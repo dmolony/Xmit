@@ -3,8 +3,6 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.common.Utility;
-
 class TextUnit
 {
   static int[] keys =
@@ -36,6 +34,10 @@ class TextUnit
   List<Data> dataList = new ArrayList<> ();
   int length;
 
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
   public TextUnit (byte[] buffer, int ptr)
   {
     int key = Reader.getWord (buffer, ptr);
@@ -61,11 +63,19 @@ class TextUnit
       System.out.printf ("Unknown key: %04X%n", key);
   }
 
+  // ---------------------------------------------------------------------------------//
+  // dump
+  // ---------------------------------------------------------------------------------//
+
   static void dump ()
   {
     for (int i = 0; i < keys.length; i++)
       System.out.printf ("%04X  %-8s  %s%n", keys[i], mnemonics[i], descriptions[i]);
   }
+
+  // ---------------------------------------------------------------------------------//
+  // toString
+  // ---------------------------------------------------------------------------------//
 
   @Override
   public String toString ()
@@ -79,35 +89,5 @@ class TextUnit
     text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
-  }
-
-  class Data
-  {
-    int length;
-    byte[] data;
-    String text;
-    boolean printable = true;
-
-    Data (byte[] buffer, int ptr)
-    {
-      length = Reader.getWord (buffer, ptr);
-      data = new byte[length];
-      System.arraycopy (buffer, ptr + 2, data, 0, length);
-
-      for (byte b : data)
-        if ((b & 0xFF) <= 0x3F)
-        {
-          printable = false;
-          break;
-        }
-      text = printable ? Reader.getString (data, 0, length) : "";
-    }
-
-    @Override
-    public String toString ()
-    {
-      return String.format ("%04X %s : %s", length, Utility.getHex (data, 0, data.length),
-          text);
-    }
   }
 }

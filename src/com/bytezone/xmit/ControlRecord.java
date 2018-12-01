@@ -8,6 +8,10 @@ public class ControlRecord
   final String name;
   List<TextUnit> textUnits = new ArrayList<> ();
 
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
   public ControlRecord (byte[] buffer, int ptr, int length)
   {
     name = Reader.getString (buffer, ptr, 6);

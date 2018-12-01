@@ -10,6 +10,10 @@ public class Reader
 {
   List<ControlRecord> controlRecords = new ArrayList<> ();
 
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
   public Reader (byte[] buffer)
   {
     List<byte[]> blocks = new ArrayList<> ();
@@ -56,20 +60,26 @@ public class Reader
         if (lastSegment)
         {
           byte[] fullBlock = consolidate (blocks, blockLength);
+
+          totalLength += blockLength;
+          ++dataSegments;
+
           if (false)
           {
             System.out.println ();
             System.out.println (
                 Utility.toHex (fullBlock, 0, fullBlock.length, Utility.EBCDIC, 0));
           }
-          totalLength += blockLength;
-          ++dataSegments;
-          if (dataSegments <= 2)              // presumably info about the file layout
-            ;
-          else if (dataSegments <= 6)         // 4 directory blocks in FILE069
-            printDirectory (fullBlock);
-          else                                // rest is data
-            printData (fullBlock);
+
+          if (false)
+          {
+            if (dataSegments <= 2)              // presumably info about the file layout
+              ;
+            else if (dataSegments <= 6)         // 4 directory blocks in FILE069
+              printDirectory (fullBlock);
+            else                                // rest is data
+              printData (fullBlock);
+          }
         }
       }
 
@@ -80,6 +90,10 @@ public class Reader
     System.out.printf ("Data size     : %08X  %<,10d%n", totalLength);
     //    TextUnit.dump ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  // consolidate
+  // ---------------------------------------------------------------------------------//
 
   byte[] consolidate (List<byte[]> blocks, int blockLength)
   {
@@ -93,6 +107,10 @@ public class Reader
     assert ptr == blockLength;
     return fullBlock;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // printDirectory
+  // ---------------------------------------------------------------------------------//
 
   void printDirectory (byte[] buffer)
   {
@@ -113,6 +131,10 @@ public class Reader
     }
   }
 
+  // ---------------------------------------------------------------------------------//
+  // printData
+  // ---------------------------------------------------------------------------------//
+
   void printData (byte[] buffer)
   {
     int ptr = 12;
@@ -124,6 +146,10 @@ public class Reader
       ptr += len;
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
 
   static String getString (byte[] buffer, int ptr, int length)
   {
@@ -138,12 +164,20 @@ public class Reader
     return "";
   }
 
+  // ---------------------------------------------------------------------------------//
+  // getWord
+  // ---------------------------------------------------------------------------------//
+
   static int getWord (byte[] buffer, int ptr)
   {
     int b = (buffer[ptr] & 0xFF) << 8;
     int a = (buffer[ptr + 1] & 0xFF);
     return a + b;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // getDouble
+  // ---------------------------------------------------------------------------------//
 
   static int getDouble (byte[] buffer, int ptr)
   {
