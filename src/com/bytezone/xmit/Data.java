@@ -9,6 +9,10 @@ class Data
   String text;
   boolean printable = true;
 
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
   Data (byte[] buffer, int ptr)
   {
     length = Reader.getWord (buffer, ptr);
@@ -23,6 +27,10 @@ class Data
       }
     text = printable ? Reader.getString (data, 0, length) : "";
   }
+
+  // ---------------------------------------------------------------------------------//
+  // toString
+  // ---------------------------------------------------------------------------------//
 
   @Override
   public String toString ()
