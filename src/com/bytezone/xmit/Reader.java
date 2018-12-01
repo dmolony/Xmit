@@ -9,6 +9,7 @@ import com.bytezone.common.Utility;
 public class Reader
 {
   List<ControlRecord> controlRecords = new ArrayList<> ();
+  List<byte[]> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -17,9 +18,6 @@ public class Reader
   public Reader (byte[] buffer)
   {
     List<byte[]> blocks = new ArrayList<> ();
-    int blockLength = 0;
-    int totalLength = 0;
-    int dataSegments = 0;
 
     int ptr = 0;
     while (ptr < buffer.length)
@@ -47,22 +45,16 @@ public class Reader
       else
       {
         if (firstSegment)
-        {
           blocks.clear ();
-          blockLength = 0;
-        }
 
         byte[] block = new byte[length - 2];
         System.arraycopy (buffer, ptr + 2, block, 0, length - 2);
         blocks.add (block);
-        blockLength += length - 2;
 
         if (lastSegment)
         {
-          byte[] fullBlock = consolidate (blocks, blockLength);
-
-          totalLength += blockLength;
-          ++dataSegments;
+          byte[] fullBlock = consolidate (blocks);
+          dataBlocks.add (fullBlock);
 
           if (false)
           {
@@ -71,14 +63,14 @@ public class Reader
                 Utility.toHex (fullBlock, 0, fullBlock.length, Utility.EBCDIC, 0));
           }
 
-          if (false)
+          if (true)
           {
-            if (dataSegments <= 2)              // presumably info about the file layout
-              ;
-            else if (dataSegments <= 6)         // 4 directory blocks in FILE069
+            if (dataBlocks.size () <= 2)        // presumably info about the file layout
+              printHex (fullBlock);
+            else if (dataBlocks.size () <= 6)   // 4 directory blocks in FILE069
               printDirectory (fullBlock);
-            else                                // rest is data
-              printData (fullBlock);
+            //            else                                // rest is data
+            //              printData (fullBlock);
           }
         }
       }
@@ -86,7 +78,11 @@ public class Reader
       ptr += length;
     }
 
-    System.out.printf ("%nData segments :     %04X  %<,10d%n", dataSegments);
+    int totalLength = 0;
+    for (byte[] block : dataBlocks)
+      totalLength += block.length;
+
+    System.out.printf ("%nData segments :     %04X  %<,10d%n", dataBlocks.size ());
     System.out.printf ("Data size     : %08X  %<,10d%n", totalLength);
     //    TextUnit.dump ();
   }
@@ -95,8 +91,12 @@ public class Reader
   // consolidate
   // ---------------------------------------------------------------------------------//
 
-  byte[] consolidate (List<byte[]> blocks, int blockLength)
+  byte[] consolidate (List<byte[]> blocks)
   {
+    int blockLength = 0;
+    for (byte[] block : blocks)
+      blockLength += block.length;
+
     byte[] fullBlock = new byte[blockLength];
     int ptr = 0;
     for (byte[] block : blocks)
@@ -126,7 +126,7 @@ public class Reader
         ptr += 24;
         continue;
       }
-      System.out.println (Utility.toHex (buffer, ptr, 16, Utility.EBCDIC, 0));
+      System.out.println (Utility.toHex (buffer, ptr, 32, Utility.EBCDIC, 0));
       ptr += 42;
     }
   }
@@ -145,6 +145,16 @@ public class Reader
       System.out.println (Reader.getString (buffer, ptr, len));
       ptr += len;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // printHex
+  // ---------------------------------------------------------------------------------//
+
+  void printHex (byte[] buffer)
+  {
+    System.out.println ();
+    System.out.println (Utility.toHex (buffer, 0, buffer.length, Utility.EBCDIC, 0));
   }
 
   // ---------------------------------------------------------------------------------//
