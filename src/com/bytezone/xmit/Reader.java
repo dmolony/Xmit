@@ -9,6 +9,7 @@ import com.bytezone.common.Utility;
 public class Reader
 {
   List<ControlRecord> controlRecords = new ArrayList<> ();
+  List<CatalogEntry> catalogEntries = new ArrayList<> ();
   List<byte[]> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
@@ -18,6 +19,8 @@ public class Reader
   public Reader (byte[] buffer)
   {
     List<byte[]> blocks = new ArrayList<> ();
+    int totalBlocks = 0;
+    int currentEntry = 0;
 
     int ptr = 0;
     while (ptr < buffer.length)
@@ -53,6 +56,7 @@ public class Reader
 
         if (lastSegment)
         {
+          totalBlocks += blocks.size ();
           byte[] fullBlock = consolidate (blocks);
           dataBlocks.add (fullBlock);
 
@@ -63,14 +67,24 @@ public class Reader
                 Utility.toHex (fullBlock, 0, fullBlock.length, Utility.EBCDIC, 0));
           }
 
-          if (true)
+          if (dataBlocks.size () <= 2)        // presumably info about the file layout
           {
-            if (dataBlocks.size () <= 2)        // presumably info about the file layout
+            printHex (fullBlock);
+            System.out.println ();
+          }
+          else if (dataBlocks.size () <= 6)   // 4 directory blocks in FILE069
+            catalogEntries.addAll (printDirectory (fullBlock));
+          else                                // rest is data
+          {
+            if (fullBlock.length == 12)
               printHex (fullBlock);
-            else if (dataBlocks.size () <= 6)   // 4 directory blocks in FILE069
-              printDirectory (fullBlock);
-            //            else                                // rest is data
-            //              printData (fullBlock);
+            else
+            {
+              CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
+              catalogEntry.addBlock (fullBlock);
+              if (catalogEntry.isComplete ())
+                ++currentEntry;
+            }
           }
         }
       }
@@ -84,7 +98,15 @@ public class Reader
 
     System.out.printf ("%nData segments :     %04X  %<,10d%n", dataBlocks.size ());
     System.out.printf ("Data size     : %08X  %<,10d%n", totalLength);
+    System.out.printf ("Total blocks  :     %04X  %<,10d%n", totalBlocks);
+    System.out.printf ("Total entries :     %04X  %<,10d%n", catalogEntries.size ());
+
     //    TextUnit.dump ();
+
+    for (CatalogEntry catalogEntry : catalogEntries)
+      System.out.println (catalogEntry);
+
+    //    catalogEntries.get (4).list ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -112,10 +134,10 @@ public class Reader
   // printDirectory
   // ---------------------------------------------------------------------------------//
 
-  void printDirectory (byte[] buffer)
+  List<CatalogEntry> printDirectory (byte[] buffer)
   {
     int ptr = 22;
-    System.out.println ();
+    List<CatalogEntry> catalogEntries = new ArrayList<> ();
 
     while (ptr + 42 < buffer.length)
     {
@@ -127,22 +149,30 @@ public class Reader
         continue;
       }
       System.out.println (Utility.toHex (buffer, ptr, 32, Utility.EBCDIC, 0));
+      System.out.println ();
+      CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr);
+      catalogEntries.add (catalogEntry);
       ptr += 42;
     }
+    return catalogEntries;
   }
 
   // ---------------------------------------------------------------------------------//
   // printData
   // ---------------------------------------------------------------------------------//
 
-  void printData (byte[] buffer)
+  void printData (int blockNo, int totalBlocks)
   {
+    byte[] buffer = dataBlocks.get (blockNo);
     int ptr = 12;
-    System.out.println ();
+    int line = 0;
+    System.out.printf ("%nBlock no: %04X  %04X  %06X%n", blockNo, totalBlocks,
+        buffer.length / 80);
     while (ptr < buffer.length)
     {
+      ++line;
       int len = Integer.min (80, buffer.length - ptr);
-      System.out.println (Reader.getString (buffer, ptr, len));
+      System.out.printf ("%04X: %s%n", line, Reader.getString (buffer, ptr, len));
       ptr += len;
     }
   }
@@ -151,10 +181,14 @@ public class Reader
   // printHex
   // ---------------------------------------------------------------------------------//
 
-  void printHex (byte[] buffer)
+  static void printHex (byte[] buffer)
   {
-    System.out.println ();
     System.out.println (Utility.toHex (buffer, 0, buffer.length, Utility.EBCDIC, 0));
+  }
+
+  static void printHex (byte[] buffer, int offset, int length)
+  {
+    System.out.println (Utility.toHex (buffer, offset, length, Utility.EBCDIC, 0));
   }
 
   // ---------------------------------------------------------------------------------//

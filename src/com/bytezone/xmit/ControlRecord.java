@@ -18,7 +18,7 @@ public class ControlRecord
     int max = ptr + length;
     ptr += 6;
 
-    System.out.printf ("%n%s", name);
+    System.out.printf ("%s", name);
 
     if ("INMR02".equals (name))
     {
@@ -36,5 +36,6 @@ public class ControlRecord
       System.out.println ("   " + textUnit);
       ptr += 4 + textUnit.length;
     }
+    System.out.println ();
   }
 }
