@@ -16,7 +16,7 @@ public class Xmit
                            "files/pds33903.xmi", "files/pds33909.xmi", "files/seq.xmi",
                            "files/testpds.xmi", "files/testpdse.xmi" };
 
-    int i = 0;
+    int i = 6;
 
     try
     {

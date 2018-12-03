@@ -5,10 +5,13 @@ import java.util.List;
 
 public class CatalogEntry
 {
-  String name;
-  String owner;
+  static String line = "====== ---------+---------+---------+---------+"
+      + "---------+---------+---------+---------+";
+  String memberName;
+  String userName;
   int size;
   List<String> lines;
+  byte[] data = new byte[24];
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -16,10 +19,11 @@ public class CatalogEntry
 
   public CatalogEntry (byte[] buffer, int offset)
   {
-    name = Reader.getString (buffer, offset, 8);
-    owner = Reader.getString (buffer, offset + 32, 8);
+    memberName = Reader.getString (buffer, offset, 8);
+    userName = Reader.getString (buffer, offset + 32, 8);
     size = Reader.getWord (buffer, offset + 26);
     lines = new ArrayList<> (size);
+    System.arraycopy (buffer, offset + 8, data, 0, 24);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -57,10 +61,16 @@ public class CatalogEntry
 
   public void list ()
   {
-    System.out.println ();
-    System.out.println (name);
+    System.out.println (line);
+    System.out.printf ("Member : %s%n", memberName);
+    System.out.printf ("User   : %s%n", userName);
+    System.out.printf ("Data   : %s%n", Reader.getHexString (data, 0, data.length));
+    System.out.println (line);
+
+    int lineNo = 0;
     for (String line : lines)
-      System.out.println (line);
+      System.out.printf ("%05d0 %s%n", ++lineNo, line);
+    System.out.println (line);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -70,6 +80,7 @@ public class CatalogEntry
   @Override
   public String toString ()
   {
-    return String.format ("%8s  %8s  %,5d  %,5d", name, owner, size, lines.size ());
+    return String.format ("%8s  %8s  %,5d  %,5d", memberName, userName, size,
+        lines.size ());
   }
 }
