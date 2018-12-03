@@ -1,45 +1,47 @@
-package com.bytezone.xmit;
+package com.bytezone.xmit.textunit;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class TextUnit
+import com.bytezone.xmit.Reader;
+
+public class TextUnit
 {
-  static final int INMBLKSZ = 0x0030;
-  static final int INMCREAT = 0x1022;
-  static final int INMDDNAM = 0x0001;
-  static final int INMDIR = 0x000C;
-  static final int INMDSNAM = 0x0002;
-  static final int INMDSORG = 0x003C;
-  static final int INMEATTR = 0x8028;
-  static final int INMERRCD = 0x1027;
-  static final int INMEXPDT = 0x0022;
+  public static final int INMBLKSZ = 0x0030;
+  public static final int INMCREAT = 0x1022;
+  public static final int INMDDNAM = 0x0001;
+  public static final int INMDIR = 0x000C;
+  public static final int INMDSNAM = 0x0002;
+  public static final int INMDSORG = 0x003C;
+  public static final int INMEATTR = 0x8028;
+  public static final int INMERRCD = 0x1027;
+  public static final int INMEXPDT = 0x0022;
 
-  static final int INMFACK = 0x1026;
-  static final int INMFFM = 0x102D;
-  static final int INMFNODE = 0x1011;
-  static final int INMFTIME = 0x1024;
-  static final int INMFUID = 0x1012;
-  static final int INMFVERS = 0x1023;
-  static final int INMLCHG = 0x1021;
-  static final int INMLRECL = 0x0042;
-  static final int INMLREF = 0x1020;
+  public static final int INMFACK = 0x1026;
+  public static final int INMFFM = 0x102D;
+  public static final int INMFNODE = 0x1011;
+  public static final int INMFTIME = 0x1024;
+  public static final int INMFUID = 0x1012;
+  public static final int INMFVERS = 0x1023;
+  public static final int INMLCHG = 0x1021;
+  public static final int INMLRECL = 0x0042;
+  public static final int INMLREF = 0x1020;
 
-  static final int INMLSIZE = 0x8018;
-  static final int INMMEMBR = 0x0003;
-  static final int INMNUMF = 0x102F;
-  static final int INMRECCT = 0x102A;
-  static final int INMRECFM = 0x0049;
-  static final int INMSECND = 0x000B;
-  static final int INMSIZE = 0x102C;
-  static final int INMTERM = 0x0028;
-  static final int INMTNODE = 0x1001;
+  public static final int INMLSIZE = 0x8018;
+  public static final int INMMEMBR = 0x0003;
+  public static final int INMNUMF = 0x102F;
+  public static final int INMRECCT = 0x102A;
+  public static final int INMRECFM = 0x0049;
+  public static final int INMSECND = 0x000B;
+  public static final int INMSIZE = 0x102C;
+  public static final int INMTERM = 0x0028;
+  public static final int INMTNODE = 0x1001;
 
-  static final int INMTTIME = 0x1025;
-  static final int INMTUID = 0x1002;
-  static final int INMTYPE = 0x8012;
-  static final int INMUSERP = 0x1029;
-  static final int INMUTILN = 0x1028;
+  public static final int INMTTIME = 0x1025;
+  public static final int INMTUID = 0x1002;
+  public static final int INMTYPE = 0x8012;
+  public static final int INMUSERP = 0x1029;
+  public static final int INMUTILN = 0x1028;
 
   static int[] keys = { 0x0000, INMBLKSZ, INMCREAT, INMDDNAM, INMDIR, INMDSNAM, INMDSORG,
                         INMEATTR, INMERRCD, INMEXPDT, INMFACK, INMFFM, INMFNODE, INMFTIME,
@@ -98,6 +100,15 @@ class TextUnit
 
     if (keyId == 0)
       System.out.printf ("Unknown key: %04X%n", key);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // length
+  // ---------------------------------------------------------------------------------//
+
+  public int length ()
+  {
+    return length;
   }
 
   // ---------------------------------------------------------------------------------//

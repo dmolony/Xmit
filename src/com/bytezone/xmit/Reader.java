@@ -243,7 +243,7 @@ public class Reader
   // getString
   // ---------------------------------------------------------------------------------//
 
-  static String getString (byte[] buffer, int ptr, int length)
+  public static String getString (byte[] buffer, int ptr, int length)
   {
     try
     {
@@ -260,7 +260,7 @@ public class Reader
   // getWord
   // ---------------------------------------------------------------------------------//
 
-  static int getWord (byte[] buffer, int ptr)
+  public static int getWord (byte[] buffer, int ptr)
   {
     int b = (buffer[ptr] & 0xFF) << 8;
     int a = (buffer[ptr + 1] & 0xFF);

@@ -3,6 +3,8 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.textunit.TextUnit;
+
 public class ControlRecord
 {
   final String name;
@@ -34,7 +36,7 @@ public class ControlRecord
       TextUnit textUnit = createTextUnit (buffer, ptr);
       textUnits.add (textUnit);
       System.out.println ("   " + textUnit);
-      ptr += 4 + textUnit.length;
+      ptr += 4 + textUnit.length ();
     }
     System.out.println ();
   }
