@@ -31,11 +31,23 @@ public class ControlRecord
 
     while (ptr < max)
     {
-      TextUnit textUnit = new TextUnit (buffer, ptr);
+      TextUnit textUnit = createTextUnit (buffer, ptr);
       textUnits.add (textUnit);
       System.out.println ("   " + textUnit);
       ptr += 4 + textUnit.length;
     }
     System.out.println ();
+  }
+
+  private TextUnit createTextUnit (byte[] buffer, int ptr)
+  {
+    int key = Reader.getWord (buffer, ptr);
+    switch (key)
+    {
+      case TextUnit.INMDSNAM:
+        return new TextUnit (buffer, ptr);
+      default:
+        return new TextUnit (buffer, ptr);
+    }
   }
 }

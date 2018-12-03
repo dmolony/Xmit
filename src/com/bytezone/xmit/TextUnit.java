@@ -5,11 +5,47 @@ import java.util.List;
 
 class TextUnit
 {
-  static int[] keys =
-      { 0x0000, 0x0030, 0x1022, 0x0001, 0x000C, 0x0002, 0x003C, 0x8028, 0x1027, 0x0022,
-        0x1026, 0x102D, 0x1011, 0x1024, 0x1012, 0x1023, 0x1021, 0x0042, 0x1020, 0x8018,
-        0x0003, 0x102F, 0x102A, 0x0049, 0x000B, 0x102C, 0x0028, 0x1001, 0x1025, 0x1002,
-        0x8012, 0x1029, 0x1028 };
+  static final int INMBLKSZ = 0x0030;
+  static final int INMCREAT = 0x1022;
+  static final int INMDDNAM = 0x0001;
+  static final int INMDIR = 0x000C;
+  static final int INMDSNAM = 0x0002;
+  static final int INMDSORG = 0x003C;
+  static final int INMEATTR = 0x8028;
+  static final int INMERRCD = 0x1027;
+  static final int INMEXPDT = 0x0022;
+
+  static final int INMFACK = 0x1026;
+  static final int INMFFM = 0x102D;
+  static final int INMFNODE = 0x1011;
+  static final int INMFTIME = 0x1024;
+  static final int INMFUID = 0x1012;
+  static final int INMFVERS = 0x1023;
+  static final int INMLCHG = 0x1021;
+  static final int INMLRECL = 0x0042;
+  static final int INMLREF = 0x1020;
+
+  static final int INMLSIZE = 0x8018;
+  static final int INMMEMBR = 0x0003;
+  static final int INMNUMF = 0x102F;
+  static final int INMRECCT = 0x102A;
+  static final int INMRECFM = 0x0049;
+  static final int INMSECND = 0x000B;
+  static final int INMSIZE = 0x102C;
+  static final int INMTERM = 0x0028;
+  static final int INMTNODE = 0x1001;
+
+  static final int INMTTIME = 0x1025;
+  static final int INMTUID = 0x1002;
+  static final int INMTYPE = 0x8012;
+  static final int INMUSERP = 0x1029;
+  static final int INMUTILN = 0x1028;
+
+  static int[] keys = { 0x0000, INMBLKSZ, INMCREAT, INMDDNAM, INMDIR, INMDSNAM, INMDSORG,
+                        INMEATTR, INMERRCD, INMEXPDT, INMFACK, INMFFM, INMFNODE, INMFTIME,
+                        INMFUID, INMFVERS, INMLCHG, INMLRECL, INMLREF, INMLSIZE, INMMEMBR,
+                        INMNUMF, INMRECCT, INMRECFM, INMSECND, INMSIZE, INMTERM, INMTNODE,
+                        INMTTIME, INMTUID, INMTYPE, INMUSERP, INMUTILN };
   static String[] mnemonics =
       { "NONE", "INMBLKSZ", "INMCREAT", "INMDDNAM", "INMDIR", "INMDSNAM", "INMDSORG",
         "INMEATTR", "INMERRCD", "INMEXPDT", "INMFACK", "INMFFM", "INMFNODE", "INMFTIME",
@@ -31,7 +67,7 @@ class TextUnit
         "User parameter string", "Name of utility program" };
 
   int keyId;
-  List<Data> dataList = new ArrayList<> ();
+  List<Data> dataList;
   int length;
 
   // ---------------------------------------------------------------------------------//
@@ -42,6 +78,7 @@ class TextUnit
   {
     int key = Reader.getWord (buffer, ptr);
     int number = Reader.getWord (buffer, ptr + 2);
+    dataList = new ArrayList<> (number);
 
     ptr += 4;
     for (int i = 0; i < number; i++)
