@@ -33,7 +33,7 @@ public class CatalogEntry
   void addBlock (byte[] buffer)
   {
     int ptr = 12;
-    Reader.printHex (buffer, 0, 12);
+    //    Reader.printHex (buffer, 0, 12);
     while (ptr < buffer.length)
     {
       int len = Integer.min (80, buffer.length - ptr);

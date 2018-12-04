@@ -48,12 +48,14 @@ public class TextUnit
                         INMFUID, INMFVERS, INMLCHG, INMLRECL, INMLREF, INMLSIZE, INMMEMBR,
                         INMNUMF, INMRECCT, INMRECFM, INMSECND, INMSIZE, INMTERM, INMTNODE,
                         INMTTIME, INMTUID, INMTYPE, INMUSERP, INMUTILN };
+
   static String[] mnemonics =
       { "NONE", "INMBLKSZ", "INMCREAT", "INMDDNAM", "INMDIR", "INMDSNAM", "INMDSORG",
         "INMEATTR", "INMERRCD", "INMEXPDT", "INMFACK", "INMFFM", "INMFNODE", "INMFTIME",
         "INMFUID", "INMFVERS", "INMLCHG", "INMLRECL", "INMLREF", "INMLSIZE", "INMMEMBR",
         "INMNUMF", "INMRECCT", "INMRECFM", "INMSECND", "INMSIZE", "INMTERM", "INMTNODE",
         "INMTTIME", "INMTUID", "INMTYPE", "INMUSERP", "INMUTILN" };
+
   static String[] descriptions =
       { "None", "Block size", "Creation date", "DDNAME for the file",
         "Number of directory blocks", "Name of the file", "File organization",
@@ -134,7 +136,8 @@ public class TextUnit
     for (Data data : dataList)
       text.append (String.format ("  %s", data) + ",");
 
-    text.deleteCharAt (text.length () - 1);
+    if (dataList.size () > 0)
+      text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
   }

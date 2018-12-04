@@ -8,6 +8,8 @@ import com.bytezone.common.Utility;
 
 public class Reader
 {
+  private static String[] format = { "?", "V", "F", "U" };
+
   List<ControlRecord> controlRecords = new ArrayList<> ();
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
   List<byte[]> dataBlocks = new ArrayList<> ();
@@ -68,17 +70,50 @@ public class Reader
                 Utility.toHex (fullBlock, 0, fullBlock.length, Utility.EBCDIC, 0));
           }
 
-          if (dataBlocks.size () <= 2)        // presumably info about the file layout
+          if (dataBlocks.size () == 1)
+          {
+            printHex (fullBlock);
+            System.out.println ();
+
+            int dsorg = getWord (fullBlock, 4);
+            int blksize = getWord (fullBlock, 6);
+            int lrecl = getWord (fullBlock, 8);
+
+            int byte10 = buffer[10] & 0xFF;
+            String recfm = format[byte10 >> 6];
+            String blocked = (byte10 & 0x10) != 0 ? "B" : "";
+            String spanned = (byte10 & 0x08) != 0 ? "S" : "";
+
+            int keyLen = buffer[11] & 0xFF;
+            int optcd = buffer[12] & 0xFF;
+
+            System.out.printf ("Keylen = %d%n", keyLen);
+            int containingBlksize = getWord (buffer, 14);
+            System.out.printf ("Containing blksize = %d%n", containingBlksize);
+
+            int maxBlocks = (containingBlksize + 8) / (blksize + 12);
+            System.out.printf ("Max blocks = %d%n", maxBlocks);
+
+            int lastField = getWord (buffer, 54);
+            //            assert lastField == 0;
+
+            System.out.printf ("DSORG : %04X%n", dsorg);
+            System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
+            System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
+            System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
+          }
+          else if (dataBlocks.size () == 2)     // presumably info about the file layout
           {
             printHex (fullBlock);
             System.out.println ();
           }
           else if (inCatalog)
             inCatalog = addCatalogEntries (fullBlock);
-          else
+          else    // in data
           {
             if (fullBlock.length == 12)
-              printHex (fullBlock);
+              ;
+            //              printHex (fullBlock);
             else
             {
               CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
@@ -176,13 +211,12 @@ public class Reader
 
   boolean addCatalogEntries (byte[] buffer)
   {
-    //    List<CatalogEntry> catalogEntries = new ArrayList<> ();
     int ptr = 0;
     while (ptr < buffer.length)
     {
-      //      System.out.println (getHexString (buffer, ptr, 12));      // header
+      System.out.println (getHexString (buffer, ptr, 12));      // header
       ptr += 12;
-      //      System.out.println (getHexString (buffer, ptr, 10));      // last member name
+      System.out.println (getHexString (buffer, ptr, 10));      // last member name
       ptr += 10;
 
       for (int i = 0; i < 6; i++)
@@ -198,7 +232,7 @@ public class Reader
         ptr += 42;
       }
 
-      //      System.out.println (getHexString (buffer, ptr, 2));
+      System.out.println (getHexString (buffer, ptr, 2));
       ptr += 2;
     }
     System.out.println ();

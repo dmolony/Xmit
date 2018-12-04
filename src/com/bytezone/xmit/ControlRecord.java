@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.textunit.TextUnit;
+import com.bytezone.xmit.textunit.*;
 
 public class ControlRecord
 {
@@ -47,7 +47,31 @@ public class ControlRecord
     switch (key)
     {
       case TextUnit.INMDSNAM:
-        return new TextUnit (buffer, ptr);
+        return new ImdDsnam (buffer, ptr);
+
+      case TextUnit.INMUTILN:
+      case TextUnit.INMFNODE:
+      case TextUnit.INMFUID:
+      case TextUnit.INMTNODE:
+      case TextUnit.INMTUID:
+        return new TextUnitString (buffer, ptr);
+
+      case TextUnit.INMNUMF:
+      case TextUnit.INMLRECL:
+      case TextUnit.INMBLKSZ:
+      case TextUnit.INMSIZE:
+      case TextUnit.INMDIR:
+        return new TextUnitNumber (buffer, ptr);
+
+      case TextUnit.INMFTIME:
+        return new TextUnitTime (buffer, ptr);
+
+      //      case TextUnit.INMRECFM:
+      //        return new Recfm (buffer, ptr);
+
+      case TextUnit.INMDSORG:
+        return new Dsorg (buffer, ptr);
+
       default:
         return new TextUnit (buffer, ptr);
     }
