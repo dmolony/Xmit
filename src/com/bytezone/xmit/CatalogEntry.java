@@ -21,8 +21,10 @@ public class CatalogEntry
   {
     memberName = Reader.getString (buffer, offset, 8);
     userName = Reader.getString (buffer, offset + 32, 8);
+
     size = Reader.getWord (buffer, offset + 26);
     lines = new ArrayList<> (size);
+
     System.arraycopy (buffer, offset + 8, data, 0, 24);
   }
 
@@ -41,7 +43,10 @@ public class CatalogEntry
       if (lines.size () < size)
         lines.add (line);
       else
+      {
         Reader.printHex (buffer, ptr, len);
+        System.out.println (((len - 1) / 80 + 1) + " extra lines");
+      }
       ptr += len;
     }
   }

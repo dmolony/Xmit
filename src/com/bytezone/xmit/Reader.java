@@ -101,6 +101,7 @@ public class Reader
             System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
             System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
             System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
+            System.out.println ();
           }
           else if (dataBlocks.size () == 2)     // presumably info about the file layout
           {
@@ -108,7 +109,10 @@ public class Reader
             System.out.println ();
           }
           else if (inCatalog)
+          {
             inCatalog = addCatalogEntries (fullBlock);
+            System.out.println ();
+          }
           else    // in data
           {
             if (fullBlock.length == 12)
@@ -116,10 +120,18 @@ public class Reader
             //              printHex (fullBlock);
             else
             {
-              CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
-              catalogEntry.addBlock (fullBlock);
-              if (catalogEntry.isComplete ())
-                ++currentEntry;
+              if (currentEntry < catalogEntries.size ())
+              {
+                CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
+                catalogEntry.addBlock (fullBlock);
+                if (catalogEntry.isComplete ())
+                  ++currentEntry;
+              }
+              else
+              {
+                System.out.println ("no more catalog entries");
+                break;
+              }
             }
           }
         }
@@ -127,16 +139,6 @@ public class Reader
 
       ptr += length;
     }
-
-    //    int count = 0;
-    //    for (byte[] block : dataBlocks)
-    //    {
-    //      if (++count > 10)
-    //        break;
-    //      System.out.printf ("Block: %04X%n", count);
-    //      printHex (block);
-    //      System.out.println ();
-    //    }
 
     int totalLength = 0;
     for (byte[] block : dataBlocks)
@@ -179,85 +181,74 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  // printDirectory
-  // ---------------------------------------------------------------------------------//
-
-  //  List<CatalogEntry> printDirectory (byte[] buffer)
-  //  {
-  //    int ptr = 22;
-  //    List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  //
-  //    while (ptr + 42 < buffer.length)
-  //    {
-  //      if (buffer[ptr] == (byte) 0xFF)
-  //        break;
-  //      if (buffer[ptr] == 0)
-  //      {
-  //        ptr += 24;
-  //        continue;
-  //      }
-  //      System.out.println (Utility.toHex (buffer, ptr, 32, Utility.EBCDIC, 0));
-  //      System.out.println ();
-  //      CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr);
-  //      catalogEntries.add (catalogEntry);
-  //      ptr += 42;
-  //    }
-  //    return catalogEntries;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // addCatalogEntries
   // ---------------------------------------------------------------------------------//
 
   boolean addCatalogEntries (byte[] buffer)
   {
     int ptr = 0;
-    while (ptr < buffer.length)
+    boolean stillProcessing = true;
+    System.out.printf ("Processing buffer: %d%n", buffer.length);
+
+    while (ptr + 22 < buffer.length)
     {
-      System.out.println (getHexString (buffer, ptr, 12));      // header
-      ptr += 12;
-      System.out.println (getHexString (buffer, ptr, 10));      // last member name
-      ptr += 10;
+      System.out.printf ("%06X: %s", ptr, getHexString (buffer, ptr, 22));      // header
+      String lastMember = getString (buffer, ptr + 12, 8);
+      System.out.println ("  Last: " + lastMember);
+      ptr += 22;
 
-      for (int i = 0; i < 6; i++)
+      int flag = buffer[ptr - 1] & 0xFF;          // indicates skipping if != 0xFE
+
+      int ptr2 = ptr;
+      int count = 0;
+      while (true)
       {
-        if (buffer[ptr] == (byte) 0xFF)
-          return false;
-        String memberName = getString (buffer, ptr, 8);
-        String userName = getString (buffer, ptr + 32, 8);
-        System.out.printf ("%s %s %s%n", getHexString (buffer, ptr, 42), memberName,
-            userName);
-        catalogEntries.add (new CatalogEntry (buffer, ptr));
+        System.out.printf ("%06X: %s", ptr2, Reader.getHexString (buffer, ptr2, 12));
 
-        ptr += 42;
+        if (buffer[ptr2] == (byte) 0xFF)
+        {
+          System.out.println ();
+          stillProcessing = false;
+          break;
+        }
+
+        if (buffer[ptr2] == 0)
+          break;
+
+        if (buffer[ptr2 + 11] != 0x0F)
+        {
+          String alias = Reader.getString (buffer, ptr2, 8);
+          ptr2 += 12;
+
+          System.out.println (alias);
+          if (lastMember.equals (alias))
+            break;
+
+          continue;
+        }
+
+        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
+        catalogEntries.add (catalogEntry);
+
+        System.out.printf ("%s %s %s%n", Reader.getHexString (buffer, ptr2 + 12, 30),
+            catalogEntry.memberName, catalogEntry.userName);
+
+        ptr2 += 42;
+        if (++count == 6)
+          break;
       }
 
-      System.out.println (getHexString (buffer, ptr, 2));
-      ptr += 2;
+      ptr += 6 * 42 + 2;
+
+      if (ptr2 < ptr)
+      {
+        System.out.printf ("%06X: %s%n", ptr2, getHexString (buffer, ptr2, ptr - ptr2));
+        System.out.println ();
+      }
     }
-    System.out.println ();
-    return true;
+
+    return stillProcessing;
   }
-
-  // ---------------------------------------------------------------------------------//
-  // printData
-  // ---------------------------------------------------------------------------------//
-
-  //  void printData (int blockNo, int totalBlocks)
-  //  {
-  //    byte[] buffer = dataBlocks.get (blockNo);
-  //    int ptr = 12;
-  //    int line = 0;
-  //    System.out.printf ("%nBlock no: %04X  %04X  %06X%n", blockNo, totalBlocks,
-  //        buffer.length / 80);
-  //    while (ptr < buffer.length)
-  //    {
-  //      ++line;
-  //      int len = Integer.min (80, buffer.length - ptr);
-  //      System.out.printf ("%04X: %s%n", line, Reader.getString (buffer, ptr, len));
-  //      ptr += len;
-  //    }
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // printHex
@@ -279,9 +270,18 @@ public class Reader
 
   public static String getString (byte[] buffer, int ptr, int length)
   {
+    assert ptr + length <= buffer.length;
     try
     {
-      return new String (buffer, ptr, length, Utility.EBCDIC);
+      StringBuilder text = new StringBuilder ();
+
+      for (int i = 0; i < length; i++)
+        if ((buffer[ptr + i] & 0xFF) < 0x40)
+          text.append (".");
+        else
+          text.append (new String (buffer, ptr + i, 1, Utility.EBCDIC));
+
+      return text.toString ();
     }
     catch (UnsupportedEncodingException e)
     {
@@ -320,7 +320,7 @@ public class Reader
   {
     StringBuilder text = new StringBuilder ();
 
-    while (length-- > 0)
+    while (length-- > 0 && offset < buffer.length)
       text.append (String.format ("%02X ", buffer[offset++]));
     //    if (text.length () > 0)
     //      text.deleteCharAt (text.length () - 1);
