@@ -14,6 +14,8 @@ public class Reader
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
   List<byte[]> dataBlocks = new ArrayList<> ();
 
+  boolean debug = false;
+
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
@@ -74,8 +76,11 @@ public class Reader
 
           if (dataBlocks.size () == 1)
           {
-            printHex (fullBlock);
-            System.out.println ();
+            if (debug)
+            {
+              printHex (fullBlock);
+              System.out.println ();
+            }
 
             int dsorg = getWord (fullBlock, 4);
             int blksize = getWord (fullBlock, 6);
@@ -89,31 +94,36 @@ public class Reader
             int keyLen = buffer[11] & 0xFF;
             int optcd = buffer[12] & 0xFF;
 
-            System.out.printf ("Keylen = %d%n", keyLen);
             int containingBlksize = getWord (buffer, 14);
-            System.out.printf ("Containing blksize = %d%n", containingBlksize);
 
             int maxBlocks = (containingBlksize + 8) / (blksize + 12);
-            System.out.printf ("Max blocks = %d%n", maxBlocks);
 
             int lastField = getWord (buffer, 54);
             //            assert lastField == 0;
 
-            System.out.printf ("DSORG : %04X%n", dsorg);
-            System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
-            System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
-            System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
-            System.out.println ();
+            if (false)
+            {
+              System.out.printf ("Keylen = %d%n", keyLen);
+              System.out.printf ("Max blocks = %d%n", maxBlocks);
+              System.out.printf ("Containing blksize = %d%n", containingBlksize);
+              System.out.printf ("DSORG : %04X%n", dsorg);
+              System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
+              System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
+              System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
+              System.out.println ();
+            }
           }
           else if (dataBlocks.size () == 2)     // presumably info about the file layout
           {
-            printHex (fullBlock);
-            System.out.println ();
+            if (debug)
+            {
+              printHex (fullBlock);
+              System.out.println ();
+            }
           }
           else if (inCatalog)
           {
             inCatalog = addCatalogEntries (fullBlock);
-            System.out.println ();
           }
           else    // in data
           {
@@ -128,12 +138,17 @@ public class Reader
 
             if (rem == 24 || dataLength == 0)
             {
-              String header = getHexString (fullBlock, 0, 12);
-              String trailer =
-                  rem == 24 ? getHexString (fullBlock, fullBlock.length - 12, 12) : "";
-              System.out.printf ("%3d  %<04X  %s  %04X  %<,6d  %3d  %4d  %d  %s  %s%n",
-                  currentEntry, catalogEntry.memberName, fullBlock.length, lines,
-                  totalLines, rem, header, trailer);
+              if (debug)
+              {
+                String header = getHexString (fullBlock, 0, 12);
+                String trailer =
+                    rem == 24 ? getHexString (fullBlock, fullBlock.length - 12, 12) : "";
+                System.out.printf ("%3d  %<04X  %s  %04X  %<,6d  %3d  %4d  %d  %s%n",
+                    currentEntry, catalogEntry.getMemberName (), fullBlock.length, lines,
+                    totalLines, rem, header);
+                if (!trailer.isEmpty ())
+                  System.out.printf ("%49.49s %s%n", "", trailer);
+              }
 
               ++currentEntry;
               totalLines = 0;
@@ -153,19 +168,9 @@ public class Reader
     System.out.printf ("Data size       : %08X  %<,10d%n", totalLength);
     System.out.printf ("Total blocks    :     %04X  %<,10d%n", totalBlockSize);
     System.out.printf ("Catalog entries :     %04X  %<,10d%n", catalogEntries.size ());
+    System.out.println ();
 
-    //    if (false)
-    //    {
-    //      System.out.println ();
-    //    count = 0;
-    //    for (CatalogEntry catalogEntry : catalogEntries)
-    //      System.out.printf ("%4d  %s%n", count++, catalogEntry);
-    //
-    //      for (int i = 0; i < 5; i++)
-    //        if (i < catalogEntries.size ())
-    //          catalogEntries.get (i).list ();
-    //    }
-    catalogEntries.get (400).list ();
+    catalogEntries.get (catalogEntries.size () - 1).list ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -204,14 +209,19 @@ public class Reader
   boolean addCatalogEntries (byte[] buffer)
   {
     int ptr = 0;
-    boolean stillProcessing = true;
-    System.out.printf ("Processing buffer: %,d  %<04X%n", buffer.length);
+    boolean eof = false;
+
+    if (debug)
+      System.out.printf ("Processing buffer: %,d  %<04X%n", buffer.length);
 
     while (ptr + 22 < buffer.length)
     {
-      System.out.printf ("%06X: %s", ptr, getHexString (buffer, ptr, 22));      // header
       String lastMember = getString (buffer, ptr + 12, 8);
-      System.out.println ("  Last: " + lastMember);
+      if (debug)
+      {
+        System.out.printf ("%06X: %s", ptr, getHexString (buffer, ptr, 22));      // header
+        System.out.println ("  Last: " + lastMember);
+      }
       ptr += 22;
 
       int len = getWord (buffer, ptr - 2);          // used data?
@@ -220,23 +230,25 @@ public class Reader
 
       while (true)
       {
-        stillProcessing = buffer[ptr2] != (byte) 0xFF;
-        if (!stillProcessing || buffer[ptr2] == 0)
+        eof = buffer[ptr2] == (byte) 0xFF;
+        if (eof || buffer[ptr2] == 0)
           break;
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
 
-        System.out.printf ("%06X: %s%n", ptr2, catalogEntry.getPrintLine ());
+        if (debug)
+          System.out.printf ("%06X: %s%n", ptr2, catalogEntry.getPrintLine ());
 
         ptr2 += catalogEntry.length ();
       }
 
       ptr += 254;
-      System.out.println ();
+      if (debug)
+        System.out.println ();
     }
 
-    return stillProcessing;
+    return !eof;
   }
 
   // ---------------------------------------------------------------------------------//
