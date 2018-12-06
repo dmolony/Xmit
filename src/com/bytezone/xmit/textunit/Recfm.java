@@ -7,11 +7,6 @@ public class Recfm extends TextUnit
     F, FB, FBA, FS, FBS, FBM, V, VB, VBA, VS, VBS, VBM
   }
 
-  public enum Organisation
-  {
-    PS, PSU, PO, POU, DA, DAU, GDG, IS, ISU, PDSM, VSAM
-  }
-
   String type;
 
   public Recfm (byte[] buffer, int ptr)

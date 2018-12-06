@@ -15,6 +15,11 @@ public class Dsorg extends TextUnit
   public final static int XFSDS = 0x04;
   public final static int LFSDS = 0x01;
 
+  public enum Organisation
+  {
+    PS, PSU, PO, POU, DA, DAU, GDG, IS, ISU, PDSM, VSAM
+  }
+
   String type;
 
   public Dsorg (byte[] buffer, int ptr)
