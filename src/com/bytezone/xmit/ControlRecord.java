@@ -24,7 +24,7 @@ public class ControlRecord
 
     if ("INMR02".equals (name))
     {
-      int fileNbr = Reader.getDouble (buffer, ptr);
+      int fileNbr = Reader.getDoubleWord (buffer, ptr);
       System.out.printf (" (file %d)", fileNbr);
       ptr += 4;
     }

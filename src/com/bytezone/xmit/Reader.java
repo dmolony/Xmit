@@ -303,10 +303,10 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDouble
+  // getDoubleWord
   // ---------------------------------------------------------------------------------//
 
-  static int getDouble (byte[] buffer, int ptr)
+  static int getDoubleWord (byte[] buffer, int ptr)
   {
     int a = getWord (buffer, ptr) << 16;
     int b = getWord (buffer, ptr + 2);
