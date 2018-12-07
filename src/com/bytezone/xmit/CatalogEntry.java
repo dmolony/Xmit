@@ -57,13 +57,24 @@ public class CatalogEntry
   // getMemberName
   // ---------------------------------------------------------------------------------//
 
-  String getMemberName ()
+  public String getMemberName ()
   {
     return memberName;
   }
 
+  public String getText ()
+  {
+    StringBuilder text = new StringBuilder ();
+    int lineNo = 0;
+    for (String line : lines)
+      text.append (String.format ("%05d0 %s%n", ++lineNo, line));
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+    return text.toString ();
+  }
+
   // ---------------------------------------------------------------------------------//
-  // 
+  //
   // ---------------------------------------------------------------------------------//
 
   void addBlock (byte[] buffer)

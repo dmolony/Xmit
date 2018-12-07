@@ -26,7 +26,6 @@ public class Reader
     int totalBlockSize = 0;
     int currentEntry = 0;
     boolean inCatalog = true;
-    //    int count = 0;
     int totalLines = 0;
 
     int ptr = 0;
@@ -160,17 +159,17 @@ public class Reader
       ptr += length;
     }
 
-    int totalLength = 0;
-    for (byte[] block : dataBlocks)
-      totalLength += block.length;
+    //    int totalLength = 0;
+    //    for (byte[] block : dataBlocks)
+    //      totalLength += block.length;
+    //
+    //    System.out.printf ("Data segments   :     %04X  %<,10d%n", dataBlocks.size ());
+    //    System.out.printf ("Data size       : %08X  %<,10d%n", totalLength);
+    //    System.out.printf ("Total blocks    :     %04X  %<,10d%n", totalBlockSize);
+    //    System.out.printf ("Catalog entries :     %04X  %<,10d%n", catalogEntries.size ());
+    //    System.out.println ();
 
-    System.out.printf ("Data segments   :     %04X  %<,10d%n", dataBlocks.size ());
-    System.out.printf ("Data size       : %08X  %<,10d%n", totalLength);
-    System.out.printf ("Total blocks    :     %04X  %<,10d%n", totalBlockSize);
-    System.out.printf ("Catalog entries :     %04X  %<,10d%n", catalogEntries.size ());
-    System.out.println ();
-
-    catalogEntries.get (catalogEntries.size () - 1).list ();
+    //    catalogEntries.get (catalogEntries.size () - 1).list ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -249,6 +248,15 @@ public class Reader
     }
 
     return !eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getCatalogEntries
+  // ---------------------------------------------------------------------------------//
+
+  public List<CatalogEntry> getCatalogEntries ()
+  {
+    return catalogEntries;
   }
 
   // ---------------------------------------------------------------------------------//
