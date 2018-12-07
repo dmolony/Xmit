@@ -38,7 +38,7 @@ public class ControlRecord
       //      System.out.println ("   " + textUnit);
       ptr += 4 + textUnit.length ();
     }
-    System.out.println ();
+    //    System.out.println ();
   }
 
   private TextUnit createTextUnit (byte[] buffer, int ptr)
@@ -88,5 +88,17 @@ public class ControlRecord
         return textUnit;
 
     return null;
+  }
+
+  @Override
+  public String toString ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Name      %s%n", name));
+    for (TextUnit textUnit : textUnits)
+      text.append (textUnit + "\n");
+
+    return text.toString ();
   }
 }

@@ -15,9 +15,8 @@ public class Reader
 
   List<ControlRecord> controlRecords = new ArrayList<> ();
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  List<byte[]> dataBlocks = new ArrayList<> ();
+  List<String> lines = new ArrayList<> ();
 
-  boolean debug = false;
   Dsorg.Org org;
 
   // ---------------------------------------------------------------------------------//
@@ -27,10 +26,7 @@ public class Reader
   public Reader (byte[] buffer)
   {
     List<List<BlockPointer>> blockPointersList = new ArrayList<> ();
-    List<BlockPointer> blockPointers = new ArrayList<> ();
-
-    int currentEntry = 0;
-    boolean inCatalog = true;
+    List<BlockPointer> blockPointers = null;
 
     int ptr = 0;
     while (ptr < buffer.length)
@@ -41,7 +37,10 @@ public class Reader
       boolean firstSegment = (flags & 0x80) != 0;
       boolean lastSegment = (flags & 0x40) != 0;
       boolean controlRecord = (flags & 0x20) != 0;
-      boolean recordNumber = (flags & 0x10) != 0;
+      boolean recordNumber = (flags & 0x10) != 0;       // not seen one of these yet
+
+      if (recordNumber)
+        System.out.println ("Found a record number");
 
       if (controlRecord)
       {
@@ -55,69 +54,23 @@ public class Reader
       else
       {
         if (firstSegment)
-          blockPointers.clear ();       // allocate new ArrayList and add to blockPointersList
+        {
+          blockPointers = new ArrayList<> ();
+          blockPointersList.add (blockPointers);
+        }
 
         blockPointers.add (new BlockPointer (ptr + 2, length - 2));
-
-        if (lastSegment)
-        {
-          byte[] fullBlock = consolidate (buffer, blockPointers);
-          dataBlocks.add (fullBlock);
-
-          if (dataBlocks.size () == 1)
-          {
-            //            if (false)
-            //            {
-            //            int dsorg = getWord (fullBlock, 4);
-            //            int blksize = getWord (fullBlock, 6);
-            //            int lrecl = getWord (fullBlock, 8);
-            //              int byte10 = buffer[10] & 0xFF;
-            //              String recfm = format[byte10 >> 6];
-            //              String blocked = (byte10 & 0x10) != 0 ? "B" : "";
-            //              String spanned = (byte10 & 0x08) != 0 ? "S" : "";
-            //
-            //              int keyLen = buffer[11] & 0xFF;
-            //              int optcd = buffer[12] & 0xFF;
-            //
-            //              int containingBlksize = getWord (buffer, 14);
-            //
-            //              int maxBlocks = (containingBlksize + 8) / (blksize + 12);
-            //
-            //              int lastField = getWord (buffer, 54);
-            //              //            assert lastField == 0;
-            //
-            //              System.out.printf ("Keylen = %d%n", keyLen);
-            //              System.out.printf ("Max blocks = %d%n", maxBlocks);
-            //              System.out.printf ("Containing blksize = %d%n", containingBlksize);
-            //              System.out.printf ("DSORG : %04X%n", dsorg);
-            //              System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
-            //              System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
-            //              System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
-            //              System.out.println ();
-            //            }
-          }
-          else if (dataBlocks.size () == 2)     // presumably info about the file layout
-          {
-          }
-          else if (inCatalog)
-          {
-            inCatalog = addCatalogEntries (fullBlock);
-          }
-          else    // in data
-          {
-            CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
-            catalogEntry.addBlock (fullBlock);
-
-            int rem = fullBlock.length % 80;
-            int dataLength = Reader.getWord (fullBlock, 10);
-            if (rem == 24 || dataLength == 0)
-              ++currentEntry;
-          }
-        }
       }
 
       ptr += length;
     }
+
+    if (org == Dsorg.Org.PDS)
+      processPDS (buffer, blockPointersList);
+    else if (org == Dsorg.Org.PS)
+      processPS (buffer, blockPointersList);
+    else
+      System.out.println ("Unknown ORG");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -126,6 +79,7 @@ public class Reader
 
   Dsorg.Org getOrg ()
   {
+    Dsorg saveOrg = null;
     for (ControlRecord controlRecord : controlRecords)
     {
       if (controlRecord.name.equals ("INMR02"))
@@ -135,13 +89,89 @@ public class Reader
           System.out.println ("text unit not found");
         else if (((TextUnitString) textUnit).getString ().equals ("IEBCOPY"))
         {
-          //          System.out.println (controlRecord.getTextUnit (TextUnit.INMDSORG));
           Dsorg dsorg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
           return dsorg.type;
         }
+        else
+          saveOrg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
       }
     }
-    return null;
+    return saveOrg.type;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // processPS
+  // ---------------------------------------------------------------------------------//
+
+  void processPS (byte[] buffer, List<List<BlockPointer>> blockPointersList)
+  {
+    for (int i = 0; i < blockPointersList.size (); i++)
+      lines.add (getString (consolidate (buffer, blockPointersList.get (i))));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // processPDS
+  // ---------------------------------------------------------------------------------//
+
+  void processPDS (byte[] buffer, List<List<BlockPointer>> blockPointersList)
+  {
+    int currentEntry = 0;
+    boolean inCatalog = true;
+
+    for (int i = 0; i < blockPointersList.size (); i++)
+    {
+      byte[] fullBlock = consolidate (buffer, blockPointersList.get (i));
+
+      if (i == 0)
+      {
+        //            if (false)
+        //            {
+        //            int dsorg = getWord (fullBlock, 4);
+        //            int blksize = getWord (fullBlock, 6);
+        //            int lrecl = getWord (fullBlock, 8);
+        //              int byte10 = buffer[10] & 0xFF;
+        //              String recfm = format[byte10 >> 6];
+        //              String blocked = (byte10 & 0x10) != 0 ? "B" : "";
+        //              String spanned = (byte10 & 0x08) != 0 ? "S" : "";
+        //
+        //              int keyLen = buffer[11] & 0xFF;
+        //              int optcd = buffer[12] & 0xFF;
+        //
+        //              int containingBlksize = getWord (buffer, 14);
+        //
+        //              int maxBlocks = (containingBlksize + 8) / (blksize + 12);
+        //
+        //              int lastField = getWord (buffer, 54);
+        //              //            assert lastField == 0;
+        //
+        //              System.out.printf ("Keylen = %d%n", keyLen);
+        //              System.out.printf ("Max blocks = %d%n", maxBlocks);
+        //              System.out.printf ("Containing blksize = %d%n", containingBlksize);
+        //              System.out.printf ("DSORG : %04X%n", dsorg);
+        //              System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
+        //              System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
+        //              System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
+        //              System.out.println ();
+        //            }
+      }
+      else if (i == 1)     // presumably info about the file layout
+      {
+      }
+      else if (inCatalog)
+      {
+        inCatalog = addCatalogEntries (fullBlock);
+      }
+      else    // in data
+      {
+        CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
+        catalogEntry.addBlock (fullBlock);
+
+        int rem = fullBlock.length % 80;
+        int dataLength = Reader.getWord (fullBlock, 10);
+        if (rem == 24 || dataLength == 0)
+          ++currentEntry;
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -211,6 +241,20 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
+  // getLines
+  // ---------------------------------------------------------------------------------//
+
+  public String getLines ()
+  {
+    StringBuilder text = new StringBuilder ();
+    for (String line : lines)
+      text.append (line + "\n");
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   // printHex
   // ---------------------------------------------------------------------------------//
 
@@ -222,6 +266,15 @@ public class Reader
   static void printHex (byte[] buffer, int offset, int length)
   {
     System.out.println (Utility.toHex (buffer, offset, length, Utility.EBCDIC, 0));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
+
+  static String getString (byte[] buffer)
+  {
+    return getString (buffer, 0, buffer.length);
   }
 
   // ---------------------------------------------------------------------------------//

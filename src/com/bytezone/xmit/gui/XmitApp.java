@@ -87,8 +87,6 @@ public class XmitApp extends Application
     mainPane.setTop (menuBar);
     ObservableList<Menu> menus = menuBar.getMenus ();
     menus.add (fileMenu.getMenu ());
-    //    menus.add (editMenu.getMenu ());
-    //    menus.add (optionsMenu.getMenu ());
 
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
@@ -104,15 +102,31 @@ public class XmitApp extends Application
 
   void select (TreeItem<File> treeItem)
   {
-    System.out.println (treeItem);
     try
     {
-      reader = new Reader (Files.readAllBytes (treeItem.getValue ().toPath ()));
+      File file = treeItem.getValue ();
+      if (!file.isFile ())
+      {
+        listView.getItems ().clear ();
+        textArea.clear ();
+        return;
+      }
+      reader = new Reader (Files.readAllBytes (file.toPath ()));
       ObservableList<String> items = FXCollections.observableArrayList ();
-      for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
-        items.add (catalogEntry.getMemberName ());
-      listView.setItems (items);
-      listView.getSelectionModel ().select (0);
+
+      List<CatalogEntry> catalogEntries = reader.getCatalogEntries ();
+      if (catalogEntries.size () > 0)
+      {
+        for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+          items.add (catalogEntry.getMemberName ());
+        listView.setItems (items);
+        listView.getSelectionModel ().select (0);
+      }
+      else
+      {
+        listView.getItems ().clear ();
+        textArea.setText (reader.getLines ());
+      }
     }
     catch (IOException e)
     {
