@@ -57,6 +57,6 @@ public class Recfm extends TextUnit
   @Override
   public String toString ()
   {
-    return String.format ("%-8s  %s", mnemonics[keyId], type);
+    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
   }
 }

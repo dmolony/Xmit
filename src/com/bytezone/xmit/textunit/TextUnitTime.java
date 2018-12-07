@@ -22,6 +22,6 @@ public class TextUnitTime extends TextUnitString
   @Override
   public String toString ()
   {
-    return String.format ("%-8s  %s", mnemonics[keyId], dateTime);
+    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], dateTime);
   }
 }

@@ -1,10 +1,10 @@
 package com.bytezone.xmit.textunit;
 
-public class ImdDsnam extends TextUnit
+public class Dsnam extends TextUnit
 {
   final String datasetName;
 
-  public ImdDsnam (byte[] buffer, int ptr)
+  public Dsnam (byte[] buffer, int ptr)
   {
     super (buffer, ptr);
 
@@ -25,6 +25,6 @@ public class ImdDsnam extends TextUnit
   @Override
   public String toString ()
   {
-    return String.format ("%-8s  %s", mnemonics[keyId], datasetName);
+    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], datasetName);
   }
 }

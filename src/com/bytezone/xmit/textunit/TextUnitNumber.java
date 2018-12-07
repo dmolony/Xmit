@@ -24,6 +24,6 @@ public class TextUnitNumber extends TextUnit
   @Override
   public String toString ()
   {
-    return String.format ("%-8s  %,d", mnemonics[keyId], number);
+    return String.format ("%04X  %-8s  %,d", keys[keyId], mnemonics[keyId], number);
   }
 }

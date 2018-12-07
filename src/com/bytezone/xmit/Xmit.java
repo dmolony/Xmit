@@ -17,7 +17,7 @@ public class Xmit
           "files/pds33909.xmi", "files/seq.xmi", "files/testpds.xmi",
           "files/testpdse.xmi", "files/FILE861.XMI" };
 
-    int i = 8;
+    int i = 1;
 
     try
     {

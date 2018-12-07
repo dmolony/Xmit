@@ -105,6 +105,15 @@ public class TextUnit
   }
 
   // ---------------------------------------------------------------------------------//
+  // matches
+  // ---------------------------------------------------------------------------------//
+
+  public boolean matches (int keyId)
+  {
+    return keys[this.keyId] == keyId;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // length
   // ---------------------------------------------------------------------------------//
 
@@ -131,7 +140,8 @@ public class TextUnit
   public String toString ()
   {
     StringBuilder text = new StringBuilder ();
-    text.append (String.format ("%-8s  %04X", mnemonics[keyId], dataList.size ()));
+    text.append (String.format ("%04X  %-8s  %04X", keys[keyId], mnemonics[keyId],
+        dataList.size ()));
 
     for (Data data : dataList)
       text.append (String.format ("  %s", data) + ",");

@@ -1,5 +1,7 @@
 package com.bytezone.xmit.textunit;
 
+import com.bytezone.xmit.Reader;
+
 public class Dsorg extends TextUnit
 {
   //  Describes INMDSORG
@@ -20,21 +22,31 @@ public class Dsorg extends TextUnit
     PS, PSU, PO, POU, DA, DAU, GDG, IS, ISU, PDSM, VSAM
   }
 
-  String type;
+  public enum Org
+  {
+    VSAM, PDS, PS
+  }
+
+  public Org type;
 
   public Dsorg (byte[] buffer, int ptr)
   {
     super (buffer, ptr);
 
-    //    type = getType (dataList.get (0).data[0]);
+    int value = Reader.getWord (dataList.get (0).data, 0);
+    switch (value)
+    {
+      case PS:
+        type = Org.PS;
+        break;
+      case PDS:
+        type = Org.PDS;
+        break;
+      case VSAM:
+        type = Org.VSAM;
+        break;
+    }
   }
-
-  //  private String getType (byte code)
-  //  {
-  //    int recfm = code & 0xD6;      // ???
-  //    //    System.out.printf ("RECFM: %02X%n", code);
-  //    
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // toString
@@ -43,6 +55,6 @@ public class Dsorg extends TextUnit
   @Override
   public String toString ()
   {
-    return String.format ("%-8s  %s", mnemonics[keyId], type);
+    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
   }
 }

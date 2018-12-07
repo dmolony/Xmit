@@ -12,12 +12,21 @@ public class TextUnitString extends TextUnit
   }
 
   // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
+
+  public String getString ()
+  {
+    return text;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // toString
   // ---------------------------------------------------------------------------------//
 
   @Override
   public String toString ()
   {
-    return String.format ("%-8s  %s", mnemonics[keyId], text);
+    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], text);
   }
 }

@@ -20,22 +20,22 @@ public class ControlRecord
     int max = ptr + length;
     ptr += 6;
 
-    System.out.printf ("%s", name);
+    //    System.out.printf ("%s", name);
 
     if ("INMR02".equals (name))
     {
-      int fileNbr = Reader.getDoubleWord (buffer, ptr);
-      System.out.printf (" (file %d)", fileNbr);
+      int fileNbr = Reader.getDoubleWord (buffer, ptr);     // need to save this
+      //      System.out.printf (" (file %d)", fileNbr);
       ptr += 4;
     }
 
-    System.out.println ();
+    //    System.out.println ();
 
     while (ptr < max)
     {
       TextUnit textUnit = createTextUnit (buffer, ptr);
       textUnits.add (textUnit);
-      System.out.println ("   " + textUnit);
+      //      System.out.println ("   " + textUnit);
       ptr += 4 + textUnit.length ();
     }
     System.out.println ();
@@ -47,7 +47,7 @@ public class ControlRecord
     switch (key)
     {
       case TextUnit.INMDSNAM:
-        return new ImdDsnam (buffer, ptr);
+        return new Dsnam (buffer, ptr);
 
       case TextUnit.INMUTILN:
       case TextUnit.INMFNODE:
@@ -75,5 +75,18 @@ public class ControlRecord
       default:
         return new TextUnit (buffer, ptr);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getTextUnit
+  // ---------------------------------------------------------------------------------//
+
+  TextUnit getTextUnit (int keyId)
+  {
+    for (TextUnit textUnit : textUnits)
+      if (textUnit.matches (keyId))
+        return textUnit;
+
+    return null;
   }
 }
