@@ -55,9 +55,7 @@ public class Reader
       else
       {
         if (firstSegment)
-        {
-          blockPointers.clear ();
-        }
+          blockPointers.clear ();       // allocate new ArrayList and add to blockPointersList
 
         blockPointers.add (new BlockPointer (ptr + 2, length - 2));
 
@@ -68,36 +66,35 @@ public class Reader
 
           if (dataBlocks.size () == 1)
           {
-            int dsorg = getWord (fullBlock, 4);
-            int blksize = getWord (fullBlock, 6);
-            int lrecl = getWord (fullBlock, 8);
-
-            if (false)
-            {
-              int byte10 = buffer[10] & 0xFF;
-              String recfm = format[byte10 >> 6];
-              String blocked = (byte10 & 0x10) != 0 ? "B" : "";
-              String spanned = (byte10 & 0x08) != 0 ? "S" : "";
-
-              int keyLen = buffer[11] & 0xFF;
-              int optcd = buffer[12] & 0xFF;
-
-              int containingBlksize = getWord (buffer, 14);
-
-              int maxBlocks = (containingBlksize + 8) / (blksize + 12);
-
-              int lastField = getWord (buffer, 54);
-              //            assert lastField == 0;
-
-              System.out.printf ("Keylen = %d%n", keyLen);
-              System.out.printf ("Max blocks = %d%n", maxBlocks);
-              System.out.printf ("Containing blksize = %d%n", containingBlksize);
-              System.out.printf ("DSORG : %04X%n", dsorg);
-              System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
-              System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
-              System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
-              System.out.println ();
-            }
+            //            if (false)
+            //            {
+            //            int dsorg = getWord (fullBlock, 4);
+            //            int blksize = getWord (fullBlock, 6);
+            //            int lrecl = getWord (fullBlock, 8);
+            //              int byte10 = buffer[10] & 0xFF;
+            //              String recfm = format[byte10 >> 6];
+            //              String blocked = (byte10 & 0x10) != 0 ? "B" : "";
+            //              String spanned = (byte10 & 0x08) != 0 ? "S" : "";
+            //
+            //              int keyLen = buffer[11] & 0xFF;
+            //              int optcd = buffer[12] & 0xFF;
+            //
+            //              int containingBlksize = getWord (buffer, 14);
+            //
+            //              int maxBlocks = (containingBlksize + 8) / (blksize + 12);
+            //
+            //              int lastField = getWord (buffer, 54);
+            //              //            assert lastField == 0;
+            //
+            //              System.out.printf ("Keylen = %d%n", keyLen);
+            //              System.out.printf ("Max blocks = %d%n", maxBlocks);
+            //              System.out.printf ("Containing blksize = %d%n", containingBlksize);
+            //              System.out.printf ("DSORG : %04X%n", dsorg);
+            //              System.out.printf ("BLKSZ : %04X  %<,6d%n", blksize);
+            //              System.out.printf ("RECLEN: %04X  %<,6d%n", lrecl);
+            //              System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
+            //              System.out.println ();
+            //            }
           }
           else if (dataBlocks.size () == 2)     // presumably info about the file layout
           {
