@@ -52,7 +52,7 @@ public class FileTreeItem extends TreeItem<File>
         ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
 
         for (File childFile : files)
-          if (childFile.isFile () && !childFile.isHidden ())
+          if (!childFile.isHidden ())
             children.add (new FileTreeItem (childFile));
 
         return children;

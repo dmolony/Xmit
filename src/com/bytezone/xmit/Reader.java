@@ -204,9 +204,12 @@ public class Reader
     int ptr = 0;
     boolean eof = false;
 
+    printHex (buffer);
+
     while (ptr + 22 < buffer.length)
     {
       String lastMember = getString (buffer, ptr + 12, 8);
+      System.out.printf ("Last: %s%n", lastMember);
       ptr += 22;
 
       int len = getWord (buffer, ptr - 2);          // used data?
@@ -215,14 +218,21 @@ public class Reader
 
       while (true)
       {
-        eof = buffer[ptr2] == (byte) 0xFF;
-        if (eof || buffer[ptr2] == 0)
-          break;
+        printHex (buffer, ptr2, 12);
+        eof = buffer[ptr2] == (byte) 0xFF || buffer[ptr2] == (byte) 0x00;
+        if (eof || buffer[ptr2] == 0x00)
+          return false;
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
+        System.out.println (catalogEntry);
+        if (catalogEntry.getMemberName ().equals (lastMember))
+        {
+          System.out.printf ("Found last: %s%n", lastMember);
+          break;
+        }
 
-        ptr2 += catalogEntry.length ();
+        ptr2 += catalogEntry.length ();       // 42 or 12
       }
 
       ptr += 254;
