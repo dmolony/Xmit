@@ -45,6 +45,7 @@ public class XmitApp extends Application
   private double dividerPosition1;
   private double dividerPosition2;
 
+  XmitTree fileView;
   ListView<String> listView = new ListView<> ();
   TextArea textArea = new TextArea ();
 
@@ -65,7 +66,7 @@ public class XmitApp extends Application
     validateRootFolderOrExit ();
     rootFolderPath = Paths.get (rootFolderName);
 
-    XmitTree fileView =
+    fileView =
         new XmitTree (new FileTreeItem (new File ("/Users/denismolony/code/xmit")));
 
     fileView.getSelectionModel ().selectedItemProperty ()
@@ -74,6 +75,7 @@ public class XmitApp extends Application
     listView.getSelectionModel ().selectedItemProperty ()
         .addListener ( (v, oldValue, newValue) -> selectMember (newValue));
 
+    fileView.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
     listView.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
     textArea.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
@@ -91,6 +93,7 @@ public class XmitApp extends Application
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
 
+    fileView.restore ();
     restoreWindowLocation ();
 
     return mainPane;
@@ -233,7 +236,7 @@ public class XmitApp extends Application
     //    fileMenu.exit ();
     //    editMenu.exit ();
     //    optionsMenu.exit ();
-    //    filesTreeTable.exit ();
+    fileView.exit ();
     //    outputPane.exit ();
 
     Platform.exit ();
