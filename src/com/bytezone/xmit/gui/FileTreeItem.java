@@ -15,10 +15,18 @@ public class FileTreeItem extends TreeItem<File>
   private boolean isFirstTimeLeaf = true;
   private boolean isLeaf;
 
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
   public FileTreeItem (File f)
   {
     super (f);
   }
+
+  // ---------------------------------------------------------------------------------//
+  // getChildren
+  // ---------------------------------------------------------------------------------//
 
   @Override
   public ObservableList<TreeItem<File>> getChildren ()
@@ -30,6 +38,10 @@ public class FileTreeItem extends TreeItem<File>
     }
     return super.getChildren ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  // isLeaf
+  // ---------------------------------------------------------------------------------//
 
   @Override
   public boolean isLeaf ()
@@ -44,6 +56,10 @@ public class FileTreeItem extends TreeItem<File>
     return isLeaf;
   }
 
+  // ---------------------------------------------------------------------------------//
+  // buildChildren
+  // ---------------------------------------------------------------------------------//
+
   private ObservableList<TreeItem<File>> buildChildren (TreeItem<File> TreeItem)
   {
     File f = TreeItem.getValue ();
@@ -55,7 +71,8 @@ public class FileTreeItem extends TreeItem<File>
         ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
 
         for (File childFile : files)
-          if (!childFile.isHidden ())
+          if (!childFile.isHidden () && (childFile.isDirectory ()
+              || childFile.getName ().toUpperCase ().endsWith (".XMI")))
             children.add (new FileTreeItem (childFile));
 
         Collections.sort (children, comparator);

@@ -4,14 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.common.Utility;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitString;
 
 public class Reader
 {
-  private static String[] format = { "?", "V", "F", "U" };
+  //  private static String[] format = { "?", "V", "F", "U" };
 
   List<ControlRecord> controlRecords = new ArrayList<> ();
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
@@ -65,15 +64,20 @@ public class Reader
       ptr += length;
     }
 
-    if (org == Dsorg.Org.PDS)
-      processPDS (buffer, blockPointersList);
-    else if (org == Dsorg.Org.PS)
-      processPS (buffer, blockPointersList);
-    else
-      System.out.println ("Unknown ORG");
+    switch (org)
+    {
+      case PDS:
+        processPDS (buffer, blockPointersList);
+        break;
+      case PS:
+        processPS (buffer, blockPointersList);
+        break;
+      default:
+        System.out.println ("Unknown ORG: " + org);
+    }
 
-    for (CatalogEntry catalogEntry : catalogEntries)
-      System.out.println (catalogEntry.getPrintLine ());
+    //    for (CatalogEntry catalogEntry : catalogEntries)
+    //      System.out.println (catalogEntry.getPrintLine ());
   }
 
   // ---------------------------------------------------------------------------------//

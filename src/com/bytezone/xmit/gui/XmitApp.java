@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
@@ -28,6 +30,7 @@ public class XmitApp extends Application
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
   private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
+  private static final String PREFS_MEMBER_INDEX = "MemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private String rootFolderName;
@@ -38,8 +41,6 @@ public class XmitApp extends Application
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
-  //  private EditMenu editMenu;
-  //  private OptionsMenu optionsMenu;
 
   SplitPane splitPane = new SplitPane ();
   private double dividerPosition1;
@@ -50,6 +51,7 @@ public class XmitApp extends Application
   TextArea textArea = new TextArea ();
 
   private Reader reader;
+  private final Map<String, Reader> readers = new HashMap<> ();
 
   // ---------------------------------------------------------------------------------//
   // createContent
@@ -93,10 +95,23 @@ public class XmitApp extends Application
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
 
-    fileView.restore ();
-    restoreWindowLocation ();
+    restore ();
 
     return mainPane;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // restore
+  // ---------------------------------------------------------------------------------//
+
+  private void restore ()
+  {
+    fileView.restore ();
+    int index = prefs.getInt (PREFS_MEMBER_INDEX, 0);
+    listView.scrollTo (index);
+    listView.getSelectionModel ().select (index);
+    listView.getFocusModel ().focus (index);
+    restoreWindowLocation ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -114,9 +129,17 @@ public class XmitApp extends Application
         textArea.clear ();
         return;
       }
-      reader = new Reader (Files.readAllBytes (file.toPath ()));
-      ObservableList<String> items = FXCollections.observableArrayList ();
 
+      String key = file.getAbsolutePath ();
+      if (readers.containsKey (key))
+        reader = readers.get (key);
+      else
+      {
+        reader = new Reader (Files.readAllBytes (file.toPath ()));        // store these
+        readers.put (key, reader);
+      }
+
+      ObservableList<String> items = FXCollections.observableArrayList ();
       List<CatalogEntry> catalogEntries = reader.getCatalogEntries ();
       if (catalogEntries.size () > 0)
       {
@@ -232,6 +255,9 @@ public class XmitApp extends Application
     double[] positions = splitPane.getDividerPositions ();
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
+
+    int index = listView.getSelectionModel ().getSelectedIndex ();
+    prefs.putInt (PREFS_MEMBER_INDEX, index);
 
     //    fileMenu.exit ();
     //    editMenu.exit ();
