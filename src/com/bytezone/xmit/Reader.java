@@ -71,6 +71,9 @@ public class Reader
       processPS (buffer, blockPointersList);
     else
       System.out.println ("Unknown ORG");
+
+    for (CatalogEntry catalogEntry : catalogEntries)
+      System.out.println (catalogEntry.getPrintLine ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -204,40 +207,42 @@ public class Reader
     int ptr = 0;
     boolean eof = false;
 
-    printHex (buffer);
+    //    System.out.println ();
+    //    printHex (buffer);
 
     while (ptr + 22 < buffer.length)
     {
       String lastMember = getString (buffer, ptr + 12, 8);
-      System.out.printf ("Last: %s%n", lastMember);
+      //      System.out.printf ("Last: %s%n", lastMember);
       ptr += 22;
 
       int len = getWord (buffer, ptr - 2);          // used data?
+      //      System.out.printf ("Len %04X%n", len);
 
       int ptr2 = ptr;
 
       while (true)
       {
-        printHex (buffer, ptr2, 12);
-        eof = buffer[ptr2] == (byte) 0xFF || buffer[ptr2] == (byte) 0x00;
+        eof = buffer[ptr2] == (byte) 0xFF;
         if (eof || buffer[ptr2] == 0x00)
-          return false;
+          break;
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
-        System.out.println (catalogEntry);
-        if (catalogEntry.getMemberName ().equals (lastMember))
-        {
-          System.out.printf ("Found last: %s%n", lastMember);
-          break;
-        }
 
-        ptr2 += catalogEntry.length ();       // 42 or 12
+        if (false)
+          System.out.printf ("%-129s %s %s%n",
+              getHexString (buffer, ptr2, catalogEntry.length ()),
+              catalogEntry.getMemberName (), catalogEntry.getUserName ());
+
+        ptr2 += catalogEntry.length ();       // 42 or 12 or 52
       }
 
       ptr += 254;
+      //      ptr += len;
     }
 
+    //    System.out.println (eof);
     return !eof;
   }
 

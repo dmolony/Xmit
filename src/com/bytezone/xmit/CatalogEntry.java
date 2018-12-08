@@ -14,7 +14,7 @@ public class CatalogEntry
   private int size2;
   private int size3;
   private List<String> lines;
-  private byte[] data;
+  private final byte[] data;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -23,8 +23,11 @@ public class CatalogEntry
   public CatalogEntry (byte[] buffer, int offset)
   {
     memberName = Reader.getString (buffer, offset, 8);
+    int extra = buffer[offset + 11] & 0xFF;
+    data = new byte[12 + extra * 2];
+    System.arraycopy (buffer, offset, data, 0, data.length);
 
-    if (buffer[offset + 11] == 0x0F)
+    if (extra > 0)
     {
       userName = Reader.getString (buffer, offset + 32, 8);
 
@@ -32,16 +35,12 @@ public class CatalogEntry
       size2 = Reader.getWord (buffer, offset + 28);
       size3 = Reader.getWord (buffer, offset + 30);
       lines = new ArrayList<> (size1);
-
-      data = new byte[42];
     }
     else
     {
       userName = "";
       lines = new ArrayList<> ();
-      data = new byte[12];
     }
-    System.arraycopy (buffer, offset, data, 0, data.length);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -61,6 +60,19 @@ public class CatalogEntry
   {
     return memberName;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // getUserName
+  // ---------------------------------------------------------------------------------//
+
+  public String getUserName ()
+  {
+    return userName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getText
+  // ---------------------------------------------------------------------------------//
 
   public String getText ()
   {

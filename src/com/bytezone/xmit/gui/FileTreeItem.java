@@ -1,6 +1,7 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
+import java.util.Collections;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,6 +9,8 @@ import javafx.scene.control.TreeItem;
 
 public class FileTreeItem extends TreeItem<File>
 {
+  static final FileComparator comparator = new FileComparator ();
+
   private boolean isFirstTimeChildren = true;
   private boolean isFirstTimeLeaf = true;
   private boolean isLeaf;
@@ -55,6 +58,7 @@ public class FileTreeItem extends TreeItem<File>
           if (!childFile.isHidden ())
             children.add (new FileTreeItem (childFile));
 
+        Collections.sort (children, comparator);
         return children;
       }
     }

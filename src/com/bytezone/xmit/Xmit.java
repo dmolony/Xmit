@@ -12,12 +12,12 @@ public class Xmit
 
   public static void main (String[] args)
   {
-    String[] fileNames =
-        { "files/FILE069.XMI", "files/pds.xmi", "files/pds3380.xmi", "files/pds33903.xmi",
-          "files/pds33909.xmi", "files/seq.xmi", "files/testpds.xmi",
-          "files/testpdse.xmi", "files/FILE861.XMI", "files/FILE912.XMI" };
+    String[] fileNames = { "files/FILE069.XMI", "files/FILE898.XMI", "files/pds3380.xmi",
+                           "files/pds33903.xmi", "files/pds33909.xmi", "files/seq.xmi",
+                           "files/testpds.xmi", "files/testpdse.xmi", "files/FILE861.XMI",
+                           "files/FILE912.XMI" };
 
-    int i = 9;
+    int i = 1;
 
     try
     {
