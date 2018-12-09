@@ -18,7 +18,7 @@ public class Utility
 
     try
     {
-      String s = new String (values, "CP037");
+      String s = new String (values, "CP037");      // CP500, CP1047, CP037, CP285
       char[] chars = s.toCharArray ();
       for (int i = 0; i < 256; i++)
       {
@@ -33,28 +33,25 @@ public class Utility
     }
   }
 
-  public static String ebc2asc (byte[] buffer)
-  {
-    byte[] newBuffer = new byte[buffer.length];
-    int ptr = 0;
-    for (int i = 0; i < buffer.length; i++)
-      //      if (buffer[i] != 0)                                       // suppress nulls
-      newBuffer[ptr++] = (byte) ebc2asc[buffer[i] & 0xFF];
+  //  static String ebc2asc (byte[] buffer)
+  //  {
+  //    byte[] newBuffer = new byte[buffer.length];
+  //    int ptr = 0;
+  //    for (int i = 0; i < buffer.length; i++)
+  //      //      if (buffer[i] != 0)                                       // suppress nulls
+  //      newBuffer[ptr++] = (byte) ebc2asc[buffer[i] & 0xFF];
+  //
+  //    return new String (newBuffer);
+  //  }
 
-    return new String (newBuffer);
-  }
-
-  //  public static final String EBCDIC = "CP1047";
-  //  public static final String EBCDIC = "CP037";
-
-  public static int getWord (byte[] buffer, int ptr)
+  public static int getWord (byte[] buffer, int ptr)        // 2 bytes
   {
     int a = (buffer[ptr + 1] & 0xFF) << 8;
     int b = buffer[ptr] & 0xFF;
     return a + b;
   }
 
-  public static int getLong (byte[] buffer, int ptr)
+  public static int getLong (byte[] buffer, int ptr)        // 4 bytes
   {
     return getWord (buffer, ptr) + getWord (buffer, ptr + 2) * 0x10000;
   }
@@ -67,15 +64,15 @@ public class Utility
     return text.toString ();
   }
 
-  public static String getHex (String s)
-  {
-    if (s == null)
-      return "Null";
-    StringBuilder text = new StringBuilder ();
-    for (char c : s.toCharArray ())
-      text.append (String.format ("%02X ", (byte) c));
-    return text.toString ();
-  }
+  //  public static String getHex (String s)
+  //  {
+  //    if (s == null)
+  //      return "Null";
+  //    StringBuilder text = new StringBuilder ();
+  //    for (char c : s.toCharArray ())
+  //      text.append (String.format ("%02X ", (byte) c));
+  //    return text.toString ();
+  //  }
 
   public static String toBits (int x, int width)
   {
@@ -108,6 +105,7 @@ public class Utility
     {
       final StringBuilder hexLine = new StringBuilder ();
       final StringBuilder textLine = new StringBuilder ();
+
       for (int linePtr = 0; linePtr < lineSize; linePtr++)
       {
         int z = ptr + linePtr;
@@ -116,38 +114,26 @@ public class Utility
 
         hexLine.append (String.format ("%02X ", b[z]));
 
-        //        if (codePage == null)
-        //        {
-        //          final int val = b[z] & 0x7F;
-        //          if (val >= 0x00 && val <= 0x20)
-        //            textLine.append ('.');
-        //          else
-        //            textLine.append ((char) val);
-        //        }
-        //        else
-        //        {
         final int val = b[z] & 0xFF;
-        if (val >= 0x00 && val <= 0x3F)
-          textLine.append ('.');
-        else
-          textLine.append ((char) ebc2asc[val]);
-        //        }
+        textLine.append (val <= 0x3F ? '.' : (char) ebc2asc[val]);
       }
       text.append (String.format ("%06X  %-48s %s%n", displayOffset + ptr,
           hexLine.toString (), textLine.toString ()));
     }
+
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
+
     return text.toString ();
   }
 
-  public static void hexDump (String fileName) throws IOException
-  {
-    System.out.printf ("%nReading: %s", fileName);
-    byte[] originalBuffer = Files.readAllBytes (Paths.get (fileName));
-    hexDump (originalBuffer);
-    System.out.printf ("%nTotal bytes: %,d%n", originalBuffer.length);
-  }
+  //  public static void hexDump (String fileName) throws IOException
+  //  {
+  //    System.out.printf ("%nReading: %s", fileName);
+  //    byte[] originalBuffer = Files.readAllBytes (Paths.get (fileName));
+  //    hexDump (originalBuffer);
+  //    System.out.printf ("%nTotal bytes: %,d%n", originalBuffer.length);
+  //  }
 
   public static void hexDump (byte[] buffer)
   {

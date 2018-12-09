@@ -213,17 +213,12 @@ public class Reader
     int ptr = 0;
     boolean eof = false;
 
-    //    System.out.println ();
-    //    printHex (buffer);
-
     while (ptr + 22 < buffer.length)
     {
       String lastMember = getString (buffer, ptr + 12, 8);
-      //      System.out.printf ("Last: %s%n", lastMember);
       ptr += 22;
 
       int len = getWord (buffer, ptr - 2);          // used data?
-      //      System.out.printf ("Len %04X%n", len);
 
       int ptr2 = ptr;
 
@@ -245,10 +240,8 @@ public class Reader
       }
 
       ptr += 254;
-      //      ptr += len;
     }
 
-    //    System.out.println (eof);
     return !eof;
   }
 
