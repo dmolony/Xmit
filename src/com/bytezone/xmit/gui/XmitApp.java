@@ -53,6 +53,9 @@ public class XmitApp extends Application
   private Reader reader;
   private final Map<String, Reader> readers = new HashMap<> ();
 
+  // add a code page menu to allow selectable code pages
+  // remember which member was previously selected for each xmit file
+
   // ---------------------------------------------------------------------------------//
   // createContent
   // ---------------------------------------------------------------------------------//

@@ -1,6 +1,5 @@
 package com.bytezone.xmit;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,8 @@ public class Reader
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
   List<String> lines = new ArrayList<> ();
 
+  private final byte[] buffer;
+
   Dsorg.Org org;
 
   // ---------------------------------------------------------------------------------//
@@ -26,6 +27,7 @@ public class Reader
   {
     List<List<BlockPointer>> blockPointersList = new ArrayList<> ();
     List<BlockPointer> blockPointers = null;
+    this.buffer = buffer;
 
     int ptr = 0;
     while (ptr < buffer.length)
@@ -67,10 +69,10 @@ public class Reader
     switch (org)
     {
       case PDS:
-        processPDS (buffer, blockPointersList);
+        processPDS (blockPointersList);
         break;
       case PS:
-        processPS (buffer, blockPointersList);
+        processPS (blockPointersList);
         break;
       default:
         System.out.println ("Unknown ORG: " + org);
@@ -110,7 +112,7 @@ public class Reader
   // processPS
   // ---------------------------------------------------------------------------------//
 
-  void processPS (byte[] buffer, List<List<BlockPointer>> blockPointersList)
+  void processPS (List<List<BlockPointer>> blockPointersList)
   {
     for (int i = 0; i < blockPointersList.size (); i++)
       lines.add (getString (consolidate (buffer, blockPointersList.get (i))));
@@ -120,7 +122,7 @@ public class Reader
   // processPDS
   // ---------------------------------------------------------------------------------//
 
-  void processPDS (byte[] buffer, List<List<BlockPointer>> blockPointersList)
+  void processPDS (List<List<BlockPointer>> blockPointersList)
   {
     int currentEntry = 0;
     boolean inCatalog = true;
@@ -279,12 +281,12 @@ public class Reader
 
   static void printHex (byte[] buffer)
   {
-    System.out.println (Utility.toHex (buffer, 0, buffer.length, Utility.EBCDIC, 0));
+    System.out.println (Utility.toHex (buffer, 0, buffer.length));
   }
 
   static void printHex (byte[] buffer, int offset, int length)
   {
-    System.out.println (Utility.toHex (buffer, offset, length, Utility.EBCDIC, 0));
+    System.out.println (Utility.toHex (buffer, offset, length));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -303,23 +305,16 @@ public class Reader
   public static String getString (byte[] buffer, int ptr, int length)
   {
     assert ptr + length <= buffer.length;
-    try
-    {
-      StringBuilder text = new StringBuilder ();
 
-      for (int i = 0; i < length; i++)
-        if ((buffer[ptr + i] & 0xFF) < 0x40)
-          text.append (".");
-        else
-          text.append (new String (buffer, ptr + i, 1, Utility.EBCDIC));
+    StringBuilder text = new StringBuilder ();
 
-      return text.toString ();
-    }
-    catch (UnsupportedEncodingException e)
-    {
-      e.printStackTrace ();
-    }
-    return "";
+    for (int i = 0; i < length; i++)
+      if ((buffer[ptr + i] & 0xFF) < 0x40)
+        text.append (".");
+      else
+        text.append ((char) Utility.ebc2asc[buffer[ptr + i] & 0xFF]);
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

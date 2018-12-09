@@ -7,8 +7,45 @@ import java.nio.file.Paths;
 
 public class Utility
 {
+  public static final int[] ebc2asc = new int[256];
+  public static final int[] asc2ebc = new int[256];
+
+  static
+  {
+    byte[] values = new byte[256];
+    for (int i = 0; i < 256; i++)
+      values[i] = (byte) i;
+
+    try
+    {
+      String s = new String (values, "CP037");
+      char[] chars = s.toCharArray ();
+      for (int i = 0; i < 256; i++)
+      {
+        int val = chars[i];
+        ebc2asc[i] = val;
+        asc2ebc[val] = i;
+      }
+    }
+    catch (UnsupportedEncodingException e)
+    {
+      e.printStackTrace ();
+    }
+  }
+
+  public static String ebc2asc (byte[] buffer)
+  {
+    byte[] newBuffer = new byte[buffer.length];
+    int ptr = 0;
+    for (int i = 0; i < buffer.length; i++)
+      //      if (buffer[i] != 0)                                       // suppress nulls
+      newBuffer[ptr++] = (byte) ebc2asc[buffer[i] & 0xFF];
+
+    return new String (newBuffer);
+  }
+
   //  public static final String EBCDIC = "CP1047";
-  public static final String EBCDIC = "CP037";
+  //  public static final String EBCDIC = "CP037";
 
   public static int getWord (byte[] buffer, int ptr)
   {
@@ -54,16 +91,15 @@ public class Utility
 
   public static String toHex (byte[] b, int displayOffset)
   {
-    return toHex (b, 0, b.length, null, displayOffset);
+    return toHex (b, 0, b.length, displayOffset);
   }
 
   public static String toHex (byte[] b, int offset, int length)
   {
-    return toHex (b, offset, length, null, 0);
+    return toHex (b, offset, length, 0);
   }
 
-  public static String toHex (byte[] b, int offset, int length, String codePage,
-      int displayOffset)
+  public static String toHex (byte[] b, int offset, int length, int displayOffset)
   {
     final int lineSize = 16;
     StringBuilder text = new StringBuilder ();
@@ -80,29 +116,22 @@ public class Utility
 
         hexLine.append (String.format ("%02X ", b[z]));
 
-        if (codePage == null)
-        {
-          final int val = b[z] & 0x7F;
-          if (val >= 0x00 && val <= 0x20)
-            textLine.append ('.');
-          else
-            textLine.append ((char) val);
-        }
+        //        if (codePage == null)
+        //        {
+        //          final int val = b[z] & 0x7F;
+        //          if (val >= 0x00 && val <= 0x20)
+        //            textLine.append ('.');
+        //          else
+        //            textLine.append ((char) val);
+        //        }
+        //        else
+        //        {
+        final int val = b[z] & 0xFF;
+        if (val >= 0x00 && val <= 0x3F)
+          textLine.append ('.');
         else
-        {
-          final int val = b[z] & 0xFF;
-          if (val >= 0x00 && val <= 0x3F)
-            textLine.append ('.');
-          else
-            try
-            {
-              textLine.append (new String (b, z, 1, codePage));
-            }
-            catch (UnsupportedEncodingException e)
-            {
-              e.printStackTrace ();
-            }
-        }
+          textLine.append ((char) ebc2asc[val]);
+        //        }
       }
       text.append (String.format ("%06X  %-48s %s%n", displayOffset + ptr,
           hexLine.toString (), textLine.toString ()));
