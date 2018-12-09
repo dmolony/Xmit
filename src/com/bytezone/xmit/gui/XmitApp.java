@@ -149,6 +149,7 @@ public class XmitApp extends Application
         for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
           items.add (catalogEntry.getMemberName ());
         listView.setItems (items);
+        listView.scrollTo (0);
         listView.getSelectionModel ().select (0);
       }
       else
@@ -259,13 +260,13 @@ public class XmitApp extends Application
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
 
+    fileView.exit ();
     int index = listView.getSelectionModel ().getSelectedIndex ();
     prefs.putInt (PREFS_MEMBER_INDEX, index);
 
     //    fileMenu.exit ();
     //    editMenu.exit ();
     //    optionsMenu.exit ();
-    fileView.exit ();
     //    outputPane.exit ();
 
     Platform.exit ();

@@ -14,7 +14,8 @@ public class CatalogEntry
   private int size2;
   private int size3;
   private List<String> lines;
-  private final byte[] data;
+  private final byte[] directoryData;
+  private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -24,8 +25,8 @@ public class CatalogEntry
   {
     memberName = Reader.getString (buffer, offset, 8);
     int extra = buffer[offset + 11] & 0xFF;
-    data = new byte[12 + extra * 2];
-    System.arraycopy (buffer, offset, data, 0, data.length);
+    directoryData = new byte[12 + extra * 2];
+    System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
 
     if (extra > 0)
     {
@@ -49,7 +50,7 @@ public class CatalogEntry
 
   int length ()
   {
-    return data.length;
+    return directoryData.length;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -89,13 +90,20 @@ public class CatalogEntry
   //
   // ---------------------------------------------------------------------------------//
 
+  void addBlock (BlockPointerList blockPointerList)
+  {
+    addBlock (blockPointerList.getBuffer ());
+  }
+
   void addBlock (byte[] buffer)
   {
     int ptr = 12;
-    int size = buffer.length / 80;
+    int totLines = buffer.length / 80;
     int dataLength = Reader.getWord (buffer, 10);
+    assert dataLength == totLines * 80;
+    //    System.out.printf ("lines: %d  length: %d%n", totLines, dataLength);
 
-    while (size-- > 0)
+    while (totLines-- > 0)
     {
       lines.add (Reader.getString (buffer, ptr, 80));
       ptr += 80;
@@ -125,8 +133,8 @@ public class CatalogEntry
 
   String getPrintLine ()
   {
-    return String.format ("%-126s %8s %8s %5d %5d %5d", Reader.getHexString (data),
-        memberName, userName, size1, size2, size3);
+    return String.format ("%-126s %8s %8s %5d %5d %5d",
+        Reader.getHexString (directoryData), memberName, userName, size1, size2, size3);
   }
 
   // ---------------------------------------------------------------------------------//

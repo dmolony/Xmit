@@ -25,8 +25,8 @@ public class Reader
 
   public Reader (byte[] buffer)
   {
-    List<List<BlockPointer>> blockPointersList = new ArrayList<> ();
-    List<BlockPointer> blockPointers = null;
+    List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+    BlockPointerList currentBlockPointerList = null;
     this.buffer = buffer;
 
     int ptr = 0;
@@ -56,11 +56,11 @@ public class Reader
       {
         if (firstSegment)
         {
-          blockPointers = new ArrayList<> ();
-          blockPointersList.add (blockPointers);
+          currentBlockPointerList = new BlockPointerList (buffer);
+          blockPointerLists.add (currentBlockPointerList);
         }
 
-        blockPointers.add (new BlockPointer (ptr + 2, length - 2));
+        currentBlockPointerList.add (new BlockPointer (ptr + 2, length - 2));
       }
 
       ptr += length;
@@ -69,10 +69,10 @@ public class Reader
     switch (org)
     {
       case PDS:
-        processPDS (blockPointersList);
+        processPDS (blockPointerLists);
         break;
       case PS:
-        processPS (blockPointersList);
+        processPS (blockPointerLists);
         break;
       default:
         System.out.println ("Unknown ORG: " + org);
@@ -91,7 +91,6 @@ public class Reader
     for (ControlRecord controlRecord : controlRecords)
       if (controlRecord.name.equals ("INMR02"))
       {
-        System.out.println (controlRecord);
         TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
         if (textUnit == null)
           System.out.println ("text unit not found");
@@ -110,25 +109,23 @@ public class Reader
   // processPS
   // ---------------------------------------------------------------------------------//
 
-  void processPS (List<List<BlockPointer>> blockPointersList)
+  void processPS (List<BlockPointerList> blockPointerLists)
   {
-    for (int i = 0; i < blockPointersList.size (); i++)
-      lines.add (getString (consolidate (buffer, blockPointersList.get (i))));
+    for (int i = 0; i < blockPointerLists.size (); i++)
+      lines.add (getString (blockPointerLists.get (i).getBuffer ()));
   }
 
   // ---------------------------------------------------------------------------------//
   // processPDS
   // ---------------------------------------------------------------------------------//
 
-  void processPDS (List<List<BlockPointer>> blockPointersList)
+  void processPDS (List<BlockPointerList> blockPointerLists)
   {
     int currentEntry = 0;
     boolean inCatalog = true;
 
-    for (int i = 0; i < blockPointersList.size (); i++)
+    for (int i = 0; i < blockPointerLists.size (); i++)
     {
-      byte[] fullBlock = consolidate (buffer, blockPointersList.get (i));
-
       if (i == 0)
       {
         //            if (false)
@@ -166,15 +163,17 @@ public class Reader
       }
       else if (inCatalog)
       {
+        byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
         inCatalog = addCatalogEntries (fullBlock);
       }
       else    // in data
       {
+        BlockPointerList bpl = blockPointerLists.get (i);
         CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
-        catalogEntry.addBlock (fullBlock);
+        catalogEntry.addBlock (bpl);
 
-        int rem = fullBlock.length % 80;
-        int dataLength = Reader.getWord (fullBlock, 10);
+        int rem = bpl.getLength () % 80;
+        int dataLength = bpl.getWord (10);
         if (rem == 24 || dataLength == 0)
           ++currentEntry;
       }
@@ -185,22 +184,22 @@ public class Reader
   // consolidate
   // ---------------------------------------------------------------------------------//
 
-  byte[] consolidate (byte[] buffer, List<BlockPointer> blockPointers)
-  {
-    int blockLength = 0;
-    for (BlockPointer blockPointer : blockPointers)
-      blockLength += blockPointer.length;
-
-    byte[] fullBlock = new byte[blockLength];
-    int ptr = 0;
-    for (BlockPointer blockPointer : blockPointers)
-    {
-      System.arraycopy (buffer, blockPointer.start, fullBlock, ptr, blockPointer.length);
-      ptr += blockPointer.length;
-    }
-    assert ptr == blockLength;
-    return fullBlock;
-  }
+  //  byte[] consolidate (byte[] buffer, List<BlockPointer> blockPointers)
+  //  {
+  //    int blockLength = 0;
+  //    for (BlockPointer blockPointer : blockPointers)
+  //      blockLength += blockPointer.length;
+  //
+  //    byte[] fullBlock = new byte[blockLength];
+  //    int ptr = 0;
+  //    for (BlockPointer blockPointer : blockPointers)
+  //    {
+  //      System.arraycopy (buffer, blockPointer.start, fullBlock, ptr, blockPointer.length);
+  //      ptr += blockPointer.length;
+  //    }
+  //    assert ptr == blockLength;
+  //    return fullBlock;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // addCatalogEntries
