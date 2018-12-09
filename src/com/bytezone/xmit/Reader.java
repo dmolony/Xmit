@@ -309,10 +309,10 @@ public class Reader
     StringBuilder text = new StringBuilder ();
 
     for (int i = 0; i < length; i++)
-      if ((buffer[ptr + i] & 0xFF) < 0x40)
-        text.append (".");
-      else
-        text.append ((char) Utility.ebc2asc[buffer[ptr + i] & 0xFF]);
+    {
+      int c = buffer[ptr + i] & 0xFF;
+      text.append (c < 0x40 ? "." : (char) Utility.ebc2asc[c]);
+    }
 
     return text.toString ();
   }
@@ -362,17 +362,5 @@ public class Reader
     //      text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
-  }
-
-  class BlockPointer
-  {
-    int start;
-    int length;
-
-    BlockPointer (int start, int length)
-    {
-      this.start = start;
-      this.length = length;
-    }
   }
 }
