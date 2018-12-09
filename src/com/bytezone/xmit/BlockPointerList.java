@@ -32,7 +32,7 @@ public class BlockPointerList
   // getLength
   // ---------------------------------------------------------------------------------//
 
-  public int getLength ()
+  public int getDataLength ()
   {
     return length;
   }

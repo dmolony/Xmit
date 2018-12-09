@@ -77,6 +77,10 @@ public class CatalogEntry
 
   public String getText ()
   {
+    if (lines.size () == 0)
+      for (BlockPointerList blockPointerList : blockPointerLists)
+        addBlock (blockPointerList.getBuffer ());
+
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
     for (String line : lines)
@@ -87,21 +91,24 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  //
+  //addBlock
   // ---------------------------------------------------------------------------------//
 
-  void addBlock (BlockPointerList blockPointerList)
+  void addBlockPointerList (BlockPointerList blockPointerList)
   {
-    addBlock (blockPointerList.getBuffer ());
+    this.blockPointerLists.add (blockPointerList);
   }
 
-  void addBlock (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  // addBlock
+  // ---------------------------------------------------------------------------------//
+
+  private void addBlock (byte[] buffer)
   {
     int ptr = 12;
     int totLines = buffer.length / 80;
     int dataLength = Reader.getWord (buffer, 10);
     assert dataLength == totLines * 80;
-    //    System.out.printf ("lines: %d  length: %d%n", totLines, dataLength);
 
     while (totLines-- > 0)
     {

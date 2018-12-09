@@ -168,13 +168,17 @@ public class Reader
       }
       else    // in data
       {
+        // distribute the data blocks to the PDS members
         BlockPointerList bpl = blockPointerLists.get (i);
         CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
-        catalogEntry.addBlock (bpl);
+        catalogEntry.addBlockPointerList (bpl);
 
-        int rem = bpl.getLength () % 80;
-        int dataLength = bpl.getWord (10);
-        if (rem == 24 || dataLength == 0)
+        // Each data block starts with a 12-byte header. If it ends with a 12-byte trailer,
+        // or is followed by an empty 12-byte block (i.e. a header but no data) then that
+        // signals the end of the data for that PDS member.
+        int actualDataLength = bpl.getWord (10);
+        int headerSize = bpl.getDataLength () - actualDataLength;
+        if (headerSize == 24 || actualDataLength == 0)              // 2 headers or no data
           ++currentEntry;
       }
     }
