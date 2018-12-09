@@ -5,14 +5,15 @@ import java.time.format.DateTimeFormatter;
 
 public class TextUnitTime extends TextUnitString
 {
-  static DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("yyyyMMddHHmmss");
-  LocalDateTime dateTime;
+  private static DateTimeFormatter formatter =
+      DateTimeFormatter.ofPattern ("yyyyMMddHHmmss");
+  private final LocalDateTime dateTime;
 
   public TextUnitTime (byte[] buffer, int ptr)
   {
     super (buffer, ptr);
 
-    dateTime = LocalDateTime.parse (text, formatter);
+    dateTime = LocalDateTime.parse (getString (), formatter);
   }
 
   // ---------------------------------------------------------------------------------//

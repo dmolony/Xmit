@@ -88,24 +88,22 @@ public class Reader
 
   Dsorg.Org getOrg ()
   {
-    Dsorg saveOrg = null;
     for (ControlRecord controlRecord : controlRecords)
-    {
       if (controlRecord.name.equals ("INMR02"))
       {
+        System.out.println (controlRecord);
         TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
         if (textUnit == null)
           System.out.println ("text unit not found");
-        else if (((TextUnitString) textUnit).getString ().equals ("IEBCOPY"))
+        else if (((TextUnitString) textUnit).getString ().equals ("IEBCOPY")
+            || ((TextUnitString) textUnit).getString ().equals ("INMCOPY"))
         {
           Dsorg dsorg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
           return dsorg.type;
         }
-        else
-          saveOrg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
       }
-    }
-    return saveOrg.type;
+
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//

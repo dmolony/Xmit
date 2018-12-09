@@ -2,7 +2,7 @@ package com.bytezone.xmit.textunit;
 
 public class TextUnitString extends TextUnit
 {
-  String text;
+  private final String text;
 
   public TextUnitString (byte[] buffer, int ptr)
   {
@@ -15,6 +15,7 @@ public class TextUnitString extends TextUnit
   // getString
   // ---------------------------------------------------------------------------------//
 
+  @Override
   public String getString ()
   {
     return text;

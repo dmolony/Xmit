@@ -2,7 +2,7 @@ package com.bytezone.xmit.textunit;
 
 public class TextUnitNumber extends TextUnit
 {
-  long number;
+  private long number;
 
   public TextUnitNumber (byte[] buffer, int ptr)
   {
@@ -15,6 +15,12 @@ public class TextUnitNumber extends TextUnit
       number *= 256;
       number += (data.data[i] & 0xFF);
     }
+  }
+
+  @Override
+  long getNumber ()
+  {
+    return number;
   }
 
   // ---------------------------------------------------------------------------------//
