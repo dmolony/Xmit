@@ -173,12 +173,12 @@ public class Reader
         CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
         catalogEntry.addBlockPointerList (bpl);
 
-        // Each data block starts with a 12-byte header. If it ends with a 12-byte trailer,
-        // or is followed by an empty 12-byte block (i.e. a header but no data) then that
-        // signals the end of the data for that PDS member.
-        int actualDataLength = bpl.getWord (10);
-        int headerSize = bpl.getDataLength () - actualDataLength;
-        if (headerSize == 24 || actualDataLength == 0)              // 2 headers or no data
+        if (false)
+          System.out.printf ("%s   %,5d  %,7d  %,7d   %d%n",
+              catalogEntry.getMemberName (), bpl.size (), bpl.getBufferLength (),
+              bpl.getDataLength (), bpl.countHeaders ());
+
+        if (bpl.isLastBlock ())
           ++currentEntry;
       }
     }

@@ -16,6 +16,8 @@ public class CatalogEntry
   private List<String> lines;
   private final byte[] directoryData;
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  private long bufferLength;
+  private long dataLength;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -72,14 +74,56 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  // getBufferLength
+  // ---------------------------------------------------------------------------------//
+
+  public long getBufferLength ()
+  {
+    return bufferLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDataLength
+  // ---------------------------------------------------------------------------------//
+
+  public long getDataLength ()
+  {
+    return dataLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //addBlock
+  // ---------------------------------------------------------------------------------//
+
+  void addBlockPointerList (BlockPointerList blockPointerList)
+  {
+    this.blockPointerLists.add (blockPointerList);
+    bufferLength += blockPointerList.getBufferLength ();
+    dataLength += blockPointerList.getDataLength ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getText
   // ---------------------------------------------------------------------------------//
 
   public String getText ()
   {
     if (lines.size () == 0)
+    {
+      //      System.out.println ("Merging " + memberName);
+      //      int total = 0;
+      //      int data = 0;
       for (BlockPointerList blockPointerList : blockPointerLists)
-        addBlock (blockPointerList.getBuffer ());
+      {
+        byte[] buffer = blockPointerList.getBuffer ();
+        addLines (buffer);
+        //        total += buffer.length;
+        //        data += blockPointerList.getDataLength ();
+        //        System.out.printf ("%s%n", blockPointerList);
+        //        System.out.printf ("Running total  %,7d  %<04X   ", total);
+        //        System.out.printf ("Data total   %,7d  %<04X%n", data);
+      }
+    }
 
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
@@ -91,19 +135,11 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  //addBlock
+  // addLines
   // ---------------------------------------------------------------------------------//
 
-  void addBlockPointerList (BlockPointerList blockPointerList)
-  {
-    this.blockPointerLists.add (blockPointerList);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // addBlock
-  // ---------------------------------------------------------------------------------//
-
-  private void addBlock (byte[] buffer)
+  // this should be able to build lines directly from the original buffer
+  private void addLines (byte[] buffer)
   {
     int ptr = 12;
     int totLines = buffer.length / 80;

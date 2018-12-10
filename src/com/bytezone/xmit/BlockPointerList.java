@@ -7,7 +7,8 @@ public class BlockPointerList
 {
   private final List<BlockPointer> blockPointers = new ArrayList<> ();
   private final byte[] buffer;
-  private int length;
+  private int bufferLength;
+  private int dataLength;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -25,16 +26,57 @@ public class BlockPointerList
   public void add (BlockPointer blockPointer)
   {
     blockPointers.add (blockPointer);
-    length += blockPointer.length;
+    bufferLength += blockPointer.length;
+    if (blockPointers.size () == 1)
+      dataLength = Reader.getWord (buffer, blockPointer.start + 10);
   }
 
   // ---------------------------------------------------------------------------------//
-  // getLength
+  // getBufferLength
+  // ---------------------------------------------------------------------------------//
+
+  public int getBufferLength ()
+  {
+    return bufferLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDataLength
   // ---------------------------------------------------------------------------------//
 
   public int getDataLength ()
   {
-    return length;
+    return dataLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // countHeaders
+  // ---------------------------------------------------------------------------------//
+
+  int countHeaders ()
+  {
+    return (bufferLength - dataLength) / 12;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isLastBlock
+  // ---------------------------------------------------------------------------------//
+
+  boolean isLastBlock ()
+  {
+    // Each data block starts with a 12-byte header. If it ends with a 12-byte trailer,
+    // or is followed by an empty 12-byte block (i.e. a header but no data) then that
+    // signals the end of the data for that PDS member.
+    return countHeaders () == 2 || dataLength == 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // size
+  // ---------------------------------------------------------------------------------//
+
+  public int size ()
+  {
+    return blockPointers.size ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -52,16 +94,63 @@ public class BlockPointerList
   // getBuffer
   // ---------------------------------------------------------------------------------//
 
-  public byte[] getBuffer ()
+  byte[] getBuffer ()
   {
-    byte[] fullBlock = new byte[length];
+    byte[] fullBlock = new byte[bufferLength];
     int ptr = 0;
     for (BlockPointer blockPointer : blockPointers)
     {
       System.arraycopy (buffer, blockPointer.start, fullBlock, ptr, blockPointer.length);
       ptr += blockPointer.length;
     }
-    assert ptr == length;
+    assert ptr == bufferLength;
     return fullBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // toString
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public String toString ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Header length: %04X%n", bufferLength - dataLength));
+    text.append (String.format ("Data length  : %04X%n", dataLength));
+
+    boolean hasTrailer = bufferLength - dataLength == 24;
+    int count = 0;
+    for (BlockPointer blockPointer : blockPointers)
+    {
+      text.append (blockPointer);
+      text.append ("\n");
+      if (++count == 1)
+      {
+        text.append (Utility.toHex (buffer, blockPointer.start, 12));
+        if (dataLength > 0)
+        {
+          text.append ("\n\n");
+          text.append (
+              Utility.toHex (buffer, blockPointer.start + 12, blockPointer.length - 12));
+        }
+      }
+      else if (count == blockPointers.size () && hasTrailer)
+      {
+        text.append (
+            Utility.toHex (buffer, blockPointer.start, blockPointer.length - 12));
+        text.append ("\n\n");
+        text.append (
+            Utility.toHex (buffer, blockPointer.start + blockPointer.length - 12, 12));
+      }
+      else
+        text.append (Utility.toHex (buffer, blockPointer.start, blockPointer.length));
+      text.append ("\n");
+    }
+
+    text.append (String.format ("Buffer length: %,7d  %<04X   Data length: %,7d  %<04X",
+        bufferLength, dataLength));
+
+    return text.toString ();
   }
 }
