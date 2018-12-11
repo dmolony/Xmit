@@ -2,17 +2,24 @@ package com.bytezone.xmit;
 
 class BlockPointer
 {
-  int start;
-  int length;
+  private final byte[] buffer;
+  final int offset;
+  final int length;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  BlockPointer (int start, int length)
+  BlockPointer (byte[] buffer, int offset, int length)
   {
-    this.start = start;
+    this.buffer = buffer;
+    this.offset = offset;
     this.length = length;
+  }
+
+  void dump (byte[] buffer)
+  {
+    System.out.println (Utility.toHex (buffer, offset, length));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -22,6 +29,6 @@ class BlockPointer
   @Override
   public String toString ()
   {
-    return String.format ("%06X - %04X", start, length);
+    return String.format ("%06X - %04X", offset, length);
   }
 }

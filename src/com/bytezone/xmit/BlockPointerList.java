@@ -5,8 +5,12 @@ import java.util.List;
 
 public class BlockPointerList
 {
+  private static byte[] INMR01 =
+      { 0x15, (byte) 0xE0, 0x5A, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
+        (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
+
   private final List<BlockPointer> blockPointers = new ArrayList<> ();
-  private final byte[] buffer;
+  private final byte[] buffer;          // all block pointers refer to this
   private int bufferLength;
   private int dataLength;
 
@@ -28,7 +32,7 @@ public class BlockPointerList
     blockPointers.add (blockPointer);
     bufferLength += blockPointer.length;
     if (blockPointers.size () == 1)
-      dataLength = Reader.getWord (buffer, blockPointer.start + 10);
+      dataLength = Reader.getWord (buffer, blockPointer.offset + 10);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -87,7 +91,7 @@ public class BlockPointerList
   {
     BlockPointer blockPointer = blockPointers.get (0);
     assert offset < blockPointer.length + 1;
-    return Reader.getWord (buffer, blockPointer.start + offset);
+    return Reader.getWord (buffer, blockPointer.offset + offset);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -100,11 +104,31 @@ public class BlockPointerList
     int ptr = 0;
     for (BlockPointer blockPointer : blockPointers)
     {
-      System.arraycopy (buffer, blockPointer.start, fullBlock, ptr, blockPointer.length);
+      System.arraycopy (buffer, blockPointer.offset, fullBlock, ptr, blockPointer.length);
       ptr += blockPointer.length;
     }
     assert ptr == bufferLength;
     return fullBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isXmit
+  // ---------------------------------------------------------------------------------//
+
+  boolean isXmit ()
+  {
+    BlockPointer blockPointer = blockPointers.get (0);
+    return Reader.matches (INMR01, buffer, blockPointer.offset + 10);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // dump
+  // ---------------------------------------------------------------------------------//
+
+  void dump ()
+  {
+    for (BlockPointer blockPointer : blockPointers)
+      blockPointer.dump (buffer);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -127,24 +151,24 @@ public class BlockPointerList
       text.append ("\n");
       if (++count == 1)
       {
-        text.append (Utility.toHex (buffer, blockPointer.start, 12));
+        text.append (Utility.toHex (buffer, blockPointer.offset, 12));
         if (dataLength > 0)
         {
           text.append ("\n\n");
           text.append (
-              Utility.toHex (buffer, blockPointer.start + 12, blockPointer.length - 12));
+              Utility.toHex (buffer, blockPointer.offset + 12, blockPointer.length - 12));
         }
       }
       else if (count == blockPointers.size () && hasTrailer)
       {
         text.append (
-            Utility.toHex (buffer, blockPointer.start, blockPointer.length - 12));
+            Utility.toHex (buffer, blockPointer.offset, blockPointer.length - 12));
         text.append ("\n\n");
         text.append (
-            Utility.toHex (buffer, blockPointer.start + blockPointer.length - 12, 12));
+            Utility.toHex (buffer, blockPointer.offset + blockPointer.length - 12, 12));
       }
       else
-        text.append (Utility.toHex (buffer, blockPointer.start, blockPointer.length));
+        text.append (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
       text.append ("\n");
     }
 

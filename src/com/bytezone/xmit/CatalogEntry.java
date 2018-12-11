@@ -26,24 +26,65 @@ public class CatalogEntry
   public CatalogEntry (byte[] buffer, int offset)
   {
     memberName = Reader.getString (buffer, offset, 8);
+    //    System.out.println (Utility.getHex (buffer, offset, 42));
     int extra = buffer[offset + 11] & 0xFF;
-    directoryData = new byte[12 + extra * 2];
-    System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+    //    assert extra == 0 || extra == 15 || extra == 20 : "Extra " + extra;
 
-    if (extra > 0)
+    switch (extra)
     {
-      userName = Reader.getString (buffer, offset + 32, 8);
+      case 0x0F:
+        userName = Reader.getString (buffer, offset + 32, 8);
 
-      size1 = Reader.getWord (buffer, offset + 26);
-      size2 = Reader.getWord (buffer, offset + 28);
-      size3 = Reader.getWord (buffer, offset + 30);
-      lines = new ArrayList<> (size1);
+        size1 = Reader.getWord (buffer, offset + 26);
+        size2 = Reader.getWord (buffer, offset + 28);
+        size3 = Reader.getWord (buffer, offset + 30);
+        lines = new ArrayList<> (size1);
+        directoryData = new byte[42];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+        break;
+
+      case 0x14:
+        userName = Reader.getString (buffer, offset + 32, 8);
+        directoryData = new byte[52];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+        break;
+
+      case 0x2C:
+        directoryData = new byte[36];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+        userName = "";
+        break;
+
+      case 0x2E:
+        directoryData = new byte[40];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+        userName = "";
+        break;
+
+      case 0xB3:
+        directoryData = new byte[18];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+        userName = "";
+        break;
+
+      case 0:
+        userName = "";
+        lines = new ArrayList<> ();
+        directoryData = new byte[12];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+        break;
+
+      default:
+        System.out.println ("********************** Unknown extra length: " + extra);
+        userName = "";
+        directoryData = new byte[12];
+        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
     }
-    else
-    {
-      userName = "";
-      lines = new ArrayList<> ();
-    }
+
+    if (true)
+      System.out.printf ("%-129s %s %s%n",
+          Reader.getHexString (buffer, offset, length ()), getMemberName (),
+          getUserName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -110,18 +151,13 @@ public class CatalogEntry
   {
     if (lines.size () == 0)
     {
-      //      System.out.println ("Merging " + memberName);
-      //      int total = 0;
-      //      int data = 0;
+      if (blockPointerLists.size () > 200)
+        return partialDump ();
+
       for (BlockPointerList blockPointerList : blockPointerLists)
       {
         byte[] buffer = blockPointerList.getBuffer ();
         addLines (buffer);
-        //        total += buffer.length;
-        //        data += blockPointerList.getDataLength ();
-        //        System.out.printf ("%s%n", blockPointerList);
-        //        System.out.printf ("Running total  %,7d  %<04X   ", total);
-        //        System.out.printf ("Data total   %,7d  %<04X%n", data);
       }
     }
 
@@ -144,6 +180,8 @@ public class CatalogEntry
     int ptr = 12;
     int totLines = buffer.length / 80;
     int dataLength = Reader.getWord (buffer, 10);
+    System.out.println (Utility.toHex (buffer, 0, 12));
+    System.out.printf ("Buffer length: %d  Data length: %d%n", buffer.length, dataLength);
     assert dataLength == totLines * 80;
 
     while (totLines-- > 0)
@@ -151,6 +189,38 @@ public class CatalogEntry
       lines.add (Reader.getString (buffer, ptr, 80));
       ptr += 80;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // partialDump
+  // ---------------------------------------------------------------------------------//
+
+  private String partialDump ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (toString ());
+    text.append ("\n\n");
+    text.append ("Member data too large to display\n");
+    int max = 5;
+    text.append (
+        "Showing first " + max + " of " + blockPointerLists.size () + " buffers\n\n");
+    if (blockPointerLists.get (0).isXmit ())
+      text.append ("Appears to be XMIT\n\n");
+    for (int i = 0; i < max; i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+      if (bpl.getDataLength () > 0)
+      {
+        byte[] buffer = bpl.getBuffer ();
+        int length = Reader.getWord (buffer, 10);
+        text.append (Utility.toHex (buffer, 12, length));
+        if (i < max - 1)
+          text.append ("\n\n");
+      }
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -187,7 +257,7 @@ public class CatalogEntry
   @Override
   public String toString ()
   {
-    return String.format ("%8s  %8s  %,5d  %,5d", memberName, userName, size1,
-        lines.size ());
+    return String.format ("%8s  %8s  %,9d  %,9d", memberName, userName, bufferLength,
+        dataLength);
   }
 }
