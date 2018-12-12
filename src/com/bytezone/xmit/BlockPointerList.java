@@ -1,9 +1,10 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class BlockPointerList
+public class BlockPointerList implements Iterable<BlockPointer>
 {
   private static byte[] INMR01 =
       { 0x15, (byte) 0xE0, 0x5A, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
@@ -13,6 +14,7 @@ public class BlockPointerList
   private final byte[] buffer;          // all block pointers refer to this
   private int bufferLength;
   private int dataLength;
+  private boolean isBinary;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -31,8 +33,13 @@ public class BlockPointerList
   {
     blockPointers.add (blockPointer);
     bufferLength += blockPointer.length;
+
     if (blockPointers.size () == 1)
+    {
       dataLength = Reader.getWord (buffer, blockPointer.offset + 10);
+      int b = buffer[blockPointer.offset + 12] & 0xFF;
+      isBinary = b > 0 && b < 0x40;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -75,12 +82,40 @@ public class BlockPointerList
   }
 
   // ---------------------------------------------------------------------------------//
+  // listHeaders
+  // ---------------------------------------------------------------------------------//
+
+  boolean listHeaders ()
+  {
+    System.out.println ("BPL (" + size () + ")");
+    byte[] buffer = getBuffer ();
+    int ptr = 0;
+    int dataLength = -1;
+    while (ptr < buffer.length)
+    {
+      dataLength = Reader.getWord (buffer, ptr + 10);
+      System.out.printf ("%s  %,7d%n", Utility.getHex (buffer, ptr, 12), dataLength);
+      ptr += 12 + dataLength;
+    }
+    return dataLength == 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // size
   // ---------------------------------------------------------------------------------//
 
   public int size ()
   {
     return blockPointers.size ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isBinary
+  // ---------------------------------------------------------------------------------//
+
+  boolean isBinary ()
+  {
+    return isBinary;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -128,7 +163,7 @@ public class BlockPointerList
   void dump ()
   {
     for (BlockPointer blockPointer : blockPointers)
-      blockPointer.dump (buffer);
+      System.out.println (blockPointer.toHex ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -147,8 +182,10 @@ public class BlockPointerList
     int count = 0;
     for (BlockPointer blockPointer : blockPointers)
     {
+      text.append (count + "\n");
       text.append (blockPointer);
       text.append ("\n");
+
       if (++count == 1)
       {
         text.append (Utility.toHex (buffer, blockPointer.offset, 12));
@@ -159,11 +196,15 @@ public class BlockPointerList
               Utility.toHex (buffer, blockPointer.offset + 12, blockPointer.length - 12));
         }
       }
-      else if (count == blockPointers.size () && hasTrailer)
+      else if (count == blockPointers.size ()
+          && (hasTrailer || blockPointer.length == 12))
       {
-        text.append (
-            Utility.toHex (buffer, blockPointer.offset, blockPointer.length - 12));
-        text.append ("\n\n");
+        if (blockPointer.length > 12)
+        {
+          text.append (
+              Utility.toHex (buffer, blockPointer.offset, blockPointer.length - 12));
+          text.append ("\n\n");
+        }
         text.append (
             Utility.toHex (buffer, blockPointer.offset + blockPointer.length - 12, 12));
       }
@@ -176,5 +217,15 @@ public class BlockPointerList
         bufferLength, dataLength));
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // Iterator
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public Iterator<BlockPointer> iterator ()
+  {
+    return blockPointers.iterator ();
   }
 }

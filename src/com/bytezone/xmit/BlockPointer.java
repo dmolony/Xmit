@@ -17,9 +17,9 @@ class BlockPointer
     this.length = length;
   }
 
-  void dump (byte[] buffer)
+  String toHex ()
   {
-    System.out.println (Utility.toHex (buffer, offset, length));
+    return Utility.toHex (buffer, offset, length);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -29,6 +29,6 @@ class BlockPointer
   @Override
   public String toString ()
   {
-    return String.format ("%06X - %04X", offset, length);
+    return String.format ("%06X - %04X  %<,7d", offset, length);
   }
 }

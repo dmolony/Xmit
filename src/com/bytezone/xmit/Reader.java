@@ -112,8 +112,14 @@ public class Reader
         System.out.println ("Unknown ORG: " + org);
     }
 
-    //    for (CatalogEntry catalogEntry : catalogEntries)
-    //      System.out.println (catalogEntry.getPrintLine ());
+    int totAlias = 0;
+    for (CatalogEntry catalogEntry : catalogEntries)
+      if (catalogEntry.isAlias ())
+      {
+        System.out.println (catalogEntry.getPrintLine ());
+        ++totAlias;
+      }
+    System.out.println ("Total aliases: " + totAlias);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -167,6 +173,7 @@ public class Reader
     int currentEntry = 0;
     boolean inCatalog = true;
     int catalogLength = 0;
+    int catalogEndBlock = 0;
 
     for (int i = 0; i < blockPointerLists.size (); i++)
     {
@@ -226,9 +233,13 @@ public class Reader
         //        System.out.println ();
         inCatalog = addCatalogEntries (fullBlock);
         catalogLength += fullBlock.length;
+        if (!inCatalog)
+          catalogEndBlock = i;
       }
       else    // in data
       {
+        while (catalogEntries.get (currentEntry).isAlias ())
+          ++currentEntry;
         // distribute the data blocks to the PDS members
         BlockPointerList bpl = blockPointerLists.get (i);
         CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
@@ -243,8 +254,67 @@ public class Reader
           ++currentEntry;
       }
     }
-    System.out.printf ("%nCatalog entries: %d  %<04X  %,d  %<06X%n",
+
+    int blockPointers = 0;
+    int dataLength = 0;
+
+    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+      blockPointers += bpl.size ();
+      dataLength += bpl.getDataLength ();
+    }
+
+    System.out.printf ("%nMembers       : %,9d    %<04X  Length: %,d  %<06X%n",
         catalogEntries.size (), catalogLength);
+    System.out.printf ("Catalog BLs   : %,9d    %<04X%n", catalogEndBlock - 1);
+    System.out.printf ("Data BLs      : %,9d    %<04X%n%n",
+        blockPointerLists.size () - catalogEndBlock - 1);
+    System.out.printf ("Data BPs      : %,9d%n", blockPointers);
+    System.out.printf ("Data length   : %,9d  %<06X%n", dataLength);
+
+    int bplCount = catalogEndBlock + 1;
+    int length = 0;
+    int countLast = 0;
+    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+    {
+      //      if (i == 7)
+      //        break;
+      BlockPointerList bpl = blockPointerLists.get (i);
+      boolean last = bpl.listHeaders ();
+      if (last)
+        ++countLast;
+
+      //      System.out.println (bpl);
+      //      int bpCount = 0;
+      //      for (BlockPointer bp : bpl)
+      //      {
+      //        if (bpCount == 0)
+      //          System.out.printf ("%n%3d %s  %7d  %7d  %s%n", bplCount, bp,
+      //              bpl.getBufferLength (), bpl.getDataLength (),
+      //              bpl.isLastBlock () ? "LAST" : "");
+      //        else
+      //          System.out.printf ("%3d %s%n", i, bp);
+      //        if (i == 6 && bpCount == 0)
+      //        {
+      //          //          System.out.println (bp.toHex ());
+      //          byte[] buffer = bpl.getBuffer ();
+      //          int ptr = 0;
+      //          while (ptr < buffer.length)
+      //          {
+      //            System.out.println (Utility.toHex (buffer, ptr, 12));
+      //            int len = Reader.getWord (buffer, ptr + 10);
+      //            //            System.out.println (Utility.toHex (buffer, ptr + 12, len));
+      //            ptr += 12 + len;
+      //          }
+      //        }
+      //        length += bp.length;
+      //        bpCount++;
+      //      }
+      ++bplCount;
+    }
+    System.out.printf ("    Total  %06X %<,8d%n", length);
+    System.out.println (countLast + " complete blocks");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -256,27 +326,37 @@ public class Reader
     int ptr = 0;
     boolean eof = false;
 
-    while (ptr + 22 < buffer.length)
+    System.out.println (Utility.toHex (buffer));
+
+    while (ptr + 22 < buffer.length)      // 12-byte block header, 10-byte data header
     {
       String lastMember = getString (buffer, ptr + 12, 8);
-      ptr += 22;
+      int len = getWord (buffer, ptr + 20);          // used data?
+      System.out.printf ("Last member: %s  Len: %d%n", lastMember, len);
 
-      int len = getWord (buffer, ptr - 2);          // used data?
-
-      int ptr2 = ptr;
+      int ptr2 = ptr + 22;
 
       while (true)
       {
-        eof = buffer[ptr2] == (byte) 0xFF;
-        if (eof || buffer[ptr2] == 0x00)
-          break;
+        if (buffer[ptr2] == (byte) 0xFF)
+        {
+          System.out.println (Utility.getHex (buffer, ptr2, 8));
+          return false;
+        }
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
 
+        // check for last member
+        if (matches (buffer, ptr2, buffer, ptr + 12, 8))
+        {
+          //          System.out.println ("found last member");
+          break;
+        }
         ptr2 += catalogEntry.length ();       // 42 or 12 or 52
       }
 
+      ptr += 22;
       ptr += 254;
     }
 
@@ -312,11 +392,29 @@ public class Reader
 
   static boolean matches (byte[] key, byte[] buffer, int ptr)
   {
+    System.out.println ("Key: " + Utility.getHex (key, 0, key.length));
+    System.out.println (" in: " + Utility.getHex (buffer, ptr, key.length));
     if (ptr + key.length > buffer.length)
       return false;
 
     for (int i = 0; i < key.length; i++)
       if (key[i] != buffer[ptr + i])
+        return false;
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // matches
+  // ---------------------------------------------------------------------------------//
+
+  static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2, int length)
+  {
+    if (ptr1 + length >= key.length || ptr2 + length >= buffer.length)
+      return false;
+
+    for (int i = 0; i < length; i++)
+      if (key[ptr1 + i] != buffer[ptr2 + i])
         return false;
 
     return true;

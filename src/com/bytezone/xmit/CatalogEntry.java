@@ -9,13 +9,17 @@ public class CatalogEntry
       + "---------+---------+---------+---------+";
 
   private final String memberName;
-  private final String userName;
+  private String userName = "";
+  private String aliasName = "";
+
   private int size1;
   private int size2;
   private int size3;
-  private List<String> lines;
+
+  private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+
   private long bufferLength;
   private long dataLength;
 
@@ -34,52 +38,44 @@ public class CatalogEntry
     {
       case 0x0F:
         userName = Reader.getString (buffer, offset + 32, 8);
-
         size1 = Reader.getWord (buffer, offset + 26);
         size2 = Reader.getWord (buffer, offset + 28);
         size3 = Reader.getWord (buffer, offset + 30);
-        lines = new ArrayList<> (size1);
         directoryData = new byte[42];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
         break;
 
       case 0x14:
         userName = Reader.getString (buffer, offset + 32, 8);
         directoryData = new byte[52];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
         break;
 
       case 0x2C:
         directoryData = new byte[36];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
-        userName = "";
         break;
 
       case 0x2E:
         directoryData = new byte[40];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
-        userName = "";
         break;
 
-      case 0xB3:
-        directoryData = new byte[18];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
-        userName = "";
+      case 0xB1:                // alias
+        aliasName = Reader.getString (buffer, offset + 36, 8);
+        directoryData = new byte[46];       // not tested yet
+        break;
+
+      case 0xB3:                // alias
+        aliasName = Reader.getString (buffer, offset + 36, 8);
+        directoryData = new byte[50];
         break;
 
       case 0:
-        userName = "";
-        lines = new ArrayList<> ();
         directoryData = new byte[12];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
         break;
 
       default:
-        System.out.println ("********************** Unknown extra length: " + extra);
-        userName = "";
+        System.out.println ("********************** Unknown extra: " + extra);
         directoryData = new byte[12];
-        System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
     }
+    System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
 
     if (true)
       System.out.printf ("%-129s %s %s%n",
@@ -112,6 +108,24 @@ public class CatalogEntry
   public String getUserName ()
   {
     return userName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isAlias
+  // ---------------------------------------------------------------------------------//
+
+  public boolean isAlias ()
+  {
+    return !aliasName.isEmpty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getAliasName
+  // ---------------------------------------------------------------------------------//
+
+  public String getAliasName ()
+  {
+    return aliasName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -151,14 +165,19 @@ public class CatalogEntry
   {
     if (lines.size () == 0)
     {
+      if (isAlias ())
+        return "Alias of " + aliasName;
+      if (blockPointerLists.size () == 0)
+        return "No data";
       if (blockPointerLists.size () > 200)
         return partialDump ();
+      if (blockPointerLists.get (0).isBinary ())
+        return hexDump ();
 
+      //      for (BlockPointerList blockPointerList : blockPointerLists)
+      //        System.out.println (Utility.toHex (blockPointerList.getBuffer ()));
       for (BlockPointerList blockPointerList : blockPointerLists)
-      {
-        byte[] buffer = blockPointerList.getBuffer ();
-        addLines (buffer);
-      }
+        addLines (blockPointerList);
     }
 
     StringBuilder text = new StringBuilder ();
@@ -175,20 +194,48 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
 
   // this should be able to build lines directly from the original buffer
-  private void addLines (byte[] buffer)
+  private void addLines (BlockPointerList blockPointerList)
   {
-    int ptr = 12;
-    int totLines = buffer.length / 80;
-    int dataLength = Reader.getWord (buffer, 10);
-    System.out.println (Utility.toHex (buffer, 0, 12));
-    System.out.printf ("Buffer length: %d  Data length: %d%n", buffer.length, dataLength);
-    assert dataLength == totLines * 80;
+    byte[] buffer = blockPointerList.getBuffer ();
+    int dataLength = Reader.getWord (buffer, 10);       // bpl.dataLength
+    int remainder = buffer.length - dataLength;
+    if (remainder != 12 && remainder != 24)
+      System.out.printf ("Unexpected remainder in %s: %d", memberName, remainder);
 
-    while (totLines-- > 0)
+    //    System.out.println (Utility.toHex (buffer));
+
+    //    System.out.println (memberName);
+    //    System.out.println (Utility.toHex (buffer, 0, 12));
+    //    System.out.printf ("Buffer length: %d  Data length: %d%n", buffer.length, dataLength);
+    //    assert dataLength == totLines * 80;
+
+    int ptr = 12;
+    while (dataLength > 0)
     {
-      lines.add (Reader.getString (buffer, ptr, 80));
-      ptr += 80;
+      int len = Math.min (80, dataLength);
+      lines.add (Reader.getString (buffer, ptr, len));
+      ptr += len;
+      dataLength -= len;
     }
+  }
+
+  private String hexDump ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (int i = 0; i < blockPointerLists.size (); i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+      if (bpl.getDataLength () > 0)
+      {
+        byte[] buffer = bpl.getBuffer ();
+        int length = Reader.getWord (buffer, 10);
+        text.append (Utility.toHex (buffer, 12, length));
+        text.append ("\n\n");
+      }
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
