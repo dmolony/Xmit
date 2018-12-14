@@ -2,7 +2,7 @@ package com.bytezone.xmit;
 
 class BlockPointer
 {
-  private final byte[] buffer;
+  final byte[] buffer;
   final int offset;
   final int length;
 

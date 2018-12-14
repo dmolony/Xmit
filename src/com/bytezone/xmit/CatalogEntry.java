@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CatalogEntry
+public class CatalogEntry implements Comparable<CatalogEntry>
 {
   private static String line = "====== ---------+---------+---------+---------+"
       + "---------+---------+---------+---------+";
@@ -16,12 +16,17 @@ public class CatalogEntry
   private int size2;
   private int size3;
 
+  final long blockFrom;
+  final long blockTo;
+
   private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
   private long bufferLength;
   private long dataLength;
+
+  private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -30,10 +35,10 @@ public class CatalogEntry
   public CatalogEntry (byte[] buffer, int offset)
   {
     memberName = Reader.getString (buffer, offset, 8);
-    //    System.out.println (Utility.getHex (buffer, offset, 42));
-    int extra = buffer[offset + 11] & 0xFF;
-    //    assert extra == 0 || extra == 15 || extra == 20 : "Extra " + extra;
+    blockFrom = Utility.getValue (buffer, offset + 8, 3);
+    blockTo = Utility.getValue (buffer, offset + 12, 3);
 
+    int extra = buffer[offset + 11] & 0xFF;
     switch (extra)
     {
       case 0x0F:
@@ -57,6 +62,10 @@ public class CatalogEntry
         directoryData = new byte[40];
         break;
 
+      case 0x37:
+        directoryData = new byte[58];
+        break;
+
       case 0xB1:                // alias
         aliasName = Reader.getString (buffer, offset + 36, 8);
         directoryData = new byte[46];       // not tested yet
@@ -72,15 +81,15 @@ public class CatalogEntry
         break;
 
       default:
-        System.out.println ("********************** Unknown extra: " + extra);
+        System.out.printf ("********************** Unknown extra: %02X%n", extra);
         directoryData = new byte[12];
     }
     System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
 
     if (true)
-      System.out.printf ("%-129s %s %s%n",
-          Reader.getHexString (buffer, offset, length ()), getMemberName (),
-          getUserName ());
+      System.out.printf ("%02X %-8s %06X %06X %-129s %8s %8s%n", extra, getMemberName (),
+          blockFrom, blockTo, Reader.getHexString (buffer, offset + 15, length () - 15),
+          getUserName (), getAliasName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -147,11 +156,13 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  //addBlock
+  // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
   void addBlockPointerList (BlockPointerList blockPointerList)
   {
+    logicalBuffer.addBlockPointerList (blockPointerList);
+
     this.blockPointerLists.add (blockPointerList);
     bufferLength += blockPointerList.getBufferLength ();
     dataLength += blockPointerList.getDataLength ();
@@ -163,6 +174,8 @@ public class CatalogEntry
 
   public String getText ()
   {
+    //    logicalBuffer.walk ();
+
     if (lines.size () == 0)
     {
       if (isAlias ())
@@ -201,13 +214,6 @@ public class CatalogEntry
     int remainder = buffer.length - dataLength;
     if (remainder != 12 && remainder != 24)
       System.out.printf ("Unexpected remainder in %s: %d", memberName, remainder);
-
-    //    System.out.println (Utility.toHex (buffer));
-
-    //    System.out.println (memberName);
-    //    System.out.println (Utility.toHex (buffer, 0, 12));
-    //    System.out.printf ("Buffer length: %d  Data length: %d%n", buffer.length, dataLength);
-    //    assert dataLength == totLines * 80;
 
     int ptr = 12;
     while (dataLength > 0)
@@ -304,7 +310,19 @@ public class CatalogEntry
   @Override
   public String toString ()
   {
-    return String.format ("%8s  %8s  %,9d  %,9d", memberName, userName, bufferLength,
-        dataLength);
+    return String.format ("%8s  %8s  %8s  %06X  %06X", memberName, userName, aliasName,
+        blockFrom, blockTo);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // compareTo
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public int compareTo (CatalogEntry o)
+  {
+    if (this.blockFrom == o.blockFrom)
+      return this.memberName.compareTo (o.memberName);
+    return blockFrom < o.blockFrom ? -1 : 1;
   }
 }

@@ -56,6 +56,14 @@ public class Utility
     return getWord (buffer, ptr) + getWord (buffer, ptr + 2) * 0x10000;
   }
 
+  public static long getValue (byte[] buffer, int offset, int length)
+  {
+    long value = 0;
+    while (length-- > 0)
+      value = value << 8 | buffer[offset++] & 0xFF;
+    return value;
+  }
+
   public static String getHex (byte[] buffer, int offset, int length)
   {
     StringBuilder text = new StringBuilder ();

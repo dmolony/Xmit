@@ -1,8 +1,16 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.prefs.Preferences;
+
+import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
@@ -17,6 +25,14 @@ public class XmitTree extends TreeView<File>
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   //  private Path rootFolderPath;
   private final MultipleSelectionModel<TreeItem<File>> model = getSelectionModel ();
+  private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
+
+  private Reader reader;
+  private final Map<String, Reader> readers = new HashMap<> ();
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
 
   XmitTree (FileTreeItem fileTreeItem)
   {
@@ -48,6 +64,33 @@ public class XmitTree extends TreeView<File>
         };
         return cell;
       }
+    });
+
+    // selection
+    model.selectedItemProperty ().addListener ( (obs, oldSelection, newSelection) ->
+    {
+      if (newSelection == null)
+        return;
+
+      File file = newSelection.getValue ();
+      String key = file.getAbsolutePath ();
+      if (readers.containsKey (key))
+        reader = readers.get (key);
+      else
+      {
+        try
+        {
+          reader = new Reader (Files.readAllBytes (file.toPath ()));
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace ();
+        }
+        readers.put (key, reader);
+      }
+
+      for (TreeItemSelectionListener listener : listeners)
+        listener.treeItemSelected (reader);
     });
   }
 
@@ -130,5 +173,24 @@ public class XmitTree extends TreeView<File>
       item = item.getParent ();
     }
     return pathBuilder.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addListener
+  // ---------------------------------------------------------------------------------//
+
+  public void addListener (TreeItemSelectionListener listener)
+  {
+    if (!listeners.contains (listener))
+      listeners.add (listener);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // removeListener
+  // ---------------------------------------------------------------------------------//
+
+  public void removeListener (TreeItemSelectionListener listener)
+  {
+    listeners.remove (listener);
   }
 }

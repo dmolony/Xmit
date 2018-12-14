@@ -2,7 +2,7 @@ package com.bytezone.xmit.textunit;
 
 public class Dsnam extends TextUnit
 {
-  private final String datasetName;
+  public final String datasetName;
 
   public Dsnam (byte[] buffer, int ptr)
   {

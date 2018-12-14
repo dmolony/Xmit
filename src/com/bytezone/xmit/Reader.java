@@ -1,9 +1,11 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.bytezone.xmit.textunit.Dsnam;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitString;
@@ -21,6 +23,7 @@ public class Reader
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
   Dsorg.Org org;
+  String fileName;
 
   //  __XMIheadr  = "E0C9D5D4D9F0F1"x    xxINMR01
   //  __POEheadr  = "01CA6D0F"x
@@ -83,7 +86,10 @@ public class Reader
         if (cr.name.equals ("INMR06"))
           break;
         if (cr.name.equals ("INMR02") && org == null)
+        {
           org = getOrg ();
+          fileName = getFileName (cr);
+        }
         System.out.println (cr);
       }
       else
@@ -115,34 +121,9 @@ public class Reader
     int totAlias = 0;
     for (CatalogEntry catalogEntry : catalogEntries)
       if (catalogEntry.isAlias ())
-      {
-        System.out.println (catalogEntry.getPrintLine ());
         ++totAlias;
-      }
-    System.out.println ("Total aliases: " + totAlias);
-  }
 
-  // ---------------------------------------------------------------------------------//
-  // getOrg
-  // ---------------------------------------------------------------------------------//
-
-  Dsorg.Org getOrg ()
-  {
-    for (ControlRecord controlRecord : controlRecords)
-      if (controlRecord.name.equals ("INMR02"))
-      {
-        TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
-        if (textUnit == null)
-          System.out.println ("text unit not found");
-        else if (((TextUnitString) textUnit).getString ().equals ("IEBCOPY")
-            || ((TextUnitString) textUnit).getString ().equals ("INMCOPY"))
-        {
-          Dsorg dsorg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
-          return dsorg.type;
-        }
-      }
-
-    return null;
+    System.out.printf ("%3d aliases%n", totAlias);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -175,7 +156,10 @@ public class Reader
     int catalogLength = 0;
     int catalogEndBlock = 0;
 
-    for (int i = 0; i < blockPointerLists.size (); i++)
+    System.out.println (fileName);
+    System.out.printf ("Allocating %d BPLs%n", blockPointerLists.size ());
+
+    loop: for (int i = 0; i < blockPointerLists.size (); i++)
     {
       if (i == 0)
       {
@@ -208,62 +192,102 @@ public class Reader
         //              System.out.printf ("RECFM : %s %s %s%n", recfm, blocked, spanned);
         //              System.out.println ();
         //            }
-        byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
-        System.out.println (Utility.toHex (fullBlock));
-        System.out.println ();
+        //        byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
+        //        System.out.println (Utility.toHex (fullBlock));
+        //        System.out.println ();
       }
       else if (i == 1)     // presumably info about the file layout
       {
-        byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
-        System.out.println (Utility.toHex (fullBlock));
-        System.out.println ();
-
-        System.out.println (Utility.toHex (fullBlock, 0, 16));
-        System.out.println ();
-        int tot = fullBlock[0] & 0xFF;
-        for (int j = 0; j < tot; j++)
-          System.out.println (Utility.toHex (fullBlock, j * 16 + 16, 16));
-        System.out.println ();
+        //        byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
+        //        System.out.println (Utility.toHex (fullBlock));
+        //        System.out.println ();
+        //
+        //        System.out.println (Utility.toHex (fullBlock, 0, 16));
+        //        System.out.println ();
+        //        int tot = fullBlock[0] & 0xFF;
+        //        for (int j = 0; j < tot; j++)
+        //          System.out.println (Utility.toHex (fullBlock, j * 16 + 16, 16));
+        //        System.out.println ();
       }
       else if (inCatalog)
       {
         byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
-        System.out.printf ("Catalog buffer #%2d   %04X%n", i, fullBlock.length);
+        System.out.printf ("%nCatalog buffer #%2d   %04X%n", i, fullBlock.length);
         //        System.out.println (Utility.toHex (fullBlock));
         //        System.out.println ();
         inCatalog = addCatalogEntries (fullBlock);
         catalogLength += fullBlock.length;
         if (!inCatalog)
+        {
           catalogEndBlock = i;
+          //          break;
+        }
       }
       else    // in data
       {
-        while (catalogEntries.get (currentEntry).isAlias ())
-          ++currentEntry;
-        // distribute the data blocks to the PDS members
-        BlockPointerList bpl = blockPointerLists.get (i);
-        CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
-        catalogEntry.addBlockPointerList (bpl);
-
+        if (i == catalogEndBlock + 1)
+        {
+          System.out.printf ("Found %d catalog entries%n", catalogEntries.size ());
+          //          break;
+        }
         if (false)
-          System.out.printf ("%s   %,5d  %,7d  %,7d   %d%n",
-              catalogEntry.getMemberName (), bpl.size (), bpl.getBufferLength (),
-              bpl.getDataLength (), bpl.countHeaders ());
+        {
+          byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
+          System.out.println (Utility.toHex (fullBlock));
+        }
 
-        if (bpl.isLastBlock ())
-          ++currentEntry;
+        // distribute the data blocks to the PDS members
+        //        BlockPointerList bpl = blockPointerLists.get (i);
+        //        CatalogEntry catalogEntry = catalogEntries.get (currentEntry);
+        //        catalogEntry.addBlockPointerList (bpl);
+        //        bpl.setCatalogEntry (catalogEntry);
+
+        //        if (false)
+        //          System.out.printf ("%s   %,5d  %,7d  %,7d  %4d%n",
+        //              catalogEntry.getMemberName (), bpl.size (), bpl.getBufferLength (),
+        //              bpl.getDataLength (), bpl.countHeaders ());
+        //
+        //        // check for last block, increment if no errors
+        //        if (bpl.isLastBlock ())
+        //        {
+        //          int last = blockPointerLists.size () - 1;
+        //          String alert = i == last ? "" : "*** EARLY ***";
+        //          ++currentEntry;
+        //
+        //          if (currentEntry == catalogEntries.size ())
+        //          {
+        //            System.out.printf ("Breaking (1) at %d of %d %s%n", i,
+        //                blockPointerLists.size (), alert);
+        //            break loop;
+        //          }
+        //
+        //          while (catalogEntries.get (currentEntry).isAlias ())
+        //          {
+        //            ++currentEntry;
+        //            if (currentEntry == catalogEntries.size ())
+        //            {
+        //              System.out.printf ("Breaking (2) at %d of %d %s%n", i,
+        //                  blockPointerLists.size (), alert);
+        //              break loop;
+        //            }
+        //          }
+        //      }
       }
     }
 
     int blockPointers = 0;
     int dataLength = 0;
 
-    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-    {
-      BlockPointerList bpl = blockPointerLists.get (i);
-      blockPointers += bpl.size ();
-      dataLength += bpl.getDataLength ();
-    }
+    //    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+    //    for (int i = catalogEndBlock + 1; i < 20; i++)
+    //    {
+    //      BlockPointerList bpl = blockPointerLists.get (i);
+    //      System.out.println ();
+    //      System.out.println (bpl);
+    //      System.out.println ();
+    //      blockPointers += bpl.size ();
+    //      dataLength += bpl.getDataLength ();
+    //    }
 
     System.out.printf ("%nMembers       : %,9d    %<04X  Length: %,d  %<06X%n",
         catalogEntries.size (), catalogLength);
@@ -274,47 +298,65 @@ public class Reader
     System.out.printf ("Data length   : %,9d  %<06X%n", dataLength);
 
     int bplCount = catalogEndBlock + 1;
-    int length = 0;
+    //    int length = 0;
     int countLast = 0;
-    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-    {
-      //      if (i == 7)
-      //        break;
-      BlockPointerList bpl = blockPointerLists.get (i);
-      boolean last = bpl.listHeaders ();
-      if (last)
-        ++countLast;
+    if (true)
+      for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+      {
+        BlockPointerList bpl = blockPointerLists.get (i);
+        //        boolean last = bpl.listHeaders ();
+        //        if (last)
+        //          ++countLast;
 
-      //      System.out.println (bpl);
-      //      int bpCount = 0;
-      //      for (BlockPointer bp : bpl)
-      //      {
-      //        if (bpCount == 0)
-      //          System.out.printf ("%n%3d %s  %7d  %7d  %s%n", bplCount, bp,
-      //              bpl.getBufferLength (), bpl.getDataLength (),
-      //              bpl.isLastBlock () ? "LAST" : "");
-      //        else
-      //          System.out.printf ("%3d %s%n", i, bp);
-      //        if (i == 6 && bpCount == 0)
-      //        {
-      //          //          System.out.println (bp.toHex ());
-      //          byte[] buffer = bpl.getBuffer ();
-      //          int ptr = 0;
-      //          while (ptr < buffer.length)
-      //          {
-      //            System.out.println (Utility.toHex (buffer, ptr, 12));
-      //            int len = Reader.getWord (buffer, ptr + 10);
-      //            //            System.out.println (Utility.toHex (buffer, ptr + 12, len));
-      //            ptr += 12 + len;
-      //          }
-      //        }
-      //        length += bp.length;
-      //        bpCount++;
-      //      }
-      ++bplCount;
+        System.out.println (bpl.getFirstHeader ());
+        //      int bpCount = 0;
+        //      for (BlockPointer bp : bpl)
+        //      {
+        //        if (bpCount == 0)
+        //          System.out.printf ("%n%3d %s  %7d  %7d  %s%n", bplCount, bp,
+        //              bpl.getBufferLength (), bpl.getDataLength (),
+        //              bpl.isLastBlock () ? "LAST" : "");
+        //        else
+        //          System.out.printf ("%3d %s%n", i, bp);
+        //        if (i == 6 && bpCount == 0)
+        //        {
+        //          //          System.out.println (bp.toHex ());
+        //          byte[] buffer = bpl.getBuffer ();
+        //          int ptr = 0;
+        //          while (ptr < buffer.length)
+        //          {
+        //            System.out.println (Utility.toHex (buffer, ptr, 12));
+        //            int len = Reader.getWord (buffer, ptr + 10);
+        //            //            System.out.println (Utility.toHex (buffer, ptr + 12, len));
+        //            ptr += 12 + len;
+        //          }
+        //        }
+        //        length += bp.length;
+        //        bpCount++;
+        //      }
+        ++bplCount;
+      }
+    //    System.out.printf ("    Total  %06X %<,8d%n", length);
+    System.out.printf ("%3d complete blocks%n", countLast);
+
+    Collections.sort (catalogEntries);
+
+    for (CatalogEntry catalogEntry : catalogEntries)
+    {
+      long blockFrom = catalogEntry.blockFrom;
+      boolean found = false;
+      for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+      {
+        BlockPointerList bpl = blockPointerLists.get (i);
+        //        System.out.printf ("Comparing %06X  %06X %n", bpl.blockFrom, blockFrom);
+        if (bpl.blockFrom == blockFrom + 0x0800)
+        {
+          found = true;
+          break;
+        }
+      }
+      System.out.printf ("%s  %s%n", catalogEntry, found);
     }
-    System.out.printf ("    Total  %06X %<,8d%n", length);
-    System.out.println (countLast + " complete blocks");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -323,44 +365,38 @@ public class Reader
 
   boolean addCatalogEntries (byte[] buffer)
   {
+    //    System.out.println (Utility.toHex (buffer));
+
     int ptr = 0;
-    boolean eof = false;
-
-    System.out.println (Utility.toHex (buffer));
-
-    while (ptr + 22 < buffer.length)      // 12-byte block header, 10-byte data header
+    while (ptr < buffer.length)
     {
-      String lastMember = getString (buffer, ptr + 12, 8);
-      int len = getWord (buffer, ptr + 20);          // used data?
-      System.out.printf ("Last member: %s  Len: %d%n", lastMember, len);
+      //      System.out.printf ("%s%n", Utility.toHex (buffer, ptr, 22));
+      //      int len = getWord (buffer, ptr + 20);          // used data?
+
+      //      String lastMember = getString (buffer, ptr + 12, 8);
+      //      System.out.printf ("Last member: %s  Len: %d%n", lastMember, len);
 
       int ptr2 = ptr + 22;
 
       while (true)
       {
-        if (buffer[ptr2] == (byte) 0xFF)
-        {
-          System.out.println (Utility.getHex (buffer, ptr2, 8));
+        if (buffer[ptr2] == (byte) 0xFF)        // end of member list
           return false;
-        }
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
 
         // check for last member
         if (matches (buffer, ptr2, buffer, ptr + 12, 8))
-        {
-          //          System.out.println ("found last member");
           break;
-        }
-        ptr2 += catalogEntry.length ();       // 42 or 12 or 52
+
+        ptr2 += catalogEntry.length ();
       }
 
-      ptr += 22;
-      ptr += 254;
+      ptr += 0x114;
     }
 
-    return !eof;
+    return true;        // member list not finished yet
   }
 
   // ---------------------------------------------------------------------------------//
@@ -418,6 +454,35 @@ public class Reader
         return false;
 
     return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getOrg
+  // ---------------------------------------------------------------------------------//
+
+  Dsorg.Org getOrg ()
+  {
+    for (ControlRecord controlRecord : controlRecords)
+      if (controlRecord.name.equals ("INMR02"))
+      {
+        TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
+        if (textUnit == null)
+          System.out.println ("text unit not found");
+        else if (((TextUnitString) textUnit).getString ().equals ("IEBCOPY")
+            || ((TextUnitString) textUnit).getString ().equals ("INMCOPY"))
+        {
+          Dsorg dsorg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
+          return dsorg.type;
+        }
+      }
+
+    return null;
+  }
+
+  String getFileName (ControlRecord controlRecord)
+  {
+    TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSNAM);
+    return textUnit == null ? "" : ((Dsnam) textUnit).datasetName;
   }
 
   // ---------------------------------------------------------------------------------//

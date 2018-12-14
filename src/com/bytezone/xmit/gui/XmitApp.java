@@ -1,8 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -19,12 +17,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-public class XmitApp extends Application
+public class XmitApp extends Application implements TreeItemSelectionListener
 {
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
@@ -38,6 +40,7 @@ public class XmitApp extends Application
 
   private Stage primaryStage;
   private final BorderPane mainPane = new BorderPane ();
+  private final OutputPane outputPane = new OutputPane ();
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
@@ -46,12 +49,10 @@ public class XmitApp extends Application
   private double dividerPosition1;
   private double dividerPosition2;
 
-  XmitTree fileView;
+  XmitTree xmitTree;
   ListView<String> listView = new ListView<> ();
-  TextArea textArea = new TextArea ();
-
   private Reader reader;
-  private final Map<String, Reader> readers = new HashMap<> ();
+  private final Map<Reader, String> selectedMembers = new HashMap<> ();
 
   // add a code page menu to allow selectable code pages
   // remember which member was previously selected for each xmit file
@@ -71,22 +72,22 @@ public class XmitApp extends Application
     validateRootFolderOrExit ();
     rootFolderPath = Paths.get (rootFolderName);
 
-    fileView =
+    xmitTree =
         new XmitTree (new FileTreeItem (new File ("/Users/denismolony/code/xmit")));
 
-    fileView.getSelectionModel ().selectedItemProperty ()
-        .addListener ( (v, oldValue, newValue) -> select (newValue));
+    xmitTree.addListener (outputPane);    // must come before ourselves
+    xmitTree.addListener (this);
 
     listView.getSelectionModel ().selectedItemProperty ()
-        .addListener ( (v, oldValue, newValue) -> selectMember (newValue));
+        .addListener ( (v, oldValue, newValue) -> memberSelected (newValue));
 
-    fileView.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
+    xmitTree.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
     listView.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
-    textArea.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
+    //    textArea.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
-    splitPane.getItems ().addAll (fileView, listView, textArea);
+    splitPane.getItems ().addAll (xmitTree, listView, outputPane);
 
-    fileMenu = new FileMenu (this, fileView);
+    fileMenu = new FileMenu (this, xmitTree);
 
     mainPane.setCenter (splitPane);
 
@@ -109,75 +110,12 @@ public class XmitApp extends Application
 
   private void restore ()
   {
-    fileView.restore ();
+    xmitTree.restore ();
     int index = prefs.getInt (PREFS_MEMBER_INDEX, 0);
     listView.scrollTo (index);
     listView.getSelectionModel ().select (index);
     listView.getFocusModel ().focus (index);
     restoreWindowLocation ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // select
-  // ---------------------------------------------------------------------------------//
-
-  void select (TreeItem<File> treeItem)
-  {
-    try
-    {
-      File file = treeItem.getValue ();
-      if (!file.isFile ())
-      {
-        listView.getItems ().clear ();
-        textArea.clear ();
-        return;
-      }
-
-      String key = file.getAbsolutePath ();
-      if (readers.containsKey (key))
-        reader = readers.get (key);
-      else
-      {
-        reader = new Reader (Files.readAllBytes (file.toPath ()));        // store these
-        readers.put (key, reader);
-      }
-
-      ObservableList<String> items = FXCollections.observableArrayList ();
-      List<CatalogEntry> catalogEntries = reader.getCatalogEntries ();
-      if (catalogEntries.size () > 0)
-      {
-        for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
-          items.add (catalogEntry.getMemberName ());
-        listView.setItems (items);
-        listView.scrollTo (0);
-        listView.getSelectionModel ().select (0);
-      }
-      else
-      {
-        listView.getItems ().clear ();
-        textArea.setText (reader.getLines ());
-      }
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // selectMember
-  // ---------------------------------------------------------------------------------//
-
-  void selectMember (String memberName)
-  {
-    List<CatalogEntry> catalogEntries = reader.getCatalogEntries ();
-
-    for (CatalogEntry catalogEntry : catalogEntries)
-      if (catalogEntry.getMemberName ().equals (memberName))
-      {
-        textArea.setText (catalogEntry.getText ());
-        break;
-      }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -260,14 +198,14 @@ public class XmitApp extends Application
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
 
-    fileView.exit ();
+    xmitTree.exit ();
     int index = listView.getSelectionModel ().getSelectedIndex ();
     prefs.putInt (PREFS_MEMBER_INDEX, index);
 
     //    fileMenu.exit ();
     //    editMenu.exit ();
     //    optionsMenu.exit ();
-    //    outputPane.exit ();
+    outputPane.exit ();
 
     Platform.exit ();
   }
@@ -332,5 +270,55 @@ public class XmitApp extends Application
   public static void main (String[] args)
   {
     Application.launch (args);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // treeItemSelected
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void treeItemSelected (Reader reader)
+  {
+    this.reader = reader;
+    List<CatalogEntry> catalogEntries = reader.getCatalogEntries ();
+    if (catalogEntries.size () == 0)
+      listView.getItems ().clear ();
+    else
+    {
+      ObservableList<String> items = FXCollections.observableArrayList ();
+      for (CatalogEntry catalogEntry : catalogEntries)
+        items.add (catalogEntry.getMemberName ());
+      listView.setItems (items);
+      if (selectedMembers.containsKey (reader))
+      {
+        String member = selectedMembers.get (reader);
+        listView.scrollTo (member);
+        listView.getSelectionModel ().select (member);
+      }
+      else
+      {
+        listView.scrollTo (0);
+        listView.getSelectionModel ().select (0);
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // treeItemExpanded
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void treeItemExpanded (TreeItem<File> treeItem)
+  {
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // memberSelected
+  // ---------------------------------------------------------------------------------//
+
+  void memberSelected (String memberName)
+  {
+    outputPane.memberSelected (memberName);
+    selectedMembers.put (reader, memberName);
   }
 }
