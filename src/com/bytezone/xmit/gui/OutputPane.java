@@ -17,7 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 
 public class OutputPane extends BorderPane
-    implements TreeItemSelectionListener, MemberSelectionListener
+    implements TreeItemSelectionListener, TableItemSelectionListener
 {
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -146,18 +146,13 @@ public class OutputPane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  // MemberSelected
+  // tableItemSelected
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void memberSelected (String memberName)
+  public void tableItemSelected (CatalogEntry catalogEntry)
   {
-    for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
-      if (catalogEntry.getMemberName ().equals (memberName))
-      {
-        this.catalogEntry = catalogEntry;
-        updateCurrentTab ();
-        break;
-      }
+    this.catalogEntry = catalogEntry;
+    updateCurrentTab ();
   }
 }

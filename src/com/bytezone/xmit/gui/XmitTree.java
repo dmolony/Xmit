@@ -38,6 +38,8 @@ public class XmitTree extends TreeView<File>
   {
     super (fileTreeItem);
 
+    setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
+
     fileTreeItem.setExpanded (true);
 
     setCellFactory (new Callback<TreeView<File>, TreeCell<File>> ()
@@ -73,7 +75,10 @@ public class XmitTree extends TreeView<File>
         return;
 
       File file = newSelection.getValue ();
+      if (!file.isFile ())
+        return;
       String key = file.getAbsolutePath ();
+
       if (readers.containsKey (key))
         reader = readers.get (key);
       else
