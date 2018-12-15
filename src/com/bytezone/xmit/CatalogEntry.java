@@ -16,15 +16,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private int size2;
   private int size3;
 
-  final long blockFrom;
-  final long blockTo;
+  final int blockFrom;
+  final int blockTo;
 
   private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
-  private long bufferLength;
-  private long dataLength;
+  private int bufferLength;
+  private int dataLength;
 
   private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
 
@@ -35,8 +35,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   public CatalogEntry (byte[] buffer, int offset)
   {
     memberName = Reader.getString (buffer, offset, 8);
-    blockFrom = Utility.getValue (buffer, offset + 8, 3);
-    blockTo = Utility.getValue (buffer, offset + 12, 3);
+    blockFrom = (int) Utility.getValue (buffer, offset + 8, 3);
+    blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
 
     int extra = buffer[offset + 11] & 0xFF;
     switch (extra)
@@ -86,7 +86,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     }
     System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
 
-    if (true)
+    if (false)
       System.out.printf ("%02X %-8s %06X %06X %-129s %8s %8s%n", extra, getMemberName (),
           blockFrom, blockTo, Reader.getHexString (buffer, offset + 15, length () - 15),
           getUserName (), getAliasName ());
@@ -322,7 +322,14 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   public int compareTo (CatalogEntry o)
   {
     if (this.blockFrom == o.blockFrom)
+    {
+      if (!this.isAlias ())
+        return -1;
+      if (!o.isAlias ())
+        return 1;
       return this.memberName.compareTo (o.memberName);
+    }
+
     return blockFrom < o.blockFrom ? -1 : 1;
   }
 }

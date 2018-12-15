@@ -16,7 +16,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   private int dataLength;
   private boolean isBinary;
   private CatalogEntry catalogEntry;
-  long blockFrom;
+  int blockFrom;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -38,10 +38,13 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
     if (blockPointers.size () == 1)
     {
-      dataLength = Reader.getWord (buffer, blockPointer.offset + 10);
+      dataLength = (int) Utility.getValue (buffer, blockPointer.offset + 9, 3);
       int b = buffer[blockPointer.offset + 12] & 0xFF;
       isBinary = b > 0 && b < 0x40;
-      blockFrom = Utility.getValue (buffer, blockPointer.offset + 6, 3);
+
+      //      int c = (buffer[blockPointer.offset + 5] & 0xFF) - 0xE5;
+      //      buffer[blockPointer.offset + 6] = (byte) c;
+      blockFrom = (int) Utility.getValue (buffer, blockPointer.offset + 6, 3);
     }
   }
 

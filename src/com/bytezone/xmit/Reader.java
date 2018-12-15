@@ -1,9 +1,6 @@
 package com.bytezone.xmit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.bytezone.xmit.textunit.Dsnam;
 import com.bytezone.xmit.textunit.Dsorg;
@@ -117,13 +114,6 @@ public class Reader
       default:
         System.out.println ("Unknown ORG: " + org);
     }
-
-    int totAlias = 0;
-    for (CatalogEntry catalogEntry : catalogEntries)
-      if (catalogEntry.isAlias ())
-        ++totAlias;
-
-    System.out.printf ("%3d aliases%n", totAlias);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -212,7 +202,7 @@ public class Reader
       else if (inCatalog)
       {
         byte[] fullBlock = blockPointerLists.get (i).getBuffer ();
-        System.out.printf ("%nCatalog buffer #%2d   %04X%n", i, fullBlock.length);
+        //        System.out.printf ("%nCatalog buffer #%2d   %04X%n", i, fullBlock.length);
         //        System.out.println (Utility.toHex (fullBlock));
         //        System.out.println ();
         inCatalog = addCatalogEntries (fullBlock);
@@ -275,11 +265,10 @@ public class Reader
       }
     }
 
-    int blockPointers = 0;
-    int dataLength = 0;
+    //    int blockPointers = 0;
+    //    int dataLength = 0;
 
     //    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-    //    for (int i = catalogEndBlock + 1; i < 20; i++)
     //    {
     //      BlockPointerList bpl = blockPointerLists.get (i);
     //      System.out.println ();
@@ -294,21 +283,52 @@ public class Reader
     System.out.printf ("Catalog BLs   : %,9d    %<04X%n", catalogEndBlock - 1);
     System.out.printf ("Data BLs      : %,9d    %<04X%n%n",
         blockPointerLists.size () - catalogEndBlock - 1);
-    System.out.printf ("Data BPs      : %,9d%n", blockPointers);
-    System.out.printf ("Data length   : %,9d  %<06X%n", dataLength);
+    //    System.out.printf ("Data BPs      : %,9d%n", blockPointers);
+    //    System.out.printf ("Data length   : %,9d  %<06X%n%n", dataLength);
 
-    int bplCount = catalogEndBlock + 1;
+    List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
+    Collections.sort (sortedCatalogEntries);
+
+    int totAlias = 0;
+    Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
+    for (CatalogEntry catalogEntry : sortedCatalogEntries)
+    {
+      if (catalogEntry.isAlias ())
+        ++totAlias;
+      if (!offsets.containsKey (catalogEntry.blockFrom))
+        offsets.put (catalogEntry.blockFrom, catalogEntry);
+    }
+
+    List<CatalogEntry> uniqueCatalogEntries = new ArrayList<> ();
+    for (CatalogEntry ce : offsets.values ())
+      uniqueCatalogEntries.add (ce);
+
+    System.out.printf ("%3d aliases%n", totAlias);
+    System.out.printf ("%3d non-aliases%n", catalogEntries.size () - totAlias);
+    System.out.printf ("%3d offsets%n", offsets.size ());
+    System.out.printf ("%3d unique%n", uniqueCatalogEntries.size ());
+
+    //    int bplCount = catalogEndBlock + 1;
     //    int length = 0;
     int countLast = 0;
+    int next = 0;
+    CatalogEntry member = null;
     if (true)
       for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
       {
         BlockPointerList bpl = blockPointerLists.get (i);
-        //        boolean last = bpl.listHeaders ();
-        //        if (last)
-        //          ++countLast;
 
-        System.out.println (bpl.getFirstHeader ());
+        boolean last = bpl.isLastBlock ();
+        if (member == null)
+          member = uniqueCatalogEntries.get (next++);
+        member.addBlockPointerList (bpl);
+        if (last)
+          ++countLast;
+        //        System.out.printf ("%4d  %8s  %s  %s%n", i, member.getMemberName (),
+        //            bpl.getFirstHeader (), last ? "LAST" : "");
+        if (last)
+          member = null;
+
         //      int bpCount = 0;
         //      for (BlockPointer bp : bpl)
         //      {
@@ -334,29 +354,28 @@ public class Reader
         //        length += bp.length;
         //        bpCount++;
         //      }
-        ++bplCount;
+        //        ++bplCount;
       }
     //    System.out.printf ("    Total  %06X %<,8d%n", length);
+    System.out.println ();
     System.out.printf ("%3d complete blocks%n", countLast);
+    System.out.println ();
 
-    Collections.sort (catalogEntries);
-
-    for (CatalogEntry catalogEntry : catalogEntries)
-    {
-      long blockFrom = catalogEntry.blockFrom;
-      boolean found = false;
-      for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-      {
-        BlockPointerList bpl = blockPointerLists.get (i);
-        //        System.out.printf ("Comparing %06X  %06X %n", bpl.blockFrom, blockFrom);
-        if (bpl.blockFrom == blockFrom + 0x0800)
-        {
-          found = true;
-          break;
-        }
-      }
-      System.out.printf ("%s  %s%n", catalogEntry, found);
-    }
+    //    for (CatalogEntry catalogEntry : catalogEntries)
+    //    {
+    //      long blockFrom = catalogEntry.blockFrom;
+    //      boolean found = false;
+    //      for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+    //      {
+    //        BlockPointerList bpl = blockPointerLists.get (i);
+    //        if (bpl.blockFrom == blockFrom + 0x0800)
+    //        {
+    //          found = true;
+    //          break;
+    //        }
+    //      }
+    //      System.out.printf ("%s  %s%n", catalogEntry, found);
+    //    }
   }
 
   // ---------------------------------------------------------------------------------//
