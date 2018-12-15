@@ -1,6 +1,7 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CatalogEntry implements Comparable<CatalogEntry>
@@ -12,9 +13,14 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private String userName = "";
   private String aliasName = "";
 
-  private int size1;
-  private int size2;
-  private int size3;
+  private int size;
+  private int init;
+  private int mod;
+  private final int vv;
+  private final int mm;
+  private GregorianCalendar date1;
+  private GregorianCalendar date2;
+  private String time;
 
   final int blockFrom;
   final int blockTo;
@@ -38,14 +44,28 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     blockFrom = (int) Utility.getValue (buffer, offset + 8, 3);
     blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
 
+    vv = buffer[offset + 12] & 0xFF;
+    mm = buffer[offset + 13] & 0xFF;
+
     int extra = buffer[offset + 11] & 0xFF;
     switch (extra)
     {
       case 0x0F:
         userName = Reader.getString (buffer, offset + 32, 8);
-        size1 = Reader.getWord (buffer, offset + 26);
-        size2 = Reader.getWord (buffer, offset + 28);
-        size3 = Reader.getWord (buffer, offset + 30);
+        size = Reader.getWord (buffer, offset + 26);
+        init = Reader.getWord (buffer, offset + 28);
+        mod = Reader.getWord (buffer, offset + 30);
+        date1 = getDate (buffer, offset + 16);
+        date2 = getDate (buffer, offset + 20);
+        time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
+            buffer[offset + 15]);
+
+        String vvmmText = String.format ("%02d.%02d", vv, mm);
+        String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
+        String date2Text = String.format ("%td %<tb %<tY", date2).replace (".", "");
+        System.out.println (String.format ("%-8s  %4d  %4d %4d  %13s  %13s  %s  %5s  %s",
+            memberName, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
+
         directoryData = new byte[42];
         break;
 
@@ -163,9 +183,17 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     logicalBuffer.addBlockPointerList (blockPointerList);
 
-    this.blockPointerLists.add (blockPointerList);
+    blockPointerLists.add (blockPointerList);
     bufferLength += blockPointerList.getBufferLength ();
     dataLength += blockPointerList.getDataLength ();
+
+    if (blockPointerLists.size () == 1)       // first one
+    {
+      byte b1 = directoryData[0 + 10];
+      byte b2 = (byte) (blockPointerList.blockFrom & 0xFF);
+      if (b1 != b2)
+        System.out.println ("Mismatch in " + memberName);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -300,7 +328,22 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   String getPrintLine ()
   {
     return String.format ("%-126s %8s %8s %5d %5d %5d",
-        Reader.getHexString (directoryData), memberName, userName, size1, size2, size3);
+        Reader.getHexString (directoryData), memberName, userName, size, init, mod);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDate
+  // ---------------------------------------------------------------------------------//
+
+  private GregorianCalendar getDate (byte[] buffer, int offset)
+  {
+    String date1 = String.format ("%02X%02X%02X%02X", buffer[offset], buffer[offset + 1],
+        buffer[offset + 2], (buffer[offset + 3] & 0xF0));
+    int d1 = Integer.parseInt (date1) / 10;
+    GregorianCalendar gc = new GregorianCalendar ();
+    gc.set (GregorianCalendar.YEAR, 1900 + d1 / 1000);
+    gc.set (GregorianCalendar.DAY_OF_YEAR, d1 % 1000);
+    return gc;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -310,6 +353,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   @Override
   public String toString ()
   {
+    String vvmmText = String.format ("%02d.%02d", vv, mm);
     return String.format ("%8s  %8s  %8s  %06X  %06X", memberName, userName, aliasName,
         blockFrom, blockTo);
   }

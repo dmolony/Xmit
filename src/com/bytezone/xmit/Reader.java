@@ -10,6 +10,7 @@ import com.bytezone.xmit.textunit.TextUnitString;
 public class Reader
 {
   //  private static String[] format = { "?", "V", "F", "U" };
+  private static final int DIR_BLOCK_LENGTH = 0x114;
 
   List<ControlRecord> controlRecords = new ArrayList<> ();
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
@@ -147,9 +148,9 @@ public class Reader
     int catalogEndBlock = 0;
 
     System.out.println (fileName);
-    System.out.printf ("Allocating %d BPLs%n", blockPointerLists.size ());
+    //    System.out.printf ("Allocating %d BPLs%n", blockPointerLists.size ());
 
-    loop: for (int i = 0; i < blockPointerLists.size (); i++)
+    for (int i = 0; i < blockPointerLists.size (); i++)
     {
       if (i == 0)
       {
@@ -412,7 +413,7 @@ public class Reader
         ptr2 += catalogEntry.length ();
       }
 
-      ptr += 0x114;
+      ptr += DIR_BLOCK_LENGTH;
     }
 
     return true;        // member list not finished yet
