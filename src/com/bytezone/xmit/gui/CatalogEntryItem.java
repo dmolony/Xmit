@@ -1,11 +1,10 @@
 package com.bytezone.xmit.gui;
 
+import java.time.LocalDate;
+
 import com.bytezone.xmit.CatalogEntry;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 public class CatalogEntryItem
 {
@@ -13,7 +12,9 @@ public class CatalogEntryItem
   private StringProperty memberName;
   private StringProperty userName;
   private StringProperty aliasName;
+  private StringProperty time;
   private IntegerProperty size;
+  private ObjectProperty<LocalDate> date;
 
   public CatalogEntryItem (CatalogEntry catalogEntry)
   {
@@ -22,6 +23,8 @@ public class CatalogEntryItem
     setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
     setSize (catalogEntry.getSize ());
+    setDate (catalogEntry.getDate ());
+    setTime (catalogEntry.getTime ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,5 +109,47 @@ public class CatalogEntryItem
     if (size == null)
       size = new SimpleIntegerProperty ();
     return size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // FirstDate
+  // ---------------------------------------------------------------------------------//
+
+  private void setDate (LocalDate value)
+  {
+    dateProperty ().set (value);
+  }
+
+  public LocalDate getDate ()
+  {
+    return dateProperty ().get ();
+  }
+
+  private ObjectProperty<LocalDate> dateProperty ()
+  {
+    if (date == null)
+      date = new SimpleObjectProperty<> ();
+    return date;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // AliasName
+  // ---------------------------------------------------------------------------------//
+
+  private void setTime (String value)
+  {
+    timeProperty ().set (value);
+  }
+
+  public final String getTime ()
+  {
+    return timeProperty ().get ();
+  }
+
+  private StringProperty timeProperty ()
+  {
+    if (time == null)
+      time = new SimpleStringProperty ();
+    return time;
   }
 }

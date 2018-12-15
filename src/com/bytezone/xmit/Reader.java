@@ -43,10 +43,9 @@ public class Reader
     List<BlockPointerList> blockPointerLists = new ArrayList<> ();
     BlockPointerList currentBlockPointerList = null;
     this.buffer = buffer;
-    //    System.out.println (Utility.toHex (buffer));
 
-    //    String header = Utility.toHex (buffer, 0, 8);
-    //    System.out.println (header);
+    String header = Utility.toHex (buffer, 0, 8);
+    System.out.println (header);
     boolean dumpRaw = false;
 
     int ptr = 0;
@@ -390,12 +389,6 @@ public class Reader
     int ptr = 0;
     while (ptr < buffer.length)
     {
-      //      System.out.printf ("%s%n", Utility.toHex (buffer, ptr, 22));
-      //      int len = getWord (buffer, ptr + 20);          // used data?
-
-      //      String lastMember = getString (buffer, ptr + 12, 8);
-      //      System.out.printf ("Last member: %s  Len: %d%n", lastMember, len);
-
       int ptr2 = ptr + 22;
 
       while (true)
@@ -448,8 +441,8 @@ public class Reader
 
   static boolean matches (byte[] key, byte[] buffer, int ptr)
   {
-    System.out.println ("Key: " + Utility.getHex (key, 0, key.length));
-    System.out.println (" in: " + Utility.getHex (buffer, ptr, key.length));
+    //    System.out.println ("Key: " + Utility.getHex (key, 0, key.length));
+    //    System.out.println (" in: " + Utility.getHex (buffer, ptr, key.length));
     if (ptr + key.length > buffer.length)
       return false;
 

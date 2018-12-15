@@ -1,6 +1,7 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +26,13 @@ public class XmitTable extends TableView<CatalogEntryItem>
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
-  private final Map<Reader, String> selectedMembers = new HashMap<> ();
   final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
+
+  private final Map<Reader, String> selectedMembers = new HashMap<> ();
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
 
   XmitTable ()
   {
@@ -40,6 +46,8 @@ public class XmitTable extends TableView<CatalogEntryItem>
     addString ("Alias", "AliasName", 100)
         .setCellFactory (stringCellFactory ("CENTER-LEFT"));
     addNumber ("Size", "Size", 80).setCellFactory (numberCellFactory ());
+    addLocalDate ("Date", "Date", 100).setCellFactory (localDateCellFactory ());
+    addString ("Time", "Time", 100).setCellFactory (stringCellFactory ("CENTER"));
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, newSelection) ->
@@ -72,6 +80,20 @@ public class XmitTable extends TableView<CatalogEntryItem>
   TableColumn<CatalogEntryItem, String> addString (String heading, String name, int width)
   {
     TableColumn<CatalogEntryItem, String> column = new TableColumn<> (heading);
+    column.setCellValueFactory (new PropertyValueFactory<> (name));
+    column.setPrefWidth (width);
+    getColumns ().add (column);
+    return column;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addLocalDate
+  // ---------------------------------------------------------------------------------//
+
+  TableColumn<CatalogEntryItem, LocalDate> addLocalDate (String heading, String name,
+      int width)
+  {
+    TableColumn<CatalogEntryItem, LocalDate> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
     column.setPrefWidth (width);
     getColumns ().add (column);
@@ -135,6 +157,38 @@ public class XmitTable extends TableView<CatalogEntryItem>
               setText (item);
           }
         };
+        return cell;
+      }
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // localDateCellFactory
+  // ---------------------------------------------------------------------------------//
+
+  Callback<TableColumn<CatalogEntryItem, LocalDate>, TableCell<CatalogEntryItem, LocalDate>>
+      localDateCellFactory ()
+  {
+    return new Callback<TableColumn<CatalogEntryItem, LocalDate>, TableCell<CatalogEntryItem, LocalDate>> ()
+    {
+      @Override
+      public TableCell<CatalogEntryItem, LocalDate>
+          call (TableColumn<CatalogEntryItem, LocalDate> param)
+      {
+        TableCell<CatalogEntryItem, LocalDate> cell =
+            new TableCell<CatalogEntryItem, LocalDate> ()
+            {
+              @Override
+              public void updateItem (final LocalDate item, boolean empty)
+              {
+                super.updateItem (item, empty);
+                setStyle ("-fx-alignment: CENTER;");
+                if (item == null || empty)
+                  setText (null);
+                else
+                  setText (String.format ("%s", item));
+              }
+            };
         return cell;
       }
     };

@@ -1,7 +1,7 @@
 package com.bytezone.xmit;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CatalogEntry implements Comparable<CatalogEntry>
@@ -18,12 +18,12 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private int mod;
   private int vv;
   private int mm;
-  private GregorianCalendar date1;
-  private GregorianCalendar date2;
+  private LocalDate date1;
+  private LocalDate date2;
   private String time;
 
   final int blockFrom;
-  int blockTo;
+  //  int blockTo;
 
   private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
@@ -44,6 +44,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     blockFrom = (int) Utility.getValue (buffer, offset + 8, 3);
 
     int extra = buffer[offset + 11] & 0xFF;
+    int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
     switch (extra)
     {
       case 0x0F:
@@ -52,67 +53,67 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         init = Reader.getWord (buffer, offset + 28);
         mod = Reader.getWord (buffer, offset + 30);
 
-        blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
+        //        blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
         vv = buffer[offset + 12] & 0xFF;
         mm = buffer[offset + 13] & 0xFF;
 
-        date1 = getDate (buffer, offset + 16);
-        date2 = getDate (buffer, offset + 20);
+        date1 = getLocalDate (buffer, offset + 16);
+        date2 = getLocalDate (buffer, offset + 20);
         time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
             buffer[offset + 15]);
 
-        String vvmmText = String.format ("%02d.%02d", vv, mm);
-        String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
-        String date2Text = String.format ("%td %<tb %<tY", date2).replace (".", "");
-        System.out.println (String.format ("%-8s  %4d  %4d %4d  %13s  %13s  %s  %5s  %s",
-            memberName, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
-
-        directoryData = new byte[42];
+        if (true)
+        {
+          String vvmmText = String.format ("%02d.%02d", vv, mm);
+          String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
+          String date2Text = String.format ("%td %<tb %<tY", date2).replace (".", "");
+          System.out.println (
+              String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s", memberName,
+                  size, init, mod, date1Text, date2Text, time, vvmmText, userName));
+        }
         break;
 
       case 0x14:
         userName = Reader.getString (buffer, offset + 32, 8);
-        directoryData = new byte[52];
+        break;
+
+      case 0x2B:
         break;
 
       case 0x2C:
-        directoryData = new byte[36];
         break;
 
       case 0x2E:
-        directoryData = new byte[40];
+        break;
+
+      case 0x31:
         break;
 
       case 0x37:
-        directoryData = new byte[58];
         break;
 
-      case 0xB1:                // alias
+      case 0xB1:
         aliasName = Reader.getString (buffer, offset + 36, 8);
-        //        size = Reader.getWord (buffer, offset + 26);
-        directoryData = new byte[46];       // not tested yet
         break;
 
-      case 0xB3:                // alias
+      case 0xB3:                // alias                          
         aliasName = Reader.getString (buffer, offset + 36, 8);
-        //        size = Reader.getWord (buffer, offset + 26);
-        directoryData = new byte[50];
         break;
 
       case 0:
-        directoryData = new byte[12];
         break;
 
       default:
         System.out.printf ("********************** Unknown extra: %02X%n", extra);
-        directoryData = new byte[12];
     }
+
+    directoryData = new byte[extraLength];
     System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
 
-    //    if (false)
-    //      System.out.printf ("%02X %-8s %06X %06X %-129s %8s %8s%n", extra, getMemberName (),
-    //          blockFrom, blockTo, Reader.getHexString (buffer, offset + 15, length () - 15),
-    //          getUserName (), getAliasName ());
+    if (false)
+      System.out.printf ("%02X %-8s %06X %-129s %8s %8s%n", extra, getMemberName (),
+          blockFrom, Reader.getHexString (buffer, offset + 12, length () - 12),
+          getUserName (), getAliasName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -170,6 +171,24 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getDate
+  // ---------------------------------------------------------------------------------//
+
+  public LocalDate getDate ()
+  {
+    return date1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getTime
+  // ---------------------------------------------------------------------------------//
+
+  public String getTime ()
+  {
+    return time;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getBufferLength
   // ---------------------------------------------------------------------------------//
 
@@ -199,13 +218,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     bufferLength += blockPointerList.getBufferLength ();
     dataLength += blockPointerList.getDataLength ();
 
-    if (blockPointerLists.size () == 1)       // first one
-    {
-      byte b1 = directoryData[0 + 10];
-      byte b2 = (byte) (blockPointerList.blockFrom & 0xFF);
-      if (b1 != b2)
-        System.out.println ("Mismatch in " + memberName);
-    }
+    if (blockPointerLists.size () == 1
+        && !blockPointerList.mysteryMatches (directoryData[0 + 10]))
+      System.out.println ("Mismatch in " + memberName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -344,18 +359,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDate
+  // getLocalDate
   // ---------------------------------------------------------------------------------//
 
-  private GregorianCalendar getDate (byte[] buffer, int offset)
+  private LocalDate getLocalDate (byte[] buffer, int offset)
   {
     String date1 = String.format ("%02X%02X%02X%02X", buffer[offset], buffer[offset + 1],
         buffer[offset + 2], (buffer[offset + 3] & 0xF0));
     int d1 = Integer.parseInt (date1) / 10;
-    GregorianCalendar gc = new GregorianCalendar ();
-    gc.set (GregorianCalendar.YEAR, 1900 + d1 / 1000);
-    gc.set (GregorianCalendar.DAY_OF_YEAR, d1 % 1000);
-    return gc;
+    return LocalDate.ofYearDay (1900 + d1 / 1000, d1 % 1000);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -365,9 +377,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   @Override
   public String toString ()
   {
-    String vvmmText = String.format ("%02d.%02d", vv, mm);
-    return String.format ("%8s  %8s  %8s  %06X  %06X", memberName, userName, aliasName,
-        blockFrom, blockTo);
+    return String.format ("%8s  %8s  %8s  %06X ", memberName, userName, aliasName,
+        blockFrom);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -379,9 +390,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     if (this.blockFrom == o.blockFrom)
     {
-      if (!this.isAlias ())
+      if (!this.isAlias () && o.isAlias ())
         return -1;
-      if (!o.isAlias ())
+      if (!o.isAlias () && this.isAlias ())
         return 1;
       return this.memberName.compareTo (o.memberName);
     }
