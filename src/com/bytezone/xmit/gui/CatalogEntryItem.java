@@ -12,6 +12,7 @@ public class CatalogEntryItem
   CatalogEntry catalogEntry;
   private StringProperty memberName;
   private StringProperty userName;
+  private StringProperty aliasName;
   private IntegerProperty size;
 
   public CatalogEntryItem (CatalogEntry catalogEntry)
@@ -19,6 +20,7 @@ public class CatalogEntryItem
     this.catalogEntry = catalogEntry;
     setMemberName (catalogEntry.getMemberName ());
     setUserName (catalogEntry.getUserName ());
+    setAliasName (catalogEntry.getAliasName ());
     setSize (catalogEntry.getSize ());
   }
 
@@ -62,6 +64,27 @@ public class CatalogEntryItem
     if (userName == null)
       userName = new SimpleStringProperty ();
     return userName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // AliasName
+  // ---------------------------------------------------------------------------------//
+
+  private void setAliasName (String value)
+  {
+    aliasNameProperty ().set (value);
+  }
+
+  public final String getAliasName ()
+  {
+    return aliasNameProperty ().get ();
+  }
+
+  private StringProperty aliasNameProperty ()
+  {
+    if (aliasName == null)
+      aliasName = new SimpleStringProperty ();
+    return aliasName;
   }
 
   // ---------------------------------------------------------------------------------//

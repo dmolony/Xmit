@@ -37,7 +37,9 @@ public class XmitTable extends TableView<CatalogEntryItem>
         .setCellFactory (stringCellFactory ("CENTER-LEFT"));
     addString ("User", "UserName", 100)
         .setCellFactory (stringCellFactory ("CENTER-LEFT"));
-    addNumber ("Size", "Size", 50).setCellFactory (numberCellFactory ());
+    addString ("Alias", "AliasName", 100)
+        .setCellFactory (stringCellFactory ("CENTER-LEFT"));
+    addNumber ("Size", "Size", 80).setCellFactory (numberCellFactory ());
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, newSelection) ->
@@ -58,7 +60,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   {
     TableColumn<CatalogEntryItem, Number> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setPrefWidth (width);
+    column.setMinWidth (width);
     getColumns ().add (column);
     return column;
   }
@@ -188,6 +190,10 @@ public class XmitTable extends TableView<CatalogEntryItem>
     items.clear ();
     for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
       items.add (new CatalogEntryItem (catalogEntry));
+
+    getSelectionModel ().select (0);
+    scrollTo (0);
+    getFocusModel ().focus (0);
   }
 
   // ---------------------------------------------------------------------------------//

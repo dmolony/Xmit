@@ -16,14 +16,14 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private int size;
   private int init;
   private int mod;
-  private final int vv;
-  private final int mm;
+  private int vv;
+  private int mm;
   private GregorianCalendar date1;
   private GregorianCalendar date2;
   private String time;
 
   final int blockFrom;
-  final int blockTo;
+  int blockTo;
 
   private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
@@ -42,10 +42,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     memberName = Reader.getString (buffer, offset, 8);
     blockFrom = (int) Utility.getValue (buffer, offset + 8, 3);
-    blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
-
-    vv = buffer[offset + 12] & 0xFF;
-    mm = buffer[offset + 13] & 0xFF;
 
     int extra = buffer[offset + 11] & 0xFF;
     switch (extra)
@@ -55,6 +51,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         size = Reader.getWord (buffer, offset + 26);
         init = Reader.getWord (buffer, offset + 28);
         mod = Reader.getWord (buffer, offset + 30);
+
+        blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
+        vv = buffer[offset + 12] & 0xFF;
+        mm = buffer[offset + 13] & 0xFF;
+
         date1 = getDate (buffer, offset + 16);
         date2 = getDate (buffer, offset + 20);
         time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
@@ -88,11 +89,13 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
       case 0xB1:                // alias
         aliasName = Reader.getString (buffer, offset + 36, 8);
+        //        size = Reader.getWord (buffer, offset + 26);
         directoryData = new byte[46];       // not tested yet
         break;
 
       case 0xB3:                // alias
         aliasName = Reader.getString (buffer, offset + 36, 8);
+        //        size = Reader.getWord (buffer, offset + 26);
         directoryData = new byte[50];
         break;
 
@@ -106,10 +109,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     }
     System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
 
-    if (false)
-      System.out.printf ("%02X %-8s %06X %06X %-129s %8s %8s%n", extra, getMemberName (),
-          blockFrom, blockTo, Reader.getHexString (buffer, offset + 15, length () - 15),
-          getUserName (), getAliasName ());
+    //    if (false)
+    //      System.out.printf ("%02X %-8s %06X %06X %-129s %8s %8s%n", extra, getMemberName (),
+    //          blockFrom, blockTo, Reader.getHexString (buffer, offset + 15, length () - 15),
+    //          getUserName (), getAliasName ());
   }
 
   // ---------------------------------------------------------------------------------//
