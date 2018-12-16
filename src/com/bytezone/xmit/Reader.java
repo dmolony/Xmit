@@ -44,8 +44,6 @@ public class Reader
     BlockPointerList currentBlockPointerList = null;
     this.buffer = buffer;
 
-    //    String header = Utility.toHex (buffer, 0, 8);
-    //    System.out.println (header);
     boolean dumpRaw = false;
 
     int ptr = 0;

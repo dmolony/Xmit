@@ -48,32 +48,14 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     switch (extra)
     {
       case 0x0F:
-        userName = Reader.getString (buffer, offset + 32, 8);
-        size = Reader.getWord (buffer, offset + 26);
+        basic (buffer, offset);
+
         init = Reader.getWord (buffer, offset + 28);
         mod = Reader.getWord (buffer, offset + 30);
-
-        vv = buffer[offset + 12] & 0xFF;
-        mm = buffer[offset + 13] & 0xFF;
-
-        date1 = getLocalDate (buffer, offset + 16);
-        date2 = getLocalDate (buffer, offset + 20);
-        time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
-            buffer[offset + 15]);
-
-        if (false)
-        {
-          String vvmmText = String.format ("%02d.%02d", vv, mm);
-          String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
-          String date2Text = String.format ("%td %<tb %<tY", date2).replace (".", "");
-          System.out.println (
-              String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s", memberName,
-                  size, init, mod, date1Text, date2Text, time, vvmmText, userName));
-        }
         break;
 
       case 0x14:
-        userName = Reader.getString (buffer, offset + 32, 8);
+        basic (buffer, offset);
         break;
 
       case 0x2B:
@@ -113,6 +95,33 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       System.out.printf ("%02X %-8s %06X %-129s %8s %8s%n", extra, getMemberName (),
           blockFrom, Reader.getHexString (buffer, offset + 12, length () - 12),
           getUserName (), getAliasName ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // basic
+  // ---------------------------------------------------------------------------------//
+
+  private void basic (byte[] buffer, int offset)
+  {
+    userName = Reader.getString (buffer, offset + 32, 8);
+    size = Reader.getWord (buffer, offset + 26);
+
+    vv = buffer[offset + 12] & 0xFF;
+    mm = buffer[offset + 13] & 0xFF;
+
+    date1 = getLocalDate (buffer, offset + 16);
+    date2 = getLocalDate (buffer, offset + 20);
+    time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
+        buffer[offset + 15]);
+
+    if (false)
+    {
+      String vvmmText = String.format ("%02d.%02d", vv, mm);
+      String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
+      String date2Text = String.format ("%td %<tb %<tY", date2).replace (".", "");
+      System.out.println (String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s",
+          memberName, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -193,6 +202,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   public String getVersion ()
   {
+    if (vv == 0 & mm == 0)
+      return "";
     return String.format ("%02d.%02d", vv, mm);
   }
 

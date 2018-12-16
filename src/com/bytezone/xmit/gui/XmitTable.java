@@ -28,6 +28,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
   final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
 
+  private Reader reader;
   private final Map<Reader, String> selectedMembers = new HashMap<> ();
 
   // ---------------------------------------------------------------------------------//
@@ -56,6 +57,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
           if (newSelection == null)
             return;
 
+          selectedMembers.put (reader, newSelection.catalogEntry.getMemberName ());
           for (TableItemSelectionListener listener : listeners)
             listener.tableItemSelected (newSelection.catalogEntry);
         });
@@ -199,7 +201,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   // exit
   // ---------------------------------------------------------------------------------//
 
-  public void exit ()
+  void exit ()
   {
     prefs.putInt (PREFS_LAST_MEMBER_INDEX, getSelectionModel ().getSelectedIndex ());
   }
@@ -208,19 +210,17 @@ public class XmitTable extends TableView<CatalogEntryItem>
   // restore
   // ---------------------------------------------------------------------------------//
 
-  public void restore ()
+  void restore ()
   {
     int index = prefs.getInt (PREFS_LAST_MEMBER_INDEX, 0);
-    scrollTo (index);
-    getSelectionModel ().select (index);
-    getFocusModel ().focus (index);
+    select (index);
   }
 
   // ---------------------------------------------------------------------------------//
   // addListener
   // ---------------------------------------------------------------------------------//
 
-  public void addListener (TableItemSelectionListener listener)
+  void addListener (TableItemSelectionListener listener)
   {
     if (!listeners.contains (listener))
       listeners.add (listener);
@@ -230,7 +230,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   // removeListener
   // ---------------------------------------------------------------------------------//
 
-  public void removeListener (TableItemSelectionListener listener)
+  void removeListener (TableItemSelectionListener listener)
   {
     listeners.remove (listener);
   }
@@ -242,13 +242,14 @@ public class XmitTable extends TableView<CatalogEntryItem>
   @Override
   public void treeItemSelected (Reader reader)
   {
+    this.reader = reader;
+
     items.clear ();
     for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
       items.add (new CatalogEntryItem (catalogEntry));
 
-    getSelectionModel ().select (0);
-    scrollTo (0);
-    getFocusModel ().focus (0);
+    select (selectedMembers.containsKey (reader)
+        ? memberIndex (selectedMembers.get (reader)) : 0);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -258,5 +259,32 @@ public class XmitTable extends TableView<CatalogEntryItem>
   @Override
   public void treeItemExpanded (TreeItem<File> treeItem)
   {
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // memberIndex
+  // ---------------------------------------------------------------------------------//
+
+  private int memberIndex (String memberName)
+  {
+    int index = 0;
+    for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+    {
+      if (memberName.equals (catalogEntry.getMemberName ()))
+        return index;
+      ++index;
+    }
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // select
+  // ---------------------------------------------------------------------------------//
+
+  private void select (int index)
+  {
+    getFocusModel ().focus (index);
+    getSelectionModel ().select (index);
+    scrollTo (index);
   }
 }
