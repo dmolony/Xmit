@@ -16,14 +16,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private int size;
   private int init;
   private int mod;
+
   private int vv;
   private int mm;
+
   private LocalDate date1;
   private LocalDate date2;
-  private String time;
+  private String time = "";
 
   final int blockFrom;
-  //  int blockTo;
 
   private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
@@ -50,8 +51,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       case 0x0F:
         basic (buffer, offset);
 
-        init = Reader.getWord (buffer, offset + 28);
-        mod = Reader.getWord (buffer, offset + 30);
         break;
 
       case 0x14:
@@ -73,11 +72,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       case 0x37:
         break;
 
+      case 0x8F:
+        basic (buffer, offset);       // alias without the alias' name ??
+        break;
+
       case 0xB1:
         aliasName = Reader.getString (buffer, offset + 36, 8);
         break;
 
-      case 0xB3:                // alias                          
+      case 0xB3:
         aliasName = Reader.getString (buffer, offset + 36, 8);
         break;
 
@@ -85,7 +88,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
 
       default:
-        System.out.printf ("********************** Unknown extra: %02X%n", extra);
+        System.out.printf ("********************** Unknown extra: %02X in %s%n", extra,
+            memberName);
     }
 
     directoryData = new byte[extraLength];
@@ -105,6 +109,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     userName = Reader.getString (buffer, offset + 32, 8);
     size = Reader.getWord (buffer, offset + 26);
+    init = Reader.getWord (buffer, offset + 28);
+    mod = Reader.getWord (buffer, offset + 30);
 
     vv = buffer[offset + 12] & 0xFF;
     mm = buffer[offset + 13] & 0xFF;
@@ -238,7 +244,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     dataLength += blockPointerList.getDataLength ();
 
     if (blockPointerLists.size () == 1
-        && !blockPointerList.mysteryMatches (directoryData[0 + 10]))
+        && !blockPointerList.sortKeyMatches (directoryData[0 + 10]))
       System.out.println ("Mismatch in " + memberName);
   }
 
@@ -248,23 +254,23 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   public String getText ()
   {
-    //    logicalBuffer.walk ();
-
     if (lines.size () == 0)
     {
       if (isAlias ())
         return "Alias of " + aliasName;
       if (blockPointerLists.size () == 0)
         return "No data";
+
+      if (blockPointerLists.get (0).isXmit ())
+        return xmitList ();
+
       if (blockPointerLists.size () > 200)
         return partialDump ();
       if (blockPointerLists.get (0).isBinary ())
         return hexDump ();
 
-      //      for (BlockPointerList blockPointerList : blockPointerLists)
-      //        System.out.println (Utility.toHex (blockPointerList.getBuffer ()));
       for (BlockPointerList blockPointerList : blockPointerLists)
-        addLines (blockPointerList);
+        createLines (blockPointerList);
     }
 
     StringBuilder text = new StringBuilder ();
@@ -281,15 +287,16 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // ---------------------------------------------------------------------------------//
 
   // this should be able to build lines directly from the original buffer
-  private void addLines (BlockPointerList blockPointerList)
+  private void createLines (BlockPointerList blockPointerList)
   {
     byte[] buffer = blockPointerList.getBuffer ();
     int dataLength = Reader.getWord (buffer, 10);       // bpl.dataLength
+
     int remainder = buffer.length - dataLength;
     if (remainder != 12 && remainder != 24)
       System.out.printf ("Unexpected remainder in %s: %d", memberName, remainder);
 
-    int ptr = 12;
+    int ptr = 12;               // header
     while (dataLength > 0)
     {
       int len = Math.min (80, dataLength);
@@ -299,9 +306,66 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     }
   }
 
+  // ---------------------------------------------------------------------------------//
+  // xmitList
+  // ---------------------------------------------------------------------------------//
+
+  private String xmitList ()
+  {
+    byte[] xmitBuffer = new byte[dataLength];
+    int fullPtr = 0;
+    //    int bpl = 0;
+    //    int totDataLength = 0;
+    for (BlockPointerList blockPointerList : blockPointerLists)
+    {
+      byte[] data = blockPointerList.getBuffer ();
+      int ptr = 0;
+      int rec = 0;
+
+      while (ptr < data.length)
+      {
+        int dataLength = Reader.getWord (data, ptr + 10);
+        //        totDataLength += dataLength;
+        //        System.out.printf ("%3d  %3d  %,5d  %,7d%n", bpl, rec, dataLength, totDataLength);
+        System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
+        fullPtr += dataLength;
+        ptr += 12 + dataLength;
+        ++rec;
+      }
+      //      ++bpl;
+    }
+
+    //    System.out.println (Utility.toHex (xmitBuffer, 0, 1024));
+    StringBuilder text = new StringBuilder ();
+    text.append ("XMIT file:\n");
+    try
+    {
+      Reader reader = new Reader (xmitBuffer);
+      for (CatalogEntry catalogEntry : reader.catalogEntries)
+        text.append (catalogEntry.toString () + "\n");
+    }
+    catch (Exception e)
+    {
+      text.append ("\n");
+      text.append ("Data length: " + dataLength + "\n");
+      text.append (e.getMessage ());
+      text.append ("\n\n");
+      text.append (Utility.toHex (xmitBuffer));
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // hexDump
+  // ---------------------------------------------------------------------------------//
+
   private String hexDump ()
   {
     StringBuilder text = new StringBuilder ();
+
+    if (blockPointerLists.get (0).isXmit ())
+      text.append ("Appears to be XMIT\n\n");
 
     for (int i = 0; i < blockPointerLists.size (); i++)
     {
@@ -332,8 +396,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     int max = 5;
     text.append (
         "Showing first " + max + " of " + blockPointerLists.size () + " buffers\n\n");
+
     if (blockPointerLists.get (0).isXmit ())
       text.append ("Appears to be XMIT\n\n");
+
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
@@ -396,8 +462,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   @Override
   public String toString ()
   {
-    return String.format ("%8s  %8s  %8s  %06X ", memberName, userName, aliasName,
-        blockFrom);
+    String date1Text =
+        date1 == null ? "" : String.format ("%td %<tb %<tY", date1).replace (".", "");
+    return String.format ("%8s  %8s  %8s  %,5d  %s  %s", memberName, userName, aliasName,
+        size, date1Text, time);
   }
 
   // ---------------------------------------------------------------------------------//
