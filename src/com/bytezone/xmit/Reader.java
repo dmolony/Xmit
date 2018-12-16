@@ -44,8 +44,8 @@ public class Reader
     BlockPointerList currentBlockPointerList = null;
     this.buffer = buffer;
 
-    String header = Utility.toHex (buffer, 0, 8);
-    System.out.println (header);
+    //    String header = Utility.toHex (buffer, 0, 8);
+    //    System.out.println (header);
     boolean dumpRaw = false;
 
     int ptr = 0;
@@ -87,7 +87,7 @@ public class Reader
           org = getOrg ();
           fileName = getFileName (cr);
         }
-        System.out.println (cr);
+        //        System.out.println (cr);
       }
       else
       {
@@ -146,7 +146,7 @@ public class Reader
     int catalogLength = 0;
     int catalogEndBlock = 0;
 
-    System.out.println (fileName);
+    //    System.out.println (fileName);
     //    System.out.printf ("Allocating %d BPLs%n", blockPointerLists.size ());
 
     for (int i = 0; i < blockPointerLists.size (); i++)
@@ -217,7 +217,7 @@ public class Reader
       {
         if (i == catalogEndBlock + 1)
         {
-          System.out.printf ("Found %d catalog entries%n", catalogEntries.size ());
+          //          System.out.printf ("Found %d catalog entries%n", catalogEntries.size ());
           //          break;
         }
         if (false)
@@ -278,11 +278,12 @@ public class Reader
     //      dataLength += bpl.getDataLength ();
     //    }
 
-    System.out.printf ("%nMembers       : %,9d    %<04X  Length: %,d  %<06X%n",
-        catalogEntries.size (), catalogLength);
-    System.out.printf ("Catalog BLs   : %,9d    %<04X%n", catalogEndBlock - 1);
-    System.out.printf ("Data BLs      : %,9d    %<04X%n%n",
-        blockPointerLists.size () - catalogEndBlock - 1);
+    //    System.out.printf ("%nMembers       : %,9d    %<04X  Length: %,d  %<06X%n",
+    //        catalogEntries.size (), catalogLength);
+    //    System.out.printf ("Catalog BLs   : %,9d    %<04X%n", catalogEndBlock - 1);
+    //    System.out.printf ("Data BLs      : %,9d    %<04X%n%n",
+    //        blockPointerLists.size () - catalogEndBlock - 1);
+
     //    System.out.printf ("Data BPs      : %,9d%n", blockPointers);
     //    System.out.printf ("Data length   : %,9d  %<06X%n%n", dataLength);
 
@@ -303,10 +304,13 @@ public class Reader
     for (CatalogEntry ce : offsets.values ())
       uniqueCatalogEntries.add (ce);
 
-    System.out.printf ("%3d aliases%n", totAlias);
-    System.out.printf ("%3d non-aliases%n", catalogEntries.size () - totAlias);
-    System.out.printf ("%3d offsets%n", offsets.size ());
-    System.out.printf ("%3d unique%n", uniqueCatalogEntries.size ());
+    if (false)
+    {
+      System.out.printf ("%3d aliases%n", totAlias);
+      System.out.printf ("%3d non-aliases%n", catalogEntries.size () - totAlias);
+      System.out.printf ("%3d offsets%n", offsets.size ());
+      System.out.printf ("%3d unique%n", uniqueCatalogEntries.size ());
+    }
 
     //    int bplCount = catalogEndBlock + 1;
     //    int length = 0;
@@ -356,10 +360,11 @@ public class Reader
         //      }
         //        ++bplCount;
       }
+
     //    System.out.printf ("    Total  %06X %<,8d%n", length);
-    System.out.println ();
-    System.out.printf ("%3d complete blocks%n", countLast);
-    System.out.println ();
+    //    System.out.println ();
+    //    System.out.printf ("%3d complete blocks%n", countLast);
+    //    System.out.println ();
 
     //    for (CatalogEntry catalogEntry : catalogEntries)
     //    {
@@ -384,8 +389,6 @@ public class Reader
 
   boolean addCatalogEntries (byte[] buffer)
   {
-    //    System.out.println (Utility.toHex (buffer));
-
     int ptr = 0;
     while (ptr < buffer.length)
     {
@@ -393,8 +396,8 @@ public class Reader
 
       while (true)
       {
-        if (buffer[ptr2] == (byte) 0xFF)        // end of member list
-          return false;
+        if (buffer[ptr2] == (byte) 0xFF)
+          return false;                                       // member list finished
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
@@ -409,7 +412,7 @@ public class Reader
       ptr += DIR_BLOCK_LENGTH;
     }
 
-    return true;        // member list not finished yet
+    return true;                                            // member list not finished
   }
 
   // ---------------------------------------------------------------------------------//
@@ -441,8 +444,6 @@ public class Reader
 
   static boolean matches (byte[] key, byte[] buffer, int ptr)
   {
-    //    System.out.println ("Key: " + Utility.getHex (key, 0, key.length));
-    //    System.out.println (" in: " + Utility.getHex (buffer, ptr, key.length));
     if (ptr + key.length > buffer.length)
       return false;
 
@@ -459,7 +460,7 @@ public class Reader
 
   static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2, int length)
   {
-    if (ptr1 + length >= key.length || ptr2 + length >= buffer.length)
+    if (ptr1 + length > key.length || ptr2 + length > buffer.length)
       return false;
 
     for (int i = 0; i < length; i++)
@@ -492,6 +493,10 @@ public class Reader
     return null;
   }
 
+  // ---------------------------------------------------------------------------------//
+  // getFileName
+  // ---------------------------------------------------------------------------------//
+
   String getFileName (ControlRecord controlRecord)
   {
     TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSNAM);
@@ -506,6 +511,10 @@ public class Reader
   {
     System.out.println (Utility.toHex (buffer, 0, buffer.length));
   }
+
+  // ---------------------------------------------------------------------------------//
+  // printHex
+  // ---------------------------------------------------------------------------------//
 
   static void printHex (byte[] buffer, int offset, int length)
   {
@@ -581,8 +590,6 @@ public class Reader
 
     while (length-- > 0 && offset < buffer.length)
       text.append (String.format ("%02X ", buffer[offset++]));
-    //    if (text.length () > 0)
-    //      text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
   }

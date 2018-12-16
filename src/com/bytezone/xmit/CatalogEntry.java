@@ -53,7 +53,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         init = Reader.getWord (buffer, offset + 28);
         mod = Reader.getWord (buffer, offset + 30);
 
-        //        blockTo = (int) Utility.getValue (buffer, offset + 12, 3);
         vv = buffer[offset + 12] & 0xFF;
         mm = buffer[offset + 13] & 0xFF;
 
@@ -62,7 +61,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
             buffer[offset + 15]);
 
-        if (true)
+        if (false)
         {
           String vvmmText = String.format ("%02d.%02d", vv, mm);
           String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
@@ -186,6 +185,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   public String getTime ()
   {
     return time;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getVersion
+  // ---------------------------------------------------------------------------------//
+
+  public String getVersion ()
+  {
+    return String.format ("%02d.%02d", vv, mm);
   }
 
   // ---------------------------------------------------------------------------------//

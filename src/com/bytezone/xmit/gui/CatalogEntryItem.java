@@ -12,6 +12,7 @@ public class CatalogEntryItem
   private StringProperty memberName;
   private StringProperty userName;
   private StringProperty aliasName;
+  private StringProperty version;
   private StringProperty time;
   private IntegerProperty size;
   private ObjectProperty<LocalDate> date;
@@ -25,6 +26,7 @@ public class CatalogEntryItem
     setSize (catalogEntry.getSize ());
     setDate (catalogEntry.getDate ());
     setTime (catalogEntry.getTime ());
+    setVersion (catalogEntry.getVersion ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -133,7 +135,7 @@ public class CatalogEntryItem
   }
 
   // ---------------------------------------------------------------------------------//
-  // AliasName
+  // Time
   // ---------------------------------------------------------------------------------//
 
   private void setTime (String value)
@@ -151,5 +153,26 @@ public class CatalogEntryItem
     if (time == null)
       time = new SimpleStringProperty ();
     return time;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // Time
+  // ---------------------------------------------------------------------------------//
+
+  private void setVersion (String value)
+  {
+    versionProperty ().set (value);
+  }
+
+  public final String getVersion ()
+  {
+    return versionProperty ().get ();
+  }
+
+  private StringProperty versionProperty ()
+  {
+    if (version == null)
+      version = new SimpleStringProperty ();
+    return version;
   }
 }
