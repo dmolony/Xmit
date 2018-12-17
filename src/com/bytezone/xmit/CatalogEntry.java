@@ -30,7 +30,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private final byte[] directoryData;
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
-  private int bufferLength;
+  //  private int bufferLength;
   private int dataLength;
 
   private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
@@ -217,10 +217,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // getBufferLength
   // ---------------------------------------------------------------------------------//
 
-  public long getBufferLength ()
-  {
-    return bufferLength;
-  }
+  //  public long getBufferLength ()
+  //  {
+  //    return bufferLength;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getDataLength
@@ -240,7 +240,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     logicalBuffer.addBlockPointerList (blockPointerList);
 
     blockPointerLists.add (blockPointerList);
-    bufferLength += blockPointerList.getBufferLength ();
+    //    bufferLength += blockPointerList.getBufferLength ();
     dataLength += blockPointerList.getDataLength ();
 
     if (blockPointerLists.size () == 1
@@ -272,7 +272,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         return hexDump ();
 
       for (BlockPointerList blockPointerList : blockPointerLists)
-        createLines (blockPointerList);
+        //        createLines (blockPointerList);
+        createDataLines (blockPointerList);
     }
 
     StringBuilder text = new StringBuilder ();
@@ -282,6 +283,25 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // createDataLines
+  // ---------------------------------------------------------------------------------//
+
+  private void createDataLines (BlockPointerList blockPointerList)
+  {
+    byte[] buffer = blockPointerList.getDataBuffer ();
+
+    int ptr = 0;
+    int length = buffer.length;
+    while (length > 0)
+    {
+      int len = Math.min (80, length);
+      lines.add (Reader.getString (buffer, ptr, len));
+      ptr += len;
+      length -= len;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -314,28 +334,37 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   private String xmitList ()
   {
+    //    byte[] xmitBuffer = new byte[dataLength];
+    //    int fullPtr = 0;
+    //    //    int bpl = 0;
+    //    //    int totDataLength = 0;
+    //    for (BlockPointerList blockPointerList : blockPointerLists)
+    //    {
+    //      byte[] data = blockPointerList.getBuffer ();
+    //      int ptr = 0;
+    //      int rec = 0;
+    //
+    //      while (ptr < data.length)
+    //      {
+    //        int dataLength = Reader.getWord (data, ptr + 10);
+    //        //        totDataLength += dataLength;
+    //        //        System.out.printf ("%3d  %3d  %,5d  %,7d%n", bpl, rec, dataLength, totDataLength);
+    //        System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
+    //        fullPtr += dataLength;
+    //        ptr += 12 + dataLength;
+    //        ++rec;
+    //      }
+    //    }
+
     byte[] xmitBuffer = new byte[dataLength];
-    int fullPtr = 0;
-    //    int bpl = 0;
-    //    int totDataLength = 0;
+    int ptr = 0;
     for (BlockPointerList blockPointerList : blockPointerLists)
     {
-      byte[] data = blockPointerList.getBuffer ();
-      int ptr = 0;
-      int rec = 0;
-
-      while (ptr < data.length)
-      {
-        int dataLength = Reader.getWord (data, ptr + 10);
-        //        totDataLength += dataLength;
-        //        System.out.printf ("%3d  %3d  %,5d  %,7d%n", bpl, rec, dataLength, totDataLength);
-        System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
-        fullPtr += dataLength;
-        ptr += 12 + dataLength;
-        ++rec;
-      }
-      //      ++bpl;
+      byte[] dataBuffer = blockPointerList.getDataBuffer ();
+      System.arraycopy (dataBuffer, 0, xmitBuffer, ptr, dataBuffer.length);
+      ptr += dataBuffer.length;
     }
+    assert ptr == dataLength;
 
     StringBuilder text = new StringBuilder ();
     text.append ("XMIT file:\n\n");
@@ -403,14 +432,24 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     if (blockPointerLists.get (0).isXmit ())
       text.append ("Appears to be XMIT\n\n");
 
+    //    for (int i = 0; i < max; i++)
+    //    {
+    //      BlockPointerList bpl = blockPointerLists.get (i);
+    //      if (bpl.getDataLength () > 0)
+    //      {
+    //        byte[] buffer = bpl.getBuffer ();
+    //        int length = Reader.getWord (buffer, 10);
+    //        text.append (Utility.toHex (buffer, 12, length));
+    //        if (i < max - 1)
+    //          text.append ("\n\n");
+    //      }
+    //    }
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
       {
-        byte[] buffer = bpl.getBuffer ();
-        int length = Reader.getWord (buffer, 10);
-        text.append (Utility.toHex (buffer, 12, length));
+        text.append (Utility.toHex (bpl.getDataBuffer ()));
         if (i < max - 1)
           text.append ("\n\n");
       }
@@ -433,10 +472,14 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       text.append (String.format (
           "-----------------------< BlockPointerList %d of %d >-----------------------\n",
           ++count, blockPointerLists.size ()));
-      //      text.append (blockPointerList.toString ());
+
       text.append (blockPointerList.listHeaders ());
       text.append ("\n\n");
     }
+
+    text.deleteCharAt (text.length () - 1);
+    text.deleteCharAt (text.length () - 1);
+
     return text.toString ();
   }
 
