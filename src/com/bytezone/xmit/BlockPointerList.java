@@ -109,10 +109,10 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // countHeaders
   // ---------------------------------------------------------------------------------//
 
-  int countHeaders ()
-  {
-    return (bufferLength - dataLength) / 12;
-  }
+  //  int countHeaders ()
+  //  {
+  //    return (bufferLength - dataLength) / 12;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // isLastBlock
@@ -135,26 +135,76 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // listHeaders
   // ---------------------------------------------------------------------------------//
 
-  boolean listHeaders ()
+  String listHeaders ()
   {
-    System.out.println ("----------------------< Block Pointer List >------------------");
-    System.out.printf ("Member        : %s%n", catalogEntry.getMemberName ());
-    System.out.printf ("Block pointers: %d%n", size ());
-    System.out.printf ("Buffer length : %d%n", bufferLength);
-    System.out.printf ("Data length   : %d%n", dataLength);
+    StringBuilder text = new StringBuilder ();
+    //    text.append ("----------------------< Block Pointer List >------------------\n");
+    text.append (String.format ("Member        : %s%n", catalogEntry.getMemberName ()));
+    text.append (String.format ("Block pointers: %d%n", size ()));
+    text.append (String.format ("Buffer length : %d%n", bufferLength));
+    text.append (String.format ("Data length   : %d%n%n", dataLength));
 
-    byte[] buffer = getBuffer ();         // expensive
     int ptr = 0;
-    int dataLength = -1;
+    int avail = 0;
+    int recLen = 0;
+
+    List<BlockPointer> newList = new ArrayList<> ();
+    //    for (BlockPointer blockPointer : blockPointers)
+    //    {
+    //      System.out.println (blockPointer);
+    //      System.out
+    //          .println (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
+    //    }
+
+    for (BlockPointer blockPointer : blockPointers)
+    {
+      text.append (String.format ("BP: %s%n", blockPointer));
+
+      ptr = blockPointer.offset;
+      avail = blockPointer.length;
+
+      while (avail > 0)
+      {
+        //        System.out.printf ("ptr: %06X  dataLength: %d  avail: %d%n", ptr, recLen, avail);
+        if (recLen == 0)                // at a data header
+        {
+          recLen = Reader.getWord (buffer, ptr + 10);
+          if (recLen == 0)
+            break;
+          ptr += 12;
+          avail -= 12;
+        }
+        //        System.out.printf ("ptr: %06X  dataLength: %d  avail: %d%n", ptr, recLen, avail);
+
+        int len = Math.min (recLen, avail);
+        BlockPointer bp = new BlockPointer (buffer, ptr, len);
+        newList.add (bp);
+        ptr += len;
+        avail -= len;
+        recLen -= len;
+
+        //        System.out.println (newList.get (newList.size () - 1));
+      }
+    }
+    text.append ("\n");
+
+    for (BlockPointer bp : newList)
+      text.append (bp + "\n");
+
+    text.append ("++++++++++ list old +++++++++++\n\n");
+    byte[] buffer = getBuffer ();         // expensive
+    //    System.out.println (Utility.toHex (buffer));
+    ptr = 0;
+    recLen = -1;
 
     while (ptr < buffer.length)
     {
-      dataLength = Reader.getWord (buffer, ptr + 10);
-      System.out.printf ("%06X  %s  %,7d%n", ptr, Utility.getHex (buffer, ptr, 12),
-          dataLength);
-      ptr += 12 + dataLength;
+      recLen = Reader.getWord (buffer, ptr + 10);
+      text.append (String.format ("%06X  %s  %,7d%n", ptr,
+          Utility.getHex (buffer, ptr, 12), recLen));
+      ptr += 12 + recLen;
     }
-    return dataLength == 0;
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -261,25 +311,29 @@ public class BlockPointerList implements Iterable<BlockPointer>
   @Override
   public String toString ()
   {
-    StringBuilder text = new StringBuilder (
-        "---------------------------< BlockPointerList >------------------------\n");
+    StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Header length: %04X%n", bufferLength - dataLength));
-    text.append (String.format ("Data length  : %04X%n", dataLength));
+    text.append (String.format ("Buffer length: %04X  %<,8d%n", bufferLength));
+    text.append (
+        String.format ("Header length: %04X  %<,8d%n", bufferLength - dataLength));
+    text.append (String.format ("Data length  : %04X  %<,8d%n", dataLength));
 
     int count = 0;
     for (BlockPointer blockPointer : blockPointers)
     {
-      text.append (String.format ("Count: %d%n", count++));
-      text.append (blockPointer);
-      text.append ("\n");
-
-      text.append (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
-      text.append ("\n");
+      text.append (
+          String.format ("%nBlockPointer %d of %d%n", ++count, blockPointers.size ()));
+      if (false)
+      {
+        text.append (blockPointer);
+        text.append ("\n");
+      }
+      else
+      {
+        text.append (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
+        text.append ("\n");
+      }
     }
-
-    text.append (String.format ("Buffer length: %,7d  %<04X   Data length: %,7d  %<04X",
-        bufferLength, dataLength));
 
     return text.toString ();
   }

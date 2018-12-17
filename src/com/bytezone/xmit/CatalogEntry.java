@@ -246,6 +246,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     if (blockPointerLists.size () == 1
         && !blockPointerList.sortKeyMatches (directoryData[0 + 10]))
       System.out.println ("Mismatch in " + memberName);
+
+    blockPointerList.setCatalogEntry (this);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -335,18 +337,19 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       //      ++bpl;
     }
 
-    //    System.out.println (Utility.toHex (xmitBuffer, 0, 1024));
     StringBuilder text = new StringBuilder ();
-    text.append ("XMIT file:\n");
+    text.append ("XMIT file:\n\n");
     try
     {
       Reader reader = new Reader (xmitBuffer);
+      text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
+      text.append (" Member     User     Alias     Size     Date       Time\n");
+      text.append ("--------  --------  --------  -----  -----------  --------\n");
       for (CatalogEntry catalogEntry : reader.catalogEntries)
         text.append (catalogEntry.toString () + "\n");
     }
     catch (Exception e)
     {
-      text.append ("\n");
       text.append ("Data length: " + dataLength + "\n");
       text.append (e.getMessage ());
       text.append ("\n\n");
@@ -420,17 +423,21 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // list
   // ---------------------------------------------------------------------------------//
 
-  public void list ()
+  public String list ()
   {
-    System.out.println (line);
-    System.out.printf ("Member : %s%n", memberName);
-    System.out.printf ("User   : %s%n", userName);
-    System.out.println (line);
+    StringBuilder text = new StringBuilder ();
 
-    int lineNo = 0;
-    for (String line : lines)
-      System.out.printf ("%05d0 %s%n", ++lineNo, line);
-    System.out.println (line);
+    int count = 0;
+    for (BlockPointerList blockPointerList : blockPointerLists)
+    {
+      text.append (String.format (
+          "-----------------------< BlockPointerList %d of %d >-----------------------\n",
+          ++count, blockPointerLists.size ()));
+      //      text.append (blockPointerList.toString ());
+      text.append (blockPointerList.listHeaders ());
+      text.append ("\n\n");
+    }
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
