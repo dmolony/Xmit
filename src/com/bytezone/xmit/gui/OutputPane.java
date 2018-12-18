@@ -95,7 +95,9 @@ public class OutputPane extends BorderPane
   private void updateMetaTab ()
   {
     if (catalogEntry != null)
+    {
       metaText.setText (catalogEntry.list ());
+    }
   }
 
   // ---------------------------------------------------------------------------------//

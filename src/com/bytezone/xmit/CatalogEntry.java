@@ -332,30 +332,33 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // xmitList
   // ---------------------------------------------------------------------------------//
 
-  private String xmitList ()
+  private byte[] getXmitBufferOld ()
   {
-    //    byte[] xmitBuffer = new byte[dataLength];
-    //    int fullPtr = 0;
-    //    //    int bpl = 0;
-    //    //    int totDataLength = 0;
-    //    for (BlockPointerList blockPointerList : blockPointerLists)
-    //    {
-    //      byte[] data = blockPointerList.getBuffer ();
-    //      int ptr = 0;
-    //      int rec = 0;
-    //
-    //      while (ptr < data.length)
-    //      {
-    //        int dataLength = Reader.getWord (data, ptr + 10);
-    //        //        totDataLength += dataLength;
-    //        //        System.out.printf ("%3d  %3d  %,5d  %,7d%n", bpl, rec, dataLength, totDataLength);
-    //        System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
-    //        fullPtr += dataLength;
-    //        ptr += 12 + dataLength;
-    //        ++rec;
-    //      }
-    //    }
+    byte[] xmitBuffer = new byte[dataLength];
+    int fullPtr = 0;
+    for (BlockPointerList blockPointerList : blockPointerLists)
+    {
+      byte[] data = blockPointerList.getBuffer ();
+      int ptr = 0;
 
+      while (ptr < data.length)
+      {
+        int dataLength = Reader.getWord (data, ptr + 10);
+        System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
+        fullPtr += dataLength;
+        ptr += 12 + dataLength;
+      }
+    }
+    assert fullPtr == dataLength;
+    return xmitBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getXmitBuffer
+  // ---------------------------------------------------------------------------------//
+
+  private byte[] getXmitBuffer ()
+  {
     byte[] xmitBuffer = new byte[dataLength];
     int ptr = 0;
     for (BlockPointerList blockPointerList : blockPointerLists)
@@ -365,15 +368,24 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       ptr += dataBuffer.length;
     }
     assert ptr == dataLength;
+    return xmitBuffer;
+  }
 
+  // ---------------------------------------------------------------------------------//
+  // xmitList
+  // ---------------------------------------------------------------------------------//
+
+  private String xmitList ()
+  {
     StringBuilder text = new StringBuilder ();
     text.append ("XMIT file:\n\n");
+    byte[] xmitBuffer = getXmitBuffer ();
     try
     {
       Reader reader = new Reader (xmitBuffer);
       text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
-      text.append (" Member     User     Alias     Size     Date       Time\n");
-      text.append ("--------  --------  --------  -----  -----------  --------\n");
+      text.append (" Member     User     Alias      Size     Date       Time\n");
+      text.append ("--------  --------  --------  ------  -----------  --------\n");
       for (CatalogEntry catalogEntry : reader.catalogEntries)
         text.append (catalogEntry.toString () + "\n");
     }
@@ -404,12 +416,16 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
       {
-        byte[] buffer = bpl.getBuffer ();
-        int length = Reader.getWord (buffer, 10);
-        text.append (Utility.toHex (buffer, 12, length));
+        //        byte[] buffer = bpl.getBuffer ();
+        //        int length = Reader.getWord (buffer, 10);
+        //        text.append (Utility.toHex (buffer, 12, length));
+        text.append (Utility.toHex (bpl.getDataBuffer ()));
         text.append ("\n\n");
       }
     }
+
+    text.deleteCharAt (text.length () - 1);
+    text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
   }
@@ -514,7 +530,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     String date1Text =
         date1 == null ? "" : String.format ("%td %<tb %<tY", date1).replace (".", "");
-    return String.format ("%8s  %8s  %8s  %,5d  %s  %s", memberName, userName, aliasName,
+    return String.format ("%8s  %8s  %8s  %,6d  %s  %s", memberName, userName, aliasName,
         size, date1Text, time);
   }
 

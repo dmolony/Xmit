@@ -64,6 +64,11 @@ public class Utility
     return value;
   }
 
+  public static String getHex (byte[] buffer)
+  {
+    return getHex (buffer, 0, buffer.length);
+  }
+
   public static String getHex (byte[] buffer, int offset, int length)
   {
     StringBuilder text = new StringBuilder ();
