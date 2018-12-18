@@ -47,7 +47,9 @@ public class XmitTable extends TableView<CatalogEntryItem>
     addString ("Alias", "AliasName", 100)
         .setCellFactory (stringCellFactory ("CENTER-LEFT"));
     addNumber ("Size", "Size", 70).setCellFactory (numberCellFactory ());
-    addLocalDate ("Date", "Date", 100).setCellFactory (localDateCellFactory ());
+    addLocalDate ("Created", "DateCreated", 100).setCellFactory (localDateCellFactory ());
+    addLocalDate ("Modified", "DateModified", 100)
+        .setCellFactory (localDateCellFactory ());
     addString ("Time", "Time", 100).setCellFactory (stringCellFactory ("CENTER"));
     addString ("Version", "Version", 80).setCellFactory (stringCellFactory ("CENTER"));
 

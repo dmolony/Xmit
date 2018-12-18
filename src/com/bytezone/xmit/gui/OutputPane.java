@@ -1,9 +1,11 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.ControlRecord;
 import com.bytezone.xmit.Reader;
 
 import javafx.beans.value.ObservableValue;
@@ -25,8 +27,10 @@ public class OutputPane extends BorderPane
   private final TabPane tabPane = new TabPane ();
   private final Tab metaTab = new Tab ();
   private final Tab textTab = new Tab ();
+  private final Tab fileTab = new Tab ();
   private final TextArea metaText = new TextArea ();
   private final TextArea textText = new TextArea ();
+  private final TextArea fileText = new TextArea ();
 
   private Reader reader;
   private CatalogEntry catalogEntry;
@@ -37,7 +41,7 @@ public class OutputPane extends BorderPane
 
   public OutputPane ()
   {
-    tabPane.getTabs ().addAll (metaTab, textTab);
+    tabPane.getTabs ().addAll (fileTab, metaTab, textTab);
     tabPane.setSide (Side.BOTTOM);
     tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
     tabPane.setTabMinWidth (100);
@@ -45,7 +49,8 @@ public class OutputPane extends BorderPane
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
-    addText (metaTab, metaText, "Meta");
+    addText (fileTab, fileText, "File");
+    addText (metaTab, metaText, "Debug");
     addText (textTab, textText, "Text");
     setCenter (tabPane);
 
@@ -63,7 +68,6 @@ public class OutputPane extends BorderPane
     text.setFont (Font.font ("Monospaced", 13));
     text.setEditable (false);
     text.setWrapText (false);
-    //    textArea.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -86,10 +90,31 @@ public class OutputPane extends BorderPane
       updateMetaTab ();
     else if (selectedTab == textTab)
       updateTextTab ();
+    else if (selectedTab == fileTab)
+      updateFileTab ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateMeta
+  // updateFileTab
+  // ---------------------------------------------------------------------------------//
+
+  private void updateFileTab ()
+  {
+    if (reader != null)
+    {
+      List<ControlRecord> controlRecords = reader.getControlRecords ();
+      StringBuilder text = new StringBuilder ();
+      for (ControlRecord controlRecord : controlRecords)
+      {
+        text.append (controlRecord.toString ());
+        text.append ("\n\n");
+      }
+      fileText.setText (text.toString ());
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // updateMetaTab
   // ---------------------------------------------------------------------------------//
 
   private void updateMetaTab ()

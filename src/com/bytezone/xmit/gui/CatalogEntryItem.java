@@ -15,7 +15,8 @@ public class CatalogEntryItem
   private StringProperty version;
   private StringProperty time;
   private IntegerProperty size;
-  private ObjectProperty<LocalDate> date;
+  private ObjectProperty<LocalDate> dateCreated;
+  private ObjectProperty<LocalDate> dateModified;
 
   public CatalogEntryItem (CatalogEntry catalogEntry)
   {
@@ -24,7 +25,8 @@ public class CatalogEntryItem
     setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
     setSize (catalogEntry.getSize ());
-    setDate (catalogEntry.getDate ());
+    setDateCreated (catalogEntry.getDateCreated ());
+    setDateModified (catalogEntry.getDateModified ());
     setTime (catalogEntry.getTime ());
     setVersion (catalogEntry.getVersion ());
   }
@@ -114,24 +116,45 @@ public class CatalogEntryItem
   }
 
   // ---------------------------------------------------------------------------------//
-  // FirstDate
+  // DateCreated
   // ---------------------------------------------------------------------------------//
 
-  private void setDate (LocalDate value)
+  private void setDateCreated (LocalDate value)
   {
-    dateProperty ().set (value);
+    dateCreatedProperty ().set (value);
   }
 
-  public LocalDate getDate ()
+  public LocalDate getDateCreated ()
   {
-    return dateProperty ().get ();
+    return dateCreatedProperty ().get ();
   }
 
-  private ObjectProperty<LocalDate> dateProperty ()
+  private ObjectProperty<LocalDate> dateCreatedProperty ()
   {
-    if (date == null)
-      date = new SimpleObjectProperty<> ();
-    return date;
+    if (dateCreated == null)
+      dateCreated = new SimpleObjectProperty<> ();
+    return dateCreated;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // DateModified
+  // ---------------------------------------------------------------------------------//
+
+  private void setDateModified (LocalDate value)
+  {
+    dateModifiedProperty ().set (value);
+  }
+
+  public LocalDate getDateModified ()
+  {
+    return dateModifiedProperty ().get ();
+  }
+
+  private ObjectProperty<LocalDate> dateModifiedProperty ()
+  {
+    if (dateModified == null)
+      dateModified = new SimpleObjectProperty<> ();
+    return dateModified;
   }
 
   // ---------------------------------------------------------------------------------//
