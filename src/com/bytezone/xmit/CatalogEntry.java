@@ -305,28 +305,28 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addLines
+  // createLines
   // ---------------------------------------------------------------------------------//
 
   // this should be able to build lines directly from the original buffer
-  private void createLines (BlockPointerList blockPointerList)
-  {
-    byte[] buffer = blockPointerList.getBuffer ();
-    int dataLength = Reader.getWord (buffer, 10);       // bpl.dataLength
-
-    int remainder = buffer.length - dataLength;
-    if (remainder != 12 && remainder != 24)
-      System.out.printf ("Unexpected remainder in %s: %d", memberName, remainder);
-
-    int ptr = 12;               // header
-    while (dataLength > 0)
-    {
-      int len = Math.min (80, dataLength);
-      lines.add (Reader.getString (buffer, ptr, len));
-      ptr += len;
-      dataLength -= len;
-    }
-  }
+  //  private void createLines (BlockPointerList blockPointerList)
+  //  {
+  //    byte[] buffer = blockPointerList.getBuffer ();
+  //    int dataLength = Reader.getWord (buffer, 10);       // bpl.dataLength
+  //
+  //    int remainder = buffer.length - dataLength;
+  //    if (remainder != 12 && remainder != 24)
+  //      System.out.printf ("Unexpected remainder in %s: %d", memberName, remainder);
+  //
+  //    int ptr = 12;               // header
+  //    while (dataLength > 0)
+  //    {
+  //      int len = Math.min (80, dataLength);
+  //      lines.add (Reader.getString (buffer, ptr, len));
+  //      ptr += len;
+  //      dataLength -= len;
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // xmitList

@@ -60,18 +60,12 @@ public class XmitApp extends Application
     validateRootFolderOrExit ();
     rootFolderPath = Paths.get (rootFolderName);
 
-    xmitTree =
-        new XmitTree (new FileTreeItem (new File ("/Users/denismolony/code/xmit")));
+    xmitTree = new XmitTree (new FileTreeItem (new File (rootFolderName)));
     xmitTree.addListener (outputPane);
 
     xmitTable = new XmitTable ();
     xmitTable.addListener (outputPane);
     xmitTree.addListener (xmitTable);
-
-    //    listView.getSelectionModel ().selectedItemProperty ()
-    //        .addListener ( (v, oldValue, newValue) -> memberSelected (newValue));
-
-    //    textArea.setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
     splitPane.getItems ().addAll (xmitTree, xmitTable, outputPane);
 
@@ -185,12 +179,8 @@ public class XmitApp extends Application
 
     xmitTree.exit ();
     xmitTable.exit ();
-    //    int index = listView.getSelectionModel ().getSelectedIndex ();
-    //    prefs.putInt (PREFS_MEMBER_INDEX, index);
 
-    //    fileMenu.exit ();
-    //    editMenu.exit ();
-    //    optionsMenu.exit ();
+    fileMenu.exit ();
     outputPane.exit ();
 
     Platform.exit ();
@@ -205,8 +195,7 @@ public class XmitApp extends Application
     if (setRootFolder ())
     {
       rootFolderPath = Paths.get (rootFolderName);
-      //      filesTreeTable.setRootFolder (rootFolderPath);
-      //      setTreePaneName ();
+      xmitTree.setRootFolder (new FileTreeItem (new File (rootFolderName)));
     }
   }
 

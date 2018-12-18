@@ -129,6 +129,19 @@ public class XmitTree extends TreeView<File>
   }
 
   // ---------------------------------------------------------------------------------//
+  // setRootFolder
+  // ---------------------------------------------------------------------------------//
+
+  public void setRootFolder (FileTreeItem fileTreeItem)
+  {
+    setRoot (fileTreeItem);
+    fileTreeItem.setExpanded (true);
+
+    //    Optional<TreeItem<File>> optionalNode = getNode (lastPath);
+    //    model.select (optionalNode.get ());
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getNode
   // ---------------------------------------------------------------------------------//
 

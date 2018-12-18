@@ -300,7 +300,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   byte[] getBuffer ()
   {
-    System.out.println ("Getting full buffer");
+    //    System.out.println ("Getting full buffer");
     byte[] fullBlock = new byte[bufferLength];
     int ptr = 0;
     for (BlockPointer blockPointer : blockPointers)
@@ -318,7 +318,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   byte[] getDataBuffer ()
   {
-    System.out.println ("Getting data buffer");
+    //    System.out.println ("Getting data buffer");
     byte[] fullBlock = new byte[dataLength];
     int ptr = 0;
     for (BlockPointer blockPointer : newList)

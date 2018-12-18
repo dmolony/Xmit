@@ -11,10 +11,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-class FileMenu //implements TreeItemSelectionListener
+class FileMenu
 {
   private final Menu fileMenu = new Menu ("File");
-  //  private final MenuItem newMenuItem = new MenuItem ("New disk image...");
   private final MenuItem rootMenuItem = new MenuItem ("Set root folder");
 
   private final TreeView<File> tree;
@@ -58,7 +57,6 @@ class FileMenu //implements TreeItemSelectionListener
 
   void exit ()
   {
-    //    diskMaker.save ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -69,22 +67,4 @@ class FileMenu //implements TreeItemSelectionListener
   {
     return fileMenu;
   }
-
-  // ---------------------------------------------------------------------------------//
-  // treeItemSelected
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  public void treeItemSelected (TreeItem<FileItem> selected)
-  //  {
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // treeItemExpanded
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  public void treeItemExpanded (TreeItem<FileItem> treeItem)
-  //  {
-  //  }
 }
