@@ -247,11 +247,14 @@ public class XmitTable extends TableView<CatalogEntryItem>
     this.reader = reader;
 
     items.clear ();
-    for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
-      items.add (new CatalogEntryItem (catalogEntry));
+    if (reader != null)
+    {
+      for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+        items.add (new CatalogEntryItem (catalogEntry));
 
-    select (selectedMembers.containsKey (reader)
-        ? memberIndex (selectedMembers.get (reader)) : 0);
+      select (selectedMembers.containsKey (reader)
+          ? memberIndex (selectedMembers.get (reader)) : 0);
+    }
   }
 
   // ---------------------------------------------------------------------------------//

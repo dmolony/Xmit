@@ -72,11 +72,19 @@ public class XmitTree extends TreeView<File>
     model.selectedItemProperty ().addListener ( (obs, oldSelection, newSelection) ->
     {
       if (newSelection == null)
+      {
+        for (TreeItemSelectionListener listener : listeners)
+          listener.treeItemSelected (null);
         return;
+      }
 
       File file = newSelection.getValue ();
       if (!file.isFile ())
+      {
+        for (TreeItemSelectionListener listener : listeners)
+          listener.treeItemSelected (null);
         return;
+      }
       String key = file.getAbsolutePath ();
 
       if (readers.containsKey (key))

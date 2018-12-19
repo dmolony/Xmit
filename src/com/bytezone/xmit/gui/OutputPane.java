@@ -100,7 +100,9 @@ public class OutputPane extends BorderPane
 
   private void updateFileTab ()
   {
-    if (reader != null)
+    if (reader == null)
+      fileText.clear ();
+    else
     {
       List<ControlRecord> controlRecords = reader.getControlRecords ();
       StringBuilder text = new StringBuilder ();
@@ -119,8 +121,13 @@ public class OutputPane extends BorderPane
 
   private void updateMetaTab ()
   {
-    if (catalogEntry != null)
-      metaText.setText (catalogEntry.list ());
+    if (reader == null)
+      metaText.clear ();
+    else
+    {
+      if (catalogEntry != null)
+        metaText.setText (catalogEntry.list ());
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -129,13 +136,18 @@ public class OutputPane extends BorderPane
 
   private void updateTextTab ()
   {
-    if (catalogEntry == null)
-    {
-      if (reader != null)
-        textText.setText (reader.getLines ());
-    }
+    if (reader == null)
+      textText.clear ();
     else
-      textText.setText (catalogEntry.getText ());
+    {
+      if (catalogEntry == null)
+      {
+        if (reader != null)
+          textText.setText (reader.getLines ());
+      }
+      else
+        textText.setText (catalogEntry.getText ());
+    }
   }
 
   // ---------------------------------------------------------------------------------//
