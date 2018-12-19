@@ -2,6 +2,9 @@
 ### Xmit File Viewer
 View the contents of XMIT files.
 
+### Sample screens
+![Basic layout](resources/xmit.png?raw=true "Basic layout")
+
 ### Installation
 #### Download and install Java and JavaFX
 Java and JavaFX are now separate downloads. 
