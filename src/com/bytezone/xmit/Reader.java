@@ -155,10 +155,8 @@ public class Reader
 
     Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
     for (CatalogEntry catalogEntry : sortedCatalogEntries)
-    {
-      if (!offsets.containsKey (catalogEntry.blockFrom))
-        offsets.put (catalogEntry.blockFrom, catalogEntry);
-    }
+      if (!offsets.containsKey (catalogEntry.getOffset ()))
+        offsets.put (catalogEntry.getOffset (), catalogEntry);
 
     List<CatalogEntry> uniqueCatalogEntries = new ArrayList<> ();
     for (CatalogEntry ce : offsets.values ())

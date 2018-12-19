@@ -120,9 +120,7 @@ public class OutputPane extends BorderPane
   private void updateMetaTab ()
   {
     if (catalogEntry != null)
-    {
       metaText.setText (catalogEntry.list ());
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -131,7 +129,12 @@ public class OutputPane extends BorderPane
 
   private void updateTextTab ()
   {
-    if (catalogEntry != null)
+    if (catalogEntry == null)
+    {
+      if (reader != null)
+        textText.setText (reader.getLines ());
+    }
+    else
       textText.setText (catalogEntry.getText ());
   }
 
@@ -161,6 +164,7 @@ public class OutputPane extends BorderPane
   public void treeItemSelected (Reader reader)
   {
     this.reader = reader;
+    catalogEntry = null;
     updateCurrentTab ();
   }
 

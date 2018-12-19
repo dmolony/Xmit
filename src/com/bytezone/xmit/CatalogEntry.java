@@ -17,17 +17,16 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private int vv;
   private int mm;
 
-  private LocalDate date1;
-  private LocalDate date2;
+  private LocalDate dateCreated;
+  private LocalDate dateModified;
   private String time = "";
 
-  final int blockFrom;
+  private final int blockFrom;
 
   private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
-  //  private int bufferLength;
   private int dataLength;
 
   private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
@@ -36,22 +35,22 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry (byte[] buffer, int offset)
+  public CatalogEntry (byte[] buffer, int ptr)
   {
-    memberName = Reader.getString (buffer, offset, 8);
-    blockFrom = (int) Utility.getValue (buffer, offset + 8, 3);
+    memberName = Reader.getString (buffer, ptr, 8);
+    blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
 
-    int extra = buffer[offset + 11] & 0xFF;
+    int extra = buffer[ptr + 11] & 0xFF;
     int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
     switch (extra)
     {
       case 0x0F:
-        basic (buffer, offset);
+        basic (buffer, ptr);
 
         break;
 
       case 0x14:
-        basic (buffer, offset);
+        basic (buffer, ptr);
         break;
 
       case 0x2B:
@@ -70,15 +69,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
 
       case 0x8F:
-        basic (buffer, offset);       // alias without the alias' name ??
+        basic (buffer, ptr);       // alias without the alias' name ??
         break;
 
       case 0xB1:
-        aliasName = Reader.getString (buffer, offset + 36, 8);
+        aliasName = Reader.getString (buffer, ptr + 36, 8);
         break;
 
       case 0xB3:
-        aliasName = Reader.getString (buffer, offset + 36, 8);
+        aliasName = Reader.getString (buffer, ptr + 36, 8);
         break;
 
       case 0:
@@ -90,11 +89,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     }
 
     directoryData = new byte[extraLength];
-    System.arraycopy (buffer, offset, directoryData, 0, directoryData.length);
+    System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
     if (false)
       System.out.printf ("%02X %-8s %06X %-129s %8s %8s%n", extra, getMemberName (),
-          blockFrom, Reader.getHexString (buffer, offset + 12, length () - 12),
+          blockFrom, Reader.getHexString (buffer, ptr + 12, length () - 12),
           getUserName (), getAliasName ());
   }
 
@@ -112,16 +111,16 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     vv = buffer[offset + 12] & 0xFF;
     mm = buffer[offset + 13] & 0xFF;
 
-    date1 = getLocalDate (buffer, offset + 16);
-    date2 = getLocalDate (buffer, offset + 20);
+    dateCreated = getLocalDate (buffer, offset + 16);
+    dateModified = getLocalDate (buffer, offset + 20);
     time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
         buffer[offset + 15]);
 
     if (false)
     {
       String vvmmText = String.format ("%02d.%02d", vv, mm);
-      String date1Text = String.format ("%td %<tb %<tY", date1).replace (".", "");
-      String date2Text = String.format ("%td %<tb %<tY", date2).replace (".", "");
+      String date1Text = String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
+      String date2Text = String.format ("%td %<tb %<tY", dateModified).replace (".", "");
       System.out.println (String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s",
           memberName, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
     }
@@ -187,7 +186,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   public LocalDate getDateCreated ()
   {
-    return date1;
+    return dateCreated;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -196,7 +195,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   public LocalDate getDateModified ()
   {
-    return date2;
+    return dateModified;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -223,10 +222,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // getBufferLength
   // ---------------------------------------------------------------------------------//
 
-  //  public long getBufferLength ()
-  //  {
-  //    return bufferLength;
-  //  }
+  public int getOffset ()
+  {
+    return blockFrom;
+  }
 
   // ---------------------------------------------------------------------------------//
   // getDataLength
@@ -546,8 +545,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   @Override
   public String toString ()
   {
-    String date1Text =
-        date1 == null ? "" : String.format ("%td %<tb %<tY", date1).replace (".", "");
+    String date1Text = dateCreated == null ? ""
+        : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
     return String.format ("%8s  %8s  %8s  %,6d  %s  %s", memberName, userName, aliasName,
         size, date1Text, time);
   }
