@@ -6,9 +6,6 @@ import java.util.List;
 
 public class CatalogEntry implements Comparable<CatalogEntry>
 {
-  private static String line = "====== ---------+---------+---------+---------+"
-      + "---------+---------+---------+---------+";
-
   private final String memberName;
   private String userName = "";
   private String aliasName = "";
