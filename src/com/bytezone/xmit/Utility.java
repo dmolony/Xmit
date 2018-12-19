@@ -128,7 +128,7 @@ public class Utility
         hexLine.append (String.format ("%02X ", b[z]));
 
         final int val = b[z] & 0xFF;
-        textLine.append (val <= 0x3F ? '.' : (char) ebc2asc[val]);
+        textLine.append (val <= 0x3F || val == 0xFF ? '.' : (char) ebc2asc[val]);
       }
       text.append (String.format ("%06X  %-48s %s%n", displayOffset + ptr,
           hexLine.toString (), textLine.toString ()));

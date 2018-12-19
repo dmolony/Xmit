@@ -123,11 +123,10 @@ public class OutputPane extends BorderPane
   {
     if (reader == null)
       metaText.clear ();
+    else if (catalogEntry == null)
+      metaText.clear ();
     else
-    {
-      if (catalogEntry != null)
-        metaText.setText (catalogEntry.list ());
-    }
+      metaText.setText (catalogEntry.list ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -138,16 +137,10 @@ public class OutputPane extends BorderPane
   {
     if (reader == null)
       textText.clear ();
+    else if (catalogEntry == null)
+      textText.setText (reader.getLines ());
     else
-    {
-      if (catalogEntry == null)
-      {
-        if (reader != null)
-          textText.setText (reader.getLines ());
-      }
-      else
-        textText.setText (catalogEntry.getText ());
-    }
+      textText.setText (catalogEntry.getText ());
   }
 
   // ---------------------------------------------------------------------------------//
