@@ -38,7 +38,7 @@ public class LogicalBuffer
           {
             System.out.println ("New header");
             System.out.println (Utility.getHexDump (buffer, ptr, 12));
-            bytesLeft = Utility.getWord (buffer, ptr + 10);     // bytes left to use
+            bytesLeft = Utility.getTwoBytes (buffer, ptr + 10);     // bytes left to use
             ptr += 12;
             System.out.printf ("ptr=%06X  rem=%06X  max=%06X%n", ptr, bytesLeft, max);
           }

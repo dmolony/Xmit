@@ -16,7 +16,7 @@ class Data
 
   Data (byte[] buffer, int ptr)
   {
-    length = Utility.getWord (buffer, ptr);
+    length = Utility.getTwoBytes (buffer, ptr);
     data = new byte[length];
     System.arraycopy (buffer, ptr + 2, data, 0, length);
 

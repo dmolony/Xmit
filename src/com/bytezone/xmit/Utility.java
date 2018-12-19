@@ -31,24 +31,24 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  // getWord
+  // getTwoBytes
   // ---------------------------------------------------------------------------------//
 
-  public static int getWord (byte[] buffer, int ptr)
+  public static int getTwoBytes (byte[] buffer, int ptr)
   {
-    int b = (buffer[ptr] & 0xFF) << 8;
-    int a = (buffer[ptr + 1] & 0xFF);
+    int a = (buffer[ptr] & 0xFF) << 8;
+    int b = (buffer[ptr + 1] & 0xFF);
     return a + b;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getLong
+  // getFourBytes
   // ---------------------------------------------------------------------------------//
 
-  static int getLong (byte[] buffer, int ptr)
+  static long getFourBytes (byte[] buffer, int ptr)
   {
-    int a = getWord (buffer, ptr) << 16;
-    int b = getWord (buffer, ptr + 2);
+    long a = getTwoBytes (buffer, ptr) << 16;
+    long b = getTwoBytes (buffer, ptr + 2);
     return a + b;
   }
 

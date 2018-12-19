@@ -80,8 +80,8 @@ public class TextUnit
 
   public TextUnit (byte[] buffer, int ptr)
   {
-    int key = Utility.getWord (buffer, ptr);
-    int number = Utility.getWord (buffer, ptr + 2);
+    int key = Utility.getTwoBytes (buffer, ptr);
+    int number = Utility.getTwoBytes (buffer, ptr + 2);
     dataList = new ArrayList<> (number);
 
     ptr += 4;

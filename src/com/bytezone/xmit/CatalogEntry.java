@@ -104,9 +104,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private void basic (byte[] buffer, int offset)
   {
     userName = Reader.getString (buffer, offset + 32, 8);
-    size = Utility.getWord (buffer, offset + 26);
-    init = Utility.getWord (buffer, offset + 28);
-    mod = Utility.getWord (buffer, offset + 30);
+    size = Utility.getTwoBytes (buffer, offset + 26);
+    init = Utility.getTwoBytes (buffer, offset + 28);
+    mod = Utility.getTwoBytes (buffer, offset + 30);
 
     vv = buffer[offset + 12] & 0xFF;
     mm = buffer[offset + 13] & 0xFF;
@@ -351,7 +351,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
       while (ptr < data.length)
       {
-        int dataLength = Utility.getWord (data, ptr + 10);
+        int dataLength = Utility.getTwoBytes (data, ptr + 10);
         System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
         fullPtr += dataLength;
         ptr += 12 + dataLength;

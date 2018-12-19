@@ -33,7 +33,7 @@ public class Dsorg extends TextUnit
   {
     super (buffer, ptr);
 
-    int value = Utility.getWord (dataList.get (0).data, 0);
+    int value = Utility.getTwoBytes (dataList.get (0).data, 0);
     switch (value)
     {
       case PS:

@@ -97,7 +97,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
           avail -= needed;
           headerPtr = 0;
 
-          recLen = Utility.getWord (header, 10);
+          recLen = Utility.getTwoBytes (header, 10);
 
           if (recLen == 0)
           {
@@ -215,7 +215,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
     int dataLength = -1;
     while (ptr < buffer.length)
     {
-      dataLength = Utility.getWord (buffer, ptr + 10);
+      dataLength = Utility.getTwoBytes (buffer, ptr + 10);
       ptr += 12 + dataLength;
     }
     assert (isLastBlock == (dataLength == 0));
