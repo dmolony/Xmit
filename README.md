@@ -3,7 +3,8 @@
 View the contents of XMIT files.
 
 ### Sample screens
-![Basic layout](resources/xmit.png?raw=true "Basic layout")
+![Mac](resources/xmitosx.png?raw=true "Mac")
+![Windows](resources/xmitwin.png?raw=true "Windows")
 
 ### Installation
 #### Download and install Java and JavaFX
