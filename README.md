@@ -8,13 +8,15 @@ View the contents of XMIT files.
 ### Installation
 #### Download and install Java and JavaFX
 Java and JavaFX are now separate downloads. 
+[java](https://jdk.java.net/11/)
+[javafx](https://gluonhq.com/products/javafx/)
 
 #### Download XmitApp.jar
 Download XmitApp.jar from the [releases](https://github.com/dmolony/xmit/releases) page.
 
 #### Create executable run file
 ##### MacOs or Unix
-Create a shell file. Don't forget to make it executable.
+Create a shell file.
 
 ```/path/to/jdk-11.0.1.jdk/Contents/Home/bin/java --module-path /path/to/javafx-sdk-11/lib --add-modules=javafx.controls,javafx.fxml -Dfile.encoding=UTF-8 -jar /path/to/XmitApp.jar```
 
