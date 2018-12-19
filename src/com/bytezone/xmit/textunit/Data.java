@@ -26,6 +26,7 @@ class Data
         printable = false;
         break;
       }
+
     text = printable ? Reader.getString (data, 0, length) : "";
   }
 

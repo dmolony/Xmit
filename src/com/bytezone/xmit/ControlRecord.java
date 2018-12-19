@@ -66,8 +66,8 @@ public class ControlRecord
       case TextUnit.INMFTIME:
         return new TextUnitTime (buffer, ptr);
 
-      //      case TextUnit.INMRECFM:
-      //        return new Recfm (buffer, ptr);
+      case TextUnit.INMRECFM:
+        return new Recfm (buffer, ptr);
 
       case TextUnit.INMDSORG:
         return new Dsorg (buffer, ptr);

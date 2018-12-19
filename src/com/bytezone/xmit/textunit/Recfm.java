@@ -7,12 +7,14 @@ public class Recfm extends TextUnit
     F, FB, FBA, FS, FBS, FBM, V, VB, VBA, VS, VBS, VBM
   }
 
+  // seen: 0001, 4802, 9000
+
   String type;
 
   public Recfm (byte[] buffer, int ptr)
   {
     super (buffer, ptr);
-    type = getType (dataList.get (0).data[0]);
+    type = getType (dataList.get (0).data[0] & 0xFF);
   }
 
   String getType (int code)
@@ -31,22 +33,29 @@ public class Recfm extends TextUnit
         return "VBM";
       case 0x54:
         return "VBA";
-      case (byte) 0x80:
+
+      case 0x80:
         return "F";
-      case (byte) 0x82:
+      case 0x82:
         return "FM";
-      case (byte) 0x84:
+      case 0x84:
         return "FA";
-      case (byte) 0x90:
+      case 0x90:
         return "FB";
-      case (byte) 0x92:
+      case 0x92:
         return "FBM";
-      case (byte) 0x94:
+      case 0x94:
         return "FBA";
-      case (byte) 0xC0:
+
+      case 0xC0:
         return "U";
+      case 0xC2:
+        return "UM";
+      case 0xC4:
+        return "UA";
+
       default:
-        return "Unknown";
+        return "";
     }
   }
 
@@ -63,6 +72,7 @@ public class Recfm extends TextUnit
   @Override
   public String toString ()
   {
-    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
+    return type.isEmpty () ? super.toString ()
+        : String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
   }
 }

@@ -4,23 +4,14 @@ import com.bytezone.xmit.Utility;
 
 public class Dsorg extends TextUnit
 {
-  //  Describes INMDSORG
-
   public final static int VSAM = 0x0008;
   public final static int PDS = 0x0200;
   public final static int PS = 0x4000;
 
-  //   Describes INMTYPE
-
-  public final static int DataLib = 0x80;
-  public final static int PgmLib = 0x40;
-  public final static int XFSDS = 0x04;
-  public final static int LFSDS = 0x01;
-
-  public enum Organisation
-  {
-    PS, PSU, PO, POU, DA, DAU, GDG, IS, ISU, PDSM, VSAM
-  }
+  //  public enum Organisation
+  //  {
+  //    PS, PSU, PO, POU, DA, DAU, GDG, IS, ISU, PDSM, VSAM
+  //  }
 
   public enum Org
   {
@@ -45,6 +36,8 @@ public class Dsorg extends TextUnit
       case VSAM:
         type = Org.VSAM;
         break;
+      default:
+        System.out.printf ("** Unknown DSORG value: %04X%n", value);
     }
   }
 
@@ -55,6 +48,7 @@ public class Dsorg extends TextUnit
   @Override
   public String toString ()
   {
-    return String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
+    return type == null ? super.toString ()
+        : String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
   }
 }

@@ -2,7 +2,7 @@ package com.bytezone.xmit.textunit;
 
 public class TextUnitNumber extends TextUnit
 {
-  private long number;
+  long number;
 
   public TextUnitNumber (byte[] buffer, int ptr)
   {
