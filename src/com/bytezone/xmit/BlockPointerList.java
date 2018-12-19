@@ -232,7 +232,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
   String listHeaders ()
   {
     StringBuilder text = new StringBuilder ();
-    text.append (String.format ("Member        : %s%n", catalogEntry.getMemberName ()));
+    if (catalogEntry != null)
+      text.append (String.format ("Member        : %s%n", catalogEntry.getMemberName ()));
     text.append (String.format ("Block pointers: %d%n", size ()));
     text.append (String.format ("Buffer length : %d%n", bufferLength));
     text.append (String.format ("Data length   : %d%n", dataLength));

@@ -49,9 +49,9 @@ public class OutputPane extends BorderPane
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
-    addText (fileTab, fileText, "File");
+    addText (fileTab, fileText, "Control");
     addText (metaTab, metaText, "Debug");
-    addText (textTab, textText, "Text");
+    addText (textTab, textText, "Output");
     setCenter (tabPane);
 
     restore ();
@@ -107,7 +107,7 @@ public class OutputPane extends BorderPane
       for (ControlRecord controlRecord : controlRecords)
       {
         text.append (controlRecord.toString ());
-        text.append ("\n\n");
+        text.append ("\n");
       }
       fileText.setText (text.toString ());
     }

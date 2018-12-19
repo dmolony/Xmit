@@ -244,19 +244,22 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
-  void addBlockPointerList (BlockPointerList blockPointerList)
+  boolean addBlockPointerList (BlockPointerList blockPointerList)
   {
+    if (blockPointerLists.size () == 0
+        && !blockPointerList.sortKeyMatches (directoryData[0 + 10]))
+    {
+      System.out.println ("Mismatch in " + memberName);
+      return false;
+    }
+
     logicalBuffer.addBlockPointerList (blockPointerList);
 
     blockPointerLists.add (blockPointerList);
-    //    bufferLength += blockPointerList.getBufferLength ();
     dataLength += blockPointerList.getDataLength ();
 
-    if (blockPointerLists.size () == 1
-        && !blockPointerList.sortKeyMatches (directoryData[0 + 10]))
-      System.out.println ("Mismatch in " + memberName);
-
     blockPointerList.setCatalogEntry (this);
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -392,11 +395,17 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     try
     {
       Reader reader = new Reader (xmitBuffer);
+      for (ControlRecord controlRecord : reader.controlRecords)
+      {
+        text.append (controlRecord);
+        text.append ("\n");
+      }
       text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
       text.append (" Member     User     Alias      Size     Date       Time\n");
       text.append ("--------  --------  --------  ------  -----------  --------\n");
       for (CatalogEntry catalogEntry : reader.catalogEntries)
         text.append (catalogEntry.toString () + "\n");
+      text.deleteCharAt (text.length () - 1);
     }
     catch (Exception e)
     {
@@ -433,8 +442,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       }
     }
 
-    text.deleteCharAt (text.length () - 1);
-    text.deleteCharAt (text.length () - 1);
+    if (text.length () > 2)
+    {
+      text.deleteCharAt (text.length () - 1);
+      text.deleteCharAt (text.length () - 1);
+    }
 
     return text.toString ();
   }

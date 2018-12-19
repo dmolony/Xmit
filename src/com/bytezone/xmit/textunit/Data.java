@@ -1,7 +1,7 @@
 package com.bytezone.xmit.textunit;
 
-import com.bytezone.common.Utility;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.Utility;
 
 class Data
 {

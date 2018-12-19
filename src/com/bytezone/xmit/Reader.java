@@ -16,7 +16,6 @@ public class Reader
   List<CatalogEntry> catalogEntries = new ArrayList<> ();
   List<String> lines = new ArrayList<> ();
 
-  private final byte[] buffer;
   private final byte[] INMR06 = { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5,
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
@@ -42,7 +41,6 @@ public class Reader
   {
     List<BlockPointerList> blockPointerLists = new ArrayList<> ();
     BlockPointerList currentBlockPointerList = null;
-    this.buffer = buffer;
 
     boolean dumpRaw = false;
 
@@ -142,20 +140,15 @@ public class Reader
     boolean inCatalog = true;
     int catalogEndBlock = 0;
 
-    //    System.out.println (fileName);
-    //    System.out.printf ("Allocating %d BPLs%n", blockPointerLists.size ());
-
     for (int i = 2; i < blockPointerLists.size (); i++)
-    {
       if (inCatalog)
       {
         inCatalog = addCatalogEntries (blockPointerLists.get (i).getBuffer ());
         if (!inCatalog)
           catalogEndBlock = i;
       }
-      else              // in data
+      else
         blockPointerLists.get (i).build ();       // create new BlockPointers
-    }
 
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
@@ -171,27 +164,16 @@ public class Reader
     for (CatalogEntry ce : offsets.values ())
       uniqueCatalogEntries.add (ce);
 
-    //    if (false)
-    //    {
-    //      System.out.printf ("%3d aliases%n", totAlias);
-    //      System.out.printf ("%3d non-aliases%n", catalogEntries.size () - totAlias);
-    //      System.out.printf ("%3d offsets%n", offsets.size ());
-    //      System.out.printf ("%3d unique%n", uniqueCatalogEntries.size ());
-    //    }
-
-    int next = 0;
-    CatalogEntry member = null;
-
+    // assign BlockPointerLists to CatalogEntries
+    int currentMember = 0;
     for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-
-      if (member == null)
-        member = uniqueCatalogEntries.get (next++);
-
-      member.addBlockPointerList (bpl);
+      CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
+      if (!ce.addBlockPointerList (bpl))
+        break;                                  // PDSE fails here
       if (bpl.isLastBlock ())
-        member = null;
+        ++currentMember;
     }
   }
 
@@ -209,7 +191,7 @@ public class Reader
       while (true)
       {
         if (buffer[ptr2] == (byte) 0xFF)
-          return false;                                       // member list finished
+          return false;                                     // member list finished
 
         CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);

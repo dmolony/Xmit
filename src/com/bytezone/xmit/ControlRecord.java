@@ -95,7 +95,7 @@ public class ControlRecord
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Name      %s%n", name));
+    text.append (String.format ("Control Record: %s%n%n", name));
     for (TextUnit textUnit : textUnits)
       text.append (textUnit + "\n");
 
