@@ -7,9 +7,9 @@ View the contents of XMIT files.
 
 ### Installation
 #### Download and install Java and JavaFX
-Java and JavaFX are now separate downloads. 
-[java](https://jdk.java.net/11/)
-[javafx](https://gluonhq.com/products/javafx/)
+Java and JavaFX are now separate downloads. You can get them
+[here](https://jdk.java.net/11/) and
+[here](https://gluonhq.com/products/javafx/)
 
 #### Download XmitApp.jar
 Download XmitApp.jar from the [releases](https://github.com/dmolony/xmit/releases) page.
