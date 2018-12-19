@@ -104,9 +104,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private void basic (byte[] buffer, int offset)
   {
     userName = Reader.getString (buffer, offset + 32, 8);
-    size = Reader.getWord (buffer, offset + 26);
-    init = Reader.getWord (buffer, offset + 28);
-    mod = Reader.getWord (buffer, offset + 30);
+    size = Utility.getWord (buffer, offset + 26);
+    init = Utility.getWord (buffer, offset + 28);
+    mod = Utility.getWord (buffer, offset + 30);
 
     vv = buffer[offset + 12] & 0xFF;
     mm = buffer[offset + 13] & 0xFF;
@@ -351,7 +351,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
       while (ptr < data.length)
       {
-        int dataLength = Reader.getWord (data, ptr + 10);
+        int dataLength = Utility.getWord (data, ptr + 10);
         System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
         fullPtr += dataLength;
         ptr += 12 + dataLength;
@@ -408,7 +408,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       text.append ("Data length: " + dataLength + "\n");
       text.append (e.getMessage ());
       text.append ("\n\n");
-      text.append (Utility.toHex (xmitBuffer));
+      text.append (Utility.getHexDump (xmitBuffer));
     }
 
     return text.toString ();
@@ -433,7 +433,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         //        byte[] buffer = bpl.getBuffer ();
         //        int length = Reader.getWord (buffer, 10);
         //        text.append (Utility.toHex (buffer, 12, length));
-        text.append (Utility.toHex (bpl.getDataBuffer ()));
+        text.append (Utility.getHexDump (bpl.getDataBuffer ()));
         text.append ("\n\n");
       }
     }
@@ -482,7 +482,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
       {
-        text.append (Utility.toHex (bpl.getDataBuffer ()));
+        text.append (Utility.getHexDump (bpl.getDataBuffer ()));
         if (i < max - 1)
           text.append ("\n\n");
       }

@@ -3,7 +3,7 @@ package com.bytezone.xmit.textunit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.Utility;
 
 public class TextUnit
 {
@@ -80,8 +80,8 @@ public class TextUnit
 
   public TextUnit (byte[] buffer, int ptr)
   {
-    int key = Reader.getWord (buffer, ptr);
-    int number = Reader.getWord (buffer, ptr + 2);
+    int key = Utility.getWord (buffer, ptr);
+    int number = Utility.getWord (buffer, ptr + 2);
     dataList = new ArrayList<> (number);
 
     ptr += 4;

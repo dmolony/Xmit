@@ -19,7 +19,7 @@ class BlockPointer
 
   String toHex ()
   {
-    return Utility.toHex (buffer, offset, length);
+    return Utility.getHexDump (buffer, offset, length);
   }
 
   // ---------------------------------------------------------------------------------//

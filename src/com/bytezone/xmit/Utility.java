@@ -1,9 +1,6 @@
 package com.bytezone.xmit;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class Utility
 {
@@ -33,28 +30,31 @@ public class Utility
     }
   }
 
-  //  static String ebc2asc (byte[] buffer)
-  //  {
-  //    byte[] newBuffer = new byte[buffer.length];
-  //    int ptr = 0;
-  //    for (int i = 0; i < buffer.length; i++)
-  //      //      if (buffer[i] != 0)                                       // suppress nulls
-  //      newBuffer[ptr++] = (byte) ebc2asc[buffer[i] & 0xFF];
-  //
-  //    return new String (newBuffer);
-  //  }
+  // ---------------------------------------------------------------------------------//
+  // getWord
+  // ---------------------------------------------------------------------------------//
 
-  public static int getWord (byte[] buffer, int ptr)        // 2 bytes
+  public static int getWord (byte[] buffer, int ptr)
   {
-    int a = (buffer[ptr + 1] & 0xFF) << 8;
-    int b = buffer[ptr] & 0xFF;
+    int b = (buffer[ptr] & 0xFF) << 8;
+    int a = (buffer[ptr + 1] & 0xFF);
     return a + b;
   }
 
-  public static int getLong (byte[] buffer, int ptr)        // 4 bytes
+  // ---------------------------------------------------------------------------------//
+  // getLong
+  // ---------------------------------------------------------------------------------//
+
+  static int getLong (byte[] buffer, int ptr)
   {
-    return getWord (buffer, ptr) + getWord (buffer, ptr + 2) * 0x10000;
+    int a = getWord (buffer, ptr) << 16;
+    int b = getWord (buffer, ptr + 2);
+    return a + b;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // getValue
+  // ---------------------------------------------------------------------------------//
 
   public static long getValue (byte[] buffer, int offset, int length)
   {
@@ -64,12 +64,20 @@ public class Utility
     return value;
   }
 
-  public static String getHex (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  // getHexValues
+  // ---------------------------------------------------------------------------------//
+
+  public static String getHexValues (byte[] buffer)
   {
-    return getHex (buffer, 0, buffer.length);
+    return getHexValues (buffer, 0, buffer.length);
   }
 
-  public static String getHex (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  // getHexValues
+  // ---------------------------------------------------------------------------------//
+
+  public static String getHexValues (byte[] buffer, int offset, int length)
   {
     StringBuilder text = new StringBuilder ();
     for (int i = offset, max = offset + length; i < max; i++)
@@ -77,39 +85,38 @@ public class Utility
     return text.toString ();
   }
 
-  //  public static String getHex (String s)
-  //  {
-  //    if (s == null)
-  //      return "Null";
-  //    StringBuilder text = new StringBuilder ();
-  //    for (char c : s.toCharArray ())
-  //      text.append (String.format ("%02X ", (byte) c));
-  //    return text.toString ();
-  //  }
+  // ---------------------------------------------------------------------------------//
+  // getHexDump
+  // ---------------------------------------------------------------------------------//
 
-  public static String toBits (int x, int width)
+  public static String getHexDump (byte[] b)
   {
-    String bits = "000000000000" + Integer.toBinaryString (x);
-    return String.format ("Value: %03X (%s)%n", x,
-        bits.substring (bits.length () - width));
+    return getHexDump (b, 0, b.length);
   }
 
-  public static String toHex (byte[] b)
+  // ---------------------------------------------------------------------------------//
+  // getHexDump
+  // ---------------------------------------------------------------------------------//
+
+  public static String getHexDump (byte[] b, int displayOffset)
   {
-    return toHex (b, 0, b.length);
+    return getHexDump (b, 0, b.length, displayOffset);
   }
 
-  public static String toHex (byte[] b, int displayOffset)
+  // ---------------------------------------------------------------------------------//
+  // getHexDump
+  // ---------------------------------------------------------------------------------//
+
+  public static String getHexDump (byte[] b, int offset, int length)
   {
-    return toHex (b, 0, b.length, displayOffset);
+    return getHexDump (b, offset, length, 0);
   }
 
-  public static String toHex (byte[] b, int offset, int length)
-  {
-    return toHex (b, offset, length, 0);
-  }
+  // ---------------------------------------------------------------------------------//
+  // getHexDump
+  // ---------------------------------------------------------------------------------//
 
-  public static String toHex (byte[] b, int offset, int length, int displayOffset)
+  public static String getHexDump (byte[] b, int offset, int length, int displayOffset)
   {
     final int lineSize = 16;
     StringBuilder text = new StringBuilder ();
@@ -140,49 +147,9 @@ public class Utility
     return text.toString ();
   }
 
-  //  public static void hexDump (String fileName) throws IOException
-  //  {
-  //    System.out.printf ("%nReading: %s", fileName);
-  //    byte[] originalBuffer = Files.readAllBytes (Paths.get (fileName));
-  //    hexDump (originalBuffer);
-  //    System.out.printf ("%nTotal bytes: %,d%n", originalBuffer.length);
-  //  }
-
-  public static void hexDump (byte[] buffer)
-  {
-    int max = buffer.length;
-
-    for (int i = 0; i < max; i++)
-    {
-      if (i % 16 == 0)
-        System.out.printf ("%n%06X: ", i);
-
-      System.out.printf ("%02X ", buffer[i]);
-    }
-  }
-
-  public static void bitDump (String fileName) throws IOException
-  {
-    System.out.printf ("%nReading: %s", fileName);
-    byte[] originalBuffer = Files.readAllBytes (Paths.get (fileName));
-    bitDump (originalBuffer);
-    System.out.printf ("%nTotal bytes: %,d%n", originalBuffer.length);
-  }
-
-  public static void bitDump (byte[] buffer)
-  {
-    int max = buffer.length;
-
-    for (int i = 0; i < max; i++)
-    {
-      if (i % 16 == 0)
-        System.out.printf ("%n%06X: ", i);
-
-      String s1 = String.format ("%8s", Integer.toBinaryString (buffer[i] & 0xFF))
-          .replace (' ', '0');
-      System.out.printf ("%s ", s1);
-    }
-  }
+  // ---------------------------------------------------------------------------------//
+  // printStackTrace
+  // ---------------------------------------------------------------------------------//
 
   public static void printStackTrace ()
   {

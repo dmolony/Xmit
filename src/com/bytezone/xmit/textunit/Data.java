@@ -16,7 +16,7 @@ class Data
 
   Data (byte[] buffer, int ptr)
   {
-    length = Reader.getWord (buffer, ptr);
+    length = Utility.getWord (buffer, ptr);
     data = new byte[length];
     System.arraycopy (buffer, ptr + 2, data, 0, length);
 
@@ -36,7 +36,7 @@ class Data
   @Override
   public String toString ()
   {
-    return String.format ("%04X %s : %s", length, Utility.getHex (data, 0, data.length),
-        text);
+    return String.format ("%04X %s : %s", length,
+        Utility.getHexValues (data, 0, data.length), text);
   }
 }

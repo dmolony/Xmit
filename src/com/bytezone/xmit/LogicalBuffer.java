@@ -37,8 +37,8 @@ public class LogicalBuffer
           if (bytesLeft == 0)             // new header
           {
             System.out.println ("New header");
-            System.out.println (Utility.toHex (buffer, ptr, 12));
-            bytesLeft = Reader.getWord (buffer, ptr + 10);     // bytes left to use
+            System.out.println (Utility.getHexDump (buffer, ptr, 12));
+            bytesLeft = Utility.getWord (buffer, ptr + 10);     // bytes left to use
             ptr += 12;
             System.out.printf ("ptr=%06X  rem=%06X  max=%06X%n", ptr, bytesLeft, max);
           }
@@ -46,7 +46,7 @@ public class LogicalBuffer
           if (ptr + bytesLeft <= max)
           {
             System.out.println ("Full record");
-            System.out.println (Utility.toHex (buffer, ptr, bytesLeft));
+            System.out.println (Utility.getHexDump (buffer, ptr, bytesLeft));
             ptr += bytesLeft;
             bytesLeft = 0;
             System.out.printf ("ptr=%06X  rem=%06X  max=%06X%n", ptr, bytesLeft, max);
@@ -54,7 +54,7 @@ public class LogicalBuffer
           else
           {
             System.out.println ("Partial record");
-            System.out.println (Utility.toHex (buffer, ptr, max - ptr));
+            System.out.println (Utility.getHexDump (buffer, ptr, max - ptr));
             bytesLeft -= (max - ptr);
             ptr = max;
             System.out.printf ("ptr=%06X  rem=%06X  max=%06X%n", ptr, bytesLeft, max);

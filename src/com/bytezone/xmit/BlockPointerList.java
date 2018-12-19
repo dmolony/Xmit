@@ -97,7 +97,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
           avail -= needed;
           headerPtr = 0;
 
-          recLen = Reader.getWord (header, 10);
+          recLen = Utility.getWord (header, 10);
 
           if (recLen == 0)
           {
@@ -128,7 +128,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
       for (BlockPointer blockPointer : newList)
         System.out.println (blockPointer);
       for (byte[] header2 : headers)
-        System.out.println (Utility.toHex (header2));
+        System.out.println (Utility.getHexDump (header2));
     }
   }
 
@@ -215,7 +215,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
     int dataLength = -1;
     while (ptr < buffer.length)
     {
-      dataLength = Reader.getWord (buffer, ptr + 10);
+      dataLength = Utility.getWord (buffer, ptr + 10);
       ptr += 12 + dataLength;
     }
     assert (isLastBlock == (dataLength == 0));
@@ -242,7 +242,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
     for (BlockPointer blockPointer : blockPointers)
     {
       text.append (String.format ("%s%n", blockPointer));
-      text.append (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
+      text.append (Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
       text.append ("\n");
     }
 
@@ -250,14 +250,14 @@ public class BlockPointerList implements Iterable<BlockPointer>
     for (BlockPointer blockPointer : newList)
     {
       text.append (String.format ("%s%n", blockPointer));
-      text.append (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
+      text.append (Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
       text.append ("\n");
     }
 
     text.append ("\nHeaders:\n");
     for (byte[] header : headers)
     {
-      text.append (Utility.getHex (header));
+      text.append (Utility.getHexValues (header));
       text.append ("\n");
     }
 
@@ -380,7 +380,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
       }
       else
       {
-        text.append (Utility.toHex (buffer, blockPointer.offset, blockPointer.length));
+        text.append (
+            Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
         text.append ("\n");
       }
     }

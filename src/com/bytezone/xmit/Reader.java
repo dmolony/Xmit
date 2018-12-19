@@ -65,7 +65,7 @@ public class Reader
 
       if (dumpRaw)
       {
-        System.out.println (Utility.toHex (buffer, ptr, length));
+        System.out.println (Utility.getHexDump (buffer, ptr, length));
         System.out.println ();
         if (matches (INMR06, buffer, ptr))
           return;
@@ -310,7 +310,7 @@ public class Reader
 
   static void printHex (byte[] buffer)
   {
-    System.out.println (Utility.toHex (buffer, 0, buffer.length));
+    System.out.println (Utility.getHexDump (buffer, 0, buffer.length));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -319,7 +319,7 @@ public class Reader
 
   static void printHex (byte[] buffer, int offset, int length)
   {
-    System.out.println (Utility.toHex (buffer, offset, length));
+    System.out.println (Utility.getHexDump (buffer, offset, length));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -354,23 +354,23 @@ public class Reader
   // getWord
   // ---------------------------------------------------------------------------------//
 
-  public static int getWord (byte[] buffer, int ptr)
-  {
-    int b = (buffer[ptr] & 0xFF) << 8;
-    int a = (buffer[ptr + 1] & 0xFF);
-    return a + b;
-  }
+  //  public static int getWord (byte[] buffer, int ptr)
+  //  {
+  //    int b = (buffer[ptr] & 0xFF) << 8;
+  //    int a = (buffer[ptr + 1] & 0xFF);
+  //    return a + b;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getDoubleWord
   // ---------------------------------------------------------------------------------//
 
-  static int getDoubleWord (byte[] buffer, int ptr)
-  {
-    int a = getWord (buffer, ptr) << 16;
-    int b = getWord (buffer, ptr + 2);
-    return a + b;
-  }
+  //  static int getDoubleWord (byte[] buffer, int ptr)
+  //  {
+  //    int a = getWord (buffer, ptr) << 16;
+  //    int b = getWord (buffer, ptr + 2);
+  //    return a + b;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getHexString

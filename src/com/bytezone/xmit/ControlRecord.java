@@ -24,7 +24,7 @@ public class ControlRecord
 
     if ("INMR02".equals (name))
     {
-      int fileNbr = Reader.getDoubleWord (buffer, ptr);     // need to save this
+      int fileNbr = Utility.getLong (buffer, ptr);     // need to save this
       //      System.out.printf (" (file %d)", fileNbr);
       ptr += 4;
     }
@@ -43,7 +43,7 @@ public class ControlRecord
 
   private TextUnit createTextUnit (byte[] buffer, int ptr)
   {
-    int key = Reader.getWord (buffer, ptr);
+    int key = Utility.getWord (buffer, ptr);
     switch (key)
     {
       case TextUnit.INMDSNAM:

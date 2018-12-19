@@ -1,6 +1,6 @@
 package com.bytezone.xmit.textunit;
 
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.Utility;
 
 public class Dsorg extends TextUnit
 {
@@ -33,7 +33,7 @@ public class Dsorg extends TextUnit
   {
     super (buffer, ptr);
 
-    int value = Reader.getWord (dataList.get (0).data, 0);
+    int value = Utility.getWord (dataList.get (0).data, 0);
     switch (value)
     {
       case PS:
