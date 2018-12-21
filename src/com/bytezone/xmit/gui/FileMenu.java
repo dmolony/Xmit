@@ -73,6 +73,8 @@ class FileMenu implements TableItemSelectionListener
       System.out.println ("Extracting XMIT file: " + catalogEntry.getMemberName ());
       byte[] buffer = catalogEntry.getXmitBuffer ();
 
+      // use the PDS dataset name as the default
+      // or use the parent file.member name
       FileChooser fileChooser = new FileChooser ();
       fileChooser.getExtensionFilters ()
           .add (new FileChooser.ExtensionFilter ("XMIT files (*.xmi)", "*.xmi"));

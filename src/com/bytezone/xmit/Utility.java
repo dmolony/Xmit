@@ -120,11 +120,13 @@ public class Utility
   {
     final int lineSize = 16;
     StringBuilder text = new StringBuilder ();
+    final StringBuilder hexLine = new StringBuilder ();
+    final StringBuilder textLine = new StringBuilder ();
 
     for (int ptr = offset, max = offset + length; ptr < max; ptr += lineSize)
     {
-      final StringBuilder hexLine = new StringBuilder ();
-      final StringBuilder textLine = new StringBuilder ();
+      hexLine.setLength (0);
+      textLine.setLength (0);
 
       for (int linePtr = 0; linePtr < lineSize; linePtr++)
       {

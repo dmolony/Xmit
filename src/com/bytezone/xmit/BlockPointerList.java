@@ -12,7 +12,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   private final byte[] buffer;          // all block pointers refer to this
   private int bufferLength;
 
-  private int dataLength;               // only applies to data records
+  private int dataLength;               // only applies to data blocks
   private boolean isBinary;
   private byte sortKey;
 
@@ -50,12 +50,11 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // build
   // ---------------------------------------------------------------------------------//
 
-  void build ()         // used for data blocks
+  void build ()                       // used only for data blocks
   {
     int recLen = 0;
     isLastBlock = false;
     newList = new ArrayList<> ();
-    boolean debug = false;
 
     int headerPtr = 0;
     byte[] header = null;
@@ -65,14 +64,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
       int ptr = blockPointer.offset;
       int avail = blockPointer.length;
 
-      //      if (debug)
-      //        System.out.println (blockPointer);
-
       while (avail > 0)
       {
-        //        if (debug)
-        //          System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
-
         if (recLen == 0)                // at a data header
         {
           if (headerPtr == 0)
@@ -83,7 +76,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
           if (avail < 12 - headerPtr)
           {
-            //            System.out.println ("part filling " + Utility.toHex (buffer, ptr, 14));
             System.arraycopy (buffer, ptr, header, headerPtr, avail);
             ptr += avail;
             headerPtr += avail;
@@ -104,8 +96,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
             isLastBlock = true;
             break;
           }
-          //          if (debug)
-          //            System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
         }
 
         int len = Math.min (recLen, avail);
@@ -114,33 +104,26 @@ public class BlockPointerList implements Iterable<BlockPointer>
         ptr += len;
         avail -= len;
         recLen -= len;
-        //        if (debug)
-        //          System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
       }
     }
 
     for (BlockPointer blockPointer : newList)
       dataLength += blockPointer.length;
-
-    if (true)
-    {
-      //      for (BlockPointer blockPointer : newList)
-      //        System.out.println (blockPointer);
-      for (byte[] header2 : headers)
-        System.out.println (Utility.getHexDump (header2));
-      System.out.println ();
-    }
   }
 
   // ---------------------------------------------------------------------------------//
-  // getFirstHeader
+  // getList
   // ---------------------------------------------------------------------------------//
 
-  //  private String getFirstHeader ()
-  //  {
-  //    BlockPointer bp = blockPointers.get (0);
-  //    return Utility.getHex (buffer, bp.offset, 12);
-  //  }
+  public String getList ()
+  {
+    StringBuilder text = new StringBuilder ();
+    text.append (String.format ("BlockPointerList: %d  (%d / %d blocks)%n", id,
+        blockPointers.size (), newList.size ()));
+    for (byte[] header2 : headers)
+      text.append (String.format ("   %s%n", Utility.getHexValues (header2)));
+    return text.toString ();
+  }
 
   // ---------------------------------------------------------------------------------//
   // setBinaryFlag
@@ -178,15 +161,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getBufferLength
-  // ---------------------------------------------------------------------------------//
-
-  //  public int getBufferLength ()
-  //  {
-  //    return bufferLength;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // getDataLength
   // ---------------------------------------------------------------------------------//
 
@@ -208,22 +182,19 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // isLastBlock
   // ---------------------------------------------------------------------------------//
 
-  boolean isLastBlockOld ()
-  {
-    byte[] buffer = getBuffer ();       // expensive
-    int ptr = 0;
-    int dataLength = -1;
-    while (ptr < buffer.length)
-    {
-      dataLength = Utility.getTwoBytes (buffer, ptr + 10);
-      ptr += 12 + dataLength;
-    }
-    assert (isLastBlock == (dataLength == 0));
-    //      System.out.printf ("*****************  mismatch in lastBlock (%d)  %s%n", id,
-    //          isLastBlock);
-    return dataLength == 0;
-    //    return isLastBlock;
-  }
+  //  boolean isLastBlockOld ()
+  //  {
+  //    byte[] buffer = getBuffer ();       // expensive
+  //    int ptr = 0;
+  //    int dataLength = -1;
+  //    while (ptr < buffer.length)
+  //    {
+  //      dataLength = Utility.getTwoBytes (buffer, ptr + 10);
+  //      ptr += 12 + dataLength;
+  //    }
+  //    assert (isLastBlock == (dataLength == 0));
+  //    return dataLength == 0;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // listHeaders
@@ -233,10 +204,11 @@ public class BlockPointerList implements Iterable<BlockPointer>
   {
     StringBuilder text = new StringBuilder ();
     if (catalogEntry != null)
-      text.append (String.format ("Member        : %s%n", catalogEntry.getMemberName ()));
-    text.append (String.format ("Block pointers: %d%n", size ()));
-    text.append (String.format ("Buffer length : %d%n", bufferLength));
-    text.append (String.format ("Data length   : %d%n", dataLength));
+      text.append (String.format ("Member         : %s  %06X%n",
+          catalogEntry.getMemberName (), catalogEntry.getOffset ()));
+    text.append (String.format ("Block pointers : %d%n", size ()));
+    text.append (String.format ("Buffer length  : %06X  %<d%n", bufferLength));
+    text.append (String.format ("Data length    : %06X  %<d%n", dataLength));
 
     if (false)
     {
@@ -275,17 +247,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getWord
-  // ---------------------------------------------------------------------------------//
-
-  //  int getWord (byte[] buffer, int ptr)
-  //  {
-  //    int b = (buffer[ptr] & 0xFF) << 8;
-  //    int a = (buffer[ptr + 1] & 0xFF);
-  //    return a + b;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // size
   // ---------------------------------------------------------------------------------//
 
@@ -309,7 +270,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   byte[] getBuffer ()
   {
-    //    System.out.println ("Getting full buffer");
     byte[] fullBlock = new byte[bufferLength];
     int ptr = 0;
     for (BlockPointer blockPointer : blockPointers)
@@ -327,7 +287,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   byte[] getDataBuffer ()
   {
-    //    System.out.println ("Getting data buffer");
     byte[] fullBlock = new byte[dataLength];
     int ptr = 0;
     for (BlockPointer blockPointer : newList)
@@ -371,9 +330,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
   {
     StringBuilder text = new StringBuilder ();
 
-    //    text.append (String.format ("Buffer length: %04X  %<,8d%n", bufferLength));
-    //    text.append (
-    //        String.format ("Header length: %04X  %<,8d%n", bufferLength - dataLength));
     text.append (String.format ("Data length  : %04X  %<,8d%n", dataLength));
 
     int count = 0;

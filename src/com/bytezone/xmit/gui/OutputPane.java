@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.BlockPointerList;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.ControlRecord;
 import com.bytezone.xmit.Reader;
-import com.bytezone.xmit.Utility;
 
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
@@ -112,6 +112,19 @@ public class OutputPane extends BorderPane
         text.append (controlRecord.toString ());
         text.append ("\n");
       }
+
+      text.append ("Catalog Blocks:\n");
+      for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+      {
+        text.append (catalogEntry.debugLine ());
+        text.append ("\n");
+      }
+
+      text.append ("\nData Blocks:\n");
+      for (BlockPointerList bpl : reader.getDataBlockPointerLists ())
+        text.append (String.format ("%s%n", bpl.getList ()));
+
+      text.deleteCharAt (text.length () - 1);
       fileText.setText (text.toString ());
     }
   }
@@ -126,19 +139,25 @@ public class OutputPane extends BorderPane
       metaText.clear ();
     else if (catalogEntry == null)
       metaText.clear ();
-    else if (catalogEntry.isXmit ())
+    //    else if (catalogEntry.isXmit ())
+    //    {
+    //      StringBuilder text = new StringBuilder ();
+    //      text.append ("Xmit file\n\n");
+    //      byte[] buffer = catalogEntry.getXmitBuffer ();
+    //      int displayLength = Math.min (1024 * 10, buffer.length);
+    //      text.append (Utility.getHexDump (buffer, 0, displayLength));
+    //      if (displayLength < buffer.length)
+    //        text.append ("\n\n..." + (buffer.length - displayLength) + " further bytes");
+    //      metaText.setText (text.toString ());
+    //    }
+    else
     {
       StringBuilder text = new StringBuilder ();
-      text.append ("Xmit file\n\n");
-      byte[] buffer = catalogEntry.getXmitBuffer ();
-      int displayLength = Math.min (1024 * 10, buffer.length);
-      text.append (Utility.getHexDump (buffer, 0, displayLength));
-      if (displayLength < buffer.length)
-        text.append ("\n\n..." + (buffer.length - displayLength) + " further bytes");
+      if (catalogEntry.isXmit ())
+        text.append ("XMIT file\n\n");
+      text.append (catalogEntry.list ());
       metaText.setText (text.toString ());
     }
-    else
-      metaText.setText (catalogEntry.list ());
   }
 
   // ---------------------------------------------------------------------------------//

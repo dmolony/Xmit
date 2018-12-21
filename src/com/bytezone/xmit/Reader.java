@@ -9,7 +9,6 @@ import com.bytezone.xmit.textunit.TextUnitString;
 
 public class Reader
 {
-  //  private static String[] format = { "?", "V", "F", "U" };
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   List<ControlRecord> controlRecords = new ArrayList<> ();
@@ -21,6 +20,9 @@ public class Reader
 
   Dsorg.Org org;
   String fileName;
+  boolean isPDSE;
+  List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  int catalogEndBlock = 0;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -28,7 +30,6 @@ public class Reader
 
   public Reader (byte[] buffer)
   {
-    List<BlockPointerList> blockPointerLists = new ArrayList<> ();
     BlockPointerList currentBlockPointerList = null;
 
     boolean dumpRaw = false;
@@ -93,9 +94,11 @@ public class Reader
       case PDS:
         processPDS (blockPointerLists);
         break;
+
       case PS:
         processPS (blockPointerLists);
         break;
+
       default:
         System.out.println ("Unknown ORG: " + org);
     }
@@ -127,7 +130,6 @@ public class Reader
   void processPDS (List<BlockPointerList> blockPointerLists)
   {
     boolean inCatalog = true;
-    int catalogEndBlock = 0;
 
     for (int i = 2; i < blockPointerLists.size (); i++)
       if (inCatalog)
@@ -160,11 +162,11 @@ public class Reader
     }
 
     // check for PDSE
-    System.out.println ("First header:");
     BlockPointerList bpl2 = blockPointerLists.get (catalogEndBlock + 1);
 
     if (bpl2.headers.get (0)[0] == (byte) 0x88)
     {
+      isPDSE = true;
       int lastValue = 0;
       int currentMember = -1;
       for (int i = catalogEndBlock + 2; i < blockPointerLists.size (); i++)
@@ -247,6 +249,18 @@ public class Reader
   public List<CatalogEntry> getCatalogEntries ()
   {
     return catalogEntries;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getBlockPointerLists
+  // ---------------------------------------------------------------------------------//
+
+  public List<BlockPointerList> getDataBlockPointerLists ()
+  {
+    List<BlockPointerList> newList = new ArrayList<> ();
+    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+      newList.add (blockPointerLists.get (i));
+    return newList;
   }
 
   // ---------------------------------------------------------------------------------//

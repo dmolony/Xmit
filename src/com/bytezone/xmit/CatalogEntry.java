@@ -90,11 +90,18 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
     directoryData = new byte[extraLength];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
+  }
 
-    if (true)
-      System.out.printf ("%02X %-8s %06X %-129s %8s %8s%n", extra, getMemberName (),
-          blockFrom, Reader.getHexString (buffer, ptr + 12, length () - 12),
-          getUserName (), getAliasName ());
+  // ---------------------------------------------------------------------------------//
+  // debugLine
+  // ---------------------------------------------------------------------------------//
+
+  public String debugLine ()
+  {
+    return String.format ("%02X %-8s %06X %-129s %8s %8s", directoryData[11],
+        getMemberName (), blockFrom,
+        Reader.getHexString (directoryData, 12, directoryData.length - 12),
+        getUserName (), getAliasName ());
   }
 
   // ---------------------------------------------------------------------------------//
