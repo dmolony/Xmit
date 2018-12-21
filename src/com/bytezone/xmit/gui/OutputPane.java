@@ -7,6 +7,7 @@ import java.util.prefs.Preferences;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.ControlRecord;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.Utility;
 
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
@@ -125,6 +126,17 @@ public class OutputPane extends BorderPane
       metaText.clear ();
     else if (catalogEntry == null)
       metaText.clear ();
+    else if (catalogEntry.isXmit ())
+    {
+      StringBuilder text = new StringBuilder ();
+      text.append ("Xmit file\n\n");
+      byte[] buffer = catalogEntry.getXmitBuffer ();
+      int displayLength = Math.min (1024 * 10, buffer.length);
+      text.append (Utility.getHexDump (buffer, 0, displayLength));
+      if (displayLength < buffer.length)
+        text.append ("\n\n..." + (buffer.length - displayLength) + " further bytes");
+      metaText.setText (text.toString ());
+    }
     else
       metaText.setText (catalogEntry.list ());
   }

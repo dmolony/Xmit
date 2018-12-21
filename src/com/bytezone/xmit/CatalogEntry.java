@@ -91,7 +91,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     directoryData = new byte[extraLength];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    if (false)
+    if (true)
       System.out.printf ("%02X %-8s %06X %-129s %8s %8s%n", extra, getMemberName (),
           blockFrom, Reader.getHexString (buffer, ptr + 12, length () - 12),
           getUserName (), getAliasName ());
@@ -271,7 +271,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       if (blockPointerLists.size () == 0)
         return "No data";
 
-      if (blockPointerLists.get (0).isXmit ())
+      if (isXmit ())
         return xmitList ();
 
       if (blockPointerLists.size () > 200)
@@ -336,6 +336,13 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   //    }
   //  }
 
+  public boolean isXmit ()
+  {
+    if (blockPointerLists.size () == 0)
+      return false;
+    return blockPointerLists.get (0).isXmit ();
+  }
+
   // ---------------------------------------------------------------------------------//
   // xmitList
   // ---------------------------------------------------------------------------------//
@@ -365,7 +372,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // getXmitBuffer
   // ---------------------------------------------------------------------------------//
 
-  private byte[] getXmitBuffer ()
+  public byte[] getXmitBuffer ()
   {
     byte[] xmitBuffer = new byte[dataLength];
     int ptr = 0;
@@ -397,8 +404,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         text.append ("\n");
       }
       text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
-      text.append (" Member     User     Alias      Size     Date       Time\n");
-      text.append ("--------  --------  --------  ------  -----------  --------\n");
+      text.append (" Member     User      Size  Offset     Date        Time     Alias\n");
+      text.append (
+          "--------  --------  ------  ------  -----------  --------  --------\n");
       for (CatalogEntry catalogEntry : reader.catalogEntries)
         text.append (catalogEntry.toString () + "\n");
       text.deleteCharAt (text.length () - 1);
@@ -510,8 +518,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       text.append ("\n\n");
     }
 
-    text.deleteCharAt (text.length () - 1);
-    text.deleteCharAt (text.length () - 1);
+    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
   }
@@ -547,8 +555,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %8s  %8s  %,6d  %s  %s", memberName, userName, aliasName,
-        size, date1Text, time);
+    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %8s", memberName, userName, size,
+        blockFrom, date1Text, time, aliasName);
   }
 
   // ---------------------------------------------------------------------------------//

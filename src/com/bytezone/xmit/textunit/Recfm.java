@@ -9,6 +9,19 @@ public class Recfm extends TextUnit
 
   // seen: 0001, 4802, 9000
 
+  /*
+   * X'0001' Shortened VBS format used for transmission records
+   * X'xx02' Varying length records without the 4-byte header
+   * X'0200' Data includes machine code printer control characters
+   * X'0400' Data contains ASA printer control characters
+   * X'0800' Standard fixed records or spanned variable records
+   * X'1000' Blocked records
+   * X'2000' Track overflow or variable ASCII records
+   * X'4000' Variable-length records
+   * X'8000' Fixed-length records
+   * X'C000' Undefined records
+   */
+
   String type;
 
   public Recfm (byte[] buffer, int ptr)

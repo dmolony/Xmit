@@ -22,17 +22,6 @@ public class Reader
   Dsorg.Org org;
   String fileName;
 
-  //  __XMIheadr  = "E0C9D5D4D9F0F1"x    xxINMR01
-  //  __POEheadr  = "01CA6D0F"x
-  //  __PDSheadr  = "00CA6D0F"x
-  //  __R1offset  = 2
-  //  __R2offset  = 12
-
-  //  __ESDheadr  = "02C5E2C4"x
-  //  __TXTheadr  = "02E3E7E3"x
-  //  __RLDheadr_ = "02D9D3C4"x
-  //  __ENDheadr  = "02C5D5C4"x
-
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
@@ -153,25 +142,60 @@ public class Reader
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
 
+    System.out.printf ("%nSorted catalog entries:%n");
     Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
     for (CatalogEntry catalogEntry : sortedCatalogEntries)
+    {
+      System.out.println (catalogEntry);
       if (!offsets.containsKey (catalogEntry.getOffset ()))
         offsets.put (catalogEntry.getOffset (), catalogEntry);
+    }
 
+    System.out.printf ("%nUnique entries:%n");
     List<CatalogEntry> uniqueCatalogEntries = new ArrayList<> ();
-    for (CatalogEntry ce : offsets.values ())
-      uniqueCatalogEntries.add (ce);
-
-    // assign BlockPointerLists to CatalogEntries
-    int currentMember = 0;
-    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+    for (CatalogEntry catalogEntry : offsets.values ())
     {
-      BlockPointerList bpl = blockPointerLists.get (i);
-      CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
-      if (!ce.addBlockPointerList (bpl))
-        break;                                  // PDSE fails here
-      if (bpl.isLastBlock ())
-        ++currentMember;
+      System.out.println (catalogEntry);
+      uniqueCatalogEntries.add (catalogEntry);
+    }
+
+    // check for PDSE
+    System.out.println ("First header:");
+    BlockPointerList bpl2 = blockPointerLists.get (catalogEndBlock + 1);
+
+    if (bpl2.headers.get (0)[0] == (byte) 0x88)
+    {
+      int lastValue = 0;
+      int currentMember = -1;
+      for (int i = catalogEndBlock + 2; i < blockPointerLists.size (); i++)
+      {
+        BlockPointerList bpl = blockPointerLists.get (i);
+
+        int value = (int) Utility.getValue (bpl.headers.get (0), 6, 3);
+        if (lastValue != value)
+        {
+          ++currentMember;
+          lastValue = value;
+        }
+        CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
+        if (ce.getOffset () == value)
+          ce.addBlockPointerList (bpl);
+      }
+    }
+    else
+    {
+      // assign BlockPointerLists to CatalogEntries
+      int currentMember = 0;
+      for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+      {
+        BlockPointerList bpl = blockPointerLists.get (i);
+
+        CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
+        if (!ce.addBlockPointerList (bpl))
+          break;
+        if (bpl.isLastBlock ())
+          ++currentMember;
+      }
     }
   }
 

@@ -70,6 +70,7 @@ public class XmitApp extends Application
     splitPane.getItems ().addAll (xmitTree, xmitTable, outputPane);
 
     fileMenu = new FileMenu (this, xmitTree);
+    xmitTable.addListener (fileMenu);
 
     mainPane.setCenter (splitPane);
 

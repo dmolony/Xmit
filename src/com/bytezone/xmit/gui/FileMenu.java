@@ -1,6 +1,11 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import com.bytezone.xmit.CatalogEntry;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -10,13 +15,16 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.stage.FileChooser;
 
-class FileMenu
+class FileMenu implements TableItemSelectionListener
 {
   private final Menu fileMenu = new Menu ("File");
   private final MenuItem rootMenuItem = new MenuItem ("Set root folder");
+  private final MenuItem extractMenuItem = new MenuItem ("Extract file");
 
-  private final TreeView<File> tree;
+  private CatalogEntry catalogEntry;
+
   private Alert alert;
 
   // ---------------------------------------------------------------------------------//
@@ -25,13 +33,14 @@ class FileMenu
 
   public FileMenu (XmitApp owner, TreeView<File> tree)
   {
-    this.tree = tree;
-
-    fileMenu.getItems ().addAll (rootMenuItem);
+    fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem);
     rootMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+    extractMenuItem.setAccelerator (
+        new KeyCodeCombination (KeyCode.E, KeyCombination.SHORTCUT_DOWN));
 
     rootMenuItem.setOnAction (e -> owner.changeRootFolder ());
+    extractMenuItem.setOnAction (e -> extractFile ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -52,6 +61,40 @@ class FileMenu
   }
 
   // ---------------------------------------------------------------------------------//
+  // extractFile
+  // ---------------------------------------------------------------------------------//
+
+  private void extractFile ()
+  {
+    assert catalogEntry != null;
+
+    if (catalogEntry.isXmit ())
+    {
+      System.out.println ("Extracting XMIT file: " + catalogEntry.getMemberName ());
+      byte[] buffer = catalogEntry.getXmitBuffer ();
+
+      FileChooser fileChooser = new FileChooser ();
+      fileChooser.getExtensionFilters ()
+          .add (new FileChooser.ExtensionFilter ("XMIT files (*.xmi)", "*.xmi"));
+
+      File file = fileChooser.showSaveDialog (null);
+      if (file != null)
+        try
+        {
+          Files.write (Paths.get (file.getAbsolutePath ()), buffer);
+        }
+        catch (IOException e)
+        {
+          showAlert ("File Error: " + e.getMessage ());
+        }
+    }
+    else
+    {
+      System.out.println ("extract binary file");
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   // exit
   // ---------------------------------------------------------------------------------//
 
@@ -66,5 +109,25 @@ class FileMenu
   Menu getMenu ()
   {
     return fileMenu;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // tableItemSelected
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void tableItemSelected (CatalogEntry catalogEntry)
+  {
+    this.catalogEntry = catalogEntry;
+    if (catalogEntry == null)
+    {
+      extractMenuItem.setText ("Extract file");
+      extractMenuItem.setDisable (true);
+    }
+    else
+    {
+      extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
+      extractMenuItem.setDisable (false);
+    }
   }
 }

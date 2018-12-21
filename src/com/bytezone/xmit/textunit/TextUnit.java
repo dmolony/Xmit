@@ -10,7 +10,7 @@ public class TextUnit
   public static final int INMBLKSZ = 0x0030;
   public static final int INMCREAT = 0x1022;
   public static final int INMDDNAM = 0x0001;
-  public static final int INMDIR = 0x000C;
+  public static final int INMDIR = 0x000C;          // no of directory blocks
   public static final int INMDSNAM = 0x0002;
   public static final int INMDSORG = 0x003C;
   public static final int INMEATTR = 0x8028;
@@ -27,19 +27,19 @@ public class TextUnit
   public static final int INMLRECL = 0x0042;
   public static final int INMLREF = 0x1020;
 
-  public static final int INMLSIZE = 0x8018;
+  public static final int INMLSIZE = 0x8018;        // size of the file in MB
   public static final int INMMEMBR = 0x0003;
   public static final int INMNUMF = 0x102F;
   public static final int INMRECCT = 0x102A;
   public static final int INMRECFM = 0x0049;
   public static final int INMSECND = 0x000B;
-  public static final int INMSIZE = 0x102C;
+  public static final int INMSIZE = 0x102C;         // size of the file in bytes
   public static final int INMTERM = 0x0028;
   public static final int INMTNODE = 0x1001;
 
   public static final int INMTTIME = 0x1025;
   public static final int INMTUID = 0x1002;
-  public static final int INMTYPE = 0x8012;
+  public static final int INMTYPE = 0x8012;         // dataset type
   public static final int INMUSERP = 0x1029;
   public static final int INMUTILN = 0x1028;
 
@@ -73,6 +73,12 @@ public class TextUnit
   int keyId;
   List<Data> dataList;
   int length;
+
+  // INMTYPE
+  // X'80' Data library
+  // X'40' Program library
+  // X'04' Extended format sequential data set
+  // X'01' Large format sequential data set
 
   // ---------------------------------------------------------------------------------//
   // constructor

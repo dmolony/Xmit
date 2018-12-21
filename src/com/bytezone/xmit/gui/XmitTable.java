@@ -44,14 +44,14 @@ public class XmitTable extends TableView<CatalogEntryItem>
         .setCellFactory (stringCellFactory ("CENTER-LEFT"));
     addString ("User", "UserName", 100)
         .setCellFactory (stringCellFactory ("CENTER-LEFT"));
-    addString ("Alias", "AliasName", 100)
-        .setCellFactory (stringCellFactory ("CENTER-LEFT"));
     addNumber ("Size", "Size", 70).setCellFactory (numberCellFactory ());
     addLocalDate ("Created", "DateCreated", 100).setCellFactory (localDateCellFactory ());
     addLocalDate ("Modified", "DateModified", 100)
         .setCellFactory (localDateCellFactory ());
     addString ("Time", "Time", 80).setCellFactory (stringCellFactory ("CENTER"));
     addString ("Version", "Version", 80).setCellFactory (stringCellFactory ("CENTER"));
+    addString ("Alias", "AliasName", 100)
+        .setCellFactory (stringCellFactory ("CENTER-LEFT"));
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, newSelection) ->

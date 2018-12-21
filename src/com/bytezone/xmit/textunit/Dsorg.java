@@ -4,9 +4,9 @@ import com.bytezone.xmit.Utility;
 
 public class Dsorg extends TextUnit
 {
-  public final static int VSAM = 0x0008;
-  public final static int PDS = 0x0200;
-  public final static int PS = 0x4000;
+  public final static int VSAM = 0x0008;        // VSAM
+  public final static int PDS = 0x0200;         // partioned organisation
+  public final static int PS = 0x4000;          // physical sequential
 
   //  public enum Organisation
   //  {

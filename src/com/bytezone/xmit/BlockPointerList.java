@@ -65,13 +65,13 @@ public class BlockPointerList implements Iterable<BlockPointer>
       int ptr = blockPointer.offset;
       int avail = blockPointer.length;
 
-      if (debug)
-        System.out.println (blockPointer);
+      //      if (debug)
+      //        System.out.println (blockPointer);
 
       while (avail > 0)
       {
-        if (debug)
-          System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
+        //        if (debug)
+        //          System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
 
         if (recLen == 0)                // at a data header
         {
@@ -104,8 +104,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
             isLastBlock = true;
             break;
           }
-          if (debug)
-            System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
+          //          if (debug)
+          //            System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
         }
 
         int len = Math.min (recLen, avail);
@@ -114,21 +114,21 @@ public class BlockPointerList implements Iterable<BlockPointer>
         ptr += len;
         avail -= len;
         recLen -= len;
-        if (debug)
-          System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
+        //        if (debug)
+        //          System.out.printf ("        %06X  %3d  %3d%n", ptr, avail, recLen);
       }
     }
 
     for (BlockPointer blockPointer : newList)
       dataLength += blockPointer.length;
 
-    if (debug)
+    if (true)
     {
-      System.out.println ("new");
-      for (BlockPointer blockPointer : newList)
-        System.out.println (blockPointer);
+      //      for (BlockPointer blockPointer : newList)
+      //        System.out.println (blockPointer);
       for (byte[] header2 : headers)
         System.out.println (Utility.getHexDump (header2));
+      System.out.println ();
     }
   }
 
@@ -238,20 +238,28 @@ public class BlockPointerList implements Iterable<BlockPointer>
     text.append (String.format ("Buffer length : %d%n", bufferLength));
     text.append (String.format ("Data length   : %d%n", dataLength));
 
-    text.append ("\nOld list:\n");
-    for (BlockPointer blockPointer : blockPointers)
+    if (false)
     {
-      text.append (String.format ("%s%n", blockPointer));
-      text.append (Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
-      text.append ("\n");
+      text.append ("\nOld list:\n");
+      for (BlockPointer blockPointer : blockPointers)
+      {
+        text.append (String.format ("%s%n", blockPointer));
+        text.append (
+            Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
+        text.append ("\n");
+      }
     }
 
-    text.append ("\nNew list:\n");
-    for (BlockPointer blockPointer : newList)
+    if (false)
     {
-      text.append (String.format ("%s%n", blockPointer));
-      text.append (Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
-      text.append ("\n");
+      text.append ("\nNew list:\n");
+      for (BlockPointer blockPointer : newList)
+      {
+        text.append (String.format ("%s%n", blockPointer));
+        text.append (
+            Utility.getHexDump (buffer, blockPointer.offset, blockPointer.length));
+        text.append ("\n");
+      }
     }
 
     text.append ("\nHeaders:\n");
