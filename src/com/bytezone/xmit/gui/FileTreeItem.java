@@ -71,9 +71,12 @@ public class FileTreeItem extends TreeItem<File>
         ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
 
         for (File childFile : files)
+        {
+          String name = childFile.getName ().toUpperCase ();
           if (!childFile.isHidden () && (childFile.isDirectory ()
-              || childFile.getName ().toUpperCase ().endsWith (".XMI")))
+              || name.endsWith (".XMI") || name.endsWith (".XMIT")))
             children.add (new FileTreeItem (childFile));
+        }
 
         Collections.sort (children, comparator);
         return children;
