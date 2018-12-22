@@ -64,7 +64,7 @@ public class XmitApp extends Application
     xmitTree.addListener (outputPane);
 
     xmitTable = new XmitTable ();
-    xmitTable.addListener (outputPane);
+    //    xmitTable.addListener (outputPane);
     xmitTree.addListener (xmitTable);
 
     splitPane.getItems ().addAll (xmitTree, xmitTable, outputPane);
@@ -94,6 +94,7 @@ public class XmitApp extends Application
   private void restore ()
   {
     xmitTree.restore ();
+    xmitTable.addListener (outputPane);
     xmitTable.restore ();
     restoreWindowLocation ();
   }

@@ -75,13 +75,14 @@ public class ControlRecord
 
       case TextUnit.INMTYPE:
       case TextUnit.INMFACK:
-      case TextUnit.INMMEMBR:
         return new TextUnit (buffer, ptr);
+
+      case TextUnit.INMMEMBR:
+        return new Member (buffer, ptr);
 
       default:
         System.out.printf ("Unknown key: %04X%n", key);
         return new TextUnit (buffer, ptr);
-      //        return null;
     }
   }
 

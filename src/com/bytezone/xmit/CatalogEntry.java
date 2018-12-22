@@ -283,6 +283,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
       if (blockPointerLists.size () > 200)
         return partialDump ();
+
+      if (isRdw ())
+        return rdw ();
+
       if (blockPointerLists.get (0).isBinary ())
         return hexDump ();
 
@@ -323,28 +327,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // createLines
+  // isXmit
   // ---------------------------------------------------------------------------------//
-
-  // this should be able to build lines directly from the original buffer
-  //  private void createLines (BlockPointerList blockPointerList)
-  //  {
-  //    byte[] buffer = blockPointerList.getBuffer ();
-  //    int dataLength = Reader.getWord (buffer, 10);       // bpl.dataLength
-  //
-  //    int remainder = buffer.length - dataLength;
-  //    if (remainder != 12 && remainder != 24)
-  //      System.out.printf ("Unexpected remainder in %s: %d", memberName, remainder);
-  //
-  //    int ptr = 12;               // header
-  //    while (dataLength > 0)
-  //    {
-  //      int len = Math.min (80, dataLength);
-  //      lines.add (Reader.getString (buffer, ptr, len));
-  //      ptr += len;
-  //      dataLength -= len;
-  //    }
-  //  }
 
   public boolean isXmit ()
   {
@@ -354,28 +338,51 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // xmitList
+  // isRdw
   // ---------------------------------------------------------------------------------//
 
-  private byte[] getXmitBufferOld ()
+  boolean isRdw ()
   {
-    byte[] xmitBuffer = new byte[dataLength];
-    int fullPtr = 0;
-    for (BlockPointerList blockPointerList : blockPointerLists)
+    for (BlockPointerList bpl : blockPointerLists)
     {
-      byte[] data = blockPointerList.getBuffer ();
-      int ptr = 0;
+      byte[] buffer = bpl.getDataBuffer ();
+      if (buffer.length == 0)
+        continue;
 
-      while (ptr < data.length)
+      int len = Utility.getTwoBytes (buffer, 0);
+      if (len != buffer.length)
+        return false;
+    }
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // rdw
+  // ---------------------------------------------------------------------------------//
+
+  String rdw ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (BlockPointerList bpl : blockPointerLists)
+    {
+      byte[] buffer = bpl.getDataBuffer ();
+      if (buffer.length == 0)
+        continue;
+      int ptr = 4;
+
+      while (ptr < buffer.length)
       {
-        int dataLength = Utility.getTwoBytes (data, ptr + 10);
-        System.arraycopy (data, ptr + 12, xmitBuffer, fullPtr, dataLength);
-        fullPtr += dataLength;
-        ptr += 12 + dataLength;
+        int len = Utility.getTwoBytes (buffer, ptr);
+
+        String line = Reader.getString (buffer, ptr + 4, len - 4);
+        text.append (line + "\n");
+        ptr += len;
       }
     }
-    assert fullPtr == dataLength;
-    return xmitBuffer;
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

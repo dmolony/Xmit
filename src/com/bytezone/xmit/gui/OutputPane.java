@@ -1,6 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import java.io.File;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -15,7 +14,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 
@@ -202,15 +200,6 @@ public class OutputPane extends BorderPane
     this.reader = reader;
     catalogEntry = null;
     updateCurrentTab ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  //
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  public void treeItemExpanded (TreeItem<File> treeItem)
-  {
   }
 
   // ---------------------------------------------------------------------------------//

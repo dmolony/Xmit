@@ -1,6 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 
@@ -255,15 +253,6 @@ public class XmitTable extends TableView<CatalogEntryItem>
       select (selectedMembers.containsKey (reader)
           ? memberIndex (selectedMembers.get (reader)) : 0);
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // treeItemExpanded
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  public void treeItemExpanded (TreeItem<File> treeItem)
-  {
   }
 
   // ---------------------------------------------------------------------------------//
