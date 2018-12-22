@@ -285,7 +285,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         return partialDump ();
 
       if (isRdw ())
-        return rdw ();
+        return rdw (showLines);
 
       if (blockPointerLists.get (0).isBinary ())
         return hexDump ();
@@ -367,7 +367,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // rdw
   // ---------------------------------------------------------------------------------//
 
-  String rdw ()
+  String rdw (boolean showLines)
   {
     StringBuilder text = new StringBuilder ();
 
@@ -383,7 +383,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         int len = Utility.getTwoBytes (buffer, ptr);
 
         String line = Reader.getString (buffer, ptr + 4, len - 4);
-        text.append (line + "\n");
+        int count = 0;
+        if (showLines)
+          text.append (String.format ("%05d  %s%n", ++count, line));
+        else
+          text.append (String.format ("%s%n", line));
         ptr += len;
       }
     }
