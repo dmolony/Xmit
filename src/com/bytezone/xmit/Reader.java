@@ -83,15 +83,13 @@ public class Reader
       ptr += length;
     }
 
-    System.out.printf ("Control record blocks: %d%n", controlPointerLists.size ());
-    System.out.printf ("BlockP  record blocks: %d%n", blockPointerLists.size ());
+    //    System.out.printf ("Control record blocks: %d%n", controlPointerLists.size ());
+    //    System.out.printf ("BlockP  record blocks: %d%n", blockPointerLists.size ());
 
     for (BlockPointerList bpl : controlPointerLists)
     {
       ControlRecord cr = new ControlRecord (bpl.getBuffer ());
       controlRecords.add (cr);
-      //      if (cr.name.equals ("INMR06"))
-      //        break;
       if (cr.name.equals ("INMR02") && org == null)
       {
         org = getOrg ();
@@ -154,20 +152,20 @@ public class Reader
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
 
-    System.out.printf ("%nSorted catalog entries:%n");
+    //    System.out.printf ("%nSorted catalog entries:%n");
     Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
     for (CatalogEntry catalogEntry : sortedCatalogEntries)
     {
-      System.out.println (catalogEntry);
+      //      System.out.println (catalogEntry);
       if (!offsets.containsKey (catalogEntry.getOffset ()))
         offsets.put (catalogEntry.getOffset (), catalogEntry);
     }
 
-    System.out.printf ("%nUnique entries:%n");
+    //    System.out.printf ("%nUnique entries:%n");
     List<CatalogEntry> uniqueCatalogEntries = new ArrayList<> ();
     for (CatalogEntry catalogEntry : offsets.values ())
     {
-      System.out.println (catalogEntry);
+      //      System.out.println (catalogEntry);
       uniqueCatalogEntries.add (catalogEntry);
     }
 
