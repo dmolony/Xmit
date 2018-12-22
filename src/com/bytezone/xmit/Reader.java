@@ -37,7 +37,8 @@ public class Reader
 
     int ptr = 0;
     int count = 0;
-    while (ptr < buffer.length)
+    boolean eof = false;
+    while (!eof && ptr < buffer.length)
     {
       int length = buffer[ptr] & 0xFF;
       byte flags = buffer[ptr + 1];
@@ -59,7 +60,7 @@ public class Reader
         System.out.println (Utility.getHexDump (buffer, ptr, length));
         System.out.println ();
         if (matches (INMR06, buffer, ptr))
-          return;
+          eof = true;
         ptr += length;
         continue;
       }
@@ -70,7 +71,7 @@ public class Reader
         if (controlRecord)
         {
           if (matches (INMR06, buffer, ptr))
-            break;
+            eof = true;
           controlPointerLists.add (currentBlockPointerList);
         }
         else
@@ -394,6 +395,10 @@ public class Reader
 
   public static String getString (byte[] buffer, int ptr, int length)
   {
+    //    System.out.printf ("Ptr: %06X  Len: %06X  Buffer: %06X%n", ptr, length,
+    //        buffer.length);
+    //    if (ptr + length > buffer.length)
+    //      return "no buffer";
     assert ptr + length <= buffer.length;
 
     StringBuilder text = new StringBuilder ();

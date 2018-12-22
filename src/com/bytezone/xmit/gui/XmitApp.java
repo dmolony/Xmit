@@ -71,6 +71,7 @@ public class XmitApp extends Application
 
     fileMenu = new FileMenu (this, xmitTree);
     xmitTable.addListener (fileMenu);
+    xmitTable.addListener (outputPane);
 
     mainPane.setCenter (splitPane);
 
@@ -94,7 +95,6 @@ public class XmitApp extends Application
   private void restore ()
   {
     xmitTree.restore ();
-    xmitTable.addListener (outputPane);
     xmitTable.restore ();
     restoreWindowLocation ();
   }
@@ -248,56 +248,4 @@ public class XmitApp extends Application
   {
     Application.launch (args);
   }
-
-  // ---------------------------------------------------------------------------------//
-  // treeItemSelected
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  public void treeItemSelected (Reader reader)
-  //  {
-  //    this.reader = reader;
-  //    List<CatalogEntry> catalogEntries = reader.getCatalogEntries ();
-  //    if (catalogEntries.size () == 0)
-  //    {
-  //      //      listView.getItems ().clear ();
-  //    }
-  //    else
-  //    {
-  //      ObservableList<String> items = FXCollections.observableArrayList ();
-  //      for (CatalogEntry catalogEntry : catalogEntries)
-  //        items.add (catalogEntry.getMemberName ());
-  //      listView.setItems (items);
-  //      if (selectedMembers.containsKey (reader))
-  //      {
-  //        String member = selectedMembers.get (reader);
-  //        listView.scrollTo (member);
-  //        listView.getSelectionModel ().select (member);
-  //      }
-  //      else
-  //      {
-  //        listView.scrollTo (0);
-  //        listView.getSelectionModel ().select (0);
-  //      }
-  //    }
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // treeItemExpanded
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  public void treeItemExpanded (TreeItem<File> treeItem)
-  //  {
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // memberSelected
-  // ---------------------------------------------------------------------------------//
-
-  //  void memberSelected (String memberName)
-  //  {
-  //    outputPane.memberSelected (memberName);
-  //    selectedMembers.put (reader, memberName);
-  //  }
 }

@@ -32,28 +32,19 @@ public class BlockPointerList implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // add
+  // addSegment
   // ---------------------------------------------------------------------------------//
 
   public void addSegment (boolean firstSegment, boolean lastSegment,
       BlockPointer blockPointer)
   {
-    if (blockPointer.offset + blockPointer.length >= buffer.length)
+    if (blockPointer.offset + blockPointer.length > buffer.length)
     {
       System.out.println ("invalid block pointer");
       return;
     }
     blockPointers.add (blockPointer);
     bufferLength += blockPointer.length;                // used for non-data blocks
-
-    if (blockPointers.size () == 1)                     // first segment
-    {
-      assert firstSegment;
-
-      // these should only be set in build()
-      setBinaryFlag (blockPointer);
-      sortKey = buffer[blockPointer.offset + 8];        // used for data blocks
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -62,6 +53,9 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   void build ()                       // used only for data blocks
   {
+    setBinaryFlag (blockPointers.get (0));
+    sortKey = buffer[blockPointers.get (0).offset + 8];
+
     int recLen = 0;
     int headerPtr = 0;
     byte[] header = null;
@@ -140,7 +134,10 @@ public class BlockPointerList implements Iterable<BlockPointer>
   {
     for (int i = 0; i < 10; i++)
     {
-      int b = buffer[blockPointer.offset + 12 + i] & 0xFF;
+      int ptr = blockPointer.offset + 12 + i;
+      if (ptr >= buffer.length)
+        break;
+      int b = buffer[ptr] & 0xFF;
       if (b < 0x40 || b == 0xFF)
       {
         isBinary = true;
@@ -184,24 +181,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
   {
     return isLastBlock;
   }
-
-  // ---------------------------------------------------------------------------------//
-  // isLastBlock
-  // ---------------------------------------------------------------------------------//
-
-  //  boolean isLastBlockOld ()
-  //  {
-  //    byte[] buffer = getBuffer ();       // expensive
-  //    int ptr = 0;
-  //    int dataLength = -1;
-  //    while (ptr < buffer.length)
-  //    {
-  //      dataLength = Utility.getTwoBytes (buffer, ptr + 10);
-  //      ptr += 12 + dataLength;
-  //    }
-  //    assert (isLastBlock == (dataLength == 0));
-  //    return dataLength == 0;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // listHeaders
