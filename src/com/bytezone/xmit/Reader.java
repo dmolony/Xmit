@@ -152,14 +152,17 @@ public class Reader
     boolean inCatalog = true;
 
     for (int i = 2; i < blockPointerLists.size (); i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
       if (inCatalog)
       {
-        inCatalog = addCatalogEntries (blockPointerLists.get (i).getBuffer ());
+        inCatalog = addCatalogEntries (bpl.getBuffer ());
         if (!inCatalog)
           catalogEndBlock = i;
       }
       else
-        blockPointerLists.get (i).build ();       // create new BlockPointers
+        bpl.build ();       // create new BlockPointers
+    }
 
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);

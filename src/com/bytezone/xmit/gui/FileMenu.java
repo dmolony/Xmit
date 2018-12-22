@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -17,13 +18,14 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
-class FileMenu implements TableItemSelectionListener
+class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 {
   private final Menu fileMenu = new Menu ("File");
   private final MenuItem rootMenuItem = new MenuItem ("Set root folder");
   private final MenuItem extractMenuItem = new MenuItem ("Extract file");
 
   private CatalogEntry catalogEntry;
+  private Reader reader;
 
   private Alert alert;
 
@@ -131,5 +133,15 @@ class FileMenu implements TableItemSelectionListener
       extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
       extractMenuItem.setDisable (false);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // treeItemSelected
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void treeItemSelected (Reader reader)
+  {
+    this.reader = reader;
   }
 }

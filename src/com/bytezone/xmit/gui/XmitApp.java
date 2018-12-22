@@ -23,18 +23,17 @@ public class XmitApp extends Application
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
   private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
-  //  private static final String PREFS_MEMBER_INDEX = "MemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private String rootFolderName;
   private Path rootFolderPath;
 
   private Stage primaryStage;
-  private final BorderPane mainPane = new BorderPane ();
   private final OutputPane outputPane = new OutputPane ();
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
+  private ViewMenu viewMenu;
 
   SplitPane splitPane = new SplitPane ();
   private double dividerPosition1;
@@ -64,21 +63,24 @@ public class XmitApp extends Application
     xmitTree.addListener (outputPane);
 
     xmitTable = new XmitTable ();
-    //    xmitTable.addListener (outputPane);
     xmitTree.addListener (xmitTable);
 
     splitPane.getItems ().addAll (xmitTree, xmitTable, outputPane);
 
     fileMenu = new FileMenu (this, xmitTree);
+    viewMenu = new ViewMenu (this, xmitTree);
+    xmitTree.addListener (fileMenu);
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (outputPane);
+    viewMenu.addListener (outputPane);
 
+    BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
 
     // add menus
     mainPane.setTop (menuBar);
     ObservableList<Menu> menus = menuBar.getMenus ();
-    menus.add (fileMenu.getMenu ());
+    menus.addAll (fileMenu.getMenu (), viewMenu.getMenu ());
 
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
@@ -96,6 +98,8 @@ public class XmitApp extends Application
   {
     xmitTree.restore ();
     xmitTable.restore ();
+    viewMenu.restore ();
+
     restoreWindowLocation ();
   }
 
@@ -183,6 +187,7 @@ public class XmitApp extends Application
     xmitTable.exit ();
 
     fileMenu.exit ();
+    viewMenu.exit ();
     outputPane.exit ();
 
     Platform.exit ();

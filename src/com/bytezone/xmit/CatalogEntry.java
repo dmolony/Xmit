@@ -269,7 +269,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // getText
   // ---------------------------------------------------------------------------------//
 
-  public String getText ()
+  public String getText (boolean showLines)
   {
     if (lines.size () == 0)
     {
@@ -300,10 +300,16 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
+
     for (String line : lines)
-      text.append (String.format ("%05d0 %s%n", ++lineNo, line));
+      if (showLines)
+        text.append (String.format ("%05d %s%n", ++lineNo, line));
+      else
+        text.append (String.format ("%s%n", line));
+
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
+
     return text.toString ();
   }
 
