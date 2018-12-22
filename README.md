@@ -3,8 +3,11 @@
 View the contents of XMIT files.
 
 ### Sample screens
+#### Mac
 ![Mac](resources/xmitosx.png?raw=true "Mac")
+#### Windows
 ![Windows](resources/xmitwin.png?raw=true "Windows")
+#### Linux
 ![Linux](resources/xmitlinux.png?raw=true "Linux")
 
 ### Installation
