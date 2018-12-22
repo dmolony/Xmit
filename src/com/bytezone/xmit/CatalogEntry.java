@@ -29,7 +29,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   private int dataLength;
 
-  private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
+  //  private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -256,7 +256,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       return false;
     }
 
-    logicalBuffer.addBlockPointerList (blockPointerList);
+    //    logicalBuffer.addBlockPointerList (blockPointerList);
 
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
@@ -287,8 +287,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         return hexDump ();
 
       for (BlockPointerList blockPointerList : blockPointerLists)
-        //        createLines (blockPointerList);
+      {
         createDataLines (blockPointerList);
+        if (blockPointerList.isLastBlock ())        // PDSEs end early
+          break;
+      }
     }
 
     StringBuilder text = new StringBuilder ();

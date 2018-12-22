@@ -21,6 +21,7 @@ public class Reader
   Dsorg.Org org;
   String fileName;
   boolean isPDSE;
+  List<BlockPointerList> controlPointerLists = new ArrayList<> ();
   List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   int catalogEndBlock = 0;
 
@@ -63,30 +64,39 @@ public class Reader
         continue;
       }
 
-      if (controlRecord)
+      if (firstSegment)
       {
-        ControlRecord cr = new ControlRecord (buffer, ptr + 2, length - 2);
-        controlRecords.add (cr);
-        if (cr.name.equals ("INMR06"))
-          break;
-        if (cr.name.equals ("INMR02") && org == null)
+        currentBlockPointerList = new BlockPointerList (buffer, count++);
+        if (controlRecord)
         {
-          org = getOrg ();
-          fileName = getFileName (cr);
+          if (matches (INMR06, buffer, ptr))
+            break;
+          controlPointerLists.add (currentBlockPointerList);
         }
-      }
-      else
-      {
-        if (firstSegment)
-        {
-          currentBlockPointerList = new BlockPointerList (buffer, count++);
+        else
           blockPointerLists.add (currentBlockPointerList);
-        }
-
-        currentBlockPointerList.add (new BlockPointer (buffer, ptr + 2, length - 2));
       }
+
+      currentBlockPointerList.addSegment (firstSegment, lastSegment,
+          new BlockPointer (buffer, ptr + 2, length - 2));
 
       ptr += length;
+    }
+
+    System.out.printf ("Control record blocks: %d%n", controlPointerLists.size ());
+    System.out.printf ("BlockP  record blocks: %d%n", blockPointerLists.size ());
+
+    for (BlockPointerList bpl : controlPointerLists)
+    {
+      ControlRecord cr = new ControlRecord (bpl.getBuffer ());
+      controlRecords.add (cr);
+      //      if (cr.name.equals ("INMR06"))
+      //        break;
+      if (cr.name.equals ("INMR02") && org == null)
+      {
+        org = getOrg ();
+        fileName = getFileName (cr);
+      }
     }
 
     switch (org)
@@ -283,7 +293,7 @@ public class Reader
 
   static boolean matches (byte[] key, byte[] buffer, int ptr)
   {
-    if (ptr + key.length > buffer.length)
+    if (ptr + key.length >= buffer.length)
       return false;
 
     for (int i = 0; i < key.length; i++)

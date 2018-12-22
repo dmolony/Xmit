@@ -8,7 +8,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
 {
   private final int id;
   private CatalogEntry catalogEntry;
-  final List<BlockPointer> blockPointers = new ArrayList<> ();
   private final byte[] buffer;          // all block pointers refer to this
   private int bufferLength;
 
@@ -16,9 +15,11 @@ public class BlockPointerList implements Iterable<BlockPointer>
   private boolean isBinary;
   private byte sortKey;
 
-  private List<BlockPointer> newList;
-  boolean isLastBlock = false;
-  List<byte[]> headers = new ArrayList<> ();
+  private final List<BlockPointer> blockPointers = new ArrayList<> ();
+  private final List<BlockPointer> newList = new ArrayList<> ();
+
+  private boolean isLastBlock = false;
+  final List<byte[]> headers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -34,13 +35,22 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // add
   // ---------------------------------------------------------------------------------//
 
-  public void add (BlockPointer blockPointer)
+  public void addSegment (boolean firstSegment, boolean lastSegment,
+      BlockPointer blockPointer)
   {
-    blockPointers.add (blockPointer);
-    bufferLength += blockPointer.length;                // used for catalog blocks
-
-    if (blockPointers.size () == 1)
+    if (blockPointer.offset + blockPointer.length >= buffer.length)
     {
+      System.out.println ("invalid block pointer");
+      return;
+    }
+    blockPointers.add (blockPointer);
+    bufferLength += blockPointer.length;                // used for non-data blocks
+
+    if (blockPointers.size () == 1)                     // first segment
+    {
+      assert firstSegment;
+
+      // these should only be set in build()
       setBinaryFlag (blockPointer);
       sortKey = buffer[blockPointer.offset + 8];        // used for data blocks
     }
@@ -53,9 +63,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
   void build ()                       // used only for data blocks
   {
     int recLen = 0;
-    isLastBlock = false;
-    newList = new ArrayList<> ();
-
     int headerPtr = 0;
     byte[] header = null;
 

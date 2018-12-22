@@ -28,7 +28,7 @@ public class TextUnit
   public static final int INMLREF = 0x1020;
 
   public static final int INMLSIZE = 0x8018;        // size of the file in MB
-  public static final int INMMEMBR = 0x0003;
+  public static final int INMMEMBR = 0x0003;        // Member name list
   public static final int INMNUMF = 0x102F;
   public static final int INMRECCT = 0x102A;
   public static final int INMRECFM = 0x0049;
@@ -89,6 +89,7 @@ public class TextUnit
     int key = Utility.getTwoBytes (buffer, ptr);
     int number = Utility.getTwoBytes (buffer, ptr + 2);
     dataList = new ArrayList<> (number);
+    //    System.out.println (Utility.getHexDump (buffer, ptr, 20));
 
     ptr += 4;
     for (int i = 0; i < number; i++)
@@ -107,7 +108,7 @@ public class TextUnit
       }
 
     if (keyId == 0)
-      System.out.printf ("Unknown key: %04X%n", key);
+      System.out.printf ("Unknown key:: %04X%n", key);
   }
 
   String getString ()
@@ -127,6 +128,18 @@ public class TextUnit
   public boolean matches (int keyId)
   {
     return keys[this.keyId] == keyId;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // findKey
+  // ---------------------------------------------------------------------------------//
+
+  private boolean findKey (int keyId)
+  {
+    for (int key : keys)
+      if (key == keyId)
+        return true;
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

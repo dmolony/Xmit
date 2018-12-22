@@ -14,13 +14,12 @@ public class ControlRecord
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public ControlRecord (byte[] buffer, int ptr, int length)
+  public ControlRecord (byte[] buffer)
   {
+    int ptr = 0;
     name = Reader.getString (buffer, ptr, 6);
-    int max = ptr + length;
+    int max = ptr + buffer.length;
     ptr += 6;
-
-    //    System.out.printf ("%s", name);
 
     if ("INMR02".equals (name))
     {
@@ -29,17 +28,19 @@ public class ControlRecord
       ptr += 4;
     }
 
-    //    System.out.println ();
-
     while (ptr < max)
     {
       TextUnit textUnit = createTextUnit (buffer, ptr);
+      if (textUnit == null)
+        break;
       textUnits.add (textUnit);
-      //      System.out.println ("   " + textUnit);
       ptr += 4 + textUnit.length ();
     }
-    //    System.out.println ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  // createTextUnit
+  // ---------------------------------------------------------------------------------//
 
   private TextUnit createTextUnit (byte[] buffer, int ptr)
   {
@@ -72,8 +73,15 @@ public class ControlRecord
       case TextUnit.INMDSORG:
         return new Dsorg (buffer, ptr);
 
-      default:
+      case TextUnit.INMTYPE:
+      case TextUnit.INMFACK:
+      case TextUnit.INMMEMBR:
         return new TextUnit (buffer, ptr);
+
+      default:
+        System.out.printf ("Unknown key: %04X%n", key);
+        return new TextUnit (buffer, ptr);
+      //        return null;
     }
   }
 
@@ -89,6 +97,10 @@ public class ControlRecord
 
     return null;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // toString
+  // ---------------------------------------------------------------------------------//
 
   @Override
   public String toString ()
