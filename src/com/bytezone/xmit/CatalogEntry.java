@@ -29,8 +29,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   private int dataLength;
 
-  //  private final LogicalBuffer logicalBuffer = new LogicalBuffer ();
-
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
@@ -256,8 +254,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       return false;
     }
 
-    //    logicalBuffer.addBlockPointerList (blockPointerList);
-
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
 
@@ -465,9 +461,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
       {
-        //        byte[] buffer = bpl.getBuffer ();
-        //        int length = Reader.getWord (buffer, 10);
-        //        text.append (Utility.toHex (buffer, 12, length));
         text.append (Utility.getHexDump (bpl.getDataBuffer ()));
         text.append ("\n\n");
       }
