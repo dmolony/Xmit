@@ -416,7 +416,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private String xmitList ()
   {
     StringBuilder text = new StringBuilder ();
-    text.append ("XMIT file:\n\n");
+    //    text.append ("XMIT file:\n\n");
     byte[] xmitBuffer = getXmitBuffer ();
     try
     {
@@ -493,18 +493,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     if (blockPointerLists.get (0).isXmit ())
       text.append ("Appears to be XMIT\n\n");
 
-    //    for (int i = 0; i < max; i++)
-    //    {
-    //      BlockPointerList bpl = blockPointerLists.get (i);
-    //      if (bpl.getDataLength () > 0)
-    //      {
-    //        byte[] buffer = bpl.getBuffer ();
-    //        int length = Reader.getWord (buffer, 10);
-    //        text.append (Utility.toHex (buffer, 12, length));
-    //        if (i < max - 1)
-    //          text.append ("\n\n");
-    //      }
-    //    }
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);

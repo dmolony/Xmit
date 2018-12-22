@@ -73,12 +73,12 @@ public class ControlRecord
       case TextUnit.INMDSORG:
         return new Dsorg (buffer, ptr);
 
+      case TextUnit.INMMEMBR:
+        return new Member (buffer, ptr);
+
       case TextUnit.INMTYPE:
       case TextUnit.INMFACK:
         return new TextUnit (buffer, ptr);
-
-      case TextUnit.INMMEMBR:
-        return new Member (buffer, ptr);
 
       default:
         System.out.printf ("Unknown key: %04X%n", key);

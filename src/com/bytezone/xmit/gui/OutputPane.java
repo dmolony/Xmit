@@ -138,22 +138,11 @@ public class OutputPane extends BorderPane
       metaText.clear ();
     else if (catalogEntry == null)
       metaText.clear ();
-    //    else if (catalogEntry.isXmit ())
-    //    {
-    //      StringBuilder text = new StringBuilder ();
-    //      text.append ("Xmit file\n\n");
-    //      byte[] buffer = catalogEntry.getXmitBuffer ();
-    //      int displayLength = Math.min (1024 * 10, buffer.length);
-    //      text.append (Utility.getHexDump (buffer, 0, displayLength));
-    //      if (displayLength < buffer.length)
-    //        text.append ("\n\n..." + (buffer.length - displayLength) + " further bytes");
-    //      metaText.setText (text.toString ());
-    //    }
     else
     {
       StringBuilder text = new StringBuilder ();
-      if (catalogEntry.isXmit ())
-        text.append ("XMIT file\n\n");
+      //      if (catalogEntry.isXmit ())
+      //        text.append ("XMIT file\n\n");
       text.append (catalogEntry.list ());
       metaText.setText (text.toString ());
     }

@@ -2,7 +2,6 @@ package com.bytezone.xmit;
 
 import java.util.*;
 
-import com.bytezone.xmit.textunit.Dsnam;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitString;
@@ -18,8 +17,6 @@ public class Reader
   private final byte[] INMR06 = { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5,
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
-  Dsorg.Org org;
-  String fileName;
   boolean isPDSE;
   List<BlockPointerList> controlPointerLists = new ArrayList<> ();
   List<BlockPointerList> blockPointerLists = new ArrayList<> ();
@@ -84,21 +81,12 @@ public class Reader
       ptr += length;
     }
 
-    //    System.out.printf ("Control record blocks: %d%n", controlPointerLists.size ());
-    //    System.out.printf ("BlockP  record blocks: %d%n", blockPointerLists.size ());
-
     for (BlockPointerList bpl : controlPointerLists)
-    {
-      ControlRecord cr = new ControlRecord (bpl.getBuffer ());
-      controlRecords.add (cr);
-      if (cr.name.equals ("INMR02") && org == null)
-      {
-        org = getOrg ();
-        fileName = getFileName (cr);
-      }
-    }
+      controlRecords.add (new ControlRecord (bpl.getBuffer ()));
 
-    switch (org)
+    System.out.println (getControlRecordString (TextUnit.INMDSNAM));
+
+    switch (getOrg ())
     {
       case PDS:
         processPDS (blockPointerLists);
@@ -109,7 +97,7 @@ public class Reader
         break;
 
       default:
-        System.out.println ("Unknown ORG: " + org);
+        System.out.println ("Unknown ORG: " + getOrg ());
     }
   }
 
@@ -128,7 +116,7 @@ public class Reader
 
   void processPS (List<BlockPointerList> blockPointerLists)
   {
-    if (blockPointerLists.size () > 100)
+    if (blockPointerLists.size () > 600)
     {
       lines.add (String.format ("File contains %,d BlockPointerLists",
           blockPointerLists.size ()));
@@ -336,34 +324,77 @@ public class Reader
   // getOrg
   // ---------------------------------------------------------------------------------//
 
-  Dsorg.Org getOrg ()
+  private Dsorg.Org getOrg ()
   {
-    for (ControlRecord controlRecord : controlRecords)
-      if (controlRecord.name.equals ("INMR02"))
-      {
-        TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
-        if (textUnit == null)
-          System.out.println ("text unit not found");
-        else if (((TextUnitString) textUnit).getString ().equals ("IEBCOPY")
-            || ((TextUnitString) textUnit).getString ().equals ("INMCOPY"))
-        {
-          Dsorg dsorg = (Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG);
-          return dsorg.type;
-        }
-      }
+    Optional<ControlRecord> opt =
+        getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
+    if (!opt.isPresent ())
+      opt = getControlRecord ("INMR02", TextUnit.INMUTILN, "INMCOPY");
+    if (opt.isPresent ())
+    {
+      ControlRecord controlRecord = opt.get ();
+      return ((Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG)).type;
+    }
 
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getControlRecord
+  // ---------------------------------------------------------------------------------//
+
+  private Optional<ControlRecord> getControlRecord (String stepName, int key,
+      String value)
+  {
+    for (ControlRecord controlRecord : controlRecords)
+      if (controlRecord.name.equals (stepName))
+      {
+        TextUnit textUnit = controlRecord.getTextUnit (key);
+        if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
+          return Optional.of (controlRecord);
+      }
+    return Optional.empty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getControlRecord
+  // ---------------------------------------------------------------------------------//
+
+  Optional<ControlRecord> getControlRecord (int key, String value)
+  {
+    for (ControlRecord controlRecord : controlRecords)
+    {
+      TextUnit textUnit = controlRecord.getTextUnit (key);
+      if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
+        return Optional.of (controlRecord);
+    }
+    return Optional.empty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getControlRecordString
+  // ---------------------------------------------------------------------------------//
+
+  String getControlRecordString (int key)
+  {
+    for (ControlRecord controlRecord : controlRecords)
+    {
+      TextUnit textUnit = controlRecord.getTextUnit (key);
+      if (textUnit != null && textUnit instanceof TextUnitString)
+        return ((TextUnitString) textUnit).getString ();
+    }
+    return "";
   }
 
   // ---------------------------------------------------------------------------------//
   // getFileName
   // ---------------------------------------------------------------------------------//
 
-  String getFileName (ControlRecord controlRecord)
-  {
-    TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSNAM);
-    return textUnit == null ? "" : ((Dsnam) textUnit).datasetName;
-  }
+  //  String getFileName (ControlRecord controlRecord)
+  //  {
+  //    TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSNAM);
+  //    return textUnit == null ? "" : ((Dsnam) textUnit).datasetName;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // printHex
@@ -398,10 +429,6 @@ public class Reader
 
   public static String getString (byte[] buffer, int ptr, int length)
   {
-    //    System.out.printf ("Ptr: %06X  Len: %06X  Buffer: %06X%n", ptr, length,
-    //        buffer.length);
-    //    if (ptr + length > buffer.length)
-    //      return "no buffer";
     assert ptr + length <= buffer.length;
 
     StringBuilder text = new StringBuilder ();

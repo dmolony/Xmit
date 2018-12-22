@@ -1,6 +1,6 @@
 package com.bytezone.xmit.textunit;
 
-public class Dsnam extends TextUnit
+public class Dsnam extends TextUnitString
 {
   public final String datasetName;
 
@@ -16,6 +16,16 @@ public class Dsnam extends TextUnit
     }
     text.deleteCharAt (text.length () - 1);
     datasetName = text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public String getString ()
+  {
+    return datasetName;
   }
 
   // ---------------------------------------------------------------------------------//
