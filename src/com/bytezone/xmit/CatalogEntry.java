@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.textunit.Dsorg;
+
 public class CatalogEntry implements Comparable<CatalogEntry>
 {
   private final String memberName;
@@ -340,6 +342,65 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getXmitBuffer
+  // ---------------------------------------------------------------------------------//
+
+  public byte[] getXmitBuffer ()
+  {
+    byte[] xmitBuffer = new byte[dataLength];
+    int ptr = 0;
+    for (BlockPointerList blockPointerList : blockPointerLists)
+    {
+      byte[] dataBuffer = blockPointerList.getDataBuffer ();
+      System.arraycopy (dataBuffer, 0, xmitBuffer, ptr, dataBuffer.length);
+      ptr += dataBuffer.length;
+    }
+    assert ptr == dataLength;
+    return xmitBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // xmitList
+  // ---------------------------------------------------------------------------------//
+
+  private String xmitList ()
+  {
+    StringBuilder text = new StringBuilder ();
+    //    text.append ("XMIT file:\n\n");
+    byte[] xmitBuffer = getXmitBuffer ();
+    try
+    {
+      Reader reader = new Reader (xmitBuffer);
+      for (ControlRecord controlRecord : reader.controlRecords)
+      {
+        text.append (controlRecord);
+        text.append ("\n");
+      }
+
+      if (reader.getOrg () == Dsorg.Org.PDS)
+      {
+        text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
+        text.append (
+            " Member     User      Size  Offset     Date        Time     Alias\n");
+        text.append (
+            "--------  --------  ------  ------  -----------  --------  --------\n");
+        for (CatalogEntry catalogEntry : reader.catalogEntries)
+          text.append (catalogEntry.toString () + "\n");
+        text.deleteCharAt (text.length () - 1);
+      }
+    }
+    catch (Exception e)
+    {
+      text.append ("Data length: " + dataLength + "\n");
+      text.append (e.getMessage ());
+      text.append ("\n\n");
+      text.append (Utility.getHexDump (xmitBuffer));
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   // isRdw
   // ---------------------------------------------------------------------------------//
 
@@ -386,60 +447,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
           text.append (String.format ("%s%n", line));
         ptr += len;
       }
-    }
-
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getXmitBuffer
-  // ---------------------------------------------------------------------------------//
-
-  public byte[] getXmitBuffer ()
-  {
-    byte[] xmitBuffer = new byte[dataLength];
-    int ptr = 0;
-    for (BlockPointerList blockPointerList : blockPointerLists)
-    {
-      byte[] dataBuffer = blockPointerList.getDataBuffer ();
-      System.arraycopy (dataBuffer, 0, xmitBuffer, ptr, dataBuffer.length);
-      ptr += dataBuffer.length;
-    }
-    assert ptr == dataLength;
-    return xmitBuffer;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // xmitList
-  // ---------------------------------------------------------------------------------//
-
-  private String xmitList ()
-  {
-    StringBuilder text = new StringBuilder ();
-    //    text.append ("XMIT file:\n\n");
-    byte[] xmitBuffer = getXmitBuffer ();
-    try
-    {
-      Reader reader = new Reader (xmitBuffer);
-      for (ControlRecord controlRecord : reader.controlRecords)
-      {
-        text.append (controlRecord);
-        text.append ("\n");
-      }
-      text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
-      text.append (" Member     User      Size  Offset     Date        Time     Alias\n");
-      text.append (
-          "--------  --------  ------  ------  -----------  --------  --------\n");
-      for (CatalogEntry catalogEntry : reader.catalogEntries)
-        text.append (catalogEntry.toString () + "\n");
-      text.deleteCharAt (text.length () - 1);
-    }
-    catch (Exception e)
-    {
-      text.append ("Data length: " + dataLength + "\n");
-      text.append (e.getMessage ());
-      text.append ("\n\n");
-      text.append (Utility.getHexDump (xmitBuffer));
     }
 
     return text.toString ();

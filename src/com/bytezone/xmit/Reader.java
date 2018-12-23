@@ -324,7 +324,7 @@ public class Reader
   // getOrg
   // ---------------------------------------------------------------------------------//
 
-  private Dsorg.Org getOrg ()
+  Dsorg.Org getOrg ()
   {
     Optional<ControlRecord> opt =
         getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
