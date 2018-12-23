@@ -31,6 +31,38 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  // matches
+  // ---------------------------------------------------------------------------------//
+
+  static boolean matches (byte[] key, byte[] buffer, int ptr)
+  {
+    if (ptr + key.length >= buffer.length)
+      return false;
+
+    for (int i = 0; i < key.length; i++)
+      if (key[i] != buffer[ptr + i])
+        return false;
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // matches
+  // ---------------------------------------------------------------------------------//
+
+  static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2, int length)
+  {
+    if (ptr1 + length > key.length || ptr2 + length > buffer.length)
+      return false;
+
+    for (int i = 0; i < length; i++)
+      if (key[ptr1 + i] != buffer[ptr2 + i])
+        return false;
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getTwoBytes
   // ---------------------------------------------------------------------------------//
 

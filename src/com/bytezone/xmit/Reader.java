@@ -11,17 +11,18 @@ public class Reader
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
-  List<ControlRecord> controlRecords = new ArrayList<> ();
-  List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  List<String> lines = new ArrayList<> ();
+  private final List<ControlRecord> controlRecords = new ArrayList<> ();
+  private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
+  private final List<String> lines = new ArrayList<> ();
 
   private final byte[] INMR06 = { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5,
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
-  boolean isPDSE;
-  List<BlockPointerList> controlPointerLists = new ArrayList<> ();
-  List<BlockPointerList> blockPointerLists = new ArrayList<> ();
-  int catalogEndBlock = 0;
+  private boolean isPDSE;
+
+  private final List<BlockPointerList> controlPointerLists = new ArrayList<> ();
+  private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  private int catalogEndBlock = 0;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -36,6 +37,7 @@ public class Reader
     int ptr = 0;
     int count = 0;
     boolean eof = false;
+
     while (!eof && ptr < buffer.length)
     {
       int length = buffer[ptr] & 0xFF;
@@ -57,7 +59,7 @@ public class Reader
       {
         System.out.println (Utility.getHexDump (buffer, ptr, length));
         System.out.println ();
-        if (matches (INMR06, buffer, ptr))
+        if (Utility.matches (INMR06, buffer, ptr))
           eof = true;
         ptr += length;
         continue;
@@ -68,7 +70,7 @@ public class Reader
         currentBlockPointerList = new BlockPointerList (buffer, count++);
         if (controlRecord)
         {
-          if (matches (INMR06, buffer, ptr))
+          if (Utility.matches (INMR06, buffer, ptr))
             eof = true;
           controlPointerLists.add (currentBlockPointerList);
         }
@@ -85,8 +87,6 @@ public class Reader
     // build the control records
     for (BlockPointerList bpl : controlPointerLists)
       controlRecords.add (new ControlRecord (bpl.getBuffer ()));
-
-    //    System.out.println (getControlRecordString (TextUnit.INMDSNAM));
 
     // allocate the data records
     switch (getOrg ())
@@ -235,7 +235,7 @@ public class Reader
         catalogEntries.add (catalogEntry);
 
         // check for last member
-        if (matches (buffer, ptr2, buffer, ptr + 12, 8))
+        if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
           break;
 
         ptr2 += catalogEntry.length ();
@@ -281,6 +281,7 @@ public class Reader
   // getLines
   // ---------------------------------------------------------------------------------//
 
+  // this should be converted to an abstract File which Member would also use
   public String getLines ()
   {
     StringBuilder text = new StringBuilder ();
@@ -289,38 +290,6 @@ public class Reader
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
     return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // matches
-  // ---------------------------------------------------------------------------------//
-
-  static boolean matches (byte[] key, byte[] buffer, int ptr)
-  {
-    if (ptr + key.length >= buffer.length)
-      return false;
-
-    for (int i = 0; i < key.length; i++)
-      if (key[i] != buffer[ptr + i])
-        return false;
-
-    return true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // matches
-  // ---------------------------------------------------------------------------------//
-
-  static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2, int length)
-  {
-    if (ptr1 + length > key.length || ptr2 + length > buffer.length)
-      return false;
-
-    for (int i = 0; i < length; i++)
-      if (key[ptr1 + i] != buffer[ptr2 + i])
-        return false;
-
-    return true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -395,11 +364,10 @@ public class Reader
   // getFileName
   // ---------------------------------------------------------------------------------//
 
-  //  String getFileName (ControlRecord controlRecord)
-  //  {
-  //    TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSNAM);
-  //    return textUnit == null ? "" : ((Dsnam) textUnit).datasetName;
-  //  }
+  public String getFileName ()
+  {
+    return getControlRecordString (TextUnit.INMDSNAM);
+  }
 
   // ---------------------------------------------------------------------------------//
   // printHex
@@ -446,28 +414,6 @@ public class Reader
 
     return text.toString ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  // getWord
-  // ---------------------------------------------------------------------------------//
-
-  //  public static int getWord (byte[] buffer, int ptr)
-  //  {
-  //    int b = (buffer[ptr] & 0xFF) << 8;
-  //    int a = (buffer[ptr + 1] & 0xFF);
-  //    return a + b;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // getDoubleWord
-  // ---------------------------------------------------------------------------------//
-
-  //  static int getDoubleWord (byte[] buffer, int ptr)
-  //  {
-  //    int a = getWord (buffer, ptr) << 16;
-  //    int b = getWord (buffer, ptr + 2);
-  //    return a + b;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // getHexString

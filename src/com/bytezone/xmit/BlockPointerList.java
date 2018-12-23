@@ -294,7 +294,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   boolean isXmit ()
   {
     BlockPointer blockPointer = blockPointers.get (0);
-    return Reader.matches (INMR01, buffer, blockPointer.offset + 13);
+    return Utility.matches (INMR01, buffer, blockPointer.offset + 13);
   }
 
   // ---------------------------------------------------------------------------------//

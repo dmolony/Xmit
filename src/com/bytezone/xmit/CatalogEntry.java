@@ -367,12 +367,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private String xmitList ()
   {
     StringBuilder text = new StringBuilder ();
-    //    text.append ("XMIT file:\n\n");
     byte[] xmitBuffer = getXmitBuffer ();
     try
     {
       Reader reader = new Reader (xmitBuffer);
-      for (ControlRecord controlRecord : reader.controlRecords)
+      for (ControlRecord controlRecord : reader.getControlRecords ())
       {
         text.append (controlRecord);
         text.append ("\n");
@@ -380,12 +379,13 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
       if (reader.getOrg () == Dsorg.Org.PDS)
       {
-        text.append (String.format ("Members: %s%n%n", reader.catalogEntries.size ()));
+        text.append (
+            String.format ("Members: %s%n%n", reader.getCatalogEntries ().size ()));
         text.append (
             " Member     User      Size  Offset     Date        Time     Alias\n");
         text.append (
             "--------  --------  ------  ------  -----------  --------  --------\n");
-        for (CatalogEntry catalogEntry : reader.catalogEntries)
+        for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
           text.append (catalogEntry.toString () + "\n");
         text.deleteCharAt (text.length () - 1);
       }
