@@ -77,6 +77,8 @@ public class ControlRecord
         return new Member (buffer, ptr);
 
       case TextUnit.INMTYPE:
+        return new DatasetType (buffer, ptr);
+
       case TextUnit.INMFACK:
         return new TextUnit (buffer, ptr);
 

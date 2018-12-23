@@ -1,12 +1,7 @@
 package com.bytezone.xmit.textunit;
 
-public class Recfm extends TextUnit
+public class Recfm extends TextUnitNumber
 {
-  public enum RecordFormat
-  {
-    F, FB, FBA, FS, FBS, FBM, V, VB, VBA, VS, VBS, VBM
-  }
-
   // seen: 0001, 4802, 9000
 
   /*
@@ -24,53 +19,40 @@ public class Recfm extends TextUnit
 
   String type;
 
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
   public Recfm (byte[] buffer, int ptr)
   {
     super (buffer, ptr);
-    type = getType (dataList.get (0).data[0] & 0xFF);
-  }
 
-  String getType (int code)
-  {
-    switch (code)
+    type = "?";
+
+    if (number == 0xC000)
+      type = "Undefined";
+    else
     {
-      case 0x40:
-        return "V";
-      case 0x42:
-        return "VM";
-      case 0x44:
-        return "VA";
-      case 0x50:
-        return "VB";
-      case 0x52:
-        return "VBM";
-      case 0x54:
-        return "VBA";
-
-      case 0x80:
-        return "F";
-      case 0x82:
-        return "FM";
-      case 0x84:
-        return "FA";
-      case 0x90:
-        return "FB";
-      case 0x92:
-        return "FBM";
-      case 0x94:
-        return "FBA";
-
-      case 0xC0:
-        return "U";
-      case 0xC2:
-        return "UM";
-      case 0xC4:
-        return "UA";
-
-      default:
-        return "";
+      if ((number & 0x8000) != 0)
+        type = "F";
+      if ((number & 0x4000) != 0)
+        type = "V";
+      if ((number & 0x1000) != 0)
+        type = type + "B";
+      if ((number & 0x0400) != 0)
+        type = type + "A";
+      if ((number & 0x0800) != 0)
+        type = type + " standard/spanned";
+      if ((number & 0x002) != 0)
+        type = type + " (no 4-byte header)";
+      if ((number & 0x001) != 0)
+        type = "Shortened VBS format used for transmission records";
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
 
   @Override
   public String getString ()
@@ -85,7 +67,7 @@ public class Recfm extends TextUnit
   @Override
   public String toString ()
   {
-    return type.isEmpty () ? super.toString ()
-        : String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);
+    return type.isEmpty () ? super.toString () : String.format ("%04X  %-8s  %04X  %s",
+        keys[keyId], mnemonics[keyId], number, type);
   }
 }
