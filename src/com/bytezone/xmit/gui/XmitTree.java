@@ -265,7 +265,7 @@ public class XmitTree extends TreeView<File>
       return false;
 
     String suffix = getSuffix (fileName);
-    return isXmitSuffix (suffix) || isCompressionSuffix (suffix);
+    return isXmitSuffix (suffix);// || isCompressionSuffix (suffix);
   }
 
   public static String getSuffix (String filename)

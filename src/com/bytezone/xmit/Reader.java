@@ -2,6 +2,7 @@ package com.bytezone.xmit;
 
 import java.util.*;
 
+import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitString;
@@ -81,11 +82,13 @@ public class Reader
       ptr += length;
     }
 
+    // build the control records
     for (BlockPointerList bpl : controlPointerLists)
       controlRecords.add (new ControlRecord (bpl.getBuffer ()));
 
-    System.out.println (getControlRecordString (TextUnit.INMDSNAM));
+    //    System.out.println (getControlRecordString (TextUnit.INMDSNAM));
 
+    // allocate the data records
     switch (getOrg ())
     {
       case PDS:
@@ -333,7 +336,9 @@ public class Reader
     if (opt.isPresent ())
     {
       ControlRecord controlRecord = opt.get ();
-      return ((Dsorg) controlRecord.getTextUnit (TextUnit.INMDSORG)).type;
+      TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSORG);
+      if (textUnit != null)
+        return ((Dsorg) textUnit).type;
     }
 
     return null;
@@ -347,7 +352,7 @@ public class Reader
       String value)
   {
     for (ControlRecord controlRecord : controlRecords)
-      if (controlRecord.name.equals (stepName))
+      if (controlRecord.nameMatches (stepName))
       {
         TextUnit textUnit = controlRecord.getTextUnit (key);
         if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))

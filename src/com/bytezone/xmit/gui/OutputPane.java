@@ -5,8 +5,8 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.BlockPointerList;
 import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.ControlRecord;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;

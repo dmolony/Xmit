@@ -45,7 +45,7 @@ public class Utility
   // getFourBytes
   // ---------------------------------------------------------------------------------//
 
-  static long getFourBytes (byte[] buffer, int ptr)
+  public static long getFourBytes (byte[] buffer, int ptr)
   {
     long a = getTwoBytes (buffer, ptr) << 16;
     long b = getTwoBytes (buffer, ptr + 2);

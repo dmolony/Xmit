@@ -35,8 +35,9 @@ public class Recfm extends TextUnitNumber
     {
       if ((number & 0x8000) != 0)
         type = "F";
-      if ((number & 0x4000) != 0)
+      else if ((number & 0x4000) != 0)
         type = "V";
+
       if ((number & 0x1000) != 0)
         type = type + "B";
       if ((number & 0x0400) != 0)
@@ -45,6 +46,7 @@ public class Recfm extends TextUnitNumber
         type = type + " standard/spanned";
       if ((number & 0x002) != 0)
         type = type + " (no 4-byte header)";
+
       if ((number & 0x001) != 0)
         type = "Shortened VBS format used for transmission records";
     }
