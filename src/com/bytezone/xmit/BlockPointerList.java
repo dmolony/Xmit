@@ -19,7 +19,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   private final List<BlockPointer> newList = new ArrayList<> ();
 
   private boolean isLastBlock = false;
-  final List<byte[]> headers = new ArrayList<> ();
+  private final List<byte[]> headers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -110,6 +110,24 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
     for (BlockPointer blockPointer : newList)
       dataLength += blockPointer.length;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getOffset
+  // ---------------------------------------------------------------------------------//
+
+  int getOffset ()
+  {
+    return (int) Utility.getValue (headers.get (0), 6, 3);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isPDSE
+  // ---------------------------------------------------------------------------------//
+
+  boolean isPDSE ()
+  {
+    return headers.get (0)[0] == (byte) 0x88;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -104,15 +104,6 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  // getTextUnit
-  // ---------------------------------------------------------------------------------//
-
-  Optional<TextUnit> getTextUnit (String unitKey)
-  {
-    return Optional.empty ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   // processPS
   // ---------------------------------------------------------------------------------//
 
@@ -157,60 +148,63 @@ public class Reader
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
 
-    //    System.out.printf ("%nSorted catalog entries:%n");
     Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
     for (CatalogEntry catalogEntry : sortedCatalogEntries)
-    {
-      //      System.out.println (catalogEntry);
       if (!offsets.containsKey (catalogEntry.getOffset ()))
         offsets.put (catalogEntry.getOffset (), catalogEntry);
-    }
 
-    //    System.out.printf ("%nUnique entries:%n");
     List<CatalogEntry> uniqueCatalogEntries = new ArrayList<> ();
     for (CatalogEntry catalogEntry : offsets.values ())
-    {
-      //      System.out.println (catalogEntry);
       uniqueCatalogEntries.add (catalogEntry);
-    }
 
-    // check for PDSE
-    BlockPointerList bpl2 = blockPointerLists.get (catalogEndBlock + 1);
-
-    if (bpl2.headers.get (0)[0] == (byte) 0x88)
-    {
-      isPDSE = true;
-      int lastValue = 0;
-      int currentMember = -1;
-      for (int i = catalogEndBlock + 2; i < blockPointerLists.size (); i++)
-      {
-        BlockPointerList bpl = blockPointerLists.get (i);
-
-        int value = (int) Utility.getValue (bpl.headers.get (0), 6, 3);
-        if (lastValue != value)
-        {
-          ++currentMember;
-          lastValue = value;
-        }
-        CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
-        if (ce.getOffset () == value)
-          ce.addBlockPointerList (bpl);
-      }
-    }
+    // assign BlockPointerLists to CatalogEntries
+    if (blockPointerLists.get (catalogEndBlock + 1).isPDSE ())
+      assignPdsExtendedBlocks (uniqueCatalogEntries);
     else
-    {
-      // assign BlockPointerLists to CatalogEntries
-      int currentMember = 0;
-      for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-      {
-        BlockPointerList bpl = blockPointerLists.get (i);
+      assignPdsBlocks (uniqueCatalogEntries);
+  }
 
-        CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
-        if (!ce.addBlockPointerList (bpl))
-          break;
-        if (bpl.isLastBlock ())
-          ++currentMember;
+  // ---------------------------------------------------------------------------------//
+  // assignPdsBlocks
+  // ---------------------------------------------------------------------------------//
+
+  private void assignPdsBlocks (List<CatalogEntry> uniqueCatalogEntries)
+  {
+    int currentMember = 0;
+    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+
+      CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
+      if (!ce.addBlockPointerList (bpl))
+        break;
+      if (bpl.isLastBlock ())
+        ++currentMember;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // assignPdsExtendedBlocks
+  // ---------------------------------------------------------------------------------//
+
+  private void assignPdsExtendedBlocks (List<CatalogEntry> uniqueCatalogEntries)
+  {
+    isPDSE = true;
+    int lastOffset = 0;
+    int currentMember = -1;
+    for (int i = catalogEndBlock + 2; i < blockPointerLists.size (); i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+
+      int offset = bpl.getOffset ();
+      if (lastOffset != offset)
+      {
+        ++currentMember;
+        lastOffset = offset;
       }
+      CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
+      if (ce.getOffset () == offset)
+        ce.addBlockPointerList (bpl);
     }
   }
 
