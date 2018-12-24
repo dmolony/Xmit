@@ -80,12 +80,15 @@ public class XmitTree extends TreeView<File>
       }
 
       File file = newSelection.getValue ();
-      if (!file.isFile ())
+      String suffix = getSuffix (file.getName ());
+
+      if (!file.isFile () || isCompressionSuffix (suffix))
       {
         for (TreeItemSelectionListener listener : listeners)
           listener.treeItemSelected (null);
         return;
       }
+
       String key = file.getAbsolutePath ();
 
       if (readers.containsKey (key))
@@ -221,7 +224,7 @@ public class XmitTree extends TreeView<File>
         String entryName = entry.getName ();
         if (entryName.endsWith ("/"))
         {
-          //          System.out.println ("folder");
+          System.out.println ("folder");
         }
         else if (isValidFileName (entryName))
         {
@@ -229,6 +232,7 @@ public class XmitTree extends TreeView<File>
           String suffix = pos < 0 ? "" : entryName.substring (pos).toLowerCase ();
           InputStream stream = zipFile.getInputStream (entry);
           tmp = File.createTempFile (entry.getName (), suffix);
+          System.out.printf ("Created: %s%n", tmp.getName ());
           FileOutputStream fos = new FileOutputStream (tmp);
 
           int bytesRead;
@@ -265,7 +269,7 @@ public class XmitTree extends TreeView<File>
       return false;
 
     String suffix = getSuffix (fileName);
-    return isXmitSuffix (suffix);// || isCompressionSuffix (suffix);
+    return isXmitSuffix (suffix) || isCompressionSuffix (suffix);
   }
 
   public static String getSuffix (String filename)

@@ -28,6 +28,34 @@ public class Reader
 
   public Reader (byte[] buffer)
   {
+    buildPointerLists (buffer);
+
+    // build the INMRxx control records
+    for (BlockPointerList bpl : controlPointerLists)
+      controlRecords.add (new ControlRecord (bpl.getBuffer ()));
+
+    // allocate the data records
+    switch (getOrg ())
+    {
+      case PDS:
+        processPDS (blockPointerLists);
+        break;
+
+      case PS:
+        processPS (blockPointerLists);
+        break;
+
+      default:
+        System.out.println ("Unknown ORG: " + getOrg ());
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // buildPointerLists
+  // ---------------------------------------------------------------------------------//
+
+  private void buildPointerLists (byte[] buffer)
+  {
     BlockPointerList currentBlockPointerList = null;
 
     boolean dumpRaw = false;
@@ -80,25 +108,6 @@ public class Reader
           new BlockPointer (buffer, ptr + 2, length - 2));
 
       ptr += length;
-    }
-
-    // build the control records
-    for (BlockPointerList bpl : controlPointerLists)
-      controlRecords.add (new ControlRecord (bpl.getBuffer ()));
-
-    // allocate the data records
-    switch (getOrg ())
-    {
-      case PDS:
-        processPDS (blockPointerLists);
-        break;
-
-      case PS:
-        processPS (blockPointerLists);
-        break;
-
-      default:
-        System.out.println ("Unknown ORG: " + getOrg ());
     }
   }
 

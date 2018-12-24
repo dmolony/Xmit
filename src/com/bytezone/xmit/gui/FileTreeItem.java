@@ -1,10 +1,7 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 
@@ -55,7 +52,8 @@ public class FileTreeItem extends TreeItem<File>
     {
       isFirstTimeLeaf = false;
       File f = getValue ();
-      isLeaf = f.isFile ();
+      String suffix = XmitTree.getSuffix (f.getName ());
+      isLeaf = f.isFile () && !XmitTree.isCompressionSuffix (suffix);
     }
 
     return isLeaf;
@@ -67,8 +65,12 @@ public class FileTreeItem extends TreeItem<File>
 
   private ObservableList<TreeItem<File>> buildChildren (TreeItem<File> TreeItem)
   {
-    File f = TreeItem.getValue ();
-    if (f != null && f.isDirectory ())
+    File f = getValue ();
+
+    if (f == null)
+      return FXCollections.emptyObservableList ();
+
+    if (f.isDirectory ())
     {
       File[] files = f.listFiles ();
       if (files != null)
@@ -89,66 +91,31 @@ public class FileTreeItem extends TreeItem<File>
       }
     }
 
+    String suffix = XmitTree.getSuffix (f.getName ());
+    if (XmitTree.isCompressionSuffix (suffix))
+    {
+      Map<ZipEntry, File> fileList = XmitTree.decompressZip (f.toPath ());
+      if (fileList.size () > 0)
+      {
+        ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
+        for (ZipEntry entry : fileList.keySet ())
+        {
+          String entryName = entry.getName ();
+          String[] chunks = entryName.split ("/");
+          int filePos = chunks.length - 1;
+          String fileName = chunks[filePos];
+          //          System.out.println (entryName);
+          //          System.out.println (fileName);
+          if (XmitTree.isValidFileName (fileName))
+          {
+            children.add (new FileTreeItem (fileList.get (entry)));
+          }
+        }
+        Collections.sort (children, comparator);
+        return children;
+      }
+    }
+
     return FXCollections.emptyObservableList ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  // getCompressedFileSystems
-  // ---------------------------------------------------------------------------------//
-
-  private List<FileTreeItem> getCompressedFileSystems (Path path)
-  {
-    List<FileTreeItem> treeItemList = new ArrayList<> ();
-    //        FileItem fileItem = getValue ();
-    String suffix = XmitTree.getSuffix (path.toFile ().getName ());
-
-    switch (suffix)
-    {
-      case "zip":
-        Map<ZipEntry, File> fileList = XmitTree.decompressZip (path);
-        if (fileList.size () == 0)
-        {
-          //          fileItem.setFileType ("No Disk");
-          break;
-        }
-        link (fileList, treeItemList);
-        break;
-      default:
-        break;
-    }
-
-    return treeItemList;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // link
-  // ---------------------------------------------------------------------------------//
-
-  private void link (Map<ZipEntry, File> fileList, List<FileTreeItem> treeItemList)
-  {
-    for (ZipEntry entry : fileList.keySet ())
-    {
-      String entryName = entry.getName ();
-      String[] chunks = entryName.split ("/");
-      int filePos = chunks.length - 1;
-      String fileName = chunks[filePos];
-
-      //      FileTreeItem treeItem = createNamedTreeItemFile (fileList.get (entry), fileName);
-      //      LocalDateTime dateTime = LocalDateTime
-      //          .ofInstant (Instant.ofEpochMilli (entry.getTime ()), ZoneId.systemDefault ());
-      //      treeItem.getValue ().setDateTime (dateTime);
-      treeItemList.add (new FileTreeItem (fileList.get (entry)));
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // createNamedTreeItemFile
-  // ---------------------------------------------------------------------------------//
-
-  //  private FileTreeItem createNamedTreeItemFile (File file, String name)
-  //  {
-  //    FileItem fileItem = new FileItem (file.toPath ());
-  //    fileItem.setFileName (name);
-  //    return new FileTreeItem (fileItem);
-  //  }
 }
