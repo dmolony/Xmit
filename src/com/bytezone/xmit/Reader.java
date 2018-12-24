@@ -13,16 +13,15 @@ public class Reader
 
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  private final List<String> lines = new ArrayList<> ();
 
   private final byte[] INMR06 = { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5,
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
-  private boolean isPDSE;
-
   private final List<BlockPointerList> controlPointerLists = new ArrayList<> ();
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   private int catalogEndBlock = 0;
+  private boolean isPDSE;
+  private final List<String> lines = new ArrayList<> ();        // flat file
 
   // ---------------------------------------------------------------------------------//
   // constructor
