@@ -3,7 +3,6 @@ package com.bytezone.xmit.textunit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.Utility;
 
 public class ControlRecord
@@ -18,7 +17,7 @@ public class ControlRecord
   public ControlRecord (byte[] buffer)
   {
     int ptr = 0;
-    name = Reader.getString (buffer, ptr, 6);
+    name = Utility.getString (buffer, ptr, 6);
     assert name.startsWith ("INMR0");
     int max = ptr + buffer.length;
     ptr += 6;

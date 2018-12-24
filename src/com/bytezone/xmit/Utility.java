@@ -31,6 +31,34 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
+
+  static String getString (byte[] buffer)
+  {
+    return getString (buffer, 0, buffer.length);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getString
+  // ---------------------------------------------------------------------------------//
+
+  public static String getString (byte[] buffer, int ptr, int length)
+  {
+    assert ptr + length <= buffer.length;
+
+    StringBuilder text = new StringBuilder ();
+
+    for (int i = 0; i < length; i++)
+    {
+      int c = buffer[ptr + i] & 0xFF;
+      text.append (c < 0x40 ? "." : (char) ebc2asc[c]);
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   // matches
   // ---------------------------------------------------------------------------------//
 

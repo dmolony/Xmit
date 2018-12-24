@@ -1,6 +1,5 @@
 package com.bytezone.xmit.textunit;
 
-import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.Utility;
 
 class Data
@@ -27,7 +26,7 @@ class Data
         break;
       }
 
-    text = printable ? Reader.getString (data, 0, length) : "";
+    text = printable ? Utility.getString (data, 0, length) : "";
   }
 
   // ---------------------------------------------------------------------------------//

@@ -20,7 +20,6 @@ public class Reader
   private final List<BlockPointerList> controlPointerLists = new ArrayList<> ();
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   private int catalogEndBlock = 0;
-  private boolean isPDSE;
   private final List<String> lines = new ArrayList<> ();        // flat file
 
   // ---------------------------------------------------------------------------------//
@@ -121,7 +120,7 @@ public class Reader
     }
     else
       for (int i = 0; i < blockPointerLists.size (); i++)
-        lines.add (getString (blockPointerLists.get (i).getBuffer ()));
+        lines.add (Utility.getString (blockPointerLists.get (i).getBuffer ()));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -174,10 +173,10 @@ public class Reader
     for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-
       CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
       if (!ce.addBlockPointerList (bpl))
         break;
+
       if (bpl.isLastBlock ())
         ++currentMember;
     }
@@ -189,9 +188,9 @@ public class Reader
 
   private void assignPdsExtendedBlocks (List<CatalogEntry> uniqueCatalogEntries)
   {
-    isPDSE = true;
-    int lastOffset = 0;
+    int lastOffset = -1;
     int currentMember = -1;
+
     for (int i = catalogEndBlock + 2; i < blockPointerLists.size (); i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
@@ -360,74 +359,5 @@ public class Reader
   public String getFileName ()
   {
     return getControlRecordString (TextUnit.INMDSNAM);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // printHex
-  // ---------------------------------------------------------------------------------//
-
-  static void printHex (byte[] buffer)
-  {
-    System.out.println (Utility.getHexDump (buffer, 0, buffer.length));
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // printHex
-  // ---------------------------------------------------------------------------------//
-
-  static void printHex (byte[] buffer, int offset, int length)
-  {
-    System.out.println (Utility.getHexDump (buffer, offset, length));
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getString
-  // ---------------------------------------------------------------------------------//
-
-  static String getString (byte[] buffer)
-  {
-    return getString (buffer, 0, buffer.length);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getString
-  // ---------------------------------------------------------------------------------//
-
-  public static String getString (byte[] buffer, int ptr, int length)
-  {
-    assert ptr + length <= buffer.length;
-
-    StringBuilder text = new StringBuilder ();
-
-    for (int i = 0; i < length; i++)
-    {
-      int c = buffer[ptr + i] & 0xFF;
-      text.append (c < 0x40 ? "." : (char) Utility.ebc2asc[c]);
-    }
-
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getHexString
-  // ---------------------------------------------------------------------------------//
-
-  static String getHexString (byte[] buffer)
-  {
-    return getHexString (buffer, 0, buffer.length);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getHexString
-  // ---------------------------------------------------------------------------------//
-
-  static String getHexString (byte[] buffer, int offset, int length)
-  {
-    StringBuilder text = new StringBuilder ();
-
-    while (length-- > 0 && offset < buffer.length)
-      text.append (String.format ("%02X ", buffer[offset++]));
-
-    return text.toString ();
   }
 }

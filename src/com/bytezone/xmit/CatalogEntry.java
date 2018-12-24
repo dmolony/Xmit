@@ -38,7 +38,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   public CatalogEntry (byte[] buffer, int ptr)
   {
-    memberName = Reader.getString (buffer, ptr, 8);
+    memberName = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
 
     int extra = buffer[ptr + 11] & 0xFF;
@@ -74,11 +74,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
 
       case 0xB1:
-        aliasName = Reader.getString (buffer, ptr + 36, 8);
+        aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
       case 0xB3:
-        aliasName = Reader.getString (buffer, ptr + 36, 8);
+        aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
       case 0:
@@ -101,7 +101,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     return String.format ("%02X %-8s %06X %-129s %8s %8s", directoryData[11],
         getMemberName (), blockFrom,
-        Reader.getHexString (directoryData, 12, directoryData.length - 12),
+        Utility.getHexValues (directoryData, 12, directoryData.length - 12),
         getUserName (), getAliasName ());
   }
 
@@ -111,7 +111,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   private void basic (byte[] buffer, int offset)
   {
-    userName = Reader.getString (buffer, offset + 32, 8);
+    userName = Utility.getString (buffer, offset + 32, 8);
     size = Utility.getTwoBytes (buffer, offset + 26);
     init = Utility.getTwoBytes (buffer, offset + 28);
     mod = Utility.getTwoBytes (buffer, offset + 30);
@@ -325,7 +325,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     while (length > 0)
     {
       int len = Math.min (80, length);
-      lines.add (Reader.getString (buffer, ptr, len));
+      lines.add (Utility.getString (buffer, ptr, len));
       ptr += len;
       length -= len;
     }
@@ -440,7 +440,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       {
         int len = Utility.getTwoBytes (buffer, ptr);
 
-        String line = Reader.getString (buffer, ptr + 4, len - 4);
+        String line = Utility.getString (buffer, ptr + 4, len - 4);
         int count = 0;
         if (showLines)
           text.append (String.format ("%05d  %s%n", ++count, line));
@@ -547,7 +547,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   String getPrintLine ()
   {
     return String.format ("%-126s %8s %8s %5d %5d %5d",
-        Reader.getHexString (directoryData), memberName, userName, size, init, mod);
+        Utility.getHexValues (directoryData), memberName, userName, size, init, mod);
   }
 
   // ---------------------------------------------------------------------------------//
