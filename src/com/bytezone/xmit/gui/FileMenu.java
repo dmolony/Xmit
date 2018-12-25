@@ -33,7 +33,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public FileMenu (XmitApp owner, TreeView<File> tree)
+  public FileMenu (XmitApp owner, TreeView<XmitFile> tree)
   {
     fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem);
     rootMenuItem.setAccelerator (

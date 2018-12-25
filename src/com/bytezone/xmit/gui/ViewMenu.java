@@ -1,6 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -29,7 +28,7 @@ public class ViewMenu
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public ViewMenu (XmitApp owner, TreeView<File> tree)
+  public ViewMenu (XmitApp owner, TreeView<XmitFile> tree)
   {
     viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem);
     linesMenuItem.setAccelerator (

@@ -19,13 +19,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 
-public class XmitTree extends TreeView<File>
+public class XmitTree extends TreeView<XmitFile>
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   //  private Path rootFolderPath;
-  private final MultipleSelectionModel<TreeItem<File>> model = getSelectionModel ();
+  private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
   private Reader reader;
@@ -43,24 +43,24 @@ public class XmitTree extends TreeView<File>
 
     fileTreeItem.setExpanded (true);
 
-    setCellFactory (new Callback<TreeView<File>, TreeCell<File>> ()
+    setCellFactory (new Callback<TreeView<XmitFile>, TreeCell<XmitFile>> ()
     {
       @Override
-      public TreeCell<File> call (TreeView<File> parm)
+      public TreeCell<XmitFile> call (TreeView<XmitFile> parm)
       {
-        TreeCell<File> cell = new TreeCell<> ()
+        TreeCell<XmitFile> cell = new TreeCell<> ()
         {
-          public void updateItem (File item, boolean empty)
+          public void updateItem (XmitFile xmitFile, boolean empty)
           {
-            super.updateItem (item, empty);
-            if (empty || item == null)
+            super.updateItem (xmitFile, empty);
+            if (empty || xmitFile == null)
             {
               setText (null);
               setGraphic (null);
             }
             else
             {
-              setText (item.getName ());
+              setText (xmitFile.getName ());
               setGraphic (getTreeItem ().getGraphic ());
             }
           }
@@ -130,7 +130,7 @@ public class XmitTree extends TreeView<File>
 
     if (!lastPath.isEmpty ())
     {
-      Optional<TreeItem<File>> optionalNode = getNode (lastPath);
+      Optional<TreeItem<XmitFile>> optionalNode = getNode (lastPath);
       if (optionalNode.isPresent ())
       {
         model.clearSelection ();
@@ -148,19 +148,16 @@ public class XmitTree extends TreeView<File>
   {
     setRoot (fileTreeItem);
     fileTreeItem.setExpanded (true);
-
-    //    Optional<TreeItem<File>> optionalNode = getNode (lastPath);
-    //    model.select (optionalNode.get ());
   }
 
   // ---------------------------------------------------------------------------------//
   // getNode
   // ---------------------------------------------------------------------------------//
 
-  Optional<TreeItem<File>> getNode (String path)
+  Optional<TreeItem<XmitFile>> getNode (String path)
   {
-    TreeItem<File> node = getRoot ();
-    Optional<TreeItem<File>> optionalNode = Optional.empty ();
+    TreeItem<XmitFile> node = getRoot ();
+    Optional<TreeItem<XmitFile>> optionalNode = Optional.empty ();
 
     String[] chunks = path.split (SEPARATOR);
 
@@ -178,10 +175,10 @@ public class XmitTree extends TreeView<File>
   // search
   // ---------------------------------------------------------------------------------//
 
-  private Optional<TreeItem<File>> search (TreeItem<File> parentNode, String name)
+  private Optional<TreeItem<XmitFile>> search (TreeItem<XmitFile> parentNode, String name)
   {
     parentNode.setExpanded (true);
-    for (TreeItem<File> childNode : parentNode.getChildren ())
+    for (TreeItem<XmitFile> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
         return Optional.of (childNode);
 
@@ -196,7 +193,7 @@ public class XmitTree extends TreeView<File>
   {
     StringBuilder pathBuilder = new StringBuilder ();
 
-    TreeItem<File> item = model.getSelectedItem ();
+    TreeItem<XmitFile> item = model.getSelectedItem ();
     while (item != null)
     {
       pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());
@@ -209,10 +206,10 @@ public class XmitTree extends TreeView<File>
   // decompressZip
   // ---------------------------------------------------------------------------------//
 
-  public static Map<ZipEntry, File> decompressZip (Path path)
+  public static Map<ZipEntry, XmitFile> decompressZip (Path path)
   {
     String fileName = path.toString ();
-    Map<ZipEntry, File> fileList = new HashMap<> ();
+    Map<ZipEntry, XmitFile> fileList = new HashMap<> ();
     try (ZipFile zipFile = new ZipFile (fileName))
     {
       Enumeration<? extends ZipEntry> entries = zipFile.entries ();
@@ -232,7 +229,7 @@ public class XmitTree extends TreeView<File>
           String suffix = pos < 0 ? "" : entryName.substring (pos).toLowerCase ();
           InputStream stream = zipFile.getInputStream (entry);
           tmp = File.createTempFile (entry.getName (), suffix);
-          System.out.printf ("Created: %s%n", tmp.getName ());
+
           FileOutputStream fos = new FileOutputStream (tmp);
 
           int bytesRead;
@@ -243,7 +240,7 @@ public class XmitTree extends TreeView<File>
           stream.close ();
           fos.close ();
           tmp.deleteOnExit ();
-          fileList.put (entry, tmp);
+          fileList.put (entry, new XmitFile (tmp, entry.getName ()));
         }
       }
     }

@@ -9,7 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
-public class FileTreeItem extends TreeItem<File>
+public class FileTreeItem extends TreeItem<XmitFile>
 {
   static final FileComparator comparator = new FileComparator ();
 
@@ -21,7 +21,7 @@ public class FileTreeItem extends TreeItem<File>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public FileTreeItem (File f)
+  public FileTreeItem (XmitFile f)
   {
     super (f);
   }
@@ -31,7 +31,7 @@ public class FileTreeItem extends TreeItem<File>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public ObservableList<TreeItem<File>> getChildren ()
+  public ObservableList<TreeItem<XmitFile>> getChildren ()
   {
     if (isFirstTimeChildren)
     {
@@ -51,9 +51,8 @@ public class FileTreeItem extends TreeItem<File>
     if (isFirstTimeLeaf)
     {
       isFirstTimeLeaf = false;
-      File f = getValue ();
-      String suffix = XmitTree.getSuffix (f.getName ());
-      isLeaf = f.isFile () && !XmitTree.isCompressionSuffix (suffix);
+      XmitFile f = getValue ();
+      isLeaf = f.isFile () && !f.isCompressed ();
     }
 
     return isLeaf;
@@ -63,9 +62,9 @@ public class FileTreeItem extends TreeItem<File>
   // buildChildren
   // ---------------------------------------------------------------------------------//
 
-  private ObservableList<TreeItem<File>> buildChildren (TreeItem<File> TreeItem)
+  private ObservableList<TreeItem<XmitFile>> buildChildren (TreeItem<XmitFile> TreeItem)
   {
-    File f = getValue ();
+    XmitFile f = getValue ();
 
     if (f == null)
       return FXCollections.emptyObservableList ();
@@ -75,7 +74,8 @@ public class FileTreeItem extends TreeItem<File>
       File[] files = f.listFiles ();
       if (files != null)
       {
-        ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
+        ObservableList<TreeItem<XmitFile>> children =
+            FXCollections.observableArrayList ();
 
         for (File childFile : files)
         {
@@ -83,7 +83,7 @@ public class FileTreeItem extends TreeItem<File>
           if (childFile.isHidden ())
             continue;
           if (childFile.isDirectory () || XmitTree.isValidFileName (name))
-            children.add (new FileTreeItem (childFile));
+            children.add (new FileTreeItem (new XmitFile (childFile)));
         }
 
         Collections.sort (children, comparator);
@@ -91,21 +91,19 @@ public class FileTreeItem extends TreeItem<File>
       }
     }
 
-    String suffix = XmitTree.getSuffix (f.getName ());
-    if (XmitTree.isCompressionSuffix (suffix))
+    if (f.isCompressed ())
     {
-      Map<ZipEntry, File> fileList = XmitTree.decompressZip (f.toPath ());
+      Map<ZipEntry, XmitFile> fileList = XmitTree.decompressZip (f.toPath ());
       if (fileList.size () > 0)
       {
-        ObservableList<TreeItem<File>> children = FXCollections.observableArrayList ();
+        ObservableList<TreeItem<XmitFile>> children =
+            FXCollections.observableArrayList ();
         for (ZipEntry entry : fileList.keySet ())
         {
           String entryName = entry.getName ();
           String[] chunks = entryName.split ("/");
           int filePos = chunks.length - 1;
           String fileName = chunks[filePos];
-          //          System.out.println (entryName);
-          //          System.out.println (fileName);
           if (XmitTree.isValidFileName (fileName))
           {
             children.add (new FileTreeItem (fileList.get (entry)));
