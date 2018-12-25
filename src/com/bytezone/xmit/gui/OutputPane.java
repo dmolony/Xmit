@@ -23,13 +23,13 @@ public class OutputPane extends BorderPane
 
   private final TabPane tabPane = new TabPane ();
 
+  private final Tab fileTab = new Tab ();
   private final Tab debugTab = new Tab ();
   private final Tab textTab = new Tab ();
-  private final Tab fileTab = new Tab ();
 
-  private final TextArea metaText = new TextArea ();
-  private final TextArea textText = new TextArea ();
   private final TextArea fileText = new TextArea ();
+  private final TextArea debugText = new TextArea ();
+  private final TextArea textText = new TextArea ();
 
   private Reader reader;
   private CatalogEntry catalogEntry;
@@ -41,7 +41,6 @@ public class OutputPane extends BorderPane
 
   public OutputPane ()
   {
-    //    tabPane.getTabs ().addAll (fileTab, debugTab, textTab);
     tabPane.setSide (Side.BOTTOM);
     tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
     tabPane.setTabMinWidth (100);
@@ -50,7 +49,7 @@ public class OutputPane extends BorderPane
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
     addText (fileTab, fileText, "Control");
-    addText (debugTab, metaText, "Debug");
+    addText (debugTab, debugText, "Debug");
     addText (textTab, textText, "Output");
 
     setCenter (tabPane);
@@ -87,8 +86,9 @@ public class OutputPane extends BorderPane
   private void updateCurrentTab ()
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
+
     if (selectedTab == debugTab)
-      updateMetaTab ();
+      updateDebugTab ();
     else if (selectedTab == textTab)
       updateTextTab ();
     else if (selectedTab == fileTab)
@@ -130,20 +130,20 @@ public class OutputPane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateMetaTab
+  // updateDebugTab
   // ---------------------------------------------------------------------------------//
 
-  private void updateMetaTab ()
+  private void updateDebugTab ()
   {
     if (reader == null)
-      metaText.clear ();
+      debugText.clear ();
     else if (catalogEntry == null)
-      metaText.clear ();
+      debugText.clear ();
     else
     {
       StringBuilder text = new StringBuilder ();
       text.append (catalogEntry.list ());
-      metaText.setText (text.toString ());
+      debugText.setText (text.toString ());
     }
   }
 
@@ -183,10 +183,10 @@ public class OutputPane extends BorderPane
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (boolean metaVisible, boolean debugVisible)
+  void setTabVisible (boolean fileVisible, boolean debugVisible)
   {
     tabPane.getTabs ().clear ();
-    if (metaVisible)
+    if (fileVisible)
       tabPane.getTabs ().add (fileTab);
     if (debugVisible)
       tabPane.getTabs ().add (debugTab);
@@ -194,7 +194,7 @@ public class OutputPane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  //
+  // treeItemSelected
   // ---------------------------------------------------------------------------------//
 
   @Override
