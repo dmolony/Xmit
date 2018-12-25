@@ -21,9 +21,9 @@ public class FileTreeItem extends TreeItem<XmitFile>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public FileTreeItem (XmitFile f)
+  public FileTreeItem (XmitFile xmitFile)
   {
-    super (f);
+    super (xmitFile);
   }
 
   // ---------------------------------------------------------------------------------//

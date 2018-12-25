@@ -24,9 +24,11 @@ public class OutputPane extends BorderPane
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final TabPane tabPane = new TabPane ();
+
   private final Tab metaTab = new Tab ();
   private final Tab textTab = new Tab ();
   private final Tab fileTab = new Tab ();
+
   private final TextArea metaText = new TextArea ();
   private final TextArea textText = new TextArea ();
   private final TextArea fileText = new TextArea ();
@@ -52,6 +54,7 @@ public class OutputPane extends BorderPane
     addText (fileTab, fileText, "Control");
     addText (metaTab, metaText, "Debug");
     addText (textTab, textText, "Output");
+
     setCenter (tabPane);
 
     restore ();
@@ -141,8 +144,6 @@ public class OutputPane extends BorderPane
     else
     {
       StringBuilder text = new StringBuilder ();
-      //      if (catalogEntry.isXmit ())
-      //        text.append ("XMIT file\n\n");
       text.append (catalogEntry.list ());
       metaText.setText (text.toString ());
     }
@@ -178,6 +179,15 @@ public class OutputPane extends BorderPane
   void exit ()
   {
     prefs.putInt (PREFS_LAST_TAB, tabPane.getSelectionModel ().getSelectedIndex ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setTabVisible
+  // ---------------------------------------------------------------------------------//
+
+  void setTabVisible (String tabName, boolean visible)
+  {
+    System.out.printf ("Set %s %s%n", tabName, visible);
   }
 
   // ---------------------------------------------------------------------------------//

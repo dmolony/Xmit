@@ -38,18 +38,14 @@ public class XmitTable extends TableView<CatalogEntryItem>
     setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
     setItems (items);
 
-    addString ("Member", "MemberName", 100)
-        .setCellFactory (stringCellFactory ("CENTER-LEFT"));
-    addString ("User", "UserName", 100)
-        .setCellFactory (stringCellFactory ("CENTER-LEFT"));
-    addNumber ("Size", "Size", 70).setCellFactory (numberCellFactory ());
-    addLocalDate ("Created", "DateCreated", 100).setCellFactory (localDateCellFactory ());
-    addLocalDate ("Modified", "DateModified", 100)
-        .setCellFactory (localDateCellFactory ());
-    addString ("Time", "Time", 80).setCellFactory (stringCellFactory ("CENTER"));
-    addString ("Version", "Version", 80).setCellFactory (stringCellFactory ("CENTER"));
-    addString ("Alias", "AliasName", 100)
-        .setCellFactory (stringCellFactory ("CENTER-LEFT"));
+    addString ("Member", "MemberName", 100, "CENTER-LEFT");
+    addString ("User", "UserName", 100, "CENTER-LEFT");
+    addNumber ("Size", "Size", 70);
+    addLocalDate ("Created", "DateCreated", 100);
+    addLocalDate ("Modified", "DateModified", 100);
+    addString ("Time", "Time", 90, "CENTER");
+    addString ("Version", "Version", 80, "CENTER");
+    addString ("Alias", "AliasName", 100, "CENTER-LEFT");
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, newSelection) ->
@@ -71,6 +67,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   {
     TableColumn<CatalogEntryItem, Number> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
+    column.setCellFactory (numberCellFactory ());
     column.setMinWidth (width);
     getColumns ().add (column);
     return column;
@@ -80,10 +77,12 @@ public class XmitTable extends TableView<CatalogEntryItem>
   // addString
   // ---------------------------------------------------------------------------------//
 
-  TableColumn<CatalogEntryItem, String> addString (String heading, String name, int width)
+  TableColumn<CatalogEntryItem, String> addString (String heading, String name, int width,
+      String alignment)
   {
     TableColumn<CatalogEntryItem, String> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
+    column.setCellFactory (stringCellFactory (alignment));
     column.setPrefWidth (width);
     getColumns ().add (column);
     return column;
@@ -98,6 +97,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   {
     TableColumn<CatalogEntryItem, LocalDate> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
+    column.setCellFactory (localDateCellFactory ());
     column.setPrefWidth (width);
     getColumns ().add (column);
     return column;

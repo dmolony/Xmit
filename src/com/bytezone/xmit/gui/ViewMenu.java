@@ -17,10 +17,12 @@ public class ViewMenu
   private static final String PREFS_SHOW_CONTROL = "ShowControl";
   private static final String PREFS_SHOW_DEBUG = "ShowDebug";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
+
   private final List<ShowLinesListener> listeners = new ArrayList<> ();
+  private final XmitApp xmitApp;
 
   private final Menu viewMenu = new Menu ("View");
-  private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Show line numbers");
+  private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Line numbers");
   private final CheckMenuItem controlMenuItem = new CheckMenuItem ("Control tab");
   private final CheckMenuItem debugMenuItem = new CheckMenuItem ("Debug tab");
 
@@ -28,8 +30,10 @@ public class ViewMenu
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public ViewMenu (XmitApp owner, TreeView<XmitFile> tree)
+  public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree)
   {
+    this.xmitApp = xmitApp;
+
     viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem);
     linesMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
@@ -51,12 +55,12 @@ public class ViewMenu
 
   private void setMeta ()
   {
-
+    xmitApp.setTabVisible ("META", controlMenuItem.isSelected ());
   }
 
   private void setDebug ()
   {
-
+    xmitApp.setTabVisible ("DEBUG", debugMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
