@@ -82,7 +82,7 @@ public class FileTreeItem extends TreeItem<XmitFile>
           String name = childFile.getName ().toUpperCase ();
           if (childFile.isHidden ())
             continue;
-          if (childFile.isDirectory () || XmitTree.isValidFileName (name))
+          if (childFile.isDirectory () || XmitFile.isValidFileName (name))
             children.add (new FileTreeItem (new XmitFile (childFile)));
         }
 
@@ -93,7 +93,7 @@ public class FileTreeItem extends TreeItem<XmitFile>
 
     if (f.isCompressed ())
     {
-      Map<ZipEntry, XmitFile> fileList = XmitTree.decompressZip (f.toPath ());
+      Map<ZipEntry, XmitFile> fileList = XmitFile.decompressZip (f.toPath ());
       if (fileList.size () > 0)
       {
         ObservableList<TreeItem<XmitFile>> children =
@@ -104,7 +104,7 @@ public class FileTreeItem extends TreeItem<XmitFile>
           String[] chunks = entryName.split ("/");
           int filePos = chunks.length - 1;
           String fileName = chunks[filePos];
-          if (XmitTree.isValidFileName (fileName))
+          if (XmitFile.isValidFileName (fileName))
           {
             children.add (new FileTreeItem (fileList.get (entry)));
           }
