@@ -23,6 +23,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
 {
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
+
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
   final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
 

@@ -250,9 +250,9 @@ public class XmitApp extends Application
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (String tabName, boolean visible)
+  void setTabVisible (boolean metaVisible, boolean debugVisible)
   {
-    outputPane.setTabVisible (tabName, visible);
+    outputPane.setTabVisible (metaVisible, debugVisible);
   }
 
   // ---------------------------------------------------------------------------------//

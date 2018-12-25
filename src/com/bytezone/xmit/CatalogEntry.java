@@ -84,6 +84,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       case 0x36:      // file242
         break;
       case 0xB6:      // file242
+        aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
       case 0:

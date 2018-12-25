@@ -1,9 +1,7 @@
 package com.bytezone.xmit.gui;
 
-import java.util.List;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.BlockPointerList;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.textunit.ControlRecord;
@@ -25,7 +23,7 @@ public class OutputPane extends BorderPane
 
   private final TabPane tabPane = new TabPane ();
 
-  private final Tab metaTab = new Tab ();
+  private final Tab debugTab = new Tab ();
   private final Tab textTab = new Tab ();
   private final Tab fileTab = new Tab ();
 
@@ -43,7 +41,7 @@ public class OutputPane extends BorderPane
 
   public OutputPane ()
   {
-    tabPane.getTabs ().addAll (fileTab, metaTab, textTab);
+    //    tabPane.getTabs ().addAll (fileTab, debugTab, textTab);
     tabPane.setSide (Side.BOTTOM);
     tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
     tabPane.setTabMinWidth (100);
@@ -52,7 +50,7 @@ public class OutputPane extends BorderPane
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
     addText (fileTab, fileText, "Control");
-    addText (metaTab, metaText, "Debug");
+    addText (debugTab, metaText, "Debug");
     addText (textTab, textText, "Output");
 
     setCenter (tabPane);
@@ -89,7 +87,7 @@ public class OutputPane extends BorderPane
   private void updateCurrentTab ()
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
-    if (selectedTab == metaTab)
+    if (selectedTab == debugTab)
       updateMetaTab ();
     else if (selectedTab == textTab)
       updateTextTab ();
@@ -107,13 +105,13 @@ public class OutputPane extends BorderPane
       fileText.clear ();
     else
     {
-      List<ControlRecord> controlRecords = reader.getControlRecords ();
       StringBuilder text = new StringBuilder ();
-      for (ControlRecord controlRecord : controlRecords)
+      for (ControlRecord controlRecord : reader.getControlRecords ())
       {
         text.append (controlRecord.toString ());
         text.append ("\n");
       }
+      text.deleteCharAt (text.length () - 1);
 
       text.append ("Catalog Blocks:\n");
       for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
@@ -122,9 +120,9 @@ public class OutputPane extends BorderPane
         text.append ("\n");
       }
 
-      text.append ("\nData Blocks:\n");
-      for (BlockPointerList bpl : reader.getDataBlockPointerLists ())
-        text.append (String.format ("%s%n", bpl.getList ()));
+      //      text.append ("\nData Blocks:\n");
+      //      for (BlockPointerList bpl : reader.getDataBlockPointerLists ())
+      //        text.append (String.format ("%s%n", bpl.getList ()));
 
       text.deleteCharAt (text.length () - 1);
       fileText.setText (text.toString ());
@@ -185,9 +183,14 @@ public class OutputPane extends BorderPane
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (String tabName, boolean visible)
+  void setTabVisible (boolean metaVisible, boolean debugVisible)
   {
-    System.out.printf ("Set %s %s%n", tabName, visible);
+    tabPane.getTabs ().clear ();
+    if (metaVisible)
+      tabPane.getTabs ().add (fileTab);
+    if (debugVisible)
+      tabPane.getTabs ().add (debugTab);
+    tabPane.getTabs ().add (textTab);
   }
 
   // ---------------------------------------------------------------------------------//

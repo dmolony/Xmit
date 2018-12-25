@@ -39,8 +39,8 @@ public class ViewMenu
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> setLines ());
-    controlMenuItem.setOnAction (e -> setMeta ());
-    debugMenuItem.setOnAction (e -> setDebug ());
+    controlMenuItem.setOnAction (e -> setTabs ());
+    debugMenuItem.setOnAction (e -> setTabs ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -53,14 +53,13 @@ public class ViewMenu
       listener.showLinesSelected (linesMenuItem.isSelected ());
   }
 
-  private void setMeta ()
-  {
-    xmitApp.setTabVisible ("META", controlMenuItem.isSelected ());
-  }
+  // ---------------------------------------------------------------------------------//
+  // setTabs
+  // ---------------------------------------------------------------------------------//
 
-  private void setDebug ()
+  private void setTabs ()
   {
-    xmitApp.setTabVisible ("DEBUG", debugMenuItem.isSelected ());
+    xmitApp.setTabVisible (controlMenuItem.isSelected (), debugMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -74,6 +73,7 @@ public class ViewMenu
 
     controlMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_CONTROL, false));
     debugMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_DEBUG, false));
+    setTabs ();
   }
 
   // ---------------------------------------------------------------------------------//
