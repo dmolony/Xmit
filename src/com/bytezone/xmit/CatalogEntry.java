@@ -292,6 +292,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     {
       if (isAlias ())
         return "Alias of " + aliasName;
+
       if (blockPointerLists.size () == 0)
         return "No data";
 
@@ -355,9 +356,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   public boolean isXmit ()
   {
-    if (blockPointerLists.size () == 0)
-      return false;
-    return blockPointerLists.get (0).isXmit ();
+    return blockPointerLists.size () > 0 && blockPointerLists.get (0).isXmit ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -423,6 +422,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   boolean isRdw ()
   {
+    if (blockPointerLists.size () == 0)
+      return false;
+
     for (BlockPointerList bpl : blockPointerLists)
     {
       byte[] buffer = bpl.getDataBuffer ();
@@ -475,6 +477,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   private String hexDump ()
   {
+    if (blockPointerLists.size () == 0)
+      return "";
+
     StringBuilder text = new StringBuilder ();
 
     if (blockPointerLists.get (0).isXmit ())
