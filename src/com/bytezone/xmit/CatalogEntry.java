@@ -92,6 +92,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
       case 0x4E:      // 
         break;
+      case 0xCB:      // 
+        break;
+      case 0x4B:      // 
+        break;
 
       case 0:
         break;

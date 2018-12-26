@@ -72,6 +72,7 @@ public class ControlRecord
       case TextUnit.INMBLKSZ:
       case TextUnit.INMSIZE:
       case TextUnit.INMDIR:
+      case TextUnit.INMEATTR:
         return new TextUnitNumber (buffer, ptr);
 
       case TextUnit.INMFTIME:
@@ -93,7 +94,7 @@ public class ControlRecord
         return new TextUnit (buffer, ptr);
 
       default:
-        System.out.printf ("Unknown key: %04X%n", key);
+        System.out.printf ("Unknown key: %04X in %s%n", key, name);
         return new TextUnit (buffer, ptr);
     }
   }

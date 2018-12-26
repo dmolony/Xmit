@@ -13,7 +13,7 @@ public class TextUnit
   public static final int INMDIR = 0x000C;          // no of directory blocks
   public static final int INMDSNAM = 0x0002;
   public static final int INMDSORG = 0x003C;
-  public static final int INMEATTR = 0x8028;
+  public static final int INMEATTR = 0x8028;        // Extended attribute status
   public static final int INMERRCD = 0x1027;
   public static final int INMEXPDT = 0x0022;
 
