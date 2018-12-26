@@ -5,7 +5,7 @@
 - extract individual files
 
 ## Sample screens
-### Mac
+### MacOS
 ![Mac](resources/xmitosx.png?raw=true "Mac")
 ### Windows
 ![Windows](resources/xmitwin.png?raw=true "Windows")
