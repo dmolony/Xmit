@@ -337,14 +337,13 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private void createDataLines (BlockPointerList blockPointerList)
   {
     byte[] buffer = blockPointerList.getDataBuffer ();
-    //    System.out.println (reader.);
 
     int ptr = 0;
     int length = buffer.length;
     while (length > 0)
     {
       int len = Math.min (lrecl, length);
-      lines.add (Utility.getString (buffer, ptr, len));
+      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
       ptr += len;
       length -= len;
     }
