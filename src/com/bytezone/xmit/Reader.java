@@ -5,6 +5,7 @@ import java.util.*;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.TextUnit;
+import com.bytezone.xmit.textunit.TextUnitNumber;
 import com.bytezone.xmit.textunit.TextUnitString;
 
 public class Reader
@@ -21,6 +22,7 @@ public class Reader
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   private int catalogEndBlock = 0;
   private final List<String> lines = new ArrayList<> ();        // flat file
+  private final int lrecl;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -33,6 +35,8 @@ public class Reader
     // build the INMRxx control records
     for (BlockPointerList bpl : controlPointerLists)
       controlRecords.add (new ControlRecord (bpl.getBuffer ()));
+
+    lrecl = getRecordLength ();
 
     // allocate the data records
     switch (getOrg ())
@@ -232,7 +236,7 @@ public class Reader
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
+        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2, lrecl);
         catalogEntries.add (catalogEntry);
 
         // check for last member
@@ -372,6 +376,38 @@ public class Reader
         return ((TextUnitString) textUnit).getString ();
     }
     return "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getControlRecordNumber
+  // ---------------------------------------------------------------------------------//
+
+  int getControlRecordNumber (int key)
+  {
+    for (ControlRecord controlRecord : controlRecords)
+    {
+      TextUnit textUnit = controlRecord.getTextUnit (key);
+      if (textUnit != null && textUnit instanceof TextUnitNumber)
+        return (int) ((TextUnitNumber) textUnit).getNumber ();
+    }
+    return -1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getRecordLength
+  // ---------------------------------------------------------------------------------//
+
+  public int getRecordLength ()
+  {
+    Optional<ControlRecord> opt =
+        getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
+    if (opt.isPresent ())
+    {
+      TextUnit textUnit = opt.get ().getTextUnit (TextUnit.INMLRECL);
+      if (textUnit != null && textUnit instanceof TextUnitNumber)
+        return (int) ((TextUnitNumber) textUnit).getNumber ();
+    }
+    return -1;
   }
 
   // ---------------------------------------------------------------------------------//

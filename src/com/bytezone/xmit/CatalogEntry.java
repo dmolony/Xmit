@@ -31,15 +31,17 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
   private int dataLength;
+  private final int lrecl;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry (byte[] buffer, int ptr)
+  public CatalogEntry (byte[] buffer, int ptr, int lrecl)
   {
     memberName = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
+    this.lrecl = lrecl;
 
     int extra = buffer[ptr + 11] & 0xFF;
 
@@ -335,12 +337,13 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private void createDataLines (BlockPointerList blockPointerList)
   {
     byte[] buffer = blockPointerList.getDataBuffer ();
+    //    System.out.println (reader.);
 
     int ptr = 0;
     int length = buffer.length;
     while (length > 0)
     {
-      int len = Math.min (80, length);
+      int len = Math.min (lrecl, length);
       lines.add (Utility.getString (buffer, ptr, len));
       ptr += len;
       length -= len;

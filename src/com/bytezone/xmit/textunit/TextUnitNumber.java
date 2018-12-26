@@ -18,7 +18,7 @@ public class TextUnitNumber extends TextUnit
   }
 
   @Override
-  long getNumber ()
+  public long getNumber ()
   {
     return number;
   }
