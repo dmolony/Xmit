@@ -121,19 +121,18 @@ public class Reader
 
   void processPS (List<BlockPointerList> blockPointerLists)
   {
-    if (blockPointerLists.size () > 600)
+    int max = blockPointerLists.size ();
+    if (max > 300)
     {
-      lines.add (String.format ("File contains %,d BlockPointerLists",
-          blockPointerLists.size ()));
-      for (int i = 0; i < 5; i++)
-      {
-        BlockPointerList bpl = blockPointerLists.get (i);
-        lines.add (Utility.getHexDump (bpl.getBuffer ()));
-      }
+      lines.add (String.format ("File contains %,d BlockPointerLists", max));
+      max = 5;
     }
-    else
-      for (int i = 0; i < blockPointerLists.size (); i++)
-        lines.add (Utility.getString (blockPointerLists.get (i).getBuffer ()));
+
+    for (int i = 0; i < max; i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+      lines.add (Utility.getHexDump (bpl.getBuffer ()));
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -407,7 +406,7 @@ public class Reader
       if (textUnit != null && textUnit instanceof TextUnitNumber)
         return (int) ((TextUnitNumber) textUnit).getNumber ();
     }
-    return -1;
+    return 0;
   }
 
   // ---------------------------------------------------------------------------------//

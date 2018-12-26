@@ -368,14 +368,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     byte[] xmitBuffer = new byte[dataLength];
     int ptr = 0;
+
     for (BlockPointerList blockPointerList : blockPointerLists)
-    {
-      //      byte[] dataBuffer = blockPointerList.getDataBuffer ();
       ptr = blockPointerList.getDataBuffer (xmitBuffer, ptr);
-      //      System.arraycopy (dataBuffer, 0, xmitBuffer, ptr, dataBuffer.length);
-      //      ptr += dataBuffer.length;
-    }
     assert ptr == dataLength;
+
     return xmitBuffer;
   }
 
