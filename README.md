@@ -1,8 +1,8 @@
 # Xmit
-- view the contents of XMIT files
+- view the contents of xmit files
 - view xmit files stored as PDS members
 - view xmit files inside .zip files
-- extract individual files
+- extract individual PDS members
 
 ## Sample screens
 ### MacOS
