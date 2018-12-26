@@ -1,11 +1,7 @@
 package com.bytezone.xmit.gui;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
@@ -22,12 +18,9 @@ public class XmitTree extends TreeView<XmitFile>
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-  //  private Path rootFolderPath;
+
   private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
-
-  private Reader reader;
-  private final Map<String, Reader> readers = new HashMap<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -78,30 +71,7 @@ public class XmitTree extends TreeView<XmitFile>
       }
 
       XmitFile xmitFile = newSelection.getValue ();
-
-      if (!xmitFile.isFile () || xmitFile.isCompressed ())
-      {
-        for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null);
-        return;
-      }
-
-      String key = xmitFile.getAbsolutePath ();
-
-      if (readers.containsKey (key))
-        reader = readers.get (key);
-      else
-      {
-        try
-        {
-          reader = new Reader (Files.readAllBytes (xmitFile.toPath ()));
-        }
-        catch (IOException e)
-        {
-          e.printStackTrace ();
-        }
-        readers.put (key, reader);
-      }
+      Reader reader = xmitFile.getReader ((FileTreeItem) newSelection);
 
       for (TreeItemSelectionListener listener : listeners)
         listener.treeItemSelected (reader);
@@ -155,11 +125,13 @@ public class XmitTree extends TreeView<XmitFile>
   {
     TreeItem<XmitFile> node = getRoot ();
     Optional<TreeItem<XmitFile>> optionalNode = Optional.empty ();
+    //    System.out.println (path);
 
     String[] chunks = path.split (SEPARATOR);
 
     for (int i = 2; i < chunks.length; i++)
     {
+      //      System.out.println (chunks[i]);
       optionalNode = search (node, chunks[i]);
       if (!optionalNode.isPresent ())
         break;
@@ -174,7 +146,16 @@ public class XmitTree extends TreeView<XmitFile>
 
   private Optional<TreeItem<XmitFile>> search (TreeItem<XmitFile> parentNode, String name)
   {
+    //    System.out.println (name);
     parentNode.setExpanded (true);
+    //    System.out.printf ("%s search children: %d%n", parentNode.getValue ().getName (),
+    //        parentNode.getChildren ().size ());
+    //    if (parentNode.getChildren ().size () == 0)
+    //    {
+    //      XmitFile xmitFile = parentNode.getValue ();
+    //      //      if (xmitFile.isFile ())
+    //      Utility.printStackTrace ();
+    //    }
 
     for (TreeItem<XmitFile> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
@@ -197,6 +178,7 @@ public class XmitTree extends TreeView<XmitFile>
       pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());
       item = item.getParent ();
     }
+
     return pathBuilder.toString ();
   }
 

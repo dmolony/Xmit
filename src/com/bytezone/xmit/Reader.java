@@ -279,6 +279,19 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
+  // getXmitFiles
+  // ---------------------------------------------------------------------------------//
+
+  public List<CatalogEntry> getXmitFiles ()
+  {
+    List<CatalogEntry> xmitFiles = new ArrayList<> ();
+    for (CatalogEntry catalogEntry : catalogEntries)
+      if (catalogEntry.isXmit ())
+        xmitFiles.add (catalogEntry);
+    return xmitFiles;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getLines
   // ---------------------------------------------------------------------------------//
 

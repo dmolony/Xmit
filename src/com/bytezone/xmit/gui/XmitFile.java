@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -13,7 +14,10 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class XmitFile extends File
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Reader;
+
+public class XmitFile
 {
   private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit");
   private static final List<String> compressionSuffixes = Arrays.asList ("zip");
@@ -21,6 +25,9 @@ public class XmitFile extends File
   private final File file;
   private final String suffix;
   private String name;
+  private Reader reader;
+  //  private Reader parentReader;
+  private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -28,7 +35,6 @@ public class XmitFile extends File
 
   public XmitFile (File file)                   // plain file
   {
-    super (file.getAbsolutePath ());
     this.file = file;
     suffix = getSuffix (file.getName ());
   }
@@ -37,10 +43,80 @@ public class XmitFile extends File
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitFile (File file, String name)      // an extracted file
+  public XmitFile (File file, String name)      // an unzipped file
   {
     this (file);
     this.name = name;             // display this name instead of the tmp file name
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
+  public XmitFile (CatalogEntry catalogEntry)      // an xmit member
+  {
+    suffix = "";
+    file = null;
+    this.catalogEntry = catalogEntry;
+    name = catalogEntry.getMemberName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isFile
+  // ---------------------------------------------------------------------------------//
+
+  public boolean isFile ()
+  {
+    return file == null ? false : file.isFile ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isDirectory
+  // ---------------------------------------------------------------------------------//
+
+  public boolean isDirectory ()
+  {
+    return file == null ? false : file.isDirectory ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isMember
+  // ---------------------------------------------------------------------------------//
+
+  public boolean isMember ()
+  {
+    return catalogEntry != null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // listFiles
+  // ---------------------------------------------------------------------------------//
+
+  public File[] listFiles ()
+  {
+    if (file != null)
+      return file.listFiles ();
+    return new File[0];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getAbsolutePath
+  // ---------------------------------------------------------------------------------//
+
+  String getAbsolutePath ()
+  {
+    if (file != null)
+      return file.getAbsolutePath ();
+    return reader.getFileName ();   // should be parent.getAbsolutePath()+"."+memberName
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // toPath
+  // ---------------------------------------------------------------------------------//
+
+  Path toPath ()
+  {
+    return file.toPath ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -53,10 +129,63 @@ public class XmitFile extends File
   }
 
   // ---------------------------------------------------------------------------------//
+  // setReader
+  // ---------------------------------------------------------------------------------//
+
+  void setReader (Reader reader)
+  {
+    this.reader = reader;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getReader
+  // ---------------------------------------------------------------------------------//
+
+  Reader getReader (FileTreeItem fileTreeItem)
+  {
+    Reader reader = getReader ();
+    if (reader != null && reader.getXmitFiles ().size () > 0)
+      fileTreeItem.buildChildren ();
+    return reader;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getReader
+  // ---------------------------------------------------------------------------------//
+
+  Reader getReader ()
+  {
+    if (reader == null && catalogEntry != null)
+    {
+      reader = new Reader (catalogEntry.getXmitBuffer ());
+    }
+    if (reader == null && isFile () && !isCompressed ())
+      try
+      {
+        //        System.out.println ("reading");
+        reader = new Reader (Files.readAllBytes (file.toPath ()));
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
+    return reader;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // hasReader
+  // ---------------------------------------------------------------------------------//
+
+  boolean hasReader ()
+  {
+    return reader != null;
+  }
+
+  // ---------------------------------------------------------------------------------//
   //getName
   // ---------------------------------------------------------------------------------//
 
-  @Override
+  //  @Override
   public String getName ()
   {
     return name == null ? file.getName () : name;
