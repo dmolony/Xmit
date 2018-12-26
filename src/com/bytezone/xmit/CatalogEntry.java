@@ -42,12 +42,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
 
     int extra = buffer[ptr + 11] & 0xFF;
-    int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
+
     switch (extra)
     {
       case 0x0F:
         basic (buffer, ptr);
-
         break;
 
       case 0x14:
@@ -105,6 +104,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
             memberName);
     }
 
+    int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
     directoryData = new byte[extraLength];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
   }
@@ -267,7 +267,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   boolean addBlockPointerList (BlockPointerList blockPointerList)
   {
     if (blockPointerLists.size () == 0
-        && !blockPointerList.sortKeyMatches (directoryData[0 + 10]))
+        && !blockPointerList.sortKeyMatches (directoryData[10]))
     {
       System.out.println ("Mismatch in " + memberName);
       return false;
@@ -368,9 +368,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     int ptr = 0;
     for (BlockPointerList blockPointerList : blockPointerLists)
     {
-      byte[] dataBuffer = blockPointerList.getDataBuffer ();
-      System.arraycopy (dataBuffer, 0, xmitBuffer, ptr, dataBuffer.length);
-      ptr += dataBuffer.length;
+      //      byte[] dataBuffer = blockPointerList.getDataBuffer ();
+      ptr = blockPointerList.getDataBuffer (xmitBuffer, ptr);
+      //      System.arraycopy (dataBuffer, 0, xmitBuffer, ptr, dataBuffer.length);
+      //      ptr += dataBuffer.length;
     }
     assert ptr == dataLength;
     return xmitBuffer;

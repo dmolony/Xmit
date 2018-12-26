@@ -114,6 +114,8 @@ public class OutputPane extends BorderPane
       text.deleteCharAt (text.length () - 1);
 
       text.append ("Catalog Blocks:\n");
+      text.append ("                   versn    ss -created--  -modified-  hh mm ");
+      text.append ("Size1 Size2       -------- user ---------     \n");
       for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
       {
         text.append (catalogEntry.debugLine ());

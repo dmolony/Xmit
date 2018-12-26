@@ -286,7 +286,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getNewBuffer
+  // getDataBuffer
   // ---------------------------------------------------------------------------------//
 
   byte[] getDataBuffer ()
@@ -300,6 +300,26 @@ public class BlockPointerList implements Iterable<BlockPointer>
     }
     assert ptr == dataLength;
     return fullBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDataBuffer
+  // ---------------------------------------------------------------------------------//
+
+  int getDataBuffer (byte[] xmitBuffer, int ptr)
+  {
+    assert buffer.length >= ptr + dataLength;
+    //    byte[] fullBlock = new byte[dataLength];
+    //    int ptr = 0;
+    for (BlockPointer blockPointer : newList)
+    {
+      System.arraycopy (buffer, blockPointer.offset, xmitBuffer, ptr,
+          blockPointer.length);
+      ptr += blockPointer.length;
+    }
+    //    assert ptr == dataLength;
+    //    return fullBlock;
+    return ptr;
   }
 
   // ---------------------------------------------------------------------------------//
