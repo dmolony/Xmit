@@ -13,10 +13,8 @@
 ![Linux](resources/xmitlinux.png?raw=true "Linux")
 
 ## Installation
-- Download and install Java and JavaFX, which are now separate downloads. You can get them
-[here](https://jdk.java.net/11/) and
-[here](https://gluonhq.com/products/javafx/).
-- Download XmitApp.jar from the [releases](https://github.com/dmolony/xmit/releases) page.
+- Download and install [Java 11](https://jdk.java.net/11/) and [JavaFX 11](https://gluonhq.com/products/javafx/), which are now separate downloads.
+- Download [XmitApp](https://github.com/dmolony/xmit/releases).
 - Create executable run file.  
 ### MacOs or Unix shell file  
 
