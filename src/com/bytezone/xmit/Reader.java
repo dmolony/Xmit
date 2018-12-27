@@ -122,8 +122,9 @@ public class Reader
           // hack to handle multiple INMR03 records - see FILE434.XMI
           if (Utility.matches (INMR03, buffer, ptr + 1) && blockPointerLists.size () > 0)
           {
-            System.out.printf ("Clearing previous INMR03 data: %d%n",
-                blockPointerLists.size ());
+            //            System.out.printf ("Clearing previous INMR03 data: %d%n",
+            //                blockPointerLists.size ());
+            print ();
             blockPointerLists.clear ();
           }
         }
@@ -135,6 +136,15 @@ public class Reader
           new BlockPointer (buffer, ptr + 2, length - 2));
 
       ptr += length;
+    }
+  }
+
+  void print ()
+  {
+    for (BlockPointerList bpl : blockPointerLists)
+    {
+      byte[] buffer = bpl.getBuffer ();
+      System.out.println (Utility.getString (buffer));
     }
   }
 
@@ -155,12 +165,17 @@ public class Reader
     {
       BlockPointerList bpl = blockPointerLists.get (i);
       byte[] buffer = bpl.getBuffer ();
-      int ptr = 0;
-      while (ptr < buffer.length)
+      if (lrecl == 0)
+        lines.add (Utility.getHexDump (buffer));
+      else
       {
-        int len = Math.min (lrecl, buffer.length - ptr);
-        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-        ptr += len;
+        int ptr = 0;
+        while (ptr < buffer.length)
+        {
+          int len = Math.min (lrecl, buffer.length - ptr);
+          lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+          ptr += len;
+        }
       }
     }
   }
