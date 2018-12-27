@@ -20,7 +20,8 @@
 - Create executable run file.  
 ### MacOs or Unix shell file  
 
-```/path/to/jdk-11.0.1.jdk/Contents/Home/bin/java \
+```
+/path/to/jdk-11.0.1.jdk/Contents/Home/bin/java    \
 --module-path /path/to/javafx-sdk-11/lib          \
 --add-modules=javafx.controls                     \
 -Dfile.encoding=UTF-8                             \
@@ -28,8 +29,10 @@
 ```  
 ### Windows batch file  
 
-```C:\path\to\jdk-11.0.1\bin\java.exe             \
+```
+C:\path\to\jdk-11.0.1\bin\java.exe                \
 --module-path C:\path\to\javafx-sdk-11.0.1\lib    \
 --add-modules=javafx.controls                     \
 -Dfile.encoding=UTF-8                             \
--jar C:\path\to\XmitApp.jar```
+-jar C:\path\to\XmitApp.jar
+```
