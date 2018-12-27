@@ -15,6 +15,8 @@ public class Reader
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
 
+  private final byte[] INMR03 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
+                                  (byte) 0xD9, (byte) 0xF0, (byte) 0xF3 };
   private final byte[] INMR06 = { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5,
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
@@ -22,7 +24,7 @@ public class Reader
   private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   private int catalogEndBlock = 0;
   private final List<String> lines = new ArrayList<> ();        // flat file
-  private final int lrecl;
+  private int lrecl;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -36,16 +38,23 @@ public class Reader
     for (BlockPointerList bpl : controlPointerLists)
       controlRecords.add (new ControlRecord (bpl.getBuffer ()));
 
-    lrecl = getRecordLength ();
+    if (false)
+      for (ControlRecord controlRecord : controlRecords)
+        System.out.println (controlRecord);
 
     // allocate the data records
+    //    if (controlRecords.size () > 6)
+    //      System.out.println ("Unexpected control records");
+    //    else
     switch (getOrg ())
     {
       case PDS:
+        lrecl = getRecordLength ("IEBCOPY");
         processPDS (blockPointerLists);
         break;
 
       case PS:
+        lrecl = getRecordLength ("INMCOPY");
         processPS (blockPointerLists);
         break;
 
@@ -79,8 +88,14 @@ public class Reader
       boolean recordNumber = (flags & 0x10) != 0;       // not seen one of these yet
 
       if (false)
-        System.out.printf ("%2s  %2s  %2s  %2s%n", firstSegment ? "FS" : "",
-            lastSegment ? "LS" : "", controlRecord ? "CR" : "", recordNumber ? "RN" : "");
+      {
+        String name = controlRecord ? Utility.getString (buffer, ptr + 2, 6) : "";
+        System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
+            firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
+            recordNumber ? "RN" : "", name);
+        if (!controlRecord && firstSegment && lastSegment)
+          System.out.println (Utility.getHexDump (buffer, ptr, length));
+      }
 
       if (recordNumber)
         System.out.println ("******** Found a record number");
@@ -103,6 +118,14 @@ public class Reader
           if (Utility.matches (INMR06, buffer, ptr))
             eof = true;
           controlPointerLists.add (currentBlockPointerList);
+
+          // hack to handle multiple INMR03 records - see FILE434.XMI
+          if (Utility.matches (INMR03, buffer, ptr + 1) && blockPointerLists.size () > 0)
+          {
+            System.out.printf ("Clearing previous INMR03 data: %d%n",
+                blockPointerLists.size ());
+            blockPointerLists.clear ();
+          }
         }
         else
           blockPointerLists.add (currentBlockPointerList);
@@ -122,16 +145,23 @@ public class Reader
   void processPS (List<BlockPointerList> blockPointerLists)
   {
     int max = blockPointerLists.size ();
-    if (max > 300)
-    {
-      lines.add (String.format ("File contains %,d BlockPointerLists", max));
-      max = 5;
-    }
+    //    if (max > 300)
+    //    {
+    //      lines.add (String.format ("File contains %,d BlockPointerLists", max));
+    //      max = 5;
+    //    }
 
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-      lines.add (Utility.getHexDump (bpl.getBuffer ()));
+      byte[] buffer = bpl.getBuffer ();
+      int ptr = 0;
+      while (ptr < buffer.length)
+      {
+        int len = Math.min (lrecl, buffer.length - ptr);
+        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+        ptr += len;
+      }
     }
   }
 
@@ -226,7 +256,7 @@ public class Reader
   boolean addCatalogEntries (byte[] buffer)
   {
     int ptr = 0;
-    while (ptr < buffer.length)
+    while (ptr + 22 < buffer.length)
     {
       int ptr2 = ptr + 22;
 
@@ -396,10 +426,9 @@ public class Reader
   // getRecordLength
   // ---------------------------------------------------------------------------------//
 
-  public int getRecordLength ()
+  public int getRecordLength (String utility)
   {
-    Optional<ControlRecord> opt =
-        getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
+    Optional<ControlRecord> opt = getControlRecord ("INMR02", TextUnit.INMUTILN, utility);
     if (opt.isPresent ())
     {
       TextUnit textUnit = opt.get ().getTextUnit (TextUnit.INMLRECL);

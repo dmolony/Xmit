@@ -91,6 +91,7 @@ public class ControlRecord
         return new DatasetType (buffer, ptr);
 
       case TextUnit.INMFACK:
+      case TextUnit.INMTERM:
         return new TextUnit (buffer, ptr);
 
       default:
