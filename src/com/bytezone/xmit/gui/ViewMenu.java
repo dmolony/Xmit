@@ -26,6 +26,8 @@ public class ViewMenu
   private final CheckMenuItem controlMenuItem = new CheckMenuItem ("Control tab");
   private final CheckMenuItem debugMenuItem = new CheckMenuItem ("Debug tab");
 
+  // TODO: Optional code pages
+
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
