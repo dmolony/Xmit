@@ -2,9 +2,33 @@ package com.bytezone.xmit;
 
 public class Utility
 {
-  //  static CodePage[] codePages = { new CodePage ("CP037"), new CodePage ("CP500"),
-  //                                  new CodePage ("CP1047"), new CodePage ("CP285") };
-  static CodePage codePage = new CodePage ("CP037");
+  static CodePage[] codePages = { new CodePage ("CP037"), new CodePage ("CP285"),
+                                  new CodePage ("CP500"), new CodePage ("CP1047") };
+  static CodePage codePage = codePages[0];
+
+  // ---------------------------------------------------------------------------------//
+  //
+  // ---------------------------------------------------------------------------------//
+
+  public static void setCodePage (String codePageName)
+  {
+    switch (codePageName)
+    {
+      case "CP037":
+        codePage = codePages[0];
+        break;
+      case "CP285":
+        codePage = codePages[1];
+        break;
+      case "CP500":
+        codePage = codePages[2];
+        break;
+      case "CP1047":
+        codePage = codePages[3];
+        break;
+    }
+    //    System.out.printf ("Code Page: %s%n", codePageName);
+  }
 
   // ---------------------------------------------------------------------------------//
   // getString

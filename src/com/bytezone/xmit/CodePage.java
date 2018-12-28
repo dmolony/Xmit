@@ -4,15 +4,19 @@ import java.io.UnsupportedEncodingException;
 
 public class CodePage
 {
+  private static byte[] values;
   public final int[] ebc2asc = new int[256];
   public final int[] asc2ebc = new int[256];
 
-  public CodePage (String codePage)
+  static
   {
-    byte[] values = new byte[256];
+    values = new byte[256];
     for (int i = 0; i < 256; i++)
       values[i] = (byte) i;
+  }
 
+  public CodePage (String codePage)
+  {
     try
     {
       String s = new String (values, codePage);      // CP500, CP1047, CP037, CP285

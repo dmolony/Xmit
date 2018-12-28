@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.Utility;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -17,7 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-public class XmitApp extends Application
+public class XmitApp extends Application implements CodePageSelectedListener
 {
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
@@ -72,7 +74,8 @@ public class XmitApp extends Application
     xmitTree.addListener (fileMenu);
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (outputPane);
-    viewMenu.addListener (outputPane);
+    viewMenu.addShowLinesListener (outputPane);
+    viewMenu.addCodePageListener (this);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
@@ -253,6 +256,17 @@ public class XmitApp extends Application
   void setTabVisible (boolean metaVisible, boolean debugVisible)
   {
     outputPane.setTabVisible (metaVisible, debugVisible);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // selectCodePage
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void selectCodePage (String codePageName)
+  {
+    Utility.setCodePage (codePageName);
+    outputPane.selectCodePage ();
   }
 
   // ---------------------------------------------------------------------------------//

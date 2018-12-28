@@ -228,4 +228,13 @@ public class OutputPane extends BorderPane
     this.showLines = showLines;
     updateCurrentTab ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  // selectCodePage
+  // ---------------------------------------------------------------------------------//
+
+  public void selectCodePage ()
+  {
+    updateCurrentTab ();
+  }
 }
