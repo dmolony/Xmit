@@ -62,11 +62,7 @@ public class ViewMenu
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     controlMenuItem.setOnAction (e -> setTabs ());
     debugMenuItem.setOnAction (e -> setTabs ());
-    euroMenuItem.setOnAction (e ->
-    {
-      setEuro ();
-      notifyCodePageListeners ();
-    });
+    euroMenuItem.setOnAction (e -> setEuroAndNotifyListeners ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,10 +102,10 @@ public class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // setEuro
+  // setEuroAndNotifyListeners
   // ---------------------------------------------------------------------------------//
 
-  private void setEuro ()
+  private void setEuroAndNotifyListeners ()
   {
     int j = euroMenuItem.isSelected () ? 1 : 0;
     for (int i = 0; i < codePageNames.length; i++)
@@ -117,6 +113,7 @@ public class ViewMenu
       codePageMenuItems.get (i).setText (codePageNames[i][j]);
       codePageMenuItems.get (i).setUserData (codePageNames[i][j]);
     }
+    notifyCodePageListeners ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -142,7 +139,6 @@ public class ViewMenu
     setTabs ();
 
     euroMenuItem.setSelected (prefs.getBoolean (PREFS_EURO_PAGE, false));
-    setEuro ();
 
     int j = euroMenuItem.isSelected () ? 1 : 0;
     String codePageName = prefs.get (PREFS_CODE_PAGE, codePageNames[0][j]);
@@ -150,13 +146,11 @@ public class ViewMenu
     for (int i = 0; i < codePageNames.length; i++)
       if (codePageNames[i][j].equals (codePageName))
       {
-        RadioMenuItem item = codePageMenuItems.get (i);
-        toggleGroup.selectToggle (item);
-        item.setText (codePageName);
+        toggleGroup.selectToggle (codePageMenuItems.get (i));
         break;
       }
 
-    notifyCodePageListeners ();
+    setEuroAndNotifyListeners ();
   }
 
   // ---------------------------------------------------------------------------------//
