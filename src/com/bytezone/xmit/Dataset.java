@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class File
+public class Dataset
 {
   int dataLength;
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();

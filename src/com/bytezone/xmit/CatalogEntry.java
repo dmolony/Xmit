@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 
-public class CatalogEntry extends File implements Comparable<CatalogEntry>
+public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 {
   private final String memberName;
   private String userName = "";
