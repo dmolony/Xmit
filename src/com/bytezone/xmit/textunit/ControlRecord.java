@@ -9,6 +9,7 @@ public class ControlRecord
 {
   final String name;
   final List<TextUnit> textUnits = new ArrayList<> ();
+  int fileNbr;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -24,8 +25,7 @@ public class ControlRecord
 
     if ("INMR02".equals (name))
     {
-      long fileNbr = Utility.getFourBytes (buffer, ptr);     // need to save this
-      //      System.out.printf (" (file %d)", fileNbr);
+      fileNbr = (int) Utility.getFourBytes (buffer, ptr);     // need to save this
       ptr += 4;
     }
 
@@ -46,6 +46,15 @@ public class ControlRecord
   public boolean nameMatches (String name)
   {
     return this.name.equals (name);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // fileNbrMatches
+  // ---------------------------------------------------------------------------------//
+
+  public boolean fileNbrMatches (int fileNbr)
+  {
+    return this.fileNbr == fileNbr;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -122,7 +131,8 @@ public class ControlRecord
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Control Record: %s%n%n", name));
+    String fileNbrText = fileNbr > 0 ? String.format (" (file %d)", fileNbr) : "";
+    text.append (String.format ("Control Record: %s %s%n%n", name, fileNbrText));
     for (TextUnit textUnit : textUnits)
       text.append (textUnit + "\n");
 

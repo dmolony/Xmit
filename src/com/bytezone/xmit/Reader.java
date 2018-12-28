@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
+import com.bytezone.xmit.textunit.Dsorg.Org;
 import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitNumber;
 import com.bytezone.xmit.textunit.TextUnitString;
@@ -21,9 +22,11 @@ public class Reader
                                   (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
 
   private final List<BlockPointerList> controlPointerLists = new ArrayList<> ();
-  private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  private List<BlockPointerList> blockPointerLists;
+  private final List<List<BlockPointerList>> masterBPL = new ArrayList<> ();
+
   private int catalogEndBlock = 0;
-  private final List<String> lines = new ArrayList<> ();        // flat file
+  private final List<String> lines = new ArrayList<> ();        // sequential file
   private int lrecl;
 
   // ---------------------------------------------------------------------------------//
@@ -42,11 +45,14 @@ public class Reader
       for (ControlRecord controlRecord : controlRecords)
         System.out.println (controlRecord);
 
+    Org org = getOrg (masterBPL.size ());       // default to the last one
+
+    if (masterBPL.size () > 1)
+      for (BlockPointerList bpl : masterBPL.get (0))
+        System.out.println (Utility.getString (bpl.getBuffer ()));
+
     // allocate the data records
-    //    if (controlRecords.size () > 6)
-    //      System.out.println ("Unexpected control records");
-    //    else
-    switch (getOrg ())
+    switch (org)
     {
       case PDS:
         lrecl = getRecordLength ("IEBCOPY");
@@ -59,7 +65,7 @@ public class Reader
         break;
 
       default:
-        System.out.println ("Unknown ORG: " + getOrg ());
+        System.out.println ("Unknown ORG: " + org);
     }
   }
 
@@ -115,17 +121,16 @@ public class Reader
         currentBlockPointerList = new BlockPointerList (buffer, count++);
         if (controlRecord)
         {
-          if (Utility.matches (INMR06, buffer, ptr))
-            eof = true;
           controlPointerLists.add (currentBlockPointerList);
 
-          // hack to handle multiple INMR03 records - see FILE434.XMI
-          if (Utility.matches (INMR03, buffer, ptr + 1) && blockPointerLists.size () > 0)
+          if (Utility.matches (INMR06, buffer, ptr))
+            eof = true;
+
+          // handle multiple INMR03 records - see FILE434.XMI
+          else if (Utility.matches (INMR03, buffer, ptr + 1))
           {
-            //            System.out.printf ("Clearing previous INMR03 data: %d%n",
-            //                blockPointerLists.size ());
-            print ();
-            blockPointerLists.clear ();
+            blockPointerLists = new ArrayList<> ();
+            masterBPL.add (blockPointerLists);
           }
         }
         else
@@ -136,15 +141,6 @@ public class Reader
           new BlockPointer (buffer, ptr + 2, length - 2));
 
       ptr += length;
-    }
-  }
-
-  void print ()
-  {
-    for (BlockPointerList bpl : blockPointerLists)
-    {
-      byte[] buffer = bpl.getBuffer ();
-      System.out.println (Utility.getString (buffer));
     }
   }
 
@@ -362,7 +358,7 @@ public class Reader
   {
     Optional<ControlRecord> opt =
         getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
-    if (!opt.isPresent ())
+    if (opt.isEmpty ())
       opt = getControlRecord ("INMR02", TextUnit.INMUTILN, "INMCOPY");
     if (opt.isPresent ())
     {
@@ -373,6 +369,43 @@ public class Reader
     }
 
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getOrg
+  // ---------------------------------------------------------------------------------//
+
+  Dsorg.Org getOrg (int fileNbr)
+  {
+    Optional<ControlRecord> opt = getInmr02 (fileNbr, "IEBCOPY");
+    if (opt.isEmpty ())
+      opt = getInmr02 (fileNbr, "INMCOPY");
+    if (opt.isPresent ())
+    {
+      ControlRecord controlRecord = opt.get ();
+      TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSORG);
+      if (textUnit != null)
+        return ((Dsorg) textUnit).type;
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getInmr02
+  // ---------------------------------------------------------------------------------//
+
+  Optional<ControlRecord> getInmr02 (int fileNbr, String utilityName)
+  {
+    for (ControlRecord controlRecord : controlRecords)
+      if (controlRecord.fileNbrMatches (fileNbr))
+      {
+        TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
+        if (textUnit != null
+            && ((TextUnitString) textUnit).getString ().equals (utilityName))
+          return Optional.of (controlRecord);
+      }
+
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//
