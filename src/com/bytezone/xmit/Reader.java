@@ -162,7 +162,7 @@ public class Reader
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-      byte[] buffer = bpl.getBuffer ();
+      byte[] buffer = bpl.getBuffer ();             // raw buffer
       if (lrecl == 0)
         lines.add (Utility.getHexDump (buffer));
       else
@@ -179,6 +179,26 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
+  // getLines
+  // ---------------------------------------------------------------------------------//
+
+  // this should be converted to an abstract File which Member would also use
+  // only OutputPane uses this
+  public String getLines ()
+  {
+    lines.clear ();
+    blockPointerLists = masterBPL.get (masterBPL.size () - 1);
+    processPS (blockPointerLists);
+
+    StringBuilder text = new StringBuilder ();
+    for (String line : lines)
+      text.append (line + "\n");
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   // processPDS
   // ---------------------------------------------------------------------------------//
 
@@ -186,6 +206,9 @@ public class Reader
   {
     boolean inCatalog = true;
 
+    // skip first two BlockPointerList entries
+    // read catalo data as raw data
+    // convert remaining entries to BlockPointers with the headers removed
     for (int i = 2; i < blockPointerLists.size (); i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
@@ -199,6 +222,7 @@ public class Reader
         bpl.build ();       // create new BlockPointers
     }
 
+    // assign new BlockPointer lists to CatalogEntries
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
 
@@ -228,8 +252,8 @@ public class Reader
     for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-      CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
-      if (!ce.addBlockPointerList (bpl))
+      CatalogEntry catalogEntry = uniqueCatalogEntries.get (currentMember);
+      if (!catalogEntry.addBlockPointerList (bpl))
         break;
 
       if (bpl.isLastBlock ())
@@ -256,9 +280,9 @@ public class Reader
         ++currentMember;
         lastOffset = offset;
       }
-      CatalogEntry ce = uniqueCatalogEntries.get (currentMember);
-      if (ce.getOffset () == offset)
-        ce.addBlockPointerList (bpl);
+      CatalogEntry catalogEntry = uniqueCatalogEntries.get (currentMember);
+      if (catalogEntry.getOffset () == offset)
+        catalogEntry.addBlockPointerList (bpl);
     }
   }
 
@@ -313,18 +337,6 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  // getBlockPointerLists
-  // ---------------------------------------------------------------------------------//
-
-  public List<BlockPointerList> getDataBlockPointerLists ()
-  {
-    List<BlockPointerList> newList = new ArrayList<> ();
-    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-      newList.add (blockPointerLists.get (i));
-    return newList;
-  }
-
-  // ---------------------------------------------------------------------------------//
   // getXmitFiles
   // ---------------------------------------------------------------------------------//
 
@@ -335,25 +347,6 @@ public class Reader
       if (catalogEntry.isXmit ())
         xmitFiles.add (catalogEntry);
     return xmitFiles;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getLines
-  // ---------------------------------------------------------------------------------//
-
-  // this should be converted to an abstract File which Member would also use
-  public String getLines ()
-  {
-    lines.clear ();
-    blockPointerLists = masterBPL.get (masterBPL.size () - 1);
-    processPS (blockPointerLists);
-
-    StringBuilder text = new StringBuilder ();
-    for (String line : lines)
-      text.append (line + "\n");
-    if (text.length () > 0)
-      text.deleteCharAt (text.length () - 1);
-    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

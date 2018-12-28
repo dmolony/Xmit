@@ -1,13 +1,11 @@
 package com.bytezone.xmit;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 
-public class CatalogEntry implements Comparable<CatalogEntry>
+public class CatalogEntry extends File implements Comparable<CatalogEntry>
 {
   private final String memberName;
   private String userName = "";
@@ -26,12 +24,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   private final int blockFrom;
 
-  private final List<String> lines = new ArrayList<> ();
   private final byte[] directoryData;
-  private final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
-
-  private int dataLength;
-  private final int lrecl;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -137,8 +130,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     vv = buffer[offset + 12] & 0xFF;
     mm = buffer[offset + 13] & 0xFF;
 
-    dateCreated = getLocalDate (buffer, offset + 16);
-    dateModified = getLocalDate (buffer, offset + 20);
+    dateCreated = Utility.getLocalDate (buffer, offset + 16);
+    dateModified = Utility.getLocalDate (buffer, offset + 20);
     time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
         buffer[offset + 15]);
 
@@ -245,7 +238,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getBufferLength
+  // getOffset
   // ---------------------------------------------------------------------------------//
 
   public int getOffset ()
@@ -275,8 +268,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       return false;
     }
 
-    blockPointerLists.add (blockPointerList);
-    dataLength += blockPointerList.getDataLength ();
+    super.addBlockPointers (blockPointerList);
+    //    blockPointerLists.add (blockPointerList);
+    //    dataLength += blockPointerList.getDataLength ();
 
     blockPointerList.setCatalogEntry (this);
     return true;
@@ -569,18 +563,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     return String.format ("%-126s %8s %8s %5d %5d %5d",
         Utility.getHexValues (directoryData), memberName, userName, size, init, mod);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getLocalDate
-  // ---------------------------------------------------------------------------------//
-
-  private LocalDate getLocalDate (byte[] buffer, int offset)
-  {
-    String date1 = String.format ("%02X%02X%02X%02X", buffer[offset], buffer[offset + 1],
-        buffer[offset + 2], (buffer[offset + 3] & 0xF0));
-    int d1 = Integer.parseInt (date1) / 10;
-    return LocalDate.ofYearDay (1900 + d1 / 1000, d1 % 1000);
   }
 
   // ---------------------------------------------------------------------------------//

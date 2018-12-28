@@ -31,6 +31,8 @@ public class ViewMenu
   private final String[][] codePageNames =
       { { "CP037", "CP1140" }, { "CP285", "CP1146" }, { "CP297", "CP1147" },
         { "CP500", "CP1148" }, { "CP1047", "CP1047" } };
+  private final KeyCode[] keyCodes =
+      { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5 };
 
   private final ToggleGroup toggleGroup = new ToggleGroup ();
   List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
@@ -44,11 +46,8 @@ public class ViewMenu
   {
     this.xmitApp = xmitApp;
 
-    codePageMenuItems.add (setMenuItem (codePageNames[0][0], KeyCode.DIGIT1));
-    codePageMenuItems.add (setMenuItem (codePageNames[1][0], KeyCode.DIGIT2));
-    codePageMenuItems.add (setMenuItem (codePageNames[2][0], KeyCode.DIGIT3));
-    codePageMenuItems.add (setMenuItem (codePageNames[3][0], KeyCode.DIGIT4));
-    codePageMenuItems.add (setMenuItem (codePageNames[4][0], KeyCode.DIGIT5));
+    for (int i = 0; i < codePageNames.length; i++)
+      codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
     viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem,
         new SeparatorMenuItem ());
