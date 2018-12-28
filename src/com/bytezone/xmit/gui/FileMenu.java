@@ -73,7 +73,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     if (catalogEntry.isXmit ())
     {
       System.out.println ("Extracting XMIT file: " + catalogEntry.getMemberName ());
-      byte[] buffer = catalogEntry.getXmitBuffer ();
+      byte[] buffer = catalogEntry.getDataBuffer ();
 
       // use the PDS dataset name as the default
       // or use the parent file.member name

@@ -157,7 +157,7 @@ public class XmitFile
   {
     if (reader == null && catalogEntry != null)
     {
-      reader = new Reader (catalogEntry.getXmitBuffer ());
+      reader = new Reader (catalogEntry.getDataBuffer ());
     }
     if (reader == null && isFile () && !isCompressed ())
       try

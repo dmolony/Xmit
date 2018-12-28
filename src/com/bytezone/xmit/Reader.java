@@ -39,7 +39,7 @@ public class Reader
 
     // build the INMRxx control records
     for (BlockPointerList bpl : controlPointerLists)
-      controlRecords.add (new ControlRecord (bpl.getBuffer ()));
+      controlRecords.add (new ControlRecord (bpl.getRawBuffer ()));
 
     if (false)
       for (ControlRecord controlRecord : controlRecords)
@@ -51,7 +51,7 @@ public class Reader
 
     if (false && masterBPL.size () > 1)
       for (BlockPointerList bpl : masterBPL.get (0))
-        System.out.println (Utility.getString (bpl.getBuffer ()));
+        System.out.println (Utility.getString (bpl.getRawBuffer ()));
 
     // allocate the data records
     switch (org)
@@ -162,7 +162,7 @@ public class Reader
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-      byte[] buffer = bpl.getBuffer ();             // raw buffer
+      byte[] buffer = bpl.getRawBuffer ();             // raw buffer
       if (lrecl == 0)
         lines.add (Utility.getHexDump (buffer));
       else
@@ -214,12 +214,12 @@ public class Reader
       BlockPointerList bpl = blockPointerLists.get (i);
       if (inCatalog)
       {
-        inCatalog = addCatalogEntries (bpl.getBuffer ());
+        inCatalog = addCatalogEntries (bpl.getRawBuffer ());
         if (!inCatalog)
           catalogEndBlock = i;
       }
       else
-        bpl.build ();       // create new BlockPointers
+        bpl.createDataBlocks ();       // create new BlockPointers
     }
 
     // assign new BlockPointer lists to CatalogEntries

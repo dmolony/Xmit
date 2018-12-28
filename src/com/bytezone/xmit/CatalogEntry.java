@@ -23,6 +23,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   private String time = "";
 
   private final int blockFrom;
+  private int dataLength;
 
   private final byte[] directoryData;
 
@@ -51,13 +52,13 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
       case 0x2B:
         break;
 
-      case 0x2C:
+      case 0x2C:                    // load module?
         break;
 
       case 0x2E:
         break;
 
-      case 0x31:
+      case 0x31:                    // load module?
         break;
 
       case 0x37:
@@ -67,7 +68,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
         basic (buffer, ptr);       // alias without the alias' name ??
         break;
 
-      case 0xB1:
+      case 0xB1:                    // alias of 0x2C
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
@@ -75,20 +76,25 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
-      case 0x36:      // file242
-        break;
-      case 0xB6:      // file242
+      case 0x36:      // file242    // 0xB6 alias of itself?
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
-      case 0xD3:      // 
+      case 0xB6:      // file242    // alias of 0x31
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
-      case 0x4E:      // 
+
+      case 0xD3:
+        aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
-      case 0xCB:      // 
+
+      case 0x4E:
         break;
-      case 0x4B:      // 
+
+      case 0xCB:
+        break;
+
+      case 0x4B:
         break;
 
       case 0:
@@ -268,9 +274,8 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
       return false;
     }
 
-    super.addBlockPointers (blockPointerList);
-    //    blockPointerLists.add (blockPointerList);
-    //    dataLength += blockPointerList.getDataLength ();
+    blockPointerLists.add (blockPointerList);
+    dataLength += blockPointerList.getDataLength ();
 
     blockPointerList.setCatalogEntry (this);
     return true;
@@ -354,19 +359,21 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getXmitBuffer
+  // getDataBuffer
   // ---------------------------------------------------------------------------------//
 
-  public byte[] getXmitBuffer ()
+  @Override
+  public byte[] getDataBuffer ()
   {
-    byte[] xmitBuffer = new byte[dataLength];
+    byte[] dataBuffer = new byte[dataLength];
     int ptr = 0;
 
     for (BlockPointerList blockPointerList : blockPointerLists)
-      ptr = blockPointerList.getDataBuffer (xmitBuffer, ptr);
+      ptr = blockPointerList.getDataBuffer (dataBuffer, ptr);
+
     assert ptr == dataLength;
 
-    return xmitBuffer;
+    return dataBuffer;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -376,7 +383,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   private String xmitList ()
   {
     StringBuilder text = new StringBuilder ();
-    byte[] xmitBuffer = getXmitBuffer ();
+    byte[] xmitBuffer = getDataBuffer ();
     try
     {
       Reader reader = new Reader (xmitBuffer);

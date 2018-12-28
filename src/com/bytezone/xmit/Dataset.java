@@ -3,20 +3,11 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dataset
+public abstract class Dataset
 {
-  int dataLength;
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   final List<String> lines = new ArrayList<> ();
   int lrecl;
 
-  // ---------------------------------------------------------------------------------//
-  // addBlockPointers
-  // ---------------------------------------------------------------------------------//
-
-  void addBlockPointers (BlockPointerList blockPointerList)
-  {
-    blockPointerLists.add (blockPointerList);
-    dataLength += blockPointerList.getDataLength ();
-  }
+  abstract byte[] getDataBuffer ();
 }
