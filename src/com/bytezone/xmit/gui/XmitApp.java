@@ -1,8 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility;
@@ -28,7 +26,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private String rootFolderName;
-  private Path rootFolderPath;
+  //  private Path rootFolderPath;
 
   private Stage primaryStage;
   private final OutputPane outputPane = new OutputPane ();
@@ -44,8 +42,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   XmitTree xmitTree;
   XmitTable xmitTable;
 
-  // add a code page menu to allow selectable code pages
-
   // ---------------------------------------------------------------------------------//
   // createContent
   // ---------------------------------------------------------------------------------//
@@ -59,7 +55,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // get root folder
     validateRootFolderOrExit ();
-    rootFolderPath = Paths.get (rootFolderName);
+    //    rootFolderPath = Paths.get (rootFolderName);
 
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     xmitTree.addListener (outputPane);
@@ -99,9 +95,9 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
   private void restore ()
   {
+    viewMenu.restore ();        // ensure codepage is set first
     xmitTree.restore ();
     xmitTable.restore ();
-    viewMenu.restore ();
 
     restoreWindowLocation ();
   }
@@ -204,7 +200,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   {
     if (setRootFolder ())
     {
-      rootFolderPath = Paths.get (rootFolderName);
+      //      rootFolderPath = Paths.get (rootFolderName);
       xmitTree
           .setRootFolder (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     }

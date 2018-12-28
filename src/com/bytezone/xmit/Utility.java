@@ -1,10 +1,12 @@
 package com.bytezone.xmit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Utility
 {
-  static CodePage[] codePages = { new CodePage ("CP037"), new CodePage ("CP285"),
-                                  new CodePage ("CP500"), new CodePage ("CP1047") };
-  static CodePage codePage = codePages[0];
+  static CodePage codePage;
+  static Map<String, CodePage> codePageMap = new HashMap<> ();
 
   // ---------------------------------------------------------------------------------//
   //
@@ -12,22 +14,13 @@ public class Utility
 
   public static void setCodePage (String codePageName)
   {
-    switch (codePageName)
+    if (codePageMap.containsKey (codePageName))
+      codePage = codePageMap.get (codePageName);
+    else
     {
-      case "CP037":
-        codePage = codePages[0];
-        break;
-      case "CP285":
-        codePage = codePages[1];
-        break;
-      case "CP500":
-        codePage = codePages[2];
-        break;
-      case "CP1047":
-        codePage = codePages[3];
-        break;
+      codePage = new CodePage (codePageName);
+      codePageMap.put (codePageName, codePage);
     }
-    //    System.out.printf ("Code Page: %s%n", codePageName);
   }
 
   // ---------------------------------------------------------------------------------//

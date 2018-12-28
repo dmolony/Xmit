@@ -344,6 +344,10 @@ public class Reader
   // this should be converted to an abstract File which Member would also use
   public String getLines ()
   {
+    lines.clear ();
+    blockPointerLists = masterBPL.get (masterBPL.size () - 1);
+    processPS (blockPointerLists);
+
     StringBuilder text = new StringBuilder ();
     for (String line : lines)
       text.append (line + "\n");
