@@ -45,9 +45,11 @@ public class Reader
       for (ControlRecord controlRecord : controlRecords)
         System.out.println (controlRecord);
 
-    Org org = getOrg (masterBPL.size ());       // default to the last one
+    // default to the last DSORG and BPL
+    Org org = getOrg (masterBPL.size ());                           // 1-based
+    blockPointerLists = masterBPL.get (masterBPL.size () - 1);      // 0-based
 
-    if (masterBPL.size () > 1)
+    if (false && masterBPL.size () > 1)
       for (BlockPointerList bpl : masterBPL.get (0))
         System.out.println (Utility.getString (bpl.getBuffer ()));
 

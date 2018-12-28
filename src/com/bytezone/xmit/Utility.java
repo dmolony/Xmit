@@ -1,34 +1,10 @@
 package com.bytezone.xmit;
 
-import java.io.UnsupportedEncodingException;
-
 public class Utility
 {
-  public static final int[] ebc2asc = new int[256];
-  public static final int[] asc2ebc = new int[256];
-
-  static
-  {
-    byte[] values = new byte[256];
-    for (int i = 0; i < 256; i++)
-      values[i] = (byte) i;
-
-    try
-    {
-      String s = new String (values, "CP037");      // CP500, CP1047, CP037, CP285
-      char[] chars = s.toCharArray ();
-      for (int i = 0; i < 256; i++)
-      {
-        int val = chars[i];
-        ebc2asc[i] = val;
-        asc2ebc[val] = i;
-      }
-    }
-    catch (UnsupportedEncodingException e)
-    {
-      e.printStackTrace ();
-    }
-  }
+  //  static CodePage[] codePages = { new CodePage ("CP037"), new CodePage ("CP500"),
+  //                                  new CodePage ("CP1047"), new CodePage ("CP285") };
+  static CodePage codePage = new CodePage ("CP037");
 
   // ---------------------------------------------------------------------------------//
   // getString
@@ -52,7 +28,7 @@ public class Utility
     for (int i = 0; i < length; i++)
     {
       int c = buffer[ptr + i] & 0xFF;
-      text.append (c < 0x40 ? "." : (char) ebc2asc[c]);
+      text.append (c < 0x40 || c == 0xFF ? "." : (char) codePage.ebc2asc[c]);
     }
 
     return text.toString ();
@@ -196,8 +172,8 @@ public class Utility
 
         hexLine.append (String.format ("%02X ", b[z]));
 
-        final int val = b[z] & 0xFF;
-        textLine.append (val <= 0x3F || val == 0xFF ? '.' : (char) ebc2asc[val]);
+        int c = b[z] & 0xFF;
+        textLine.append (c < 0x40 || c == 0xFF ? '.' : (char) codePage.ebc2asc[c]);
       }
       text.append (String.format ("%06X  %-48s %s%n", displayOffset + ptr,
           hexLine.toString (), textLine.toString ()));
