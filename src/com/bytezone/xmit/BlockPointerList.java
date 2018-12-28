@@ -6,21 +6,21 @@ import java.util.List;
 
 public class BlockPointerList implements Iterable<BlockPointer>
 {
-  private final int id;
-  private CatalogEntry catalogEntry;
+  //  private final int id;
   private final byte[] buffer;          // all block pointers refer to this
 
   private int rawBufferLength;          // raw data length
   private int dataBufferLength;         // raw data minus headers
 
-  private boolean isBinary;
-  private byte sortKey;                 // value contained in first header
-  private boolean isLastBlock;
-
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
   private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
 
-  private final List<byte[]> headers = new ArrayList<> ();
+  private final List<byte[]> pdsHeaders = new ArrayList<> ();
+  private CatalogEntry catalogEntry;
+
+  private boolean isBinary;
+  private byte sortKey;                 // value contained in first header
+  private boolean isLastBlock;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -29,7 +29,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   public BlockPointerList (byte[] buffer, int id)
   {
     this.buffer = buffer;
-    this.id = id;
+    //    this.id = id;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -73,7 +73,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
           if (headerPtr == 0)
           {
             header = new byte[12];
-            headers.add (header);
+            pdsHeaders.add (header);
           }
 
           if (avail < 12 - headerPtr)
@@ -109,6 +109,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
       }
     }
 
+    dataBufferLength = 0;
     for (BlockPointer blockPointer : dataBlockPointers)
       dataBufferLength += blockPointer.length;
   }
@@ -119,7 +120,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   int getOffset ()
   {
-    return (int) Utility.getValue (headers.get (0), 6, 3);
+    return (int) Utility.getValue (pdsHeaders.get (0), 6, 3);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -128,7 +129,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   boolean isPDSE ()
   {
-    return headers.get (0)[0] == (byte) 0x88;
+    return pdsHeaders.get (0)[0] == (byte) 0x88;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -203,7 +204,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
     text.append (String.format ("Data length   : %06X  %<d%n", dataBufferLength));
 
     text.append ("\nHeaders:\n");
-    for (byte[] header : headers)
+    for (byte[] header : pdsHeaders)
     {
       text.append (Utility.getHexValues (header));
       text.append ("\n");

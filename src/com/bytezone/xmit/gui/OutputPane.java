@@ -160,7 +160,7 @@ public class OutputPane extends BorderPane
     else if (catalogEntry == null)                  // flat file
       textText.setText (reader.getLines ());
     else                                            // PDS
-      textText.setText (catalogEntry.getText (showLines));
+      textText.setText (catalogEntry.getLines (showLines));
   }
 
   // ---------------------------------------------------------------------------------//

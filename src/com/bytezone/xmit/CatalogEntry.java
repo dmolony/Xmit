@@ -282,37 +282,27 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getText
+  // getLines
   // ---------------------------------------------------------------------------------//
 
-  public String getText (boolean showLines)
+  public String getLines (boolean showLines)
   {
     if (lines.size () == 0)
     {
       if (isAlias ())
-        return "Alias of " + aliasName;
-
-      if (blockPointerLists.size () == 0)
-        return "No data";
-
-      if (isXmit ())
-        return xmitList ();
-
-      if (blockPointerLists.size () > 200)
-        return partialDump ();
-
-      if (isRdw ())
-        return rdw (showLines);
-
-      if (blockPointerLists.get (0).isBinary ())
-        return hexDump ();
-
-      for (BlockPointerList blockPointerList : blockPointerLists)
-      {
-        createDataLines (blockPointerList);
-        if (blockPointerList.isLastBlock ())        // PDSEs end early
-          break;
-      }
+        lines.add ("Alias of " + aliasName);
+      else if (blockPointerLists.size () == 0)
+        lines.add ("No data");
+      else if (isXmit ())
+        xmitList ();
+      else if (blockPointerLists.size () > 200)
+        partialDump ();
+      else if (isRdw ())
+        rdw ();
+      else if (blockPointerLists.get (0).isBinary ())
+        hexDump ();
+      else
+        createDataLines ();
     }
 
     StringBuilder text = new StringBuilder ();
@@ -334,10 +324,25 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   // createDataLines
   // ---------------------------------------------------------------------------------//
 
-  private void createDataLines (BlockPointerList blockPointerList)
+  private void createDataLines ()
   {
-    byte[] buffer = blockPointerList.getDataBuffer ();
-
+    //    for (BlockPointerList blockPointerList : blockPointerLists)
+    //    {
+    //      byte[] buffer = blockPointerList.getDataBuffer ();
+    //
+    //      int ptr = 0;
+    //      int length = buffer.length;
+    //      while (length > 0)
+    //      {
+    //        int len = Math.min (lrecl, length);
+    //        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+    //        ptr += len;
+    //        length -= len;
+    //      }
+    //      if (blockPointerList.isLastBlock ())        // PDSEs end early
+    //        break;
+    //    }
+    byte[] buffer = getDataBuffer ();
     int ptr = 0;
     int length = buffer.length;
     while (length > 0)
@@ -369,9 +374,13 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
     int ptr = 0;
 
     for (BlockPointerList blockPointerList : blockPointerLists)
+    {
       ptr = blockPointerList.getDataBuffer (dataBuffer, ptr);
+      if (blockPointerList.isLastBlock ())        // PDSEs end early
+        break;
+    }
 
-    assert ptr == dataLength;
+    //    assert ptr == dataLength;               // screwed by PDSE
 
     return dataBuffer;
   }
@@ -380,41 +389,37 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   // xmitList
   // ---------------------------------------------------------------------------------//
 
-  private String xmitList ()
+  private void xmitList ()
   {
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
     byte[] xmitBuffer = getDataBuffer ();
     try
     {
       Reader reader = new Reader (xmitBuffer);
       for (ControlRecord controlRecord : reader.getControlRecords ())
-      {
-        text.append (controlRecord);
-        text.append ("\n");
-      }
+        lines.add (String.format ("%s%n", controlRecord));
 
       if (reader.getOrg () == Dsorg.Org.PDS)
       {
-        text.append (
-            String.format ("Members: %s%n%n", reader.getCatalogEntries ().size ()));
-        text.append (
-            " Member     User      Size  Offset     Date        Time     Alias\n");
-        text.append (
+        lines
+            .add (String.format ("Members: %s%n%n", reader.getCatalogEntries ().size ()));
+        lines.add (" Member     User      Size  Offset     Date        Time     Alias\n");
+        lines.add (
             "--------  --------  ------  ------  -----------  --------  --------\n");
         for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
-          text.append (catalogEntry.toString () + "\n");
-        text.deleteCharAt (text.length () - 1);
+          lines.add (catalogEntry.toString () + "\n");
+        //        text.deleteCharAt (text.length () - 1);
       }
     }
     catch (Exception e)
     {
-      text.append ("Data length: " + dataLength + "\n");
-      text.append (e.getMessage ());
-      text.append ("\n\n");
-      text.append (Utility.getHexDump (xmitBuffer));
+      lines.add ("Data length: " + dataLength + "\n");
+      lines.add (e.getMessage ());
+      lines.add ("\n\n");
+      lines.add (Utility.getHexDump (xmitBuffer));
     }
 
-    return text.toString ();
+    //    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -444,97 +449,117 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   // rdw
   // ---------------------------------------------------------------------------------//
 
-  String rdw (boolean showLines)
+  void rdw ()
   {
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
+    System.out.println ("rdw: " + memberName);
 
-    for (BlockPointerList bpl : blockPointerLists)
+    //    for (BlockPointerList bpl : blockPointerLists)
+    //    {
+    //      byte[] buffer = bpl.getDataBuffer ();
+    //      if (buffer.length == 0)
+    //        continue;
+    //      int ptr = 4;
+    //
+    //      while (ptr < buffer.length)
+    //      {
+    //        int len = Utility.getTwoBytes (buffer, ptr);
+    //
+    //        String line = Utility.getString (buffer, ptr + 4, len - 4);
+    //        int count = 0;
+    //        if (showLines)
+    //          text.append (String.format ("%05d  %s%n", ++count, line));
+    //        else
+    //          text.append (String.format ("%s%n", line));
+    //        ptr += len;
+    //      }
+    //    }
+    byte[] buffer = getDataBuffer ();
+    int ptr = 4;
+    while (ptr < buffer.length)
     {
-      byte[] buffer = bpl.getDataBuffer ();
-      if (buffer.length == 0)
-        continue;
-      int ptr = 4;
+      int len = Utility.getTwoBytes (buffer, ptr);
 
-      while (ptr < buffer.length)
-      {
-        int len = Utility.getTwoBytes (buffer, ptr);
-
-        String line = Utility.getString (buffer, ptr + 4, len - 4);
-        int count = 0;
-        if (showLines)
-          text.append (String.format ("%05d  %s%n", ++count, line));
-        else
-          text.append (String.format ("%s%n", line));
-        ptr += len;
-      }
+      String line = Utility.getString (buffer, ptr + 4, len - 4);
+      //      int count = 0;
+      //      if (showLines)
+      //        lines.add (String.format ("%05d  %s%n", ++count, line));
+      //      else
+      lines.add (String.format ("%s%n", line));
+      ptr += len;
     }
 
-    return text.toString ();
+    //    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
   // hexDump
   // ---------------------------------------------------------------------------------//
 
-  private String hexDump ()
+  private void hexDump ()
   {
     if (blockPointerLists.size () == 0)
-      return "";
+      return;
 
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
 
     if (blockPointerLists.get (0).isXmit ())
-      text.append ("Appears to be XMIT\n\n");
+      lines.add ("Appears to be XMIT");
 
-    for (int i = 0; i < blockPointerLists.size (); i++)
-    {
-      BlockPointerList bpl = blockPointerLists.get (i);
-      if (bpl.getDataLength () > 0)
-      {
-        text.append (Utility.getHexDump (bpl.getDataBuffer ()));
-        text.append ("\n\n");
-      }
-    }
+    //    for (int i = 0; i < blockPointerLists.size (); i++)
+    //    {
+    //      BlockPointerList bpl = blockPointerLists.get (i);
+    //      if (bpl.getDataLength () > 0)
+    //      {
+    //        text.append (Utility.getHexDump (bpl.getDataBuffer ()));
+    //        text.append ("\n\n");
+    //      }
+    //    }
 
-    if (text.length () > 2)
-    {
-      text.deleteCharAt (text.length () - 1);
-      text.deleteCharAt (text.length () - 1);
-    }
+    // FILE600.XMI
+    byte[] buffer = getDataBuffer ();
+    lines.add (Utility.getHexDump (buffer));
 
-    return text.toString ();
+    //    if (text.length () > 2)
+    //    {
+    //      text.deleteCharAt (text.length () - 1);
+    //      text.deleteCharAt (text.length () - 1);
+    //    }
+
+    //    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
   // partialDump
   // ---------------------------------------------------------------------------------//
 
-  private String partialDump ()
+  private void partialDump ()
   {
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
 
-    text.append (toString ());
-    text.append ("\n\n");
-    text.append ("Member data too large to display\n");
+    lines.add (toString ());
+    //    text.append ("\n\n");
+    lines.add ("Member data too large to display");
     int max = 5;
-    text.append (
+    lines.add (
         "Showing first " + max + " of " + blockPointerLists.size () + " buffers\n\n");
 
     if (blockPointerLists.get (0).isXmit ())
-      text.append ("Appears to be XMIT\n\n");
+      lines.add ("Appears to be XMIT");
 
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
       {
-        text.append (Utility.getHexDump (bpl.getDataBuffer ()));
-        if (i < max - 1)
-          text.append ("\n\n");
+        lines.add (Utility.getHexDump (bpl.getDataBuffer ()));
+
+        //        if (i < max - 1)
+        //          text.append ("\n\n");
       }
     }
 
-    return text.toString ();
+    //    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

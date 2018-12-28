@@ -162,7 +162,7 @@ public class Reader
     for (int i = 0; i < max; i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
-      byte[] buffer = bpl.getRawBuffer ();             // raw buffer
+      byte[] buffer = bpl.getRawBuffer ();
       if (lrecl == 0)
         lines.add (Utility.getHexDump (buffer));
       else
