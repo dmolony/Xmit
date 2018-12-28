@@ -2,6 +2,8 @@ package com.bytezone.xmit;
 
 import java.io.UnsupportedEncodingException;
 
+// https://en.wikipedia.org/wiki/EBCDIC_code_pages
+
 public class CodePage
 {
   private static byte[] values;
@@ -19,7 +21,7 @@ public class CodePage
   {
     try
     {
-      String s = new String (values, codePage);      // CP500, CP1047, CP037, CP285
+      String s = new String (values, codePage);
       char[] chars = s.toCharArray ();
       for (int i = 0; i < 256; i++)
       {

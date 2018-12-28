@@ -15,6 +15,8 @@ public class ViewMenu
   private static final String PREFS_SHOW_CONTROL = "ShowControl";
   private static final String PREFS_SHOW_DEBUG = "ShowDebug";
   private static final String PREFS_CODE_PAGE = "CodePage";
+  private static final String PREFS_EURO_PAGE = "EuroPage";
+
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final List<ShowLinesListener> showLinesListeners = new ArrayList<> ();
@@ -26,11 +28,13 @@ public class ViewMenu
   private final CheckMenuItem controlMenuItem = new CheckMenuItem ("Control tab");
   private final CheckMenuItem debugMenuItem = new CheckMenuItem ("Debug tab");
 
+  private final String[][] codePageNames =
+      { { "CP037", "CP1140" }, { "CP285", "CP1146" }, { "CP297", "CP1147" },
+        { "CP500", "CP1148" }, { "CP1047", "CP924" } };
+
   private final ToggleGroup toggleGroup = new ToggleGroup ();
-  private final RadioMenuItem cp285MenuItem = new RadioMenuItem ("CP285");
-  private final RadioMenuItem cp037MenuItem = new RadioMenuItem ("CP037");
-  private final RadioMenuItem cp500MenuItem = new RadioMenuItem ("CP500");
-  private final RadioMenuItem cp1047MenuItem = new RadioMenuItem ("CP1047");
+  List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
+  private final CheckMenuItem euroMenuItem = new CheckMenuItem ("Euro update");
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -40,41 +44,44 @@ public class ViewMenu
   {
     this.xmitApp = xmitApp;
 
-    SeparatorMenuItem separator = new SeparatorMenuItem ();
+    codePageMenuItems.add (setMenuItem (codePageNames[0][0], KeyCode.DIGIT1));
+    codePageMenuItems.add (setMenuItem (codePageNames[1][0], KeyCode.DIGIT2));
+    codePageMenuItems.add (setMenuItem (codePageNames[2][0], KeyCode.DIGIT3));
+    codePageMenuItems.add (setMenuItem (codePageNames[3][0], KeyCode.DIGIT4));
+    codePageMenuItems.add (setMenuItem (codePageNames[4][0], KeyCode.DIGIT5));
 
-    cp037MenuItem.setToggleGroup (toggleGroup);
-    cp285MenuItem.setToggleGroup (toggleGroup);
-    cp500MenuItem.setToggleGroup (toggleGroup);
-    cp1047MenuItem.setToggleGroup (toggleGroup);
-    //    cp037MenuItem.setSelected (true);
+    viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem,
+        new SeparatorMenuItem ());
+    for (RadioMenuItem item : codePageMenuItems)
+      viewMenu.getItems ().add (item);
+    viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
 
-    cp037MenuItem.setOnAction (e -> notifyCodePageListeners ());
-    cp285MenuItem.setOnAction (e -> notifyCodePageListeners ());
-    cp500MenuItem.setOnAction (e -> notifyCodePageListeners ());
-    cp1047MenuItem.setOnAction (e -> notifyCodePageListeners ());
-
-    cp037MenuItem.setUserData ("CP037");
-    cp285MenuItem.setUserData ("CP285");
-    cp500MenuItem.setUserData ("CP500");
-    cp1047MenuItem.setUserData ("CP1047");
-
-    cp037MenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
-    cp285MenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
-    cp500MenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
-    cp1047MenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
-
-    viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem, separator,
-        cp037MenuItem, cp285MenuItem, cp500MenuItem, cp1047MenuItem);
     linesMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     controlMenuItem.setOnAction (e -> setTabs ());
     debugMenuItem.setOnAction (e -> setTabs ());
+    euroMenuItem.setOnAction (e ->
+    {
+      setEuro ();
+      notifyCodePageListeners ();
+    });
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setMenuItem
+  // ---------------------------------------------------------------------------------//
+
+  private RadioMenuItem setMenuItem (String name, KeyCode keyCode)
+  {
+    RadioMenuItem menuItem = new RadioMenuItem (name);
+    menuItem.setToggleGroup (toggleGroup);
+    menuItem.setUserData (name);
+    menuItem.setOnAction (e -> notifyCodePageListeners ());
+    menuItem
+        .setAccelerator (new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
+    return menuItem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,10 +101,22 @@ public class ViewMenu
   private void notifyCodePageListeners ()
   {
     String codePageName = toggleGroup.getSelectedToggle ().getUserData ().toString ();
-    //    System.out.println (codePageName);
-    //    System.out.println (codePageListeners.size ());
     for (CodePageSelectedListener listener : codePageListeners)
       listener.selectCodePage (codePageName);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setEuro
+  // ---------------------------------------------------------------------------------//
+
+  private void setEuro ()
+  {
+    int j = euroMenuItem.isSelected () ? 1 : 0;
+    for (int i = 0; i < codePageNames.length; i++)
+    {
+      codePageMenuItems.get (i).setText (codePageNames[i][j]);
+      codePageMenuItems.get (i).setUserData (codePageNames[i][j]);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -122,26 +141,21 @@ public class ViewMenu
     debugMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_DEBUG, false));
     setTabs ();
 
-    String codePageName = prefs.get (PREFS_CODE_PAGE, "CP037");
-    switch (codePageName)
-    {
-      case "CP037":
-        //        cp037MenuItem.setSelected (true);
-        toggleGroup.selectToggle (cp037MenuItem);
+    euroMenuItem.setSelected (prefs.getBoolean (PREFS_EURO_PAGE, false));
+    setEuro ();
+
+    int j = euroMenuItem.isSelected () ? 1 : 0;
+    String codePageName = prefs.get (PREFS_CODE_PAGE, codePageNames[0][j]);
+
+    for (int i = 0; i < codePageNames.length; i++)
+      if (codePageNames[i][j].equals (codePageName))
+      {
+        RadioMenuItem item = codePageMenuItems.get (i);
+        toggleGroup.selectToggle (item);
+        item.setText (codePageName);
         break;
-      case "CP285":
-        //        cp285MenuItem.setSelected (true);
-        toggleGroup.selectToggle (cp285MenuItem);
-        break;
-      case "CP500":
-        //        cp500MenuItem.setSelected (true);
-        toggleGroup.selectToggle (cp500MenuItem);
-        break;
-      case "CP1047":
-        //        cp1047MenuItem.setSelected (true);
-        toggleGroup.selectToggle (cp1047MenuItem);
-        break;
-    }
+      }
+
     notifyCodePageListeners ();
   }
 
@@ -154,6 +168,8 @@ public class ViewMenu
     prefs.putBoolean (PREFS_SHOW_LINES, linesMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_CONTROL, controlMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_DEBUG, debugMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_EURO_PAGE, euroMenuItem.isSelected ());
+
     prefs.put (PREFS_CODE_PAGE,
         toggleGroup.getSelectedToggle ().getUserData ().toString ());
   }
