@@ -11,16 +11,31 @@ public abstract class Dataset
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   final List<String> lines = new ArrayList<> ();
   int lrecl;
+  String name;
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
+  Dataset (String name)
+  {
+    this.name = name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //
+  // ---------------------------------------------------------------------------------//
 
   abstract byte[] getDataBuffer ();
+
+  abstract String getLines (boolean showLines);
 
   // ---------------------------------------------------------------------------------//
   // createDataLines
   // ---------------------------------------------------------------------------------//
 
-  void createDataLines ()
+  void createDataLines (byte[] buffer)
   {
-    byte[] buffer = getDataBuffer ();
     int ptr = 0;
     int length = buffer.length;
     while (length > 0)
@@ -94,7 +109,7 @@ public abstract class Dataset
   // isXmit
   // ---------------------------------------------------------------------------------//
 
-  public boolean isXmit ()
+  boolean isXmit ()
   {
     return blockPointerLists.size () > 0 && blockPointerLists.get (0).isXmit ();
   }
@@ -134,14 +149,14 @@ public abstract class Dataset
   // partialDump
   // ---------------------------------------------------------------------------------//
 
-  void partialDump ()
+  void partialDump (int max)
   {
-    int max = 5;
-
     lines.add (toString ());
-    lines.add ("Member data too large to display");
-    lines
-        .add ("Showing first " + max + " of " + blockPointerLists.size () + " buffers\n");
+    lines.add ("");
+    lines.add ("Data too large to display");
+    lines.add ("");
+    lines.add ("Showing first " + max + " of " + blockPointerLists.size () + " buffers");
+    lines.add ("");
 
     if (blockPointerLists.get (0).isXmit ())
       lines.add ("Appears to be XMIT");
@@ -150,7 +165,7 @@ public abstract class Dataset
     {
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
-        lines.add (Utility.getHexDump (bpl.getDataBuffer ()));
+        createDataLines (bpl.getDataBuffer ());
     }
   }
 }

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 {
-  private final String memberName;
+  //  private final String memberName;
   private String userName = "";
   private String aliasName = "";
 
@@ -30,7 +30,9 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 
   public CatalogEntry (byte[] buffer, int ptr, int lrecl)
   {
-    memberName = Utility.getString (buffer, ptr, 8);
+    super (Utility.getString (buffer, ptr, 8));
+
+    //    memberName = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
     this.lrecl = lrecl;
 
@@ -99,7 +101,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 
       default:
         System.out.printf ("********************** Unknown extra: %02X in %s%n", extra,
-            memberName);
+            name);
     }
 
     int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
@@ -144,7 +146,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
       String date1Text = String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
       String date2Text = String.format ("%td %<tb %<tY", dateModified).replace (".", "");
       System.out.println (String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s",
-          memberName, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
+          name, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
     }
   }
 
@@ -163,7 +165,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 
   public String getMemberName ()
   {
-    return memberName;
+    return name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -267,7 +269,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
     if (blockPointerLists.size () == 0
         && !blockPointerList.sortKeyMatches (directoryData[10]))
     {
-      System.out.println ("Mismatch in " + memberName);
+      System.out.println ("Mismatch in " + name);
       return false;
     }
 
@@ -282,6 +284,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   // getLines
   // ---------------------------------------------------------------------------------//
 
+  @Override
   public String getLines (boolean showLines)
   {
     if (lines.size () == 0)
@@ -293,13 +296,13 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
       else if (isXmit ())
         xmitList ();
       else if (blockPointerLists.size () > 200)
-        partialDump ();
+        partialDump (100);
       else if (isRdw ())
         rdw ();
       else if (blockPointerLists.get (0).isBinary ())
         hexDump ();
       else
-        createDataLines ();
+        createDataLines (getDataBuffer ());
     }
 
     StringBuilder text = new StringBuilder ();
@@ -369,7 +372,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   String getPrintLine ()
   {
     return String.format ("%-126s %8s %8s %5d %5d %5d",
-        Utility.getHexValues (directoryData), memberName, userName, size, init, mod);
+        Utility.getHexValues (directoryData), name, userName, size, init, mod);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -381,7 +384,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %8s", memberName, userName, size,
+    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %8s", name, userName, size,
         blockFrom, date1Text, time, aliasName);
   }
 
@@ -398,7 +401,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
         return -1;
       if (!o.isAlias () && this.isAlias ())
         return 1;
-      return this.memberName.compareTo (o.memberName);
+      return this.name.compareTo (o.name);
     }
 
     return blockFrom < o.blockFrom ? -1 : 1;
