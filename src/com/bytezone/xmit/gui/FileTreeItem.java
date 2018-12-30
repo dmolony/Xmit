@@ -115,24 +115,17 @@ public class FileTreeItem extends TreeItem<XmitFile>
       return children;
     }
 
-    //if (xmitFile.isFile ())
+    Reader reader = xmitFile.getReader ();
+    ObservableList<TreeItem<XmitFile>> children = FXCollections.observableArrayList ();
+
+    List<CatalogEntry> members = reader.getMembers ();
+    if (members.size () > 0)
     {
-      //      System.out.println ("XXXXX " + xmitFile.getName ());
-      Reader reader = xmitFile.getReader ();
-      ObservableList<TreeItem<XmitFile>> children = FXCollections.observableArrayList ();
-
-      List<CatalogEntry> xmitMembers = reader.getXmitFiles ();
-      if (xmitMembers.size () > 0)
-      {
-        //        System.out.println (xmitMembers.size ());
-        isLeaf = false;
-        for (CatalogEntry member : xmitMembers)
-          children.add (new FileTreeItem (new XmitFile (member)));
-        Collections.sort (children, comparator);
-      }
-      return children;
+      isLeaf = false;
+      for (CatalogEntry member : members)
+        children.add (new FileTreeItem (new XmitFile (member)));
+      Collections.sort (children, comparator);
     }
-
-    //    return FXCollections.emptyObservableList ();
+    return children;
   }
 }

@@ -200,10 +200,10 @@ public class Reader
   // getXmitFiles
   // ---------------------------------------------------------------------------------//
 
-  public List<CatalogEntry> getXmitFiles ()
+  public List<CatalogEntry> getMembers ()
   {
     if (currentDataset.org == Org.PDS)
-      return ((PdsDataset) currentDataset).getXmitFiles ();
+      return ((PdsDataset) currentDataset).getMembers ();
     return new ArrayList<> ();
   }
 

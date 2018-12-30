@@ -26,14 +26,13 @@ public class XmitFile
   private final String suffix;
   private String name;
   private Reader reader;
-  //  private Reader parentReader;
   private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitFile (File file)                   // plain file
+  public XmitFile (File file)                   // plain .xmi file
   {
     this.file = file;
     suffix = getSuffix (file.getName ());
@@ -43,7 +42,7 @@ public class XmitFile
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitFile (File file, String name)      // an unzipped file
+  public XmitFile (File file, String name)      // an unzipped .xmi file
   {
     this (file);
     this.name = name;             // display this name instead of the tmp file name
@@ -120,7 +119,7 @@ public class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //isCompressed
+  // isCompressed
   // ---------------------------------------------------------------------------------//
 
   public boolean isCompressed ()
@@ -144,7 +143,7 @@ public class XmitFile
   Reader getReader (FileTreeItem fileTreeItem)
   {
     Reader reader = getReader ();
-    if (reader != null && reader.getXmitFiles ().size () > 0)
+    if (reader != null && reader.getMembers ().size () > 0)
       fileTreeItem.buildChildren ();
     return reader;
   }
@@ -156,13 +155,11 @@ public class XmitFile
   Reader getReader ()
   {
     if (reader == null && catalogEntry != null)
-    {
       reader = new Reader (catalogEntry.getDataBuffer ());
-    }
+
     if (reader == null && isFile () && !isCompressed ())
       try
       {
-        //        System.out.println ("reading");
         reader = new Reader (Files.readAllBytes (file.toPath ()));
       }
       catch (IOException e)

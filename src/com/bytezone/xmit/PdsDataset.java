@@ -37,7 +37,7 @@ public class PdsDataset extends Dataset
   // getXmitFiles
   // ---------------------------------------------------------------------------------//
 
-  public List<CatalogEntry> getXmitFiles ()
+  public List<CatalogEntry> getMembers ()
   {
     List<CatalogEntry> xmitFiles = new ArrayList<> ();
     for (CatalogEntry catalogEntry : catalogEntries)
