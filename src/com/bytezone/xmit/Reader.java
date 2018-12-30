@@ -1,6 +1,8 @@
 package com.bytezone.xmit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
@@ -11,23 +13,18 @@ import com.bytezone.xmit.textunit.TextUnitString;
 
 public class Reader
 {
-  private static final int DIR_BLOCK_LENGTH = 0x114;
+  private static final byte[] INMR03 =
+      { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9, (byte) 0xF0,
+        (byte) 0xF3 };
+  private static final byte[] INMR06 =
+      { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
+        (byte) 0xF0, (byte) 0xF6 };
 
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
-  private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-
-  private final byte[] INMR03 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
-                                  (byte) 0xD9, (byte) 0xF0, (byte) 0xF3 };
-  private final byte[] INMR06 = { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5,
-                                  (byte) 0xD4, (byte) 0xD9, (byte) 0xF0, (byte) 0xF6 };
-
   private final List<BlockPointerList> controlPointerLists = new ArrayList<> ();
-  private List<BlockPointerList> blockPointerLists;
-  private final List<List<BlockPointerList>> masterBPL = new ArrayList<> ();
 
-  private int catalogEndBlock = 0;
-  private final List<String> lines = new ArrayList<> ();        // sequential file
-  private int lrecl;
+  private final Dataset currentDataset;
+  private final List<Dataset> datasets = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -37,37 +34,31 @@ public class Reader
   {
     buildPointerLists (buffer);
 
-    // build the INMRxx control records
-    for (BlockPointerList bpl : controlPointerLists)
-      controlRecords.add (new ControlRecord (bpl.getRawBuffer ()));
-
     if (false)
       for (ControlRecord controlRecord : controlRecords)
         System.out.println (controlRecord);
 
-    // default to the last DSORG and BPL
-    Org org = getOrg (masterBPL.size ());                           // 1-based
-    blockPointerLists = masterBPL.get (masterBPL.size () - 1);      // 0-based
+    // default to the last dataset
+    currentDataset = datasets.get (datasets.size () - 1);
+    //    currentDataset = datasets.get (0);
 
-    if (false && masterBPL.size () > 1)
-      for (BlockPointerList bpl : masterBPL.get (0))
+    if (false && datasets.size () > 1)
+      for (BlockPointerList bpl : datasets.get (0).blockPointerLists)
         System.out.println (Utility.getString (bpl.getRawBuffer ()));
 
     // allocate the data records
-    switch (org)
+    switch (currentDataset.org)
     {
       case PDS:
-        lrecl = getRecordLength ("IEBCOPY");
-        processPDS (blockPointerLists);
+        ((PdsDataset) currentDataset).processPDS ();
         break;
 
       case PS:
-        lrecl = getRecordLength ("INMCOPY");
-        processPS (blockPointerLists);
+        ((PsDataset) currentDataset).processPS ();
         break;
 
       default:
-        System.out.println ("Unknown ORG: " + org);
+        System.out.println ("Unknown ORG: " + currentDataset.org);
     }
   }
 
@@ -78,11 +69,11 @@ public class Reader
   private void buildPointerLists (byte[] buffer)
   {
     BlockPointerList currentBlockPointerList = null;
+    Dataset dataset = null;
 
     boolean dumpRaw = false;
 
     int ptr = 0;
-    int count = 0;
     boolean eof = false;
 
     while (!eof && ptr < buffer.length)
@@ -120,7 +111,8 @@ public class Reader
 
       if (firstSegment)
       {
-        currentBlockPointerList = new BlockPointerList (buffer, count++);
+        currentBlockPointerList = new BlockPointerList (buffer);
+
         if (controlRecord)
         {
           controlPointerLists.add (currentBlockPointerList);
@@ -128,53 +120,45 @@ public class Reader
           if (Utility.matches (INMR06, buffer, ptr))
             eof = true;
 
-          // handle multiple INMR03 records - see FILE434.XMI
+          // handle multiple INMR03 records - see FILE434.XMI/XEF62
           else if (Utility.matches (INMR03, buffer, ptr + 1))
           {
-            blockPointerLists = new ArrayList<> ();
-            masterBPL.add (blockPointerLists);
+            Org org = getOrg (datasets.size () + 1);
+            switch (org)
+            {
+              case PS:
+                dataset = new PsDataset (org, getRecordLength ("INMCOPY"));
+                break;
+
+              case PDS:
+                dataset = new PdsDataset (org, getRecordLength ("IEBCOPY"));
+                break;
+
+              case VSAM:
+                System.out.println ("VSAM dataset");
+                break;
+            }
+            datasets.add (dataset);
           }
         }
         else
-          blockPointerLists.add (currentBlockPointerList);
+          dataset.add (currentBlockPointerList);
       }
 
       currentBlockPointerList.addSegment (firstSegment, lastSegment,
           new BlockPointer (buffer, ptr + 2, length - 2));
 
-      ptr += length;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // processPS
-  // ---------------------------------------------------------------------------------//
-
-  void processPS (List<BlockPointerList> blockPointerLists)
-  {
-    int max = blockPointerLists.size ();
-    //    if (max > 300)
-    //    {
-    //      lines.add (String.format ("File contains %,d BlockPointerLists", max));
-    //      max = 5;
-    //    }
-
-    for (int i = 0; i < max; i++)
-    {
-      BlockPointerList bpl = blockPointerLists.get (i);
-      byte[] buffer = bpl.getRawBuffer ();
-      if (lrecl == 0)
-        lines.add (Utility.getHexDump (buffer));
-      else
+      if (lastSegment)
       {
-        int ptr = 0;
-        while (ptr < buffer.length)
+        if (controlRecord)
         {
-          int len = Math.min (lrecl, buffer.length - ptr);
-          lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-          ptr += len;
+          BlockPointerList bpl =
+              controlPointerLists.get (controlPointerLists.size () - 1);
+          controlRecords.add (new ControlRecord (bpl.getRawBuffer ()));
         }
       }
+
+      ptr += length;
     }
   }
 
@@ -186,139 +170,9 @@ public class Reader
   // only OutputPane uses this
   public String getLines ()
   {
-    lines.clear ();
-    blockPointerLists = masterBPL.get (masterBPL.size () - 1);
-    processPS (blockPointerLists);
-
-    StringBuilder text = new StringBuilder ();
-    for (String line : lines)
-      text.append (line + "\n");
-    if (text.length () > 0)
-      text.deleteCharAt (text.length () - 1);
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // processPDS
-  // ---------------------------------------------------------------------------------//
-
-  void processPDS (List<BlockPointerList> blockPointerLists)
-  {
-    boolean inCatalog = true;
-
-    // skip first two BlockPointerList entries
-    // read catalog data as raw data
-    // convert remaining entries to BlockPointers with the headers removed
-    for (int i = 2; i < blockPointerLists.size (); i++)
-    {
-      BlockPointerList bpl = blockPointerLists.get (i);
-      if (inCatalog)
-      {
-        inCatalog = addCatalogEntries (bpl.getRawBuffer ());
-        if (!inCatalog)
-          catalogEndBlock = i;
-      }
-      else
-        bpl.createDataBlocks ();       // create new BlockPointers
-    }
-
-    // assign new BlockPointer lists to CatalogEntries
-    List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
-    Collections.sort (sortedCatalogEntries);
-
-    Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
-    for (CatalogEntry catalogEntry : sortedCatalogEntries)
-      if (!offsets.containsKey (catalogEntry.getOffset ()))
-        offsets.put (catalogEntry.getOffset (), catalogEntry);
-
-    List<CatalogEntry> uniqueCatalogEntries = new ArrayList<> ();
-    for (CatalogEntry catalogEntry : offsets.values ())
-      uniqueCatalogEntries.add (catalogEntry);
-
-    // assign BlockPointerLists to CatalogEntries
-    if (blockPointerLists.get (catalogEndBlock + 1).isPDSE ())
-      assignPdsExtendedBlocks (uniqueCatalogEntries);
-    else
-      assignPdsBlocks (uniqueCatalogEntries);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // assignPdsBlocks
-  // ---------------------------------------------------------------------------------//
-
-  private void assignPdsBlocks (List<CatalogEntry> uniqueCatalogEntries)
-  {
-    int currentMember = 0;
-    for (int i = catalogEndBlock + 1; i < blockPointerLists.size (); i++)
-    {
-      BlockPointerList bpl = blockPointerLists.get (i);
-      CatalogEntry catalogEntry = uniqueCatalogEntries.get (currentMember);
-      if (!catalogEntry.addBlockPointerList (bpl))
-        break;
-
-      if (bpl.isLastBlock ())
-        ++currentMember;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // assignPdsExtendedBlocks
-  // ---------------------------------------------------------------------------------//
-
-  private void assignPdsExtendedBlocks (List<CatalogEntry> uniqueCatalogEntries)
-  {
-    int lastOffset = -1;
-    int currentMember = -1;
-
-    for (int i = catalogEndBlock + 2; i < blockPointerLists.size (); i++)
-    {
-      BlockPointerList bpl = blockPointerLists.get (i);
-
-      int offset = bpl.getOffset ();
-      if (lastOffset != offset)
-      {
-        ++currentMember;
-        lastOffset = offset;
-      }
-      CatalogEntry catalogEntry = uniqueCatalogEntries.get (currentMember);
-      if (catalogEntry.getOffset () == offset)
-      {
-        catalogEntry.setPdse (true);
-        catalogEntry.addBlockPointerList (bpl);
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // addCatalogEntries
-  // ---------------------------------------------------------------------------------//
-
-  boolean addCatalogEntries (byte[] buffer)
-  {
-    int ptr = 0;
-    while (ptr + 22 < buffer.length)
-    {
-      int ptr2 = ptr + 22;
-
-      while (true)
-      {
-        if (buffer[ptr2] == (byte) 0xFF)
-          return false;                                     // member list finished
-
-        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2, lrecl);
-        catalogEntries.add (catalogEntry);
-
-        // check for last member
-        if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
-          break;
-
-        ptr2 += catalogEntry.length ();
-      }
-
-      ptr += DIR_BLOCK_LENGTH;
-    }
-
-    return true;                                            // member list not finished
+    if (currentDataset.org == Org.PS)
+      return ((PsDataset) currentDataset).getLines ();
+    return "bollocks";
   }
 
   // ---------------------------------------------------------------------------------//
@@ -336,7 +190,10 @@ public class Reader
 
   public List<CatalogEntry> getCatalogEntries ()
   {
-    return catalogEntries;
+    if (currentDataset.org == Org.PDS)
+      return ((PdsDataset) currentDataset).getCatalogEntries ();
+    else
+      return new ArrayList<> ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -345,11 +202,9 @@ public class Reader
 
   public List<CatalogEntry> getXmitFiles ()
   {
-    List<CatalogEntry> xmitFiles = new ArrayList<> ();
-    for (CatalogEntry catalogEntry : catalogEntries)
-      if (catalogEntry.isXmit ())
-        xmitFiles.add (catalogEntry);
-    return xmitFiles;
+    if (currentDataset.org == Org.PDS)
+      return ((PdsDataset) currentDataset).getXmitFiles ();
+    return new ArrayList<> ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -476,7 +331,7 @@ public class Reader
   // getRecordLength
   // ---------------------------------------------------------------------------------//
 
-  public int getRecordLength (String utility)
+  int getRecordLength (String utility)
   {
     Optional<ControlRecord> opt = getControlRecord ("INMR02", TextUnit.INMUTILN, utility);
     if (opt.isPresent ())

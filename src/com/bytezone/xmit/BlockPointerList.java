@@ -25,7 +25,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public BlockPointerList (byte[] buffer, int id)
+  public BlockPointerList (byte[] buffer)
   {
     this.buffer = buffer;
   }
