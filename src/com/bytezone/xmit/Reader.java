@@ -23,7 +23,7 @@ public class Reader
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<Dataset> datasets = new ArrayList<> ();
 
-  private final Dataset currentDataset;       // this will go
+  private final Dataset crappoCurrentDataset;       // this will go
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -32,12 +32,11 @@ public class Reader
   public Reader (byte[] buffer)
   {
     BlockPointerList currentBlockPointerList = null;
-    Dataset dataset = null;
+    Dataset currentDataset = null;
 
     int ptr = 0;
-    boolean eof = false;
 
-    while (!eof && ptr < buffer.length)
+    while (ptr < buffer.length)
     {
       int length = buffer[ptr] & 0xFF;
       byte flags = buffer[ptr + 1];
@@ -65,43 +64,13 @@ public class Reader
         System.out.println (Utility.getHexDump (buffer, ptr, length));
         System.out.println ();
         if (Utility.matches (INMR06, buffer, ptr))
-          eof = true;
+          break;
         ptr += length;
         continue;
       }
 
       if (firstSegment)
-      {
         currentBlockPointerList = new BlockPointerList (buffer);
-
-        if (controlRecord)
-        {
-          if (Utility.matches (INMR06, buffer, ptr))
-            eof = true;
-
-          // handle multiple INMR03 records - see FILE434.XMI/XEF62
-          else if (Utility.matches (INMR03, buffer, ptr + 1))
-          {
-            Org org = getOrg (datasets.size () + 1);
-            switch (org)
-            {
-              case PS:
-                dataset = new PsDataset (org, getRecordLength ("INMCOPY"));
-                break;
-
-              case PDS:
-                dataset = new PdsDataset (org, getRecordLength ("IEBCOPY"));
-                break;
-
-              case VSAM:
-                dataset = null;         // will crash
-                System.out.println ("VSAM dataset");
-                break;
-            }
-            datasets.add (dataset);
-          }
-        }
-      }
 
       currentBlockPointerList.addSegment (firstSegment, lastSegment,
           new BlockPointer (buffer, ptr + 2, length - 2));
@@ -109,10 +78,34 @@ public class Reader
       if (lastSegment)
       {
         if (controlRecord)
-          controlRecords
-              .add (new ControlRecord (currentBlockPointerList.getRawBuffer ()));
+        {
+          ControlRecord cr = new ControlRecord (currentBlockPointerList.getRawBuffer ());
+          controlRecords.add (cr);
+          if (cr.nameMatches ("INMR06"))
+            break;
+          if (cr.nameMatches ("INMR03"))
+          {
+            Org org = getOrg (datasets.size () + 1);
+            switch (org)
+            {
+              case PS:
+                currentDataset = new PsDataset (org, getRecordLength ("INMCOPY"));
+                break;
+
+              case PDS:
+                currentDataset = new PdsDataset (org, getRecordLength ("IEBCOPY"));
+                break;
+
+              case VSAM:
+                currentDataset = null;         // will crash
+                System.out.println ("VSAM dataset");
+                break;
+            }
+            datasets.add (currentDataset);
+          }
+        }
         else
-          dataset.add (currentBlockPointerList);
+          currentDataset.add (currentBlockPointerList);
       }
 
       ptr += length;
@@ -130,9 +123,9 @@ public class Reader
       for (BlockPointerList bpl : datasets.get (0).blockPointerLists)
         System.out.println (Utility.getString (bpl.getRawBuffer ()));
 
-    // default to the last dataset
-    currentDataset = datasets.get (datasets.size () - 1);
-    //    currentDataset = datasets.get (0);
+    // set current dataset
+    crappoCurrentDataset = datasets.get (datasets.size () - 1);     // always last
+    //    crappoCurrentDataset = datasets.get (0);          // always first
   }
 
   // ---------------------------------------------------------------------------------//
@@ -145,9 +138,9 @@ public class Reader
   }
 
   // temporary
-  public Dataset getCurrentDataset ()
+  public Dataset getCrappoCurrentDataset ()
   {
-    return currentDataset;
+    return crappoCurrentDataset;
   }
 
   // ---------------------------------------------------------------------------------//

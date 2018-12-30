@@ -119,7 +119,7 @@ public class FileTreeItem extends TreeItem<XmitFile>
     }
 
     Reader reader = xmitFile.getReader ();
-    Dataset dataset = reader.getCurrentDataset ();
+    Dataset dataset = reader.getCrappoCurrentDataset ();
     Org org = dataset.getOrg ();
     ObservableList<TreeItem<XmitFile>> children = FXCollections.observableArrayList ();
 

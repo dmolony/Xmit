@@ -77,7 +77,7 @@ public class XmitTree extends TreeView<XmitFile>
           listener.treeItemSelected (null, null);
       else
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (reader, reader.getCurrentDataset ());
+          listener.treeItemSelected (reader, reader.getCrappoCurrentDataset ());
     });
   }
 

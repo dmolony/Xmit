@@ -514,11 +514,11 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     try
     {
       Reader reader = new Reader (xmitBuffer);
-      List<Dataset> datasets = reader.getDatasets ();
-      Dataset dataset = datasets.get (datasets.size () - 1);    // dangerous!!
+
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
+      Dataset dataset = reader.getCrappoCurrentDataset ();
       if (dataset.getOrg () == Dsorg.Org.PDS)
       {
         List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
@@ -533,7 +533,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     {
       lines.add ("Data length: " + xmitBuffer.length);
       lines.add (e.getMessage ());
-      //      lines.add ("\n\n");
       lines.add (Utility.getHexDump (xmitBuffer));
     }
   }

@@ -141,7 +141,7 @@ public class XmitFile
     Reader reader = getReader ();
     if (reader != null)
     {
-      Dataset dataset = reader.getCurrentDataset ();
+      Dataset dataset = reader.getCrappoCurrentDataset ();
       Org org = dataset.getOrg ();
       if (org == Org.PDS && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
         fileTreeItem.buildChildren ();
