@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.Alert;
@@ -26,6 +27,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 
   private CatalogEntry catalogEntry;
   private Reader reader;
+  private Dataset dataset;
 
   private Alert alert;
 
@@ -133,8 +135,9 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader)
+  public void treeItemSelected (Reader reader, Dataset dataset)
   {
     this.reader = reader;
+    this.dataset = dataset;
   }
 }

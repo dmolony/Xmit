@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +31,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
 
   private Reader reader;
+  private Dataset dataset;
   private final Map<Reader, String> selectedMembers = new HashMap<> ();
 
   // ---------------------------------------------------------------------------------//
@@ -241,14 +245,15 @@ public class XmitTable extends TableView<CatalogEntryItem>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader)
+  public void treeItemSelected (Reader reader, Dataset dataset)
   {
     this.reader = reader;
+    this.dataset = dataset;
 
     items.clear ();
-    if (reader != null)
+    if (dataset != null && dataset.getOrg () == Org.PDS)
     {
-      for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
         items.add (new CatalogEntryItem (catalogEntry));
 
       select (selectedMembers.containsKey (reader)
@@ -263,7 +268,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   private int memberIndex (String memberName)
   {
     int index = 0;
-    for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
     {
       if (memberName.equals (catalogEntry.getMemberName ()))
         return index;

@@ -514,15 +514,18 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     try
     {
       Reader reader = new Reader (xmitBuffer);
+      List<Dataset> datasets = reader.getDatasets ();
+      Dataset dataset = datasets.get (datasets.size () - 1);    // dangerous!!
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
-      if (reader.getOrg () == Dsorg.Org.PDS)
+      if (dataset.getOrg () == Dsorg.Org.PDS)
       {
-        lines.add (String.format ("Members: %s%n", reader.getCatalogEntries ().size ()));
+        List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
+        lines.add (String.format ("Members: %s%n", members.size ()));
         lines.add (" Member     User      Size  Offset     Date        Time     Alias");
         lines.add ("--------  --------  ------  ------  -----------  --------  --------");
-        for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+        for (CatalogEntry catalogEntry : members)
           lines.add (catalogEntry.toString ());
       }
     }

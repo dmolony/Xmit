@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -116,15 +119,20 @@ public class FileTreeItem extends TreeItem<XmitFile>
     }
 
     Reader reader = xmitFile.getReader ();
+    Dataset dataset = reader.getCurrentDataset ();
+    Org org = dataset.getOrg ();
     ObservableList<TreeItem<XmitFile>> children = FXCollections.observableArrayList ();
 
-    List<CatalogEntry> members = reader.getMembers ();
-    if (members.size () > 0)
+    if (org == Org.PDS)
     {
-      isLeaf = false;
-      for (CatalogEntry member : members)
-        children.add (new FileTreeItem (new XmitFile (member)));
-      Collections.sort (children, comparator);
+      List<CatalogEntry> members = ((PdsDataset) dataset).getXmitMembers ();
+      if (members.size () > 0)
+      {
+        isLeaf = false;
+        for (CatalogEntry member : members)
+          children.add (new FileTreeItem (new XmitFile (member)));
+        Collections.sort (children, comparator);
+      }
     }
     return children;
   }

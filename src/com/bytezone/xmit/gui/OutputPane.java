@@ -3,8 +3,12 @@ package com.bytezone.xmit.gui;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.textunit.ControlRecord;
+import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
@@ -32,6 +36,7 @@ public class OutputPane extends BorderPane
   private final TextArea textText = new TextArea ();
 
   private Reader reader;
+  private Dataset dataset;
   private CatalogEntry catalogEntry;
   private boolean showLines;
 
@@ -113,13 +118,16 @@ public class OutputPane extends BorderPane
       }
       text.deleteCharAt (text.length () - 1);
 
-      text.append ("Catalog Blocks:\n");
-      text.append ("   -member- header versn    ss -created--  -modified-  hh mm ");
-      text.append ("Size1 Size2       -------- user ---------     \n");
-      for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+      if (dataset.getOrg () == Org.PDS)
       {
-        text.append (catalogEntry.debugLine ());
-        text.append ("\n");
+        text.append ("Catalog Blocks:\n");
+        text.append ("   -member- header versn    ss -created--  -modified-  hh mm ");
+        text.append ("Size1 Size2       -------- user ---------     \n");
+        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
+        {
+          text.append (catalogEntry.debugLine ());
+          text.append ("\n");
+        }
       }
 
       //      text.append ("\nData Blocks:\n");
@@ -157,9 +165,9 @@ public class OutputPane extends BorderPane
   {
     if (reader == null)
       textText.clear ();
-    else if (catalogEntry == null)                  // flat file
-      textText.setText (reader.getLines ());
-    else                                            // PDS
+    else if (dataset.getOrg () == Org.PS)                  // flat file
+      textText.setText (((PsDataset) dataset).getLines ());
+    else if (catalogEntry != null)                         // PDS
       textText.setText (catalogEntry.getLines (showLines));
   }
 
@@ -200,9 +208,11 @@ public class OutputPane extends BorderPane
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader)
+  public void treeItemSelected (Reader reader, Dataset dataset)
   {
     this.reader = reader;
+    this.dataset = dataset;
+
     catalogEntry = null;
     updateCurrentTab ();
   }

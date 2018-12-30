@@ -15,7 +15,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.textunit.Dsorg.Org;
 
 public class XmitFile
 {
@@ -24,7 +27,8 @@ public class XmitFile
 
   private final File file;
   private final String suffix;
-  private String name;
+  private final String name;
+
   private Reader reader;
   private CatalogEntry catalogEntry;
 
@@ -35,7 +39,8 @@ public class XmitFile
   public XmitFile (File file)                   // plain .xmi file
   {
     this.file = file;
-    suffix = getSuffix (file.getName ());
+    name = file.getName ();
+    suffix = getSuffix (name);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -44,8 +49,9 @@ public class XmitFile
 
   public XmitFile (File file, String name)      // an unzipped .xmi file
   {
-    this (file);
+    this.file = file;
     this.name = name;             // display this name instead of the tmp file name
+    suffix = getSuffix (name);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -54,10 +60,11 @@ public class XmitFile
 
   public XmitFile (CatalogEntry catalogEntry)      // an xmit member
   {
-    suffix = "";
     file = null;
-    this.catalogEntry = catalogEntry;
     name = catalogEntry.getMemberName ();
+    suffix = "";
+
+    this.catalogEntry = catalogEntry;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -99,17 +106,6 @@ public class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  // getAbsolutePath
-  // ---------------------------------------------------------------------------------//
-
-  String getAbsolutePath ()
-  {
-    if (file != null)
-      return file.getAbsolutePath ();
-    return reader.getFileName ();   // should be parent.getAbsolutePath()+"."+memberName
-  }
-
-  // ---------------------------------------------------------------------------------//
   // toPath
   // ---------------------------------------------------------------------------------//
 
@@ -143,8 +139,13 @@ public class XmitFile
   Reader getReader (FileTreeItem fileTreeItem)
   {
     Reader reader = getReader ();
-    if (reader != null && reader.getMembers ().size () > 0)
-      fileTreeItem.buildChildren ();
+    if (reader != null)
+    {
+      Dataset dataset = reader.getCurrentDataset ();
+      Org org = dataset.getOrg ();
+      if (org == Org.PDS && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
+        fileTreeItem.buildChildren ();
+    }
     return reader;
   }
 
@@ -156,8 +157,7 @@ public class XmitFile
   {
     if (reader == null && catalogEntry != null)
       reader = new Reader (catalogEntry.getDataBuffer ());
-
-    if (reader == null && isFile () && !isCompressed ())
+    else if (reader == null && isFile () && !isCompressed ())
       try
       {
         reader = new Reader (Files.readAllBytes (file.toPath ()));
@@ -185,7 +185,7 @@ public class XmitFile
   //  @Override
   public String getName ()
   {
-    return name == null ? file.getName () : name;
+    return name;
   }
 
   // ---------------------------------------------------------------------------------//

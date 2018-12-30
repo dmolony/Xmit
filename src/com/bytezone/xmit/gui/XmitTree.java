@@ -60,21 +60,24 @@ public class XmitTree extends TreeView<XmitFile>
       }
     });
 
-    // selection
     model.selectedItemProperty ().addListener ( (obs, oldSelection, newSelection) ->
     {
       if (newSelection == null)
       {
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null);
+          listener.treeItemSelected (null, null);
         return;
       }
 
       XmitFile xmitFile = newSelection.getValue ();
       Reader reader = xmitFile.getReader ((FileTreeItem) newSelection);
 
-      for (TreeItemSelectionListener listener : listeners)
-        listener.treeItemSelected (reader);
+      if (reader == null)
+        for (TreeItemSelectionListener listener : listeners)
+          listener.treeItemSelected (null, null);
+      else
+        for (TreeItemSelectionListener listener : listeners)
+          listener.treeItemSelected (reader, reader.getCurrentDataset ());
     });
   }
 
@@ -97,10 +100,10 @@ public class XmitTree extends TreeView<XmitFile>
 
     if (!lastPath.isEmpty ())
     {
-      Optional<TreeItem<XmitFile>> optionalNode = getNode (lastPath);
+      Optional<FileTreeItem> optionalNode = getNode (lastPath);
       if (optionalNode.isPresent ())
       {
-        model.clearSelection ();
+        //        model.clearSelection ();
         model.select (optionalNode.get ());
         scrollTo (model.getSelectedIndex ());
       }
@@ -121,17 +124,15 @@ public class XmitTree extends TreeView<XmitFile>
   // getNode
   // ---------------------------------------------------------------------------------//
 
-  Optional<TreeItem<XmitFile>> getNode (String path)
+  Optional<FileTreeItem> getNode (String path)
   {
-    TreeItem<XmitFile> node = getRoot ();
-    Optional<TreeItem<XmitFile>> optionalNode = Optional.empty ();
-    //    System.out.println (path);
+    FileTreeItem node = (FileTreeItem) getRoot ();
+    Optional<FileTreeItem> optionalNode = Optional.empty ();
 
     String[] chunks = path.split (SEPARATOR);
 
     for (int i = 2; i < chunks.length; i++)
     {
-      //      System.out.println (chunks[i]);
       optionalNode = search (node, chunks[i]);
       if (!optionalNode.isPresent ())
         break;
@@ -144,22 +145,13 @@ public class XmitTree extends TreeView<XmitFile>
   // search
   // ---------------------------------------------------------------------------------//
 
-  private Optional<TreeItem<XmitFile>> search (TreeItem<XmitFile> parentNode, String name)
+  private Optional<FileTreeItem> search (FileTreeItem parentNode, String name)
   {
-    //    System.out.println (name);
     parentNode.setExpanded (true);
-    //    System.out.printf ("%s search children: %d%n", parentNode.getValue ().getName (),
-    //        parentNode.getChildren ().size ());
-    //    if (parentNode.getChildren ().size () == 0)
-    //    {
-    //      XmitFile xmitFile = parentNode.getValue ();
-    //      //      if (xmitFile.isFile ())
-    //      Utility.printStackTrace ();
-    //    }
 
     for (TreeItem<XmitFile> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
-        return Optional.of (childNode);
+        return Optional.of ((FileTreeItem) childNode);
 
     return Optional.empty ();
   }
@@ -172,11 +164,11 @@ public class XmitTree extends TreeView<XmitFile>
   {
     StringBuilder pathBuilder = new StringBuilder ();
 
-    TreeItem<XmitFile> item = model.getSelectedItem ();
+    FileTreeItem item = (FileTreeItem) model.getSelectedItem ();
     while (item != null)
     {
       pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());
-      item = item.getParent ();
+      item = (FileTreeItem) item.getParent ();
     }
 
     return pathBuilder.toString ();

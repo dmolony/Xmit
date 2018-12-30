@@ -28,16 +28,16 @@ public class PdsDataset extends Dataset
   // getCatalogEntries
   // ---------------------------------------------------------------------------------//
 
-  public List<CatalogEntry> getCatalogEntries ()
+  public List<CatalogEntry> getMembers ()
   {
     return catalogEntries;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getXmitFiles
+  // getXmitMembers
   // ---------------------------------------------------------------------------------//
 
-  public List<CatalogEntry> getMembers ()
+  public List<CatalogEntry> getXmitMembers ()
   {
     List<CatalogEntry> xmitFiles = new ArrayList<> ();
     for (CatalogEntry catalogEntry : catalogEntries)
@@ -50,7 +50,8 @@ public class PdsDataset extends Dataset
   // processPDS
   // ---------------------------------------------------------------------------------//
 
-  void processPDS ()
+  @Override
+  void process ()
   {
     boolean inCatalog = true;
 
@@ -141,7 +142,7 @@ public class PdsDataset extends Dataset
   // addCatalogEntries
   // ---------------------------------------------------------------------------------//
 
-  boolean addCatalogEntries (byte[] buffer)
+  private boolean addCatalogEntries (byte[] buffer)
   {
     int ptr = 0;
     while (ptr + 22 < buffer.length)

@@ -22,7 +22,7 @@ public class PsDataset extends Dataset
   // processPS
   // ---------------------------------------------------------------------------------//
 
-  void processPS ()
+  void process ()
   {
     int max = blockPointerLists.size ();
     //    if (max > 300)

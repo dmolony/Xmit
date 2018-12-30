@@ -21,10 +21,9 @@ public class Reader
         (byte) 0xF0, (byte) 0xF6 };
 
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
-  private final List<BlockPointerList> controlPointerLists = new ArrayList<> ();
-
-  private final Dataset currentDataset;
   private final List<Dataset> datasets = new ArrayList<> ();
+
+  private final Dataset currentDataset;       // this will go
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -32,46 +31,8 @@ public class Reader
 
   public Reader (byte[] buffer)
   {
-    buildPointerLists (buffer);
-
-    if (false)
-      for (ControlRecord controlRecord : controlRecords)
-        System.out.println (controlRecord);
-
-    // default to the last dataset
-    currentDataset = datasets.get (datasets.size () - 1);
-    //    currentDataset = datasets.get (0);
-
-    if (false && datasets.size () > 1)
-      for (BlockPointerList bpl : datasets.get (0).blockPointerLists)
-        System.out.println (Utility.getString (bpl.getRawBuffer ()));
-
-    // allocate the data records
-    switch (currentDataset.org)
-    {
-      case PDS:
-        ((PdsDataset) currentDataset).processPDS ();
-        break;
-
-      case PS:
-        ((PsDataset) currentDataset).processPS ();
-        break;
-
-      default:
-        System.out.println ("Unknown ORG: " + currentDataset.org);
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // buildPointerLists
-  // ---------------------------------------------------------------------------------//
-
-  private void buildPointerLists (byte[] buffer)
-  {
     BlockPointerList currentBlockPointerList = null;
     Dataset dataset = null;
-
-    boolean dumpRaw = false;
 
     int ptr = 0;
     boolean eof = false;
@@ -99,7 +60,7 @@ public class Reader
       if (recordNumber)
         System.out.println ("******** Found a record number");
 
-      if (dumpRaw)
+      if (false)
       {
         System.out.println (Utility.getHexDump (buffer, ptr, length));
         System.out.println ();
@@ -115,8 +76,6 @@ public class Reader
 
         if (controlRecord)
         {
-          controlPointerLists.add (currentBlockPointerList);
-
           if (Utility.matches (INMR06, buffer, ptr))
             eof = true;
 
@@ -135,14 +94,13 @@ public class Reader
                 break;
 
               case VSAM:
+                dataset = null;         // will crash
                 System.out.println ("VSAM dataset");
                 break;
             }
             datasets.add (dataset);
           }
         }
-        else
-          dataset.add (currentBlockPointerList);
       }
 
       currentBlockPointerList.addSegment (firstSegment, lastSegment,
@@ -151,28 +109,45 @@ public class Reader
       if (lastSegment)
       {
         if (controlRecord)
-        {
-          BlockPointerList bpl =
-              controlPointerLists.get (controlPointerLists.size () - 1);
-          controlRecords.add (new ControlRecord (bpl.getRawBuffer ()));
-        }
+          controlRecords
+              .add (new ControlRecord (currentBlockPointerList.getRawBuffer ()));
+        else
+          dataset.add (currentBlockPointerList);
       }
 
       ptr += length;
     }
+
+    // allocate the data records
+    for (Dataset dataset2 : datasets)
+      dataset2.process ();
+
+    if (false)
+      for (ControlRecord controlRecord : controlRecords)
+        System.out.println (controlRecord);
+
+    if (false && datasets.size () > 1)
+      for (BlockPointerList bpl : datasets.get (0).blockPointerLists)
+        System.out.println (Utility.getString (bpl.getRawBuffer ()));
+
+    // default to the last dataset
+    currentDataset = datasets.get (datasets.size () - 1);
+    //    currentDataset = datasets.get (0);
   }
 
   // ---------------------------------------------------------------------------------//
-  // getLines
+  // getDatasets
   // ---------------------------------------------------------------------------------//
 
-  // this should be converted to an abstract File which Member would also use
-  // only OutputPane uses this
-  public String getLines ()
+  public List<Dataset> getDatasets ()
   {
-    if (currentDataset.org == Org.PS)
-      return ((PsDataset) currentDataset).getLines ();
-    return "bollocks";
+    return datasets;
+  }
+
+  // temporary
+  public Dataset getCurrentDataset ()
+  {
+    return currentDataset;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -182,29 +157,6 @@ public class Reader
   public List<ControlRecord> getControlRecords ()
   {
     return controlRecords;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getCatalogEntries
-  // ---------------------------------------------------------------------------------//
-
-  public List<CatalogEntry> getCatalogEntries ()
-  {
-    if (currentDataset.org == Org.PDS)
-      return ((PdsDataset) currentDataset).getCatalogEntries ();
-    else
-      return new ArrayList<> ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getXmitFiles
-  // ---------------------------------------------------------------------------------//
-
-  public List<CatalogEntry> getMembers ()
-  {
-    if (currentDataset.org == Org.PDS)
-      return ((PdsDataset) currentDataset).getMembers ();
-    return new ArrayList<> ();
   }
 
   // ---------------------------------------------------------------------------------//
