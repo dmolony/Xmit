@@ -324,7 +324,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       else if (isXmit ())
         xmitList ();
       else if (blockPointerLists.size () > 200)
-        partialDump (100);      // slow!!
+        partialDump (5);      // slow!!
       else if (isRdw ())        // slow!!
         rdw ();
       else if (blockPointerLists.get (0).isBinary ())
@@ -427,7 +427,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     int length = buffer.length;
     while (length > 0)
     {
-      int len = Math.min (lrecl, length);
+      int len = Math.min (lrecl == 0 ? 80 : lrecl, length);
       lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
       ptr += len;
       length -= len;
@@ -557,7 +557,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     {
       BlockPointerList bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
-        createDataLines (bpl.getDataBuffer ());
+        lines.add (Utility.getHexDump (bpl.getDataBuffer ()));
     }
   }
 

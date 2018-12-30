@@ -46,6 +46,9 @@ public class Reader
       boolean controlRecord = (flags & 0x20) != 0;
       boolean recordNumber = (flags & 0x10) != 0;       // not seen one of these yet
 
+      if (recordNumber)
+        System.out.println ("******** Found a record number");
+
       if (false)
       {
         String name = controlRecord ? Utility.getString (buffer, ptr + 2, 6) : "";
@@ -55,9 +58,6 @@ public class Reader
         if (!controlRecord && firstSegment && lastSegment)
           System.out.println (Utility.getHexDump (buffer, ptr, length));
       }
-
-      if (recordNumber)
-        System.out.println ("******** Found a record number");
 
       if (false)
       {
@@ -114,6 +114,9 @@ public class Reader
     // allocate the data records
     for (Dataset dataset2 : datasets)
       dataset2.process ();
+
+    if (datasets.size () > 1)
+      System.out.printf ("Processed %d datasets%n", datasets.size ());
 
     if (false)
       for (ControlRecord controlRecord : controlRecords)
