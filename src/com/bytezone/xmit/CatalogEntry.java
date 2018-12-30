@@ -1,10 +1,19 @@
 package com.bytezone.xmit;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
+import com.bytezone.xmit.textunit.ControlRecord;
+import com.bytezone.xmit.textunit.Dsorg;
+
+public class CatalogEntry implements Comparable<CatalogEntry>
 {
-  //  private final String memberName;
+  final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  final List<String> lines = new ArrayList<> ();
+  int lrecl;
+  boolean isPdse;
+  private final String name;
   private String userName = "";
   private String aliasName = "";
 
@@ -23,6 +32,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   private int dataLength;
 
   private final byte[] directoryData;
+  private final int extra;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -30,13 +40,11 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 
   public CatalogEntry (byte[] buffer, int ptr, int lrecl)
   {
-    super (Utility.getString (buffer, ptr, 8));
-
-    //    memberName = Utility.getString (buffer, ptr, 8);
+    name = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
     this.lrecl = lrecl;
 
-    int extra = buffer[ptr + 11] & 0xFF;
+    extra = buffer[ptr + 11] & 0xFF;
 
     switch (extra)
     {
@@ -58,6 +66,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
         break;
 
       case 0x31:                    // load module?
+        dateCreated = Utility.getLocalDate (buffer, ptr + 34);
         break;
 
       case 0x37:
@@ -81,6 +90,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 
       case 0xB6:      // file242    // alias of 0x31
         aliasName = Utility.getString (buffer, ptr + 36, 8);
+        dateCreated = Utility.getLocalDate (buffer, ptr + 44);
         break;
 
       case 0xD3:
@@ -115,10 +125,20 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
 
   public String debugLine ()
   {
-    return String.format ("%02X %-8s %06X %-129s %8s %8s", directoryData[11],
-        getMemberName (), blockFrom,
-        Utility.getHexValues (directoryData, 12, directoryData.length - 12),
-        getUserName (), getAliasName ());
+    String hex = "";
+    String t1 = "";
+    if (extra == 0x31)
+      hex =
+          Utility.getHexValues (directoryData, 12, 22) + "                              "
+              + Utility.getHexValues (directoryData, 34, 12);
+    else
+      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+
+    if (extra == 0xB6)
+      t1 = Utility.getString (directoryData, 48, 8);
+
+    return String.format ("%02X %-8s %06X %-129s %8s %8s %8s", directoryData[11],
+        getMemberName (), blockFrom, hex, getUserName (), getAliasName (), t1);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -261,17 +281,26 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  // setPdse
+  // ---------------------------------------------------------------------------------//
+
+  void setPdse (boolean value)
+  {
+    isPdse = value;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
   boolean addBlockPointerList (BlockPointerList blockPointerList)
   {
-    if (blockPointerLists.size () == 0
-        && !blockPointerList.sortKeyMatches (directoryData[10]))
-    {
-      System.out.println ("Mismatch in " + name);
-      return false;
-    }
+    if (blockPointerLists.size () == 0)
+      if (!blockPointerList.sortKeyMatches (directoryData[10]))
+      {
+        System.out.println ("Mismatch in " + name);
+        return false;
+      }
 
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
@@ -284,7 +313,6 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   // getLines
   // ---------------------------------------------------------------------------------//
 
-  @Override
   public String getLines (boolean showLines)
   {
     if (lines.size () == 0)
@@ -296,13 +324,16 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
       else if (isXmit ())
         xmitList ();
       else if (blockPointerLists.size () > 200)
-        partialDump (100);
-      else if (isRdw ())
+        partialDump (100);      // slow!!
+      else if (isRdw ())        // slow!!
         rdw ();
       else if (blockPointerLists.get (0).isBinary ())
         hexDump ();
       else
-        createDataLines (getDataBuffer ());
+      {
+        byte[] buffer = getDataBuffer ();
+        createDataLines (buffer);
+      }
     }
 
     StringBuilder text = new StringBuilder ();
@@ -324,9 +355,19 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   // getDataBuffer
   // ---------------------------------------------------------------------------------//
 
-  @Override
   public byte[] getDataBuffer ()
   {
+    if (isPdse)       // recalculate data length
+    {
+      dataLength = 0;
+      for (BlockPointerList blockPointerList : blockPointerLists)
+      {
+        dataLength += blockPointerList.getDataLength ();
+        if (blockPointerList.isLastBlock ())        // PDSEs end early
+          break;
+      }
+    }
+
     byte[] dataBuffer = new byte[dataLength];
     int ptr = 0;
 
@@ -336,6 +377,7 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
       if (blockPointerList.isLastBlock ())        // PDSEs end early
         break;
     }
+    assert ptr == dataLength;
 
     return dataBuffer;
   }
@@ -373,6 +415,148 @@ public class CatalogEntry extends Dataset implements Comparable<CatalogEntry>
   {
     return String.format ("%-126s %8s %8s %5d %5d %5d",
         Utility.getHexValues (directoryData), name, userName, size, init, mod);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // createDataLines
+  // ---------------------------------------------------------------------------------//
+
+  void createDataLines (byte[] buffer)
+  {
+    int ptr = 0;
+    int length = buffer.length;
+    while (length > 0)
+    {
+      int len = Math.min (lrecl, length);
+      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+      ptr += len;
+      length -= len;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // hexDump
+  // ---------------------------------------------------------------------------------//
+
+  void hexDump ()
+  {
+    if (blockPointerLists.size () == 0)
+      return;
+
+    if (blockPointerLists.get (0).isXmit ())
+      lines.add ("Appears to be XMIT");
+
+    // FILE600.XMI
+    byte[] buffer = getDataBuffer ();
+    lines.add (Utility.getHexDump (buffer));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isRdw
+  // ---------------------------------------------------------------------------------//
+
+  boolean isRdw ()
+  {
+    if (blockPointerLists.size () == 0)
+      return false;
+
+    for (BlockPointerList bpl : blockPointerLists)
+    {
+      byte[] buffer = bpl.getDataBuffer ();
+      if (buffer.length == 0)
+        continue;
+
+      int len = Utility.getTwoBytes (buffer, 0);
+      if (len != buffer.length)
+        return false;
+    }
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // rdw
+  // ---------------------------------------------------------------------------------//
+
+  void rdw ()         // see SOURCE.XMI
+  {
+    for (BlockPointerList bpl : blockPointerLists)
+    {
+      byte[] buffer = bpl.getDataBuffer ();
+      if (buffer.length == 0)
+        continue;
+      int ptr = 4;
+      while (ptr < buffer.length)
+      {
+        int len = Utility.getTwoBytes (buffer, ptr);
+        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+        ptr += len;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isXmit
+  // ---------------------------------------------------------------------------------//
+
+  boolean isXmit ()
+  {
+    return blockPointerLists.size () > 0 && blockPointerLists.get (0).isXmit ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // xmitList
+  // ---------------------------------------------------------------------------------//
+
+  void xmitList ()
+  {
+    byte[] xmitBuffer = getDataBuffer ();
+    try
+    {
+      Reader reader = new Reader (xmitBuffer);
+      for (ControlRecord controlRecord : reader.getControlRecords ())
+        lines.add (String.format ("%s", controlRecord));
+
+      if (reader.getOrg () == Dsorg.Org.PDS)
+      {
+        lines.add (String.format ("Members: %s%n", reader.getCatalogEntries ().size ()));
+        lines.add (" Member     User      Size  Offset     Date        Time     Alias");
+        lines.add ("--------  --------  ------  ------  -----------  --------  --------");
+        for (CatalogEntry catalogEntry : reader.getCatalogEntries ())
+          lines.add (catalogEntry.toString ());
+      }
+    }
+    catch (Exception e)
+    {
+      lines.add ("Data length: " + xmitBuffer.length);
+      lines.add (e.getMessage ());
+      //      lines.add ("\n\n");
+      lines.add (Utility.getHexDump (xmitBuffer));
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // partialDump
+  // ---------------------------------------------------------------------------------//
+
+  void partialDump (int max)
+  {
+    lines.add (toString ());
+    lines.add ("");
+    lines.add ("Data too large to display");
+    lines.add ("");
+    lines.add ("Showing first " + max + " of " + blockPointerLists.size () + " buffers");
+    lines.add ("");
+
+    if (blockPointerLists.get (0).isXmit ())
+      lines.add ("Appears to be XMIT");
+
+    for (int i = 0; i < max; i++)
+    {
+      BlockPointerList bpl = blockPointerLists.get (i);
+      if (bpl.getDataLength () > 0)
+        createDataLines (bpl.getDataBuffer ());
+    }
   }
 
   // ---------------------------------------------------------------------------------//

@@ -6,7 +6,6 @@ import java.util.List;
 
 public class BlockPointerList implements Iterable<BlockPointer>
 {
-  //  private final int id;
   private final byte[] buffer;          // all block pointers refer to this
 
   private int rawBufferLength;          // raw data length
@@ -29,7 +28,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
   public BlockPointerList (byte[] buffer, int id)
   {
     this.buffer = buffer;
-    //    this.id = id;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -259,7 +257,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDataBuffer
+  // getDataBuffer - contains headers which must be removed
   // ---------------------------------------------------------------------------------//
 
   int getDataBuffer (byte[] dataBuffer, int ptr)

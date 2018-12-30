@@ -207,7 +207,7 @@ public class Reader
     boolean inCatalog = true;
 
     // skip first two BlockPointerList entries
-    // read catalo data as raw data
+    // read catalog data as raw data
     // convert remaining entries to BlockPointers with the headers removed
     for (int i = 2; i < blockPointerLists.size (); i++)
     {
@@ -282,7 +282,10 @@ public class Reader
       }
       CatalogEntry catalogEntry = uniqueCatalogEntries.get (currentMember);
       if (catalogEntry.getOffset () == offset)
+      {
+        catalogEntry.setPdse (true);
         catalogEntry.addBlockPointerList (bpl);
+      }
     }
   }
 
