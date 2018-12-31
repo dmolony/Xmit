@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.textunit.Dsorg.Org;
+import com.bytezone.xmit.textunit.ControlRecord;
 
 public class PsDataset extends Dataset
 {
@@ -13,9 +13,9 @@ public class PsDataset extends Dataset
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  PsDataset (Reader reader, Org org, int lrecl)
+  PsDataset (Reader reader, ControlRecord inmr02)
   {
-    super (reader, org, lrecl);
+    super (reader, inmr02);
   }
 
   // ---------------------------------------------------------------------------------//

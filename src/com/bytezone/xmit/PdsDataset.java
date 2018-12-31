@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.bytezone.xmit.textunit.Dsorg.Org;
+import com.bytezone.xmit.textunit.ControlRecord;
 
 public class PdsDataset extends Dataset
 {
@@ -19,9 +19,9 @@ public class PdsDataset extends Dataset
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  PdsDataset (Reader reader, Org org, int lrecl)
+  PdsDataset (Reader reader, ControlRecord inmr02)
   {
-    super (reader, org, lrecl);
+    super (reader, inmr02);
   }
 
   // ---------------------------------------------------------------------------------//

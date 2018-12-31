@@ -3,27 +3,38 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.textunit.ControlRecord;
+import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.Dsorg.Org;
+import com.bytezone.xmit.textunit.Recfm;
 import com.bytezone.xmit.textunit.TextUnit;
+import com.bytezone.xmit.textunit.TextUnitNumber;
 
 public abstract class Dataset
 {
-  final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  Reader reader;
+  ControlRecord inmr02;
+
   int lrecl;
   Org org;
-  Reader reader;
   int recfm;
+
+  final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Dataset (Reader reader, Org org, int lrecl)
+  Dataset (Reader reader, ControlRecord inmr02)
   {
-    this.lrecl = lrecl;
-    this.org = org;
     this.reader = reader;
-    this.recfm = reader.getControlRecordNumber (TextUnit.INMRECFM);   // multi datasets???
+    this.inmr02 = inmr02;
+
+    this.lrecl =
+        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
+    this.org = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
+    this.recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
+    System.out.println (inmr02);
   }
 
   abstract void process ();
@@ -32,7 +43,7 @@ public abstract class Dataset
   // add
   // ---------------------------------------------------------------------------------//
 
-  void add (BlockPointerList blockPointerList)
+  void addBlockPointerList (BlockPointerList blockPointerList)
   {
     blockPointerLists.add (blockPointerList);
   }
@@ -53,6 +64,7 @@ public abstract class Dataset
   @Override
   public String toString ()
   {
-    return String.format ("%-20s %-3s %,6d", reader.getFileName (), org, lrecl);
+    return String.format ("%-20s %-3s %,6d  %04X", reader.getFileName (), org, lrecl,
+        recfm);
   }
 }

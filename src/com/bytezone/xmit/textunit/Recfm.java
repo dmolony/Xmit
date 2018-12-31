@@ -17,7 +17,7 @@ public class Recfm extends TextUnitNumber
    * X'C000' Undefined records
    */
 
-  String type;
+  public String type;
 
   // ---------------------------------------------------------------------------------//
   // constructor

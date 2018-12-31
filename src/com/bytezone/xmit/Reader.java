@@ -83,17 +83,27 @@ public class Reader
           controlRecords.add (cr);
           if (cr.nameMatches ("INMR06"))
             break;
+          if (cr.nameMatches ("INMR01"))
+          {
+            TextUnit textUnit = cr.getTextUnit (TextUnit.INMNUMF);
+            if (textUnit != null)
+            {
+              int files = (int) ((TextUnitNumber) textUnit).getNumber ();
+              System.out.println (files);
+            }
+          }
           if (cr.nameMatches ("INMR03"))
           {
             Org org = getOrg (datasets.size () + 1);
+            ControlRecord inmr02 = getInmr02 (datasets.size () + 1).get ();
             switch (org)
             {
               case PS:
-                currentDataset = new PsDataset (this, org, getRecordLength ("INMCOPY"));
+                currentDataset = new PsDataset (this, inmr02);
                 break;
 
               case PDS:
-                currentDataset = new PdsDataset (this, org, getRecordLength ("IEBCOPY"));
+                currentDataset = new PdsDataset (this, inmr02);
                 break;
 
               case VSAM:
@@ -105,7 +115,7 @@ public class Reader
           }
         }
         else
-          currentDataset.add (currentBlockPointerList);
+          currentDataset.addBlockPointerList (currentBlockPointerList);
       }
 
       ptr += length;
@@ -193,6 +203,24 @@ public class Reader
         return ((Dsorg) textUnit).type;
     }
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getInmr02
+  // ---------------------------------------------------------------------------------//
+
+  Optional<ControlRecord> getInmr02 (int fileNbr)
+  {
+    for (ControlRecord controlRecord : controlRecords)
+      if (controlRecord.fileNbrMatches (fileNbr))
+      {
+        //        TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
+        //        if (textUnit != null
+        //            && ((TextUnitString) textUnit).getString ().equals (utilityName))
+        return Optional.of (controlRecord);
+      }
+
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//
