@@ -11,6 +11,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 {
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   final List<String> lines = new ArrayList<> ();
+
   int lrecl;
   boolean isPdse;
   private final String name;

@@ -13,15 +13,16 @@ public class PsDataset extends Dataset
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  PsDataset (Org org, int lrecl)
+  PsDataset (Reader reader, Org org, int lrecl)
   {
-    super (org, lrecl);
+    super (reader, org, lrecl);
   }
 
   // ---------------------------------------------------------------------------------//
   // processPS
   // ---------------------------------------------------------------------------------//
 
+  @Override
   void process ()
   {
     int max = blockPointerLists.size ();
@@ -51,24 +52,31 @@ public class PsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
+  //getRawBuffer
+  // ---------------------------------------------------------------------------------//
+
+  public byte[] getRawBuffer ()
+  {
+    int bufferLength = 0;
+    for (BlockPointerList blockPointerList : blockPointerLists)
+      bufferLength += blockPointerList.getRawBufferLength ();
+
+    byte[] buffer = new byte[bufferLength];
+
+    int ptr = 0;
+    for (BlockPointerList blockPointerList : blockPointerLists)
+      ptr = blockPointerList.getRawBuffer (buffer, ptr);
+
+    return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getLines
   // ---------------------------------------------------------------------------------//
 
-  // this should be converted to an abstract File which Member would also use
   // only OutputPane uses this
   public String getLines ()
   {
-    //    lines.clear ();
-    //    Dataset dataset = datasets.get (datasets.size () - 1);
-    //    for (Dataset dataset : datasets)
-    //      if (dataset.org == Org.PS)
-    //      {
-    //        processPS (dataset);
-    //        break;
-    //      }
-    //    if (currentDataset.org == Org.PS)
-    //    processPS ();
-
     StringBuilder text = new StringBuilder ();
     for (String line : lines)
       text.append (line + "\n");

@@ -14,6 +14,7 @@ public class ViewMenu
   private static final String PREFS_SHOW_LINES = "ShowLines";
   private static final String PREFS_SHOW_CONTROL = "ShowControl";
   private static final String PREFS_SHOW_DEBUG = "ShowDebug";
+  private static final String PREFS_SHOW_HEX = "ShowHex";
   private static final String PREFS_CODE_PAGE = "CodePage";
   private static final String PREFS_EURO_PAGE = "EuroPage";
 
@@ -27,6 +28,7 @@ public class ViewMenu
   private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Line numbers");
   private final CheckMenuItem controlMenuItem = new CheckMenuItem ("Control tab");
   private final CheckMenuItem debugMenuItem = new CheckMenuItem ("Debug tab");
+  private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
 
   private final String[][] codePageNames =
       { { "CP037", "CP1140" }, { "CP285", "CP1146" }, { "CP297", "CP1147" },
@@ -50,7 +52,7 @@ public class ViewMenu
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
     viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem,
-        new SeparatorMenuItem ());
+        hexMenuItem, new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
       viewMenu.getItems ().add (item);
     viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
@@ -63,6 +65,7 @@ public class ViewMenu
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     controlMenuItem.setOnAction (e -> setTabs ());
     debugMenuItem.setOnAction (e -> setTabs ());
+    hexMenuItem.setOnAction (e -> setTabs ());
     euroMenuItem.setOnAction (e -> setEuroAndNotifyListeners ());
   }
 
@@ -123,7 +126,8 @@ public class ViewMenu
 
   private void setTabs ()
   {
-    xmitApp.setTabVisible (controlMenuItem.isSelected (), debugMenuItem.isSelected ());
+    xmitApp.setTabVisible (controlMenuItem.isSelected (), debugMenuItem.isSelected (),
+        hexMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -137,6 +141,7 @@ public class ViewMenu
 
     controlMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_CONTROL, false));
     debugMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_DEBUG, false));
+    hexMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEX, false));
     setTabs ();
 
     euroMenuItem.setSelected (prefs.getBoolean (PREFS_EURO_PAGE, false));
@@ -163,6 +168,7 @@ public class ViewMenu
     prefs.putBoolean (PREFS_SHOW_LINES, linesMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_CONTROL, controlMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_DEBUG, debugMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());
     prefs.putBoolean (PREFS_EURO_PAGE, euroMenuItem.isSelected ());
 
     prefs.put (PREFS_CODE_PAGE,

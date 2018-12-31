@@ -89,11 +89,11 @@ public class Reader
             switch (org)
             {
               case PS:
-                currentDataset = new PsDataset (org, getRecordLength ("INMCOPY"));
+                currentDataset = new PsDataset (this, org, getRecordLength ("INMCOPY"));
                 break;
 
               case PDS:
-                currentDataset = new PdsDataset (org, getRecordLength ("IEBCOPY"));
+                currentDataset = new PdsDataset (this, org, getRecordLength ("IEBCOPY"));
                 break;
 
               case VSAM:

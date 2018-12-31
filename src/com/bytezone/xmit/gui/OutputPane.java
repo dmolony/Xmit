@@ -2,11 +2,7 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.PsDataset;
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.*;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
@@ -30,10 +26,12 @@ public class OutputPane extends BorderPane
   private final Tab fileTab = new Tab ();
   private final Tab debugTab = new Tab ();
   private final Tab textTab = new Tab ();
+  private final Tab hexTab = new Tab ();
 
   private final TextArea fileText = new TextArea ();
   private final TextArea debugText = new TextArea ();
   private final TextArea textText = new TextArea ();
+  private final TextArea hexText = new TextArea ();
 
   private Reader reader;
   private Dataset dataset;
@@ -56,6 +54,7 @@ public class OutputPane extends BorderPane
     addText (fileTab, fileText, "Control");
     addText (debugTab, debugText, "Debug");
     addText (textTab, textText, "Output");
+    addText (hexTab, hexText, "Hex");
 
     setCenter (tabPane);
 
@@ -98,6 +97,8 @@ public class OutputPane extends BorderPane
       updateTextTab ();
     else if (selectedTab == fileTab)
       updateFileTab ();
+    else if (selectedTab == hexTab)
+      updateHexTab ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -172,6 +173,20 @@ public class OutputPane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
+  // updateHexTab
+  // ---------------------------------------------------------------------------------//
+
+  private void updateHexTab ()
+  {
+    if (reader == null)
+      hexText.clear ();
+    else if (dataset.getOrg () == Org.PS)                  // flat file
+      hexText.setText (Utility.getHexDump (((PsDataset) dataset).getRawBuffer ()));
+    else if (catalogEntry != null)                         // PDS
+      hexText.setText (Utility.getHexDump (catalogEntry.getDataBuffer ()));
+  }
+
+  // ---------------------------------------------------------------------------------//
   // restore
   // ---------------------------------------------------------------------------------//
 
@@ -193,13 +208,15 @@ public class OutputPane extends BorderPane
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (boolean fileVisible, boolean debugVisible)
+  void setTabVisible (boolean fileVisible, boolean debugVisible, boolean hexVisible)
   {
     tabPane.getTabs ().clear ();
     if (fileVisible)
       tabPane.getTabs ().add (fileTab);
     if (debugVisible)
       tabPane.getTabs ().add (debugTab);
+    if (hexVisible)
+      tabPane.getTabs ().add (hexTab);
     tabPane.getTabs ().add (textTab);
   }
 

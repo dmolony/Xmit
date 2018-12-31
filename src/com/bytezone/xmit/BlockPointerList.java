@@ -178,6 +178,15 @@ public class BlockPointerList implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getRawBufferLength
+  // ---------------------------------------------------------------------------------//
+
+  public int getRawBufferLength ()
+  {
+    return rawBufferLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // isLastBlock
   // ---------------------------------------------------------------------------------//
 
@@ -237,6 +246,24 @@ public class BlockPointerList implements Iterable<BlockPointer>
     }
     assert ptr == rawBufferLength;
     return fullBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getRawBuffer - contains no headers
+  // ---------------------------------------------------------------------------------//
+
+  int getRawBuffer (byte[] dataBuffer, int ptr)
+  {
+    assert buffer.length >= ptr + dataBufferLength;
+
+    for (BlockPointer blockPointer : rawBlockPointers)
+    {
+      System.arraycopy (buffer, blockPointer.offset, dataBuffer, ptr,
+          blockPointer.length);
+      ptr += blockPointer.length;
+    }
+
+    return ptr;
   }
 
   // ---------------------------------------------------------------------------------//

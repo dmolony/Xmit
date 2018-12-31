@@ -10,15 +10,17 @@ public abstract class Dataset
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   int lrecl;
   Org org;
+  Reader reader;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Dataset (Org org, int lrecl)
+  Dataset (Reader reader, Org org, int lrecl)
   {
     this.lrecl = lrecl;
     this.org = org;
+    this.reader = reader;
   }
 
   abstract void process ();
@@ -30,7 +32,6 @@ public abstract class Dataset
   void add (BlockPointerList blockPointerList)
   {
     blockPointerLists.add (blockPointerList);
-    //    System.out.printf ("  adding to %s %d%n", org, lrecl);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -49,6 +50,6 @@ public abstract class Dataset
   @Override
   public String toString ()
   {
-    return String.format ("Dataset: %s %d", org, lrecl);
+    return String.format ("%-20s %-3s %,6d", reader.getFileName (), org, lrecl);
   }
 }
