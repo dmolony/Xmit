@@ -26,11 +26,11 @@ public class PsDataset extends Dataset
   void process ()
   {
     int max = blockPointerLists.size ();
-    //    if (max > 300)
-    //    {
-    //      lines.add (String.format ("File contains %,d BlockPointerLists", max));
-    //      max = 5;
-    //    }
+    if (max > 200)
+    {
+      lines.add (String.format ("File contains %,d BlockPointerLists", max));
+      max = 10;
+    }
 
     for (int i = 0; i < max; i++)
     {
@@ -52,20 +52,21 @@ public class PsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
-  //getRawBuffer
+  // getRawBuffer
   // ---------------------------------------------------------------------------------//
 
   public byte[] getRawBuffer ()
   {
+    int max = blockPointerLists.size () > 200 ? 10 : blockPointerLists.size ();
     int bufferLength = 0;
-    for (BlockPointerList blockPointerList : blockPointerLists)
-      bufferLength += blockPointerList.getRawBufferLength ();
+    for (int i = 0; i < max; i++)
+      bufferLength += blockPointerLists.get (i).getRawBufferLength ();
 
     byte[] buffer = new byte[bufferLength];
 
     int ptr = 0;
-    for (BlockPointerList blockPointerList : blockPointerLists)
-      ptr = blockPointerList.getRawBuffer (buffer, ptr);
+    for (int i = 0; i < max; i++)
+      ptr = blockPointerLists.get (i).getRawBuffer (buffer, ptr);
 
     return buffer;
   }

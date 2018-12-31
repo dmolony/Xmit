@@ -13,6 +13,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   final List<String> lines = new ArrayList<> ();
 
   int lrecl;
+  int recfm;
+
   boolean isPdse;
   private final String name;
   private String userName = "";
@@ -39,11 +41,12 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry (byte[] buffer, int ptr, int lrecl)
+  public CatalogEntry (byte[] buffer, int ptr, int lrecl, int recfm)
   {
     name = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
     this.lrecl = lrecl;
+    this.recfm = recfm;
 
     extra = buffer[ptr + 11] & 0xFF;
 
@@ -325,8 +328,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
       else if (isXmit ())
         xmitList ();
       else if (blockPointerLists.size () > 200)
-        partialDump (5);      // slow!!
-      else if (isRdw ())        // slow!!
+        partialDump (10);      // slow!!
+      else if (recfm == 0x5000)
         rdw ();
       else if (blockPointerLists.get (0).isBinary ())
         hexDump ();
@@ -456,24 +459,24 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // isRdw
   // ---------------------------------------------------------------------------------//
 
-  boolean isRdw ()
-  {
-    if (blockPointerLists.size () == 0)
-      return false;
-
-    for (BlockPointerList bpl : blockPointerLists)
-    {
-      byte[] buffer = bpl.getDataBuffer ();
-      if (buffer.length == 0)
-        continue;
-
-      int len = Utility.getTwoBytes (buffer, 0);
-      if (len != buffer.length)
-        return false;
-    }
-
-    return true;
-  }
+  //  boolean isRdw ()
+  //  {
+  //    if (blockPointerLists.size () == 0)
+  //      return false;
+  //
+  //    for (BlockPointerList bpl : blockPointerLists)
+  //    {
+  //      byte[] buffer = bpl.getDataBuffer ();
+  //      if (buffer.length == 0)
+  //        continue;
+  //
+  //      int len = Utility.getTwoBytes (buffer, 0);
+  //      if (len != buffer.length)
+  //        return false;
+  //    }
+  //
+  //    return true;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // rdw

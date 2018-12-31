@@ -162,7 +162,7 @@ public class PdsDataset extends Dataset
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2, lrecl);
+        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2, lrecl, recfm);
         catalogEntries.add (catalogEntry);
 
         // check for last member

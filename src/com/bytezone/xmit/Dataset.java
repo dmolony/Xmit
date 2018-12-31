@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.xmit.textunit.Dsorg.Org;
+import com.bytezone.xmit.textunit.TextUnit;
 
 public abstract class Dataset
 {
@@ -11,6 +12,7 @@ public abstract class Dataset
   int lrecl;
   Org org;
   Reader reader;
+  int recfm;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -21,6 +23,7 @@ public abstract class Dataset
     this.lrecl = lrecl;
     this.org = org;
     this.reader = reader;
+    this.recfm = reader.getControlRecordNumber (TextUnit.INMRECFM);   // multi datasets???
   }
 
   abstract void process ();
