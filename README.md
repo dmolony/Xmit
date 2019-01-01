@@ -1,7 +1,7 @@
 # Xmit
 - view the contents of xmit files
 - view xmit files [stored as PDS members](resources/embedded.md)
-- view [compressed xmit files](resources/compressed.md) without decompressing
+- view [compressed xmit files](resources/compressed.md)
 - extract [individual PDS members](resources/extract.md)
 
 ## Sample screens
