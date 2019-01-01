@@ -70,7 +70,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
 
       case 0x31:                    // load module?
-        dateCreated = Utility.getLocalDate (buffer, ptr + 34);
+        //        dateCreated = Utility.getLocalDate (buffer, ptr + 34);  NFE
         break;
 
       case 0x37:
