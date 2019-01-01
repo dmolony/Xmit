@@ -338,7 +338,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         xmitList ();
       else if (blockPointerLists.size () > 100)
         partialDump (10);      // slow!!
-      else if (recfm == 0x5000)
+      else if (recfm == 0x5000 && isRdw ())
         rdw ();
       else if (blockPointerLists.get (0).isBinary ())
         hexDump ();
@@ -468,24 +468,24 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // isRdw
   // ---------------------------------------------------------------------------------//
 
-  //  boolean isRdw ()
-  //  {
-  //    if (blockPointerLists.size () == 0)
-  //      return false;
-  //
-  //    for (BlockPointerList bpl : blockPointerLists)
-  //    {
-  //      byte[] buffer = bpl.getDataBuffer ();
-  //      if (buffer.length == 0)
-  //        continue;
-  //
-  //      int len = Utility.getTwoBytes (buffer, 0);
-  //      if (len != buffer.length)
-  //        return false;
-  //    }
-  //
-  //    return true;
-  //  }
+  boolean isRdw ()
+  {
+    if (blockPointerLists.size () == 0)
+      return false;
+
+    for (BlockPointerList bpl : blockPointerLists)
+    {
+      byte[] buffer = bpl.getDataBuffer ();
+      if (buffer.length == 0)
+        continue;
+
+      int len = Utility.getTwoBytes (buffer, 0);
+      if (len != buffer.length)
+        return false;
+    }
+
+    return true;
+  }
 
   // ---------------------------------------------------------------------------------//
   // rdw
