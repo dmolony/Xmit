@@ -137,8 +137,8 @@ public class Reader
         System.out.println (Utility.getString (bpl.getRawBuffer ()));
 
     // set current dataset
-    //    crappoCurrentDataset = datasets.get (datasets.size () - 1);     // always last
-    crappoCurrentDataset = datasets.get (0);          // always first
+    crappoCurrentDataset = datasets.get (datasets.size () - 1);     // always last
+    //    crappoCurrentDataset = datasets.get (0);          // always first
   }
 
   // ---------------------------------------------------------------------------------//
