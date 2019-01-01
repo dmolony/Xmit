@@ -2,7 +2,7 @@
 - view the contents of xmit files
 - view xmit files [stored as PDS members](resources/embedded.md)
 - view xmit files inside .zip files
-- extract individual PDS members
+- extract [individual PDS members](resources/extract.md)
 
 ## Sample screens
 ### MacOS
