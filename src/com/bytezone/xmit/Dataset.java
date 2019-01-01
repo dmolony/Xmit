@@ -34,7 +34,6 @@ public abstract class Dataset
         (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
     this.org = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
     this.recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
-    System.out.println (inmr02);
   }
 
   abstract void process ();
@@ -55,6 +54,15 @@ public abstract class Dataset
   public Org getOrg ()
   {
     return org;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getControlRecord
+  // ---------------------------------------------------------------------------------//
+
+  public ControlRecord getControlRecord ()
+  {
+    return inmr02;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -95,7 +95,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
   private void restore ()
   {
-    viewMenu.restore ();        // ensure codepage is set first
+    fileMenu.restore ();
+    viewMenu.restore ();        // ensure codepage is set before tree
     xmitTree.restore ();
     xmitTable.restore ();
 

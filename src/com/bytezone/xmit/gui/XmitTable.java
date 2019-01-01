@@ -44,12 +44,13 @@ public class XmitTable extends TableView<CatalogEntryItem>
     setItems (items);
 
     addString ("Member", "MemberName", 100, "CENTER-LEFT");
-    addString ("User", "UserName", 100, "CENTER-LEFT");
+    addString ("Id", "UserName", 100, "CENTER-LEFT");
     addNumber ("Size", "Size", 70);
+    addNumber ("Init", "Init", 70);
     addLocalDate ("Created", "DateCreated", 100);
     addLocalDate ("Modified", "DateModified", 100);
     addString ("Time", "Time", 90, "CENTER");
-    addString ("Version", "Version", 80, "CENTER");
+    addString ("ver.mod", "Version", 80, "CENTER");
     addString ("Alias", "AliasName", 100, "CENTER-LEFT");
 
     getSelectionModel ().selectedItemProperty ()

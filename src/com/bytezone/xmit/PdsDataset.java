@@ -55,13 +55,9 @@ public class PdsDataset extends Dataset
   {
     boolean inCatalog = true;
 
-    //    System.out.println (this);
     byte[] buffer = blockPointerLists.get (0).getRawBuffer ();
-    System.out.printf ("%-34s %s%n", this,
-        Utility.getHexValues (buffer, 6, buffer.length - 6));
-    //    for (int i = 1; i < 2; i++)
-    //      System.out.println (Utility.getHexDump (blockPointerLists.get (i).getRawBuffer ()));
-    //    System.out.println ();
+    //    System.out.printf ("%-34s %s%n", this,
+    //        Utility.getHexValues (buffer, 6, buffer.length - 6));
 
     // skip first two BlockPointerList entries
     // read catalog data as raw data

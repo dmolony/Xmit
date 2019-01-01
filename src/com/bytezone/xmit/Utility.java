@@ -56,7 +56,7 @@ public class Utility
   // matches
   // ---------------------------------------------------------------------------------//
 
-  static boolean matches (byte[] key, byte[] buffer, int ptr)
+  public static boolean matches (byte[] key, byte[] buffer, int ptr)
   {
     if (ptr + key.length >= buffer.length)
       return false;
@@ -72,7 +72,8 @@ public class Utility
   // matches
   // ---------------------------------------------------------------------------------//
 
-  static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2, int length)
+  public static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2,
+      int length)
   {
     if (ptr1 + length > key.length || ptr2 + length > buffer.length)
       return false;

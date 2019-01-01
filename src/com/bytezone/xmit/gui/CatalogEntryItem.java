@@ -15,6 +15,7 @@ public class CatalogEntryItem
   private StringProperty version;
   private StringProperty time;
   private IntegerProperty size;
+  private IntegerProperty init;
   private ObjectProperty<LocalDate> dateCreated;
   private ObjectProperty<LocalDate> dateModified;
 
@@ -25,6 +26,7 @@ public class CatalogEntryItem
     setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
     setSize (catalogEntry.getSize ());
+    setInit (catalogEntry.getInit ());
     setDateCreated (catalogEntry.getDateCreated ());
     setDateModified (catalogEntry.getDateModified ());
     setTime (catalogEntry.getTime ());
@@ -95,7 +97,7 @@ public class CatalogEntryItem
   }
 
   // ---------------------------------------------------------------------------------//
-  // Days
+  // Size
   // ---------------------------------------------------------------------------------//
 
   private void setSize (int value)
@@ -113,6 +115,27 @@ public class CatalogEntryItem
     if (size == null)
       size = new SimpleIntegerProperty ();
     return size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // Init
+  // ---------------------------------------------------------------------------------//
+
+  private void setInit (int value)
+  {
+    initProperty ().set (value);
+  }
+
+  public final int getInit ()
+  {
+    return initProperty ().get ();
+  }
+
+  private IntegerProperty initProperty ()
+  {
+    if (init == null)
+      init = new SimpleIntegerProperty ();
+    return init;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -179,7 +202,7 @@ public class CatalogEntryItem
   }
 
   // ---------------------------------------------------------------------------------//
-  // Time
+  // Version
   // ---------------------------------------------------------------------------------//
 
   private void setVersion (String value)

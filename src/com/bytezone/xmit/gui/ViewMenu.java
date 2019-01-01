@@ -60,7 +60,7 @@ public class ViewMenu
     linesMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
     euroMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.E, KeyCombination.SHORTCUT_DOWN));
+        new KeyCodeCombination (KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     controlMenuItem.setOnAction (e -> setTabs ());

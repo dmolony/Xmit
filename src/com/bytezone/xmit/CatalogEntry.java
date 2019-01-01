@@ -229,6 +229,15 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getInit
+  // ---------------------------------------------------------------------------------//
+
+  public int getInit ()
+  {
+    return init;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getDateCreated
   // ---------------------------------------------------------------------------------//
 
@@ -327,7 +336,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         lines.add ("No data");
       else if (isXmit ())
         xmitList ();
-      else if (blockPointerLists.size () > 200)
+      else if (blockPointerLists.size () > 100)
         partialDump (10);      // slow!!
       else if (recfm == 0x5000)
         rdw ();
@@ -503,7 +512,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // isXmit
   // ---------------------------------------------------------------------------------//
 
-  boolean isXmit ()
+  public boolean isXmit ()
   {
     return blockPointerLists.size () > 0 && blockPointerLists.get (0).isXmit ();
   }
@@ -547,8 +556,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   void partialDump (int max)
   {
-    lines.add (toString ());
-    lines.add ("");
     lines.add ("Data too large to display");
     lines.add ("");
     lines.add ("Showing first " + max + " of " + blockPointerLists.size () + " buffers");
