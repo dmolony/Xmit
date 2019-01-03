@@ -76,7 +76,12 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         //        dateCreated = Utility.getLocalDate (buffer, ptr + 34);  NFE
         break;
 
+      case 0x36:                    // file242    // 0xB6 alias of itself?
+        aliasName = Utility.getString (buffer, ptr + 36, 8);
+        break;
+
       case 0x37:                    // FILE135
+        String someName = Utility.getString (buffer, ptr + 46, 8);
         break;
 
       case 0x8F:                    //
@@ -89,10 +94,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
 
       case 0xB3:                    // FILE035
-        aliasName = Utility.getString (buffer, ptr + 36, 8);
-        break;
-
-      case 0x36:      // file242    // 0xB6 alias of itself?
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
@@ -139,7 +140,12 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     String hex = "";
     String t1 = "";
-    if (extra == 0x31)
+
+    if (extra == 0x2E)
+      hex =
+          Utility.getHexValues (directoryData, 12, 22) + "                              "
+              + Utility.getHexValues (directoryData, 34, 6);
+    else if (extra == 0x31)
       hex =
           Utility.getHexValues (directoryData, 12, 22) + "                              "
               + Utility.getHexValues (directoryData, 34, 12);

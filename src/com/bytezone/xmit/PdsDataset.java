@@ -14,6 +14,8 @@ public class PdsDataset extends Dataset
 
   private int catalogEndBlock = 0;
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
+  private CopyR1 copyR1;
+  private CopyR2 copyR2;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -31,6 +33,24 @@ public class PdsDataset extends Dataset
   public List<CatalogEntry> getMembers ()
   {
     return catalogEntries;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getCopyR1
+  // ---------------------------------------------------------------------------------//
+
+  public CopyR1 getCopyR1 ()
+  {
+    return copyR1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getCopyR2
+  // ---------------------------------------------------------------------------------//
+
+  public CopyR2 getCopyR2 ()
+  {
+    return copyR2;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -55,11 +75,10 @@ public class PdsDataset extends Dataset
   {
     boolean inCatalog = true;
 
-    //    byte[] buffer = blockPointerLists.get (0).getRawBuffer ();
-    //    System.out.printf ("%-34s %s%n", this,
-    //        Utility.getHexValues (buffer, 6, buffer.length - 6));
-
     // skip first two BlockPointerList entries
+    copyR1 = new CopyR1 (blockPointerLists.get (0).getRawBuffer ());
+    copyR2 = new CopyR2 (blockPointerLists.get (1).getRawBuffer ());
+
     // read catalog data as raw data
     // convert remaining entries to BlockPointers with the headers removed
     for (int i = 2; i < blockPointerLists.size (); i++)

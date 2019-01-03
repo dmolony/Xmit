@@ -235,7 +235,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // getRawBuffer - contains no headers
   // ---------------------------------------------------------------------------------//
 
-  byte[] getRawBuffer ()
+  public byte[] getRawBuffer ()
   {
     byte[] fullBlock = new byte[rawBufferLength];
     int ptr = 0;
