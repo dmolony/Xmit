@@ -7,6 +7,7 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Reader;
 
+import javafx.scene.control.FocusModel;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -20,6 +21,7 @@ public class XmitTree extends TreeView<XmitFile>
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
+  private final FocusModel<TreeItem<XmitFile>> focusModel = getFocusModel ();
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
@@ -77,7 +79,7 @@ public class XmitTree extends TreeView<XmitFile>
           listener.treeItemSelected (null, null);
       else
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (reader, reader.getCrappoCurrentDataset ());
+          listener.treeItemSelected (reader, reader.getActiveDataset ());
     });
   }
 
@@ -105,6 +107,7 @@ public class XmitTree extends TreeView<XmitFile>
       {
         //        model.clearSelection ();
         model.select (optionalNode.get ());
+        focusModel.focus (model.getSelectedIndex ());   // does this do anything?
         scrollTo (model.getSelectedIndex ());
       }
     }

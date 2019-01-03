@@ -22,7 +22,7 @@ public class Xmit
     try
     {
       System.out.printf ("fileName: %s%n%n", fileNames[i]);
-      new Reader (Files.readAllBytes (Paths.get (fileNames[i])));
+      new Reader (fileNames[i], Files.readAllBytes (Paths.get (fileNames[i])));
     }
     catch (IOException e)
     {

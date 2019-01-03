@@ -121,7 +121,7 @@ public class OutputPane extends BorderPane
 
       if (dataset.getOrg () == Org.PDS)
       {
-        text.append ("Catalog Blocks:\n");
+        text.append (String.format ("%s Catalog Blocks:%n", reader.getName ()));
         text.append ("   -member- header versn    ss -created--  -modified-  hh mm ");
         text.append ("Size1 Size2       -------- user ---------     \n");
         for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())

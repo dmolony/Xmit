@@ -9,6 +9,8 @@ import com.bytezone.xmit.textunit.Dsorg;
 
 public class CatalogEntry implements Comparable<CatalogEntry>
 {
+  final Reader reader;
+
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
   final List<String> lines = new ArrayList<> ();
 
@@ -41,12 +43,13 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry (byte[] buffer, int ptr, int lrecl, int recfm)
+  public CatalogEntry (Reader reader, byte[] buffer, int ptr, int lrecl, int recfm)
   {
     name = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
     this.lrecl = lrecl;
     this.recfm = recfm;
+    this.reader = reader;
 
     extra = buffer[ptr + 11] & 0xFF;
 
@@ -60,23 +63,24 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         basic (buffer, ptr);
         break;
 
-      case 0x2B:
+      case 0x2B:                    //
         break;
 
-      case 0x2C:                    // load module?
+      case 0x2C:                    // FILE035
         break;
 
-      case 0x2E:
+      case 0x2E:                    // FILE035
         break;
 
-      case 0x31:                    // load module?
+      case 0x31:                    // FILE242
         //        dateCreated = Utility.getLocalDate (buffer, ptr + 34);  NFE
         break;
 
-      case 0x37:
+      case 0x37:                    // FILE135
         break;
 
-      case 0x8F:
+      case 0x8F:                    //
+        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
         basic (buffer, ptr);       // alias without the alias' name ??
         break;
 
@@ -84,7 +88,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
-      case 0xB3:
+      case 0xB3:                    // FILE035
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
@@ -98,16 +102,20 @@ public class CatalogEntry implements Comparable<CatalogEntry>
         break;
 
       case 0xD3:
+        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
         aliasName = Utility.getString (buffer, ptr + 36, 8);
         break;
 
       case 0x4E:
+        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
         break;
 
       case 0xCB:
+        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
         break;
 
       case 0x4B:
+        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
         break;
 
       case 0:
@@ -526,12 +534,12 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     byte[] xmitBuffer = getDataBuffer ();
     try
     {
-      Reader reader = new Reader (xmitBuffer);
+      Reader reader = new Reader (name, xmitBuffer);
 
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
-      Dataset dataset = reader.getCrappoCurrentDataset ();
+      Dataset dataset = reader.getActiveDataset ();
       if (dataset.getOrg () == Dsorg.Org.PDS)
       {
         List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();

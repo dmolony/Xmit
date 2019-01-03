@@ -141,7 +141,7 @@ public class XmitFile
     Reader reader = getReader ();
     if (reader != null)
     {
-      Dataset dataset = reader.getCrappoCurrentDataset ();
+      Dataset dataset = reader.getActiveDataset ();
       Org org = dataset.getOrg ();
       if (org == Org.PDS && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
         fileTreeItem.buildChildren ();
@@ -156,11 +156,11 @@ public class XmitFile
   Reader getReader ()
   {
     if (reader == null && catalogEntry != null)
-      reader = new Reader (catalogEntry.getDataBuffer ());
+      reader = new Reader (catalogEntry.getMemberName (), catalogEntry.getDataBuffer ());
     else if (reader == null && isFile () && !isCompressed ())
       try
       {
-        reader = new Reader (Files.readAllBytes (file.toPath ()));
+        reader = new Reader (file.getName (), Files.readAllBytes (file.toPath ()));
       }
       catch (IOException e)
       {

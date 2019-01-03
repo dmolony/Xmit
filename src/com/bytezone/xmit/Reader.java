@@ -20,17 +20,19 @@ public class Reader
       { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
         (byte) 0xF0, (byte) 0xF6 };
 
+  private final String name;
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<Dataset> datasets = new ArrayList<> ();
 
-  private final Dataset crappoCurrentDataset;       // this will go
+  private final Dataset activeDataset;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Reader (byte[] buffer)
+  public Reader (String fileName, byte[] buffer)
   {
+    this.name = fileName;
     BlockPointerList currentBlockPointerList = null;
     Dataset currentDataset = null;
 
@@ -136,9 +138,17 @@ public class Reader
       for (BlockPointerList bpl : datasets.get (0).blockPointerLists)
         System.out.println (Utility.getString (bpl.getRawBuffer ()));
 
-    // set current dataset
-    crappoCurrentDataset = datasets.get (datasets.size () - 1);     // always last
-    //    crappoCurrentDataset = datasets.get (0);          // always first
+    // set active dataset
+    activeDataset = datasets.get (datasets.size () - 1);     // always last
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getName
+  // ---------------------------------------------------------------------------------//
+
+  public String getName ()
+  {
+    return name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -150,10 +160,13 @@ public class Reader
     return datasets;
   }
 
-  // temporary
-  public Dataset getCrappoCurrentDataset ()
+  // ---------------------------------------------------------------------------------//
+  // getActiveDataset
+  // ---------------------------------------------------------------------------------//
+
+  public Dataset getActiveDataset ()
   {
-    return crappoCurrentDataset;
+    return activeDataset;
   }
 
   // ---------------------------------------------------------------------------------//

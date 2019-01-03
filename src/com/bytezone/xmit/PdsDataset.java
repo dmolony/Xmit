@@ -55,7 +55,7 @@ public class PdsDataset extends Dataset
   {
     boolean inCatalog = true;
 
-    byte[] buffer = blockPointerLists.get (0).getRawBuffer ();
+    //    byte[] buffer = blockPointerLists.get (0).getRawBuffer ();
     //    System.out.printf ("%-34s %s%n", this,
     //        Utility.getHexValues (buffer, 6, buffer.length - 6));
 
@@ -158,7 +158,7 @@ public class PdsDataset extends Dataset
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2, lrecl, recfm);
+        CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2, lrecl, recfm);
         catalogEntries.add (catalogEntry);
 
         // check for last member
