@@ -14,12 +14,17 @@ public class BlockPointerList implements Iterable<BlockPointer>
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
   private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
 
-  private final List<byte[]> pdsHeaders = new ArrayList<> ();
+  //  private final List<byte[]> pdsHeaders = new ArrayList<> ();
+  //  private final List<Integer> pdsHeaderOffsets = new ArrayList<> ();
+  final List<DataBlock> dataBlocks = new ArrayList<> ();
+
   private CatalogEntry catalogEntry;
 
   private boolean isBinary;
   private byte sortKey;                 // value contained in first header
   private boolean isLastBlock;
+
+  private final boolean shortDisplay = false;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -58,6 +63,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
     int recLen = 0;
     int headerPtr = 0;
     byte[] header = null;
+    DataBlock dataBlock = null;
 
     for (BlockPointer blockPointer : rawBlockPointers)
     {
@@ -71,7 +77,10 @@ public class BlockPointerList implements Iterable<BlockPointer>
           if (headerPtr == 0)
           {
             header = new byte[12];
-            pdsHeaders.add (header);
+            //            pdsHeaders.add (header);
+            //            pdsHeaderOffsets.add (ptr);
+            dataBlock = new DataBlock (ptr, header);
+            dataBlocks.add (dataBlock);
           }
 
           if (avail < 12 - headerPtr)
@@ -99,8 +108,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
         }
 
         int len = Math.min (recLen, avail);
-        BlockPointer bp = new BlockPointer (buffer, ptr, len);
-        dataBlockPointers.add (bp);
+        dataBlockPointers.add (new BlockPointer (buffer, ptr, len));
         ptr += len;
         avail -= len;
         recLen -= len;
@@ -118,7 +126,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   int getOffset ()
   {
-    return (int) Utility.getValue (pdsHeaders.get (0), 6, 3);
+    //    return (int) Utility.getValue (pdsHeaders.get (0), 6, 3);
+    return (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -127,7 +136,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   boolean isPDSE ()
   {
-    return pdsHeaders.get (0)[0] == (byte) 0x88;
+    //    return pdsHeaders.get (0)[0] == (byte) 0x88;
+    return dataBlocks.get (0).header[0] == (byte) 0x88;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -202,19 +212,63 @@ public class BlockPointerList implements Iterable<BlockPointer>
   String listHeaders ()
   {
     StringBuilder text = new StringBuilder ();
-    if (catalogEntry != null)
-      text.append (String.format ("Member         : %s  %06X%n",
-          catalogEntry.getMemberName (), catalogEntry.getOffset ()));
-    text.append (String.format ("Raw blocks    : %d%n", rawBlockPointers.size ()));
-    text.append (String.format ("Data blocks   : %d%n", dataBlockPointers.size ()));
-    text.append (String.format ("Buffer length : %06X  %<d%n", rawBufferLength));
-    text.append (String.format ("Data length   : %06X  %<d%n", dataBufferLength));
 
-    text.append ("\nHeaders:\n");
-    for (byte[] header : pdsHeaders)
+    if (catalogEntry != null)
     {
-      text.append (Utility.getHexValues (header));
-      text.append ("\n");
+      int headerOffset = (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
+      int diff = headerOffset - catalogEntry.getOffset ();
+      text.append (String.format ("Member         : %s  %06X  Diff: %04X%n",
+          catalogEntry.getMemberName (), catalogEntry.getOffset (), diff));
+    }
+
+    if (shortDisplay)
+    {
+      text.append (String.format ("Raw blocks    : %d%n", rawBlockPointers.size ()));
+      text.append (String.format ("Data blocks   : %d%n", dataBlockPointers.size ()));
+      text.append (String.format ("Buffer length : %06X  %<,d%n", rawBufferLength));
+      text.append (String.format ("Data length   : %06X  %<,d%n", dataBufferLength));
+    }
+    else
+    {
+
+      text.append ("\nHeaders:\n");
+      for (int i = 0; i < dataBlocks.size (); i++)
+      {
+        byte[] header = dataBlocks.get (i).header;
+        int offset = dataBlocks.get (i).offset;
+        text.append (String.format ("   %06X: ", offset));
+        text.append (Utility.getHexValues (header));
+        text.append ("\n");
+      }
+
+      text.append ("\nBlock pointers:\n");
+      int total1 = 0;
+      int total2 = 0;
+      int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
+      BlockPointer bp1, bp2;
+      for (int i = 0; i < max; i++)
+      {
+        if (i < rawBlockPointers.size ())
+        {
+          bp1 = rawBlockPointers.get (i);
+          total1 += bp1.length;
+          text.append (String.format ("   %s ", bp1));
+        }
+        else
+          text.append ("                        ");
+
+        text.append (String.format (" :%3d : ", i));
+
+        if (i < dataBlockPointers.size ())
+        {
+          bp2 = dataBlockPointers.get (i);
+          total2 += bp2.length;
+          text.append (String.format ("  %s", bp2));
+        }
+        text.append ("\n");
+      }
+      text.append (String.format ("            %04X%<,7d                    %04X%<,7d%n",
+          total1, total2));
     }
 
     text.deleteCharAt (text.length () - 1);

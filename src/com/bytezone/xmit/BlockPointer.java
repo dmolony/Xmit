@@ -29,6 +29,6 @@ class BlockPointer
   @Override
   public String toString ()
   {
-    return String.format ("%06X - %02X  %<3d", offset, length);
+    return String.format ("%06X -   %02X    %<3d", offset, length);
   }
 }

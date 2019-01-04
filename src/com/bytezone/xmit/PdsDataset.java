@@ -67,7 +67,7 @@ public class PdsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
-  // processPDS
+  // process
   // ---------------------------------------------------------------------------------//
 
   @Override
@@ -94,6 +94,14 @@ public class PdsDataset extends Dataset
         bpl.createDataBlocks ();       // create new BlockPointers
     }
 
+    System.out.println (reader.getFileName ());
+    System.out.println ("\nBlock pointers:");
+    System.out.printf ("CopyRx ..........       2%n");
+    System.out.printf ("Catalog ......... %,7d%n", catalogEndBlock - 1);
+    System.out.printf ("Data ............ %,7d%n",
+        blockPointerLists.size () - catalogEndBlock - 1);
+    System.out.printf ("Total ........... %,7d%n", blockPointerLists.size ());
+
     // assign new BlockPointer lists to CatalogEntries
     List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
@@ -112,6 +120,26 @@ public class PdsDataset extends Dataset
       assignPdsExtendedBlocks (uniqueCatalogEntries);
     else
       assignPdsBlocks (uniqueCatalogEntries);
+
+    int count = 0;
+    for (CatalogEntry catalogEntry : sortedCatalogEntries)
+    {
+      int total = 0;
+      System.out.printf ("%n       %s  %06X%n", catalogEntry.getMemberName (),
+          catalogEntry.getOffset ());
+      for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
+        for (DataBlock dataBlock : blockPointerList.dataBlocks)
+        {
+          int size = dataBlock.getSize ();
+          total += size;
+          if (size > 0)
+            System.out.printf ("%,5d  %-8s  %s%n", count++, catalogEntry.getMemberName (),
+                dataBlock);
+          else
+            System.out.printf ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
+                catalogEntry.getMemberName (), dataBlock, total);
+        }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -191,5 +219,14 @@ public class PdsDataset extends Dataset
     }
 
     return true;                                            // member list not finished
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getFileName
+  // ---------------------------------------------------------------------------------//
+
+  public String getFileName ()
+  {
+    return reader.getFileName ();
   }
 }
