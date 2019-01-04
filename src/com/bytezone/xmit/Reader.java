@@ -124,8 +124,8 @@ public class Reader
     }
 
     // allocate the data records
-    for (Dataset dataset2 : datasets)
-      dataset2.process ();
+    for (Dataset dataset : datasets)
+      dataset.process ();
 
     if (datasets.size () > 1)
       System.out.printf ("Processed %d datasets%n", datasets.size ());

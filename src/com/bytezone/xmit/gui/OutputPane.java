@@ -121,15 +121,15 @@ public class OutputPane extends BorderPane
 
       if (dataset.getOrg () == Org.PDS)
       {
-        BlockPointerList copyr1 = dataset.getBlockPointerList (0);
-        BlockPointerList copyr2 = dataset.getBlockPointerList (1);
+        //        BlockPointerList copyr1 = dataset.getBlockPointerList (0);
+        //        BlockPointerList copyr2 = dataset.getBlockPointerList (1);
         text.append ("COPYR1\n");
-        text.append (Utility.getHexDump (copyr1.getRawBuffer ()));
-        text.append ("\n\n");
+        //        text.append (Utility.getHexDump (copyr1.getRawBuffer ()));
+        //        text.append ("\n\n");
         text.append (((PdsDataset) dataset).getCopyR1 ());
         text.append ("\n\n");
         text.append ("COPYR2\n");
-        text.append (Utility.getHexDump (copyr2.getRawBuffer ()));
+        text.append (((PdsDataset) dataset).getCopyR2 ());
         text.append ("\n\n");
 
         text.append (String.format ("%s Catalog Blocks:%n", reader.getName ()));

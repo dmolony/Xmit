@@ -16,7 +16,7 @@ public abstract class Dataset
   ControlRecord inmr02;
 
   int lrecl;
-  Org org;
+  Org dsorg;
   int recfm;
 
   final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
@@ -32,7 +32,7 @@ public abstract class Dataset
 
     this.lrecl =
         (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
-    this.org = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
+    this.dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
     this.recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
   }
 
@@ -62,7 +62,7 @@ public abstract class Dataset
 
   public Org getOrg ()
   {
-    return org;
+    return dsorg;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -81,7 +81,7 @@ public abstract class Dataset
   @Override
   public String toString ()
   {
-    return String.format ("%-20s %-3s %,6d  %04X", reader.getFileName (), org, lrecl,
+    return String.format ("%-20s %-3s %,6d  %04X", reader.getFileName (), dsorg, lrecl,
         recfm);
   }
 }

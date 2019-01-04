@@ -40,14 +40,22 @@ public class Recfm extends TextUnitNumber
 
       if ((number & 0x1000) != 0)
         type = type + "B";
-      if ((number & 0x0400) != 0)
+
+      if ((number & 0x0400) != 0 || (number & 0x0200) != 0)
         type = type + "A";
+
       if ((number & 0x0800) != 0)
-        type = type + " standard/spanned";
-      if ((number & 0x002) != 0)
+      {
+        if (type.startsWith ("V"))
+          type = type + " spanned";
+        else if (type.startsWith ("F"))
+          type = type + " last block may be short";
+      }
+
+      if ((number & 0x0002) != 0)
         type = type + " (no 4-byte header)";
 
-      if ((number & 0x001) != 0)
+      if ((number & 0x0001) != 0)
         type = "Shortened VBS format used for transmission records";
     }
   }

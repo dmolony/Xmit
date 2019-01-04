@@ -75,12 +75,12 @@ public class PdsDataset extends Dataset
   {
     boolean inCatalog = true;
 
-    // skip first two BlockPointerList entries
+    // convert first two BlockPointerList entries
     copyR1 = new CopyR1 (blockPointerLists.get (0).getRawBuffer ());
     copyR2 = new CopyR2 (blockPointerLists.get (1).getRawBuffer ());
 
     // read catalog data as raw data
-    // convert remaining entries to BlockPointers with the headers removed
+    // convert remaining entries to BlockPointers
     for (int i = 2; i < blockPointerLists.size (); i++)
     {
       BlockPointerList bpl = blockPointerLists.get (i);
