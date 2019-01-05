@@ -113,7 +113,7 @@ public class CopyR1
     text.append (String.format ("Scnd alloc ...... %08X  %n", scalo));
     text.append (String.format ("Last trk used ... %06X  %n", lstar));
     text.append (String.format ("Last trk bal .... %04X  %<,7d%n", trbal));
-    text.append (String.format ("Zero ............ %02X%n", zero2));
+    text.append (String.format ("Zero ............ %02X", zero2));
 
     return text.toString ();
   }
