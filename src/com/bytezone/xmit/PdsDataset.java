@@ -128,7 +128,7 @@ public class PdsDataset extends Dataset
       System.out.printf ("%n       %s  %06X%n", catalogEntry.getMemberName (),
           catalogEntry.getOffset ());
       for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
-        for (DataBlock dataBlock : blockPointerList.dataBlocks)
+        for (DataBlock dataBlock : blockPointerList)
         {
           int size = dataBlock.getSize ();
           total += size;
@@ -199,6 +199,7 @@ public class PdsDataset extends Dataset
     while (ptr + 22 < buffer.length)
     {
       int ptr2 = ptr + 22;
+      //      System.out.println (Utility.getHexValues (buffer, ptr, 22));
 
       while (true)
       {

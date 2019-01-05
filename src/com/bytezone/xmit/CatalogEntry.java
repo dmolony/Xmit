@@ -3,6 +3,7 @@ package com.bytezone.xmit;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
@@ -99,7 +100,9 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
       case 0xB6:      // file242    // alias of 0x31
         aliasName = Utility.getString (buffer, ptr + 36, 8);
-        dateCreated = Utility.getLocalDate (buffer, ptr + 44);
+        Optional<LocalDate> opt = Utility.getLocalDate (buffer, ptr + 44);
+        if (opt.isPresent ())
+          dateCreated = opt.get ();
         break;
 
       case 0xD3:
@@ -173,8 +176,14 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     vv = buffer[offset + 12] & 0xFF;
     mm = buffer[offset + 13] & 0xFF;
 
-    dateCreated = Utility.getLocalDate (buffer, offset + 16);
-    dateModified = Utility.getLocalDate (buffer, offset + 20);
+    Optional<LocalDate> opt = Utility.getLocalDate (buffer, offset + 16);
+    if (opt.isPresent ())
+      dateCreated = opt.get ();
+
+    opt = Utility.getLocalDate (buffer, offset + 20);
+    if (opt.isPresent ())
+      dateModified = opt.get ();
+
     time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
         buffer[offset + 15]);
 
@@ -417,15 +426,29 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append (this);
+    text.append ("\n\n");
+
+    for (BlockPointerList blockPointerList : blockPointerLists)
+    {
+      for (DataBlock dataBlock : blockPointerList)
+      {
+        text.append ("   ");
+        text.append (dataBlock);
+        text.append ("\n");
+      }
+    }
+
     int count = 0;
     for (BlockPointerList blockPointerList : blockPointerLists)
     {
+      text.append ("\n");
       text.append (String.format (
-          "-----------------------< BlockPointerList %d of %d >-----------------------\n",
+          "-----------------------< BlockPointerList %d of %d >-----------------------\n\n",
           ++count, blockPointerLists.size ()));
 
       text.append (blockPointerList.listHeaders ());
-      text.append ("\n\n");
+      text.append ("\n");
     }
 
     while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')

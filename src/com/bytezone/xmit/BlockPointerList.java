@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BlockPointerList implements Iterable<BlockPointer>
+public class BlockPointerList implements Iterable<DataBlock>
 {
   private final byte[] buffer;          // all block pointers refer to this
 
@@ -13,10 +13,7 @@ public class BlockPointerList implements Iterable<BlockPointer>
 
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
   private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
-
-  //  private final List<byte[]> pdsHeaders = new ArrayList<> ();
-  //  private final List<Integer> pdsHeaderOffsets = new ArrayList<> ();
-  final List<DataBlock> dataBlocks = new ArrayList<> ();
+  private final List<DataBlock> dataBlocks = new ArrayList<> ();
 
   private CatalogEntry catalogEntry;
 
@@ -77,8 +74,6 @@ public class BlockPointerList implements Iterable<BlockPointer>
           if (headerPtr == 0)
           {
             header = new byte[12];
-            //            pdsHeaders.add (header);
-            //            pdsHeaderOffsets.add (ptr);
             dataBlock = new DataBlock (ptr, header);
             dataBlocks.add (dataBlock);
           }
@@ -108,7 +103,9 @@ public class BlockPointerList implements Iterable<BlockPointer>
         }
 
         int len = Math.min (recLen, avail);
-        dataBlockPointers.add (new BlockPointer (buffer, ptr, len));
+        BlockPointer blp = new BlockPointer (buffer, ptr, len);
+        dataBlockPointers.add (blp);
+        dataBlock.blockPointers.add (blp);
         ptr += len;
         avail -= len;
         recLen -= len;
@@ -213,13 +210,13 @@ public class BlockPointerList implements Iterable<BlockPointer>
   {
     StringBuilder text = new StringBuilder ();
 
-    if (catalogEntry != null)
-    {
-      int headerOffset = (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
-      int diff = headerOffset - catalogEntry.getOffset ();
-      text.append (String.format ("Member         : %s  %06X  Diff: %04X%n",
-          catalogEntry.getMemberName (), catalogEntry.getOffset (), diff));
-    }
+    //    if (catalogEntry != null)
+    //    {
+    //      int headerOffset = (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
+    //      int diff = headerOffset - catalogEntry.getOffset ();
+    //      text.append (String.format ("Member         : %s  %06X  Diff: %04X%n",
+    //          catalogEntry.getMemberName (), catalogEntry.getOffset (), diff));
+    //    }
 
     if (shortDisplay)
     {
@@ -230,18 +227,17 @@ public class BlockPointerList implements Iterable<BlockPointer>
     }
     else
     {
+      //      text.append ("\nHeaders:\n");
+      //      for (int i = 0; i < dataBlocks.size (); i++)
+      //      {
+      //        byte[] header = dataBlocks.get (i).header;
+      //        int offset = dataBlocks.get (i).offset;
+      //        text.append (String.format ("   %06X: ", offset));
+      //        text.append (Utility.getHexValues (header));
+      //        text.append ("\n");
+      //      }
 
-      text.append ("\nHeaders:\n");
-      for (int i = 0; i < dataBlocks.size (); i++)
-      {
-        byte[] header = dataBlocks.get (i).header;
-        int offset = dataBlocks.get (i).offset;
-        text.append (String.format ("   %06X: ", offset));
-        text.append (Utility.getHexValues (header));
-        text.append ("\n");
-      }
-
-      text.append ("\nBlock pointers:\n");
+      //      text.append ("\nBlock pointers:\n");
       int total1 = 0;
       int total2 = 0;
       int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
@@ -415,8 +411,8 @@ public class BlockPointerList implements Iterable<BlockPointer>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public Iterator<BlockPointer> iterator ()
+  public Iterator<DataBlock> iterator ()
   {
-    return rawBlockPointers.iterator ();
+    return dataBlocks.iterator ();
   }
 }

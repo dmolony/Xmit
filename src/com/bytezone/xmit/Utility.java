@@ -3,6 +3,7 @@ package com.bytezone.xmit;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class Utility
 {
@@ -123,19 +124,19 @@ public class Utility
   // getLocalDate
   // ---------------------------------------------------------------------------------//
 
-  public static LocalDate getLocalDate (byte[] buffer, int offset)
+  public static Optional<LocalDate> getLocalDate (byte[] buffer, int offset)
   {
     String date1 = String.format ("%02X%02X%02X%02X", buffer[offset], buffer[offset + 1],
         buffer[offset + 2], (buffer[offset + 3] & 0xF0));
     try
     {
       int d1 = Integer.parseInt (date1) / 10;
-      return LocalDate.ofYearDay (1900 + d1 / 1000, d1 % 1000);
+      return Optional.of (LocalDate.ofYearDay (1900 + d1 / 1000, d1 % 1000));
     }
     catch (NumberFormatException nfe)
     {
       System.out.printf ("NFE: %s%n", Utility.getHexValues (buffer, offset, 4));
-      return null;
+      return Optional.empty ();
     }
   }
 
