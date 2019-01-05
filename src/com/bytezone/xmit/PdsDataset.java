@@ -14,6 +14,7 @@ public class PdsDataset extends Dataset
 
   private int catalogEndBlock = 0;
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
+  private List<CatalogEntry> sortedCatalogEntries;
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
@@ -94,16 +95,19 @@ public class PdsDataset extends Dataset
         bpl.createDataBlocks ();       // create new BlockPointers
     }
 
-    System.out.println (reader.getFileName ());
-    System.out.println ("\nBlock pointers:");
-    System.out.printf ("CopyRx ..........       2%n");
-    System.out.printf ("Catalog ......... %,7d%n", catalogEndBlock - 1);
-    System.out.printf ("Data ............ %,7d%n",
-        blockPointerLists.size () - catalogEndBlock - 1);
-    System.out.printf ("Total ........... %,7d%n", blockPointerLists.size ());
+    if (false)
+    {
+      System.out.println (reader.getFileName ());
+      System.out.println ("\nBlock pointers:");
+      System.out.printf ("CopyRx ..........       2%n");
+      System.out.printf ("Catalog ......... %,7d%n", catalogEndBlock - 1);
+      System.out.printf ("Data ............ %,7d%n",
+          blockPointerLists.size () - catalogEndBlock - 1);
+      System.out.printf ("Total ........... %,7d%n", blockPointerLists.size ());
+    }
 
     // assign new BlockPointer lists to CatalogEntries
-    List<CatalogEntry> sortedCatalogEntries = new ArrayList<> (catalogEntries);
+    sortedCatalogEntries = new ArrayList<> (catalogEntries);
     Collections.sort (sortedCatalogEntries);
 
     Map<Integer, CatalogEntry> offsets = new TreeMap<> ();
@@ -116,30 +120,11 @@ public class PdsDataset extends Dataset
       uniqueCatalogEntries.add (catalogEntry);
 
     // assign BlockPointerLists to CatalogEntries
-    if (blockPointerLists.get (catalogEndBlock + 1).isPDSE ())
+    //    if (blockPointerLists.get (catalogEndBlock + 1).isPDSE ())
+    if (copyR1.isPdse ())
       assignPdsExtendedBlocks (uniqueCatalogEntries);
     else
       assignPdsBlocks (uniqueCatalogEntries);
-
-    int count = 0;
-    for (CatalogEntry catalogEntry : sortedCatalogEntries)
-    {
-      int total = 0;
-      System.out.printf ("%n       %s  %06X%n", catalogEntry.getMemberName (),
-          catalogEntry.getOffset ());
-      for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
-        for (DataBlock dataBlock : blockPointerList)
-        {
-          int size = dataBlock.getSize ();
-          total += size;
-          if (size > 0)
-            System.out.printf ("%,5d  %-8s  %s%n", count++, catalogEntry.getMemberName (),
-                dataBlock);
-          else
-            System.out.printf ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
-                catalogEntry.getMemberName (), dataBlock, total);
-        }
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -229,5 +214,35 @@ public class PdsDataset extends Dataset
   public String getFileName ()
   {
     return reader.getFileName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getBlockListing
+  // ---------------------------------------------------------------------------------//
+
+  public String getBlockListing ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    int count = 0;
+    for (CatalogEntry catalogEntry : sortedCatalogEntries)
+    {
+      int total = 0;
+      text.append (String.format ("%n       %s  %06X%n", catalogEntry.getMemberName (),
+          catalogEntry.getOffset ()));
+      for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
+        for (DataBlock dataBlock : blockPointerList)
+        {
+          int size = dataBlock.getSize ();
+          total += size;
+          if (size > 0)
+            text.append (String.format ("%,5d  %-8s  %s%n", count++,
+                catalogEntry.getMemberName (), dataBlock));
+          else
+            text.append (String.format ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
+                catalogEntry.getMemberName (), dataBlock, total));
+        }
+    }
+    return text.toString ();
   }
 }

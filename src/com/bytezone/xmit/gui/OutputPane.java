@@ -136,6 +136,7 @@ public class OutputPane extends BorderPane
           text.append (catalogEntry.debugLine ());
           text.append ("\n");
         }
+        text.append (((PdsDataset) dataset).getBlockListing ());
       }
 
       //      text.append ("\nData Blocks:\n");

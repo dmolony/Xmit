@@ -512,6 +512,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
     for (BlockPointerList bpl : blockPointerLists)
     {
+      if (bpl.isLastBlock ())        // PDSEs end early
+        break;
       byte[] buffer = bpl.getDataBuffer ();
       if (buffer.length == 0)
         continue;
@@ -532,6 +534,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     for (BlockPointerList bpl : blockPointerLists)
     {
+      if (bpl.isLastBlock ())        // PDSEs end early
+        break;
       byte[] buffer = bpl.getDataBuffer ();
       if (buffer.length == 0)
         continue;
