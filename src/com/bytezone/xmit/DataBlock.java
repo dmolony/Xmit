@@ -20,6 +20,11 @@ public class DataBlock
     return (int) Utility.getValue (header, 9, 3);
   }
 
+  long getTtl ()
+  {
+    return Utility.getValue (header, 4, 5);
+  }
+
   @Override
   public String toString ()
   {

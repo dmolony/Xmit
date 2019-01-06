@@ -207,6 +207,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
 
   long setCopyRecords (CopyR1 copyR1, CopyR2 copyR2)
   {
+    setPdse (copyR1.isPdse ());
+
     int x1 = (blockFrom & 0xFFFF00) >>> 8;
 
     int y1 = Utility.getTwoBytes (copyR2.buffer, 22);
@@ -356,23 +358,29 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
-  boolean addBlockPointerList (BlockPointerList blockPointerList)
-  {
-    if (blockPointerLists.size () == 0)
-    {
-      if (!blockPointerList.ttlMatches (ttl))
-      {
-        System.out.printf ("%s mismatch: %s%n", name, Utility.getHexValues (ttl));
-        return false;
-      }
-      //      else
-      //        System.out.printf ("%s matches: %s%n", name, Utility.getHexValues (ttl));
-    }
+  //  boolean addBlockPointerList (BlockPointerList blockPointerList)
+  //  {
+  //    if (blockPointerLists.size () == 0)
+  //    {
+  //      if (!blockPointerList.ttlMatches (ttl))
+  //      {
+  //        System.out.printf ("%s mismatch: %s%n", name, Utility.getHexValues (ttl));
+  //        return false;
+  //      }
+  //      //      else
+  //      //        System.out.printf ("%s matches: %s%n", name, Utility.getHexValues (ttl));
+  //    }
+  //
+  //    blockPointerLists.add (blockPointerList);
+  //    dataLength += blockPointerList.getDataLength ();
+  //
+  //    return true;
+  //  }
 
+  void addBlockPointerList2 (BlockPointerList blockPointerList)
+  {
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
-
-    return true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -383,9 +391,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     if (lines.size () == 0)
     {
-      if (isAlias ())
-        lines.add ("Alias of " + aliasName);
-      else if (blockPointerLists.size () == 0)
+      //      if (isAlias ())
+      //        lines.add ("Alias of " + aliasName);
+      //      else
+      if (blockPointerLists.size () == 0)
         lines.add ("No data");
       else if (isXmit ())
         xmitList ();
@@ -652,8 +661,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %8s", name, userName, size,
-        blockFrom, date1Text, time, aliasName);
+    return String.format ("%8s  %8s  %,6d  %s  %s  %s  %8s", name, userName, size,
+        Utility.getHexValues (ttl), date1Text, time, aliasName);
   }
 
   // ---------------------------------------------------------------------------------//
