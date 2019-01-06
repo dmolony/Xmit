@@ -205,7 +205,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   // setCopyRecords
   // ---------------------------------------------------------------------------------//
 
-  void setCopyRecords (CopyR1 copyR1, CopyR2 copyR2)
+  long setCopyRecords (CopyR1 copyR1, CopyR2 copyR2)
   {
     int x1 = (blockFrom & 0xFFFF00) >>> 8;
 
@@ -221,6 +221,7 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     ttl[0] = (byte) ((z1 & 0xFF00) >>> 8);
 
     //    System.out.println (Utility.getHexValues (ttl));
+    return Utility.getValue (ttl, 0, 5);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -371,7 +372,6 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
 
-    //    blockPointerList.setCatalogEntry (this);
     return true;
   }
 

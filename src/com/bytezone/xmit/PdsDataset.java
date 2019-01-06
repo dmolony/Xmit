@@ -1,10 +1,6 @@
 package com.bytezone.xmit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 
@@ -17,6 +13,8 @@ public class PdsDataset extends Dataset
   private List<CatalogEntry> sortedCatalogEntries;
   private CopyR1 copyR1;
   private CopyR2 copyR2;
+
+  private final Map<Long, CatalogEntry> catalogMap = new HashMap<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -94,6 +92,10 @@ public class PdsDataset extends Dataset
       else
         bpl.createDataBlocks ();       // create new BlockPointers
     }
+
+    for (BlockPointerList bpl : blockPointerLists)
+      for (DataBlock dataBlock : bpl)
+        System.out.println (dataBlock);
 
     if (false)
     {
@@ -194,7 +196,8 @@ public class PdsDataset extends Dataset
         CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2, lrecl, recfm);
         catalogEntries.add (catalogEntry);
 
-        catalogEntry.setCopyRecords (copyR1, copyR2);
+        long ttl = catalogEntry.setCopyRecords (copyR1, copyR2);
+        catalogMap.put (ttl, catalogEntry);
 
         // check for last member
         if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))

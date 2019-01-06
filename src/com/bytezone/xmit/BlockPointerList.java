@@ -15,8 +15,6 @@ public class BlockPointerList implements Iterable<DataBlock>
   private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
   private final List<DataBlock> dataBlocks = new ArrayList<> ();
 
-  //  private CatalogEntry catalogEntry;
-
   private boolean isBinary;
   private boolean isLastBlock;
 
@@ -129,11 +127,11 @@ public class BlockPointerList implements Iterable<DataBlock>
   // isPDSE
   // ---------------------------------------------------------------------------------//
 
-  boolean isPDSE ()
-  {
-    //    return pdsHeaders.get (0)[0] == (byte) 0x88;
-    return dataBlocks.get (0).header[0] == (byte) 0x88;
-  }
+  //  boolean isPDSE ()
+  //  {
+  //    //    return pdsHeaders.get (0)[0] == (byte) 0x88;
+  //    return dataBlocks.get (0).header[0] == (byte) 0x88;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // setBinaryFlag
@@ -163,15 +161,6 @@ public class BlockPointerList implements Iterable<DataBlock>
   {
     return Utility.matches (ttl, dataBlocks.get (0).header, 4);
   }
-
-  // ---------------------------------------------------------------------------------//
-  // setCatalogEntry
-  // ---------------------------------------------------------------------------------//
-
-  //  void setCatalogEntry (CatalogEntry catalogEntry)
-  //  {
-  //    this.catalogEntry = catalogEntry;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // getDataLength
@@ -221,49 +210,50 @@ public class BlockPointerList implements Iterable<DataBlock>
       text.append (String.format ("Raw blocks    : %d%n", rawBlockPointers.size ()));
       text.append (String.format ("Data blocks   : %d%n", dataBlockPointers.size ()));
       text.append (String.format ("Buffer length : %06X  %<,d%n", rawBufferLength));
-      text.append (String.format ("Data length   : %06X  %<,d%n", dataBufferLength));
+      text.append (String.format ("Data length   : %06X  %<,d", dataBufferLength));
+      return text.toString ();
     }
-    else
+    //    else
+    //    {
+    //      text.append ("\nHeaders:\n");
+    //      for (int i = 0; i < dataBlocks.size (); i++)
+    //      {
+    //        byte[] header = dataBlocks.get (i).header;
+    //        int offset = dataBlocks.get (i).offset;
+    //        text.append (String.format ("   %06X: ", offset));
+    //        text.append (Utility.getHexValues (header));
+    //        text.append ("\n");
+    //      }
+
+    //      text.append ("\nBlock pointers:\n");
+    int total1 = 0;
+    int total2 = 0;
+    int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
+    BlockPointer bp1, bp2;
+    for (int i = 0; i < max; i++)
     {
-      //      text.append ("\nHeaders:\n");
-      //      for (int i = 0; i < dataBlocks.size (); i++)
-      //      {
-      //        byte[] header = dataBlocks.get (i).header;
-      //        int offset = dataBlocks.get (i).offset;
-      //        text.append (String.format ("   %06X: ", offset));
-      //        text.append (Utility.getHexValues (header));
-      //        text.append ("\n");
-      //      }
-
-      //      text.append ("\nBlock pointers:\n");
-      int total1 = 0;
-      int total2 = 0;
-      int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
-      BlockPointer bp1, bp2;
-      for (int i = 0; i < max; i++)
+      if (i < rawBlockPointers.size ())
       {
-        if (i < rawBlockPointers.size ())
-        {
-          bp1 = rawBlockPointers.get (i);
-          total1 += bp1.length;
-          text.append (String.format ("   %s ", bp1));
-        }
-        else
-          text.append ("                        ");
-
-        text.append (String.format (" :%3d : ", i));
-
-        if (i < dataBlockPointers.size ())
-        {
-          bp2 = dataBlockPointers.get (i);
-          total2 += bp2.length;
-          text.append (String.format ("  %s", bp2));
-        }
-        text.append ("\n");
+        bp1 = rawBlockPointers.get (i);
+        total1 += bp1.length;
+        text.append (String.format ("   %s ", bp1));
       }
-      text.append (String.format ("            %04X%<,7d                    %04X%<,7d%n",
-          total1, total2));
+      else
+        text.append ("                        ");
+
+      text.append (String.format (" :%3d : ", i));
+
+      if (i < dataBlockPointers.size ())
+      {
+        bp2 = dataBlockPointers.get (i);
+        total2 += bp2.length;
+        text.append (String.format ("  %s", bp2));
+      }
+      text.append ("\n");
     }
+    text.append (String.format ("            %04X%<,7d                    %04X%<,7d%n",
+        total1, total2));
+    //    }
 
     text.deleteCharAt (text.length () - 1);
 
