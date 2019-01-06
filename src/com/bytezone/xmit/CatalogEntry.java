@@ -359,22 +359,19 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   {
     if (blockPointerLists.size () == 0)
     {
-      if (!blockPointerList.sortKeyMatches (directoryData[10]))
+      if (!blockPointerList.ttlMatches (ttl))
       {
-        System.out.println ("Mismatch in " + name);
+        System.out.printf ("%s mismatch: %s%n", name, Utility.getHexValues (ttl));
         return false;
       }
-
-      if (!blockPointerList.ttlMatches (ttl))
-        System.out.println ("mismatch");
-      else
-        System.out.printf ("%s matches: %s%n", name, Utility.getHexValues (ttl));
+      //      else
+      //        System.out.printf ("%s matches: %s%n", name, Utility.getHexValues (ttl));
     }
 
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
 
-    blockPointerList.setCatalogEntry (this);
+    //    blockPointerList.setCatalogEntry (this);
     return true;
   }
 

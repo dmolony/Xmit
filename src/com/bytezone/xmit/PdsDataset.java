@@ -232,23 +232,27 @@ public class PdsDataset extends Dataset
       int total = 0;
 
       // FILE659 for two extents
-      int xx = catalogEntry.getOffset ();
-      int x2 = xx & 0x0000FF;
-      int x1 = (xx & 0xFFFF00) >>> 8;
+      if (false)
+      {
+        int xx = catalogEntry.getOffset ();
+        int x2 = xx & 0x0000FF;
+        int x1 = (xx & 0xFFFF00) >>> 8;
 
-      int yy = (int) Utility.getFourBytes (copyR2.buffer, 22);
-      int y2 = (yy & 0xFFFF);
-      int y1 = (yy & 0xFFFF0000) >>> 16;
+        int yy = (int) Utility.getFourBytes (copyR2.buffer, 22);
+        int y2 = (yy & 0xFFFF);
+        int y1 = (yy & 0xFFFF0000) >>> 16;
 
-      int z3 = x2;
-      int z2 = (x1 + y2) % 15;
-      int z1 = y1 + (x1 + y2) / 15;
+        int z3 = x2;
+        int z2 = (x1 + y2) % 15;
+        int z1 = y1 + (x1 + y2) / 15;
 
-      int z11 = (z1 & 0xFF00) >>> 8;
-      int z12 = z1 & 0x00FF;
+        int z11 = (z1 & 0xFF00) >>> 8;
+        int z12 = z1 & 0x00FF;
+      }
 
-      text.append (String.format ("%n       %s  %-19.19s %02X %02X    %02X %02X%n",
-          catalogEntry.getMemberName (), "", z11, z12, z2, z3));
+      text.append ("\n");
+      //      text.append (String.format ("%n       %s  %-19.19s %02X %02X    %02X %02X%n",
+      //          catalogEntry.getMemberName (), "", z11, z12, z2, z3));
       for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
         for (DataBlock dataBlock : blockPointerList)
         {

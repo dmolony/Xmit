@@ -15,10 +15,9 @@ public class BlockPointerList implements Iterable<DataBlock>
   private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
   private final List<DataBlock> dataBlocks = new ArrayList<> ();
 
-  private CatalogEntry catalogEntry;
+  //  private CatalogEntry catalogEntry;
 
   private boolean isBinary;
-  private byte sortKey;                 // value contained in first header
   private boolean isLastBlock;
 
   private final boolean shortDisplay = false;
@@ -55,7 +54,6 @@ public class BlockPointerList implements Iterable<DataBlock>
   void createDataBlocks ()                        // used only for data blocks
   {
     setBinaryFlag (rawBlockPointers.get (0));
-    sortKey = buffer[rawBlockPointers.get (0).offset + 8];
 
     int recLen = 0;
     int headerPtr = 0;
@@ -158,15 +156,6 @@ public class BlockPointerList implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // sortKeyMatches
-  // ---------------------------------------------------------------------------------//
-
-  boolean sortKeyMatches (byte b)
-  {
-    return b == sortKey;
-  }
-
-  // ---------------------------------------------------------------------------------//
   // ttlMatches
   // ---------------------------------------------------------------------------------//
 
@@ -179,10 +168,10 @@ public class BlockPointerList implements Iterable<DataBlock>
   // setCatalogEntry
   // ---------------------------------------------------------------------------------//
 
-  void setCatalogEntry (CatalogEntry catalogEntry)
-  {
-    this.catalogEntry = catalogEntry;
-  }
+  //  void setCatalogEntry (CatalogEntry catalogEntry)
+  //  {
+  //    this.catalogEntry = catalogEntry;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getDataLength
