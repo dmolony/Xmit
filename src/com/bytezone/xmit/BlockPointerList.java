@@ -101,7 +101,7 @@ public class BlockPointerList implements Iterable<DataBlock>
         int len = Math.min (recLen, avail);
         BlockPointer blp = new BlockPointer (buffer, ptr, len);
         dataBlockPointers.add (blp);
-        dataBlock.blockPointers.add (blp);
+        dataBlock.add (blp);
         ptr += len;
         avail -= len;
         recLen -= len;
@@ -158,7 +158,7 @@ public class BlockPointerList implements Iterable<DataBlock>
 
   boolean ttlMatches (byte[] ttl)
   {
-    return Utility.matches (ttl, dataBlocks.get (0).header, 4);
+    return dataBlocks.get (0).ttlMatches (ttl);
   }
 
   // ---------------------------------------------------------------------------------//
