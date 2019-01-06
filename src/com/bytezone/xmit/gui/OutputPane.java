@@ -129,8 +129,9 @@ public class OutputPane extends BorderPane
         text.append ("\n\n");
 
         text.append (String.format ("%s Catalog Blocks:%n", reader.getName ()));
-        text.append ("   -member- header versn    ss -created--  -modified-  hh mm ");
-        text.append ("Size1 Size2       -------- user ---------     \n");
+        text.append (
+            "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
+        text.append ("Size1 Size2       -------- user ---------\n");
         for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
         {
           text.append (catalogEntry.debugLine ());

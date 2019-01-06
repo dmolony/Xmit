@@ -2,7 +2,7 @@ package com.bytezone.xmit;
 
 public class CopyR2
 {
-  private final byte[] buffer;
+  final byte[] buffer;
 
   // ---------------------------------------------------------------------------------//
   // constructor

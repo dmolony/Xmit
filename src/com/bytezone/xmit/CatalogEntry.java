@@ -158,8 +158,10 @@ public class CatalogEntry implements Comparable<CatalogEntry>
     if (extra == 0xB6)
       t1 = Utility.getString (directoryData, 48, 8);
 
-    return String.format ("%02X %-8s %06X %-129s %8s %8s %8s", directoryData[11],
-        getMemberName (), blockFrom, hex, getUserName (), getAliasName (), t1);
+    return String
+        .format ("%02X %-8s %-8s %06X %-129s %8s %8s", directoryData[11],
+            getMemberName (), getUserName (), blockFrom, hex, getAliasName (), t1)
+        .trim ();
   }
 
   // ---------------------------------------------------------------------------------//
