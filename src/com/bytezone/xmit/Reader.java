@@ -13,9 +13,9 @@ import com.bytezone.xmit.textunit.TextUnitString;
 
 public class Reader
 {
-  private static final byte[] INMR03 =
-      { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9, (byte) 0xF0,
-        (byte) 0xF3 };
+  //  private static final byte[] INMR03 =
+  //      { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9, (byte) 0xF0,
+  //        (byte) 0xF3 };
   private static final byte[] INMR06 =
       { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
         (byte) 0xF0, (byte) 0xF6 };
@@ -226,12 +226,7 @@ public class Reader
   {
     for (ControlRecord controlRecord : controlRecords)
       if (controlRecord.fileNbrMatches (fileNbr))
-      {
-        //        TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMUTILN);
-        //        if (textUnit != null
-        //            && ((TextUnitString) textUnit).getString ().equals (utilityName))
         return Optional.of (controlRecord);
-      }
 
     return Optional.empty ();
   }

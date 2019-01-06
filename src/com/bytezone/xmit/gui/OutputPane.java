@@ -137,12 +137,8 @@ public class OutputPane extends BorderPane
           text.append (catalogEntry.debugLine ());
           text.append ("\n");
         }
-        text.append (((PdsDataset) dataset).getBlockListing2 ());
+        text.append (((PdsDataset) dataset).getBlockListing ());
       }
-
-      //      text.append ("\nData Blocks:\n");
-      //      for (BlockPointerList bpl : reader.getDataBlockPointerLists ())
-      //        text.append (String.format ("%s%n", bpl.getList ()));
 
       text.deleteCharAt (text.length () - 1);
       fileText.setText (text.toString ());

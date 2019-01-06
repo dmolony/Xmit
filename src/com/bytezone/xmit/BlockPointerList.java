@@ -117,11 +117,10 @@ public class BlockPointerList implements Iterable<DataBlock>
   // getOffset
   // ---------------------------------------------------------------------------------//
 
-  int getOffset ()
-  {
-    //    return (int) Utility.getValue (pdsHeaders.get (0), 6, 3);
-    return (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
-  }
+  //  int getOffset ()
+  //  {
+  //    return (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // isPDSE
@@ -197,14 +196,6 @@ public class BlockPointerList implements Iterable<DataBlock>
   {
     StringBuilder text = new StringBuilder ();
 
-    //    if (catalogEntry != null)
-    //    {
-    //      int headerOffset = (int) Utility.getValue (dataBlocks.get (0).header, 6, 3);
-    //      int diff = headerOffset - catalogEntry.getOffset ();
-    //      text.append (String.format ("Member         : %s  %06X  Diff: %04X%n",
-    //          catalogEntry.getMemberName (), catalogEntry.getOffset (), diff));
-    //    }
-
     if (shortDisplay)
     {
       text.append (String.format ("Raw blocks    : %d%n", rawBlockPointers.size ()));
@@ -213,19 +204,7 @@ public class BlockPointerList implements Iterable<DataBlock>
       text.append (String.format ("Data length   : %06X  %<,d", dataBufferLength));
       return text.toString ();
     }
-    //    else
-    //    {
-    //      text.append ("\nHeaders:\n");
-    //      for (int i = 0; i < dataBlocks.size (); i++)
-    //      {
-    //        byte[] header = dataBlocks.get (i).header;
-    //        int offset = dataBlocks.get (i).offset;
-    //        text.append (String.format ("   %06X: ", offset));
-    //        text.append (Utility.getHexValues (header));
-    //        text.append ("\n");
-    //      }
 
-    //      text.append ("\nBlock pointers:\n");
     int total1 = 0;
     int total2 = 0;
     int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
@@ -253,7 +232,6 @@ public class BlockPointerList implements Iterable<DataBlock>
     }
     text.append (String.format ("            %04X%<,7d                    %04X%<,7d%n",
         total1, total2));
-    //    }
 
     text.deleteCharAt (text.length () - 1);
 
