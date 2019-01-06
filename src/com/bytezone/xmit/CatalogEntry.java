@@ -40,6 +40,8 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   private final byte[] directoryData;
   private final int extra;
 
+  private final byte[] ttl = new byte[5];
+
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
@@ -200,6 +202,28 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  // setCopyRecords
+  // ---------------------------------------------------------------------------------//
+
+  void setCopyRecords (CopyR1 copyR1, CopyR2 copyR2)
+  {
+    int x1 = (blockFrom & 0xFFFF00) >>> 8;
+
+    int y1 = Utility.getTwoBytes (copyR2.buffer, 22);
+    int y2 = Utility.getTwoBytes (copyR2.buffer, 24);
+
+    ttl[4] = (byte) (blockFrom & 0x0000FF);
+    ttl[3] = (byte) ((x1 + y2) % 15);
+
+    int z1 = (y1 + (x1 + y2) / 15);
+
+    ttl[1] = (byte) (z1 & 0x00FF);
+    ttl[0] = (byte) ((z1 & 0xFF00) >>> 8);
+
+    //    System.out.println (Utility.getHexValues (ttl));
+  }
+
+  // ---------------------------------------------------------------------------------//
   // length
   // ---------------------------------------------------------------------------------//
 
@@ -334,11 +358,18 @@ public class CatalogEntry implements Comparable<CatalogEntry>
   boolean addBlockPointerList (BlockPointerList blockPointerList)
   {
     if (blockPointerLists.size () == 0)
+    {
       if (!blockPointerList.sortKeyMatches (directoryData[10]))
       {
         System.out.println ("Mismatch in " + name);
         return false;
       }
+
+      if (!blockPointerList.ttlMatches (ttl))
+        System.out.println ("mismatch");
+      else
+        System.out.printf ("%s matches: %s%n", name, Utility.getHexValues (ttl));
+    }
 
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();

@@ -194,6 +194,8 @@ public class PdsDataset extends Dataset
         CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2, lrecl, recfm);
         catalogEntries.add (catalogEntry);
 
+        catalogEntry.setCopyRecords (copyR1, copyR2);
+
         // check for last member
         if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
           break;
@@ -224,35 +226,27 @@ public class PdsDataset extends Dataset
   {
     StringBuilder text = new StringBuilder ();
 
-    String offset = Utility.getHexValues (copyR2.buffer, 22, 4);
-    int v1 = Utility.getTwoBytes (copyR2.buffer, 22);
-    int v2 = Utility.getTwoBytes (copyR2.buffer, 24);
-    int p1 = v1 / 15;
-
     int count = 0;
     for (CatalogEntry catalogEntry : sortedCatalogEntries)
     {
       int total = 0;
 
+      // FILE659 for two extents
       int xx = catalogEntry.getOffset ();
-      int x3 = xx & 0x0000FF;
-      int x2 = (xx & 0x00FF00) >>> 8;
-      int x1 = (xx & 0xFF0000) >>> 16;
+      int x2 = xx & 0x0000FF;
+      int x1 = (xx & 0xFFFF00) >>> 8;
 
       int yy = (int) Utility.getFourBytes (copyR2.buffer, 22);
       int y2 = (yy & 0xFFFF);
       int y1 = (yy & 0xFFFF0000) >>> 16;
 
-      int z3 = x3;
-      int z2 = (x2 + y2) % 15;
-      int z1 = x1 + y1 + (x2 + y2) / 15;
+      int z3 = x2;
+      int z2 = (x1 + y2) % 15;
+      int z1 = y1 + (x1 + y2) / 15;
 
       int z11 = (z1 & 0xFF00) >>> 8;
       int z12 = z1 & 0x00FF;
 
-      //      text.append (String.format ("%n       %s  %06X              %s%n",
-      //          catalogEntry.getMemberName (), xx, offset));
-      //      text.append (String.format ("%39.39s %02X    %02X %02X%n", "", z1, z2, z3));
       text.append (String.format ("%n       %s  %-19.19s %02X %02X    %02X %02X%n",
           catalogEntry.getMemberName (), "", z11, z12, z2, z3));
       for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
