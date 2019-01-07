@@ -34,7 +34,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final Menu fileMenu = new Menu ("File");
-  private final MenuItem rootMenuItem = new MenuItem ("Set root folder");
+  private final MenuItem rootMenuItem = new MenuItem ("Set XMIT file folder");
   private final MenuItem extractMenuItem = new MenuItem ("Extract file");
 
   private CatalogEntry catalogEntry;

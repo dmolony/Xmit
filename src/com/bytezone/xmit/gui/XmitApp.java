@@ -10,6 +10,8 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
@@ -24,6 +26,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
   private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
+  private Alert alert;
 
   private String rootFolderName;
   //  private Path rootFolderPath;
@@ -55,7 +58,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // get root folder
     validateRootFolderOrExit ();
-    //    rootFolderPath = Paths.get (rootFolderName);
 
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     xmitTree.addListener (outputPane);
@@ -209,13 +211,37 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
+  // showAlert
+  // ---------------------------------------------------------------------------------//
+
+  void showAlert (AlertType alertType, String title, String message)
+  {
+    if (alert == null)
+    {
+      alert = new Alert (alertType);
+      alert.setTitle (title);
+      alert.setHeaderText (null);
+    }
+
+    alert.setContentText (message);
+    alert.showAndWait ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   // validateRootFolderOrExit
   // ---------------------------------------------------------------------------------//
 
   private void validateRootFolderOrExit ()
   {
     rootFolderName = prefs.get (PREFS_ROOT_FOLDER, "");
-    if (!rootFolderName.isEmpty ())
+    if (rootFolderName.isEmpty ())
+    {
+      showAlert (AlertType.INFORMATION, "XMIT folder",
+          "The XMIT file folder has not yet been defined. Please choose the "
+              + "FOLDER where you store your XMIT files. This folder can be "
+              + "changed at any time.");
+    }
+    else
     {
       File file = new File (rootFolderName);
       if (!file.exists ())
@@ -223,7 +249,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
     }
 
     if (rootFolderName.isEmpty () && !setRootFolder ())
+    {
       Platform.exit ();
+      System.exit (0);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -233,14 +262,16 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private boolean setRootFolder ()
   {
     DirectoryChooser directoryChooser = new DirectoryChooser ();
-    directoryChooser.setTitle ("Set root folder");
+    directoryChooser.setTitle ("Set XMIT file folder");
     directoryChooser.setInitialDirectory (new File (System.getProperty ("user.home")));
 
     File file = directoryChooser.showDialog (null);
+    System.out.println (file);
     if (file != null && file.isDirectory ())
     {
       rootFolderName = file.getAbsolutePath ();
       prefs.put (PREFS_ROOT_FOLDER, rootFolderName);
+      System.out.println (rootFolderName);
       return true;
     }
 
