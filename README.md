@@ -36,7 +36,7 @@ C:\path\to\jdk-11.0.1\bin\java.exe                \
 ```
 ### First execution
 - Read the helpful message  
-<img src="resources/xmit-folder1.png" alt="drawing" width="400"/>
+<img src="resources/xmit-folder1.png" alt="drawing" width="600"/>
 - Specify the location of your xmit files  
-<img src="resources/xmit-folder2.png" alt="drawing" width="600"/>
+<img src="resources/xmit-folder2.png" alt="drawing" width="800"/>
 - This will remain the xmit file folder until you change it
