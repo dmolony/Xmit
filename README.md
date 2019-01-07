@@ -35,8 +35,8 @@ C:\path\to\jdk-11.0.1\bin\java.exe                \
 -jar C:\path\to\XmitApp.jar
 ```
 ### First execution
-- Read the helpful message
-![](resources/xmit-folder1.png?raw=true | width=100)
-- Specify the location of your xmit files
+- Read the helpful message  
+![](resources/xmit-folder1.png =200x)
+- Specify the location of your xmit files  
 ![Dialog](resources/xmit-folder2.png?raw=true "Dialog")
 - This will remain the xmit file folder until you change it
