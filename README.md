@@ -34,3 +34,9 @@ C:\path\to\jdk-11.0.1\bin\java.exe                \
 -Dfile.encoding=UTF-8                             \
 -jar C:\path\to\XmitApp.jar
 ```
+### First execution
+- Read the helpful message
+![Notice](resources/xmit-folder1.png?raw=true "Notice")
+- Specify the location of your xmit files
+![Dialog](resources/xmit-folder2.png?raw=true "Dialog")
+- This will remain the xmit file folder until you change it

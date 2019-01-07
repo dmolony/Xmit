@@ -271,7 +271,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
     {
       rootFolderName = file.getAbsolutePath ();
       prefs.put (PREFS_ROOT_FOLDER, rootFolderName);
-      System.out.println (rootFolderName);
       return true;
     }
 
