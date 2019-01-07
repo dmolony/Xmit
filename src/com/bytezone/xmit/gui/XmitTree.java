@@ -105,9 +105,7 @@ public class XmitTree extends TreeView<XmitFile>
       Optional<FileTreeItem> optionalNode = getNode (lastPath);
       if (optionalNode.isPresent ())
       {
-        //        model.clearSelection ();
         model.select (optionalNode.get ());
-        focusModel.focus (model.getSelectedIndex ());   // does this do anything?
         scrollTo (model.getSelectedIndex ());
       }
     }
