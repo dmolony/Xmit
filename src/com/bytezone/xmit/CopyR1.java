@@ -56,8 +56,6 @@ public class CopyR1
     lstar = (int) Utility.getValue (buffer, 49, 3);
     trbal = Utility.getTwoBytes (buffer, 52);
     zero2 = Utility.getTwoBytes (buffer, 54);
-
-    //    System.out.println (this);
   }
 
   // ---------------------------------------------------------------------------------//
