@@ -238,7 +238,7 @@ public class PdsDataset extends Dataset
     {
       int total = 0;
       text.append ("\n");
-      for (Segment blockPointerList : catalogEntry.blockPointerLists)
+      for (Segment blockPointerList : catalogEntry.segments)
       {
         for (DataBlock dataBlock : blockPointerList)
         {

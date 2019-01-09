@@ -12,7 +12,9 @@ public class CatalogEntry
 {
   final Reader reader;
 
-  final List<Segment> blockPointerLists = new ArrayList<> ();
+  private Member member;                                  // contains DataBlocks
+  final List<Segment> segments = new ArrayList<> ();      // contains DataBlocks
+
   final List<String> lines = new ArrayList<> ();
 
   int lrecl;
@@ -43,8 +45,6 @@ public class CatalogEntry
   private byte[] ttl = new byte[5];
   private CopyR1 copyR1;
   private CopyR2 copyR2;
-
-  private Member member;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -221,10 +221,10 @@ public class CatalogEntry
   // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
-  private void addBlockPointerList (Segment blockPointerList)
+  private void addSegment (Segment segment)
   {
-    blockPointerLists.add (blockPointerList);
-    dataLength += blockPointerList.getDataLength ();
+    segments.add (segment);
+    dataLength += segment.getDataLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -440,15 +440,6 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  // setPdse
-  // ---------------------------------------------------------------------------------//
-
-  //  void setPdse (boolean value)
-  //  {
-  //    isPdse = value;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // getLines
   // ---------------------------------------------------------------------------------//
 
@@ -456,15 +447,15 @@ public class CatalogEntry
   {
     if (lines.size () == 0)
     {
-      if (blockPointerLists.size () == 0)
+      if (segments.size () == 0)
         lines.add ("No data");
       else if (isXmit ())
         xmitList ();
-      else if (blockPointerLists.size () > 100)
+      else if (segments.size () > 100)
         partialDump (10);      // slow!!
       else if (recfm == 0x5000 && isRdw ())
         rdw ();
-      else if (blockPointerLists.get (0).isBinary ())
+      else if (segments.get (0).isBinary ())
         hexDump ();
       else
       {
@@ -497,7 +488,7 @@ public class CatalogEntry
     if (isPdse)       // recalculate data length
     {
       dataLength = 0;
-      for (Segment blockPointerList : blockPointerLists)
+      for (Segment blockPointerList : segments)
       {
         dataLength += blockPointerList.getDataLength ();
         if (blockPointerList.isLastBlock ())        // PDSEs end early
@@ -508,7 +499,7 @@ public class CatalogEntry
     byte[] dataBuffer = new byte[dataLength];
     int ptr = 0;
 
-    for (Segment blockPointerList : blockPointerLists)
+    for (Segment blockPointerList : segments)
     {
       ptr = blockPointerList.getDataBuffer (dataBuffer, ptr);
       if (blockPointerList.isLastBlock ())        // PDSEs end early
@@ -530,9 +521,9 @@ public class CatalogEntry
     text.append (this);
     text.append ("\n\n");
 
-    for (Segment blockPointerList : blockPointerLists)
+    for (Segment segment : segments)
     {
-      for (DataBlock dataBlock : blockPointerList)
+      for (DataBlock dataBlock : segment)
       {
         text.append ("   ");
         text.append (dataBlock);
@@ -541,14 +532,14 @@ public class CatalogEntry
     }
 
     int count = 0;
-    for (Segment blockPointerList : blockPointerLists)
+    for (Segment segment : segments)
     {
       text.append ("\n");
       text.append (String.format (
-          "-----------------------< BlockPointerList %d of %d >-----------------------\n\n",
-          ++count, blockPointerLists.size ()));
+          "-----------------------< Segment %d of %d >-----------------------\n\n",
+          ++count, segments.size ()));
 
-      text.append (blockPointerList.listHeaders ());
+      text.append (segment.listHeaders ());
       text.append ("\n");
     }
 
@@ -591,10 +582,10 @@ public class CatalogEntry
 
   void hexDump ()
   {
-    if (blockPointerLists.size () == 0)
+    if (segments.size () == 0)
       return;
 
-    if (blockPointerLists.get (0).isXmit ())
+    if (segments.get (0).isXmit ())
       lines.add ("Appears to be XMIT");
 
     // FILE600.XMI
@@ -608,14 +599,14 @@ public class CatalogEntry
 
   boolean isRdw ()
   {
-    if (blockPointerLists.size () == 0)
+    if (segments.size () == 0)
       return false;
 
-    for (Segment bpl : blockPointerLists)
+    for (Segment segment : segments)
     {
-      if (bpl.isLastBlock ())        // PDSEs end early
+      if (segment.isLastBlock ())        // PDSEs end early
         break;
-      byte[] buffer = bpl.getDataBuffer ();
+      byte[] buffer = segment.getDataBuffer ();
       if (buffer.length == 0)
         continue;
 
@@ -633,11 +624,11 @@ public class CatalogEntry
 
   void rdw ()         // see SOURCE.XMI
   {
-    for (Segment bpl : blockPointerLists)
+    for (Segment segment : segments)
     {
-      if (bpl.isLastBlock ())        // PDSEs end early
+      if (segment.isLastBlock ())        // PDSEs end early
         break;
-      byte[] buffer = bpl.getDataBuffer ();
+      byte[] buffer = segment.getDataBuffer ();
       if (buffer.length == 0)
         continue;
       int ptr = 4;
@@ -656,7 +647,7 @@ public class CatalogEntry
 
   public boolean isXmit ()
   {
-    return blockPointerLists.size () > 0 && blockPointerLists.get (0).isXmit ();
+    return segments.size () > 0 && segments.get (0).isXmit ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -700,17 +691,17 @@ public class CatalogEntry
   {
     lines.add ("Data too large to display");
     lines.add ("");
-    lines.add ("Showing first " + max + " of " + blockPointerLists.size () + " buffers");
+    lines.add ("Showing first " + max + " of " + segments.size () + " buffers");
     lines.add ("");
 
-    if (blockPointerLists.get (0).isXmit ())
+    if (segments.get (0).isXmit ())
       lines.add ("Appears to be XMIT");
 
     for (int i = 0; i < max; i++)
     {
-      Segment bpl = blockPointerLists.get (i);
-      if (bpl.getDataLength () > 0)
-        lines.add (Utility.getHexDump (bpl.getDataBuffer ()));
+      Segment segment = segments.get (i);
+      if (segment.getDataLength () > 0)
+        lines.add (Utility.getHexDump (segment.getDataBuffer ()));
     }
   }
 

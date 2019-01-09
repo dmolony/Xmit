@@ -51,25 +51,25 @@ public class Reader
       if (recordNumber)
         System.out.println ("******** Found a record number");
 
-      if (false)
-      {
-        String name = controlRecord ? Utility.getString (buffer, ptr + 2, 6) : "";
-        System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
-            firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
-            recordNumber ? "RN" : "", name);
-        if (!controlRecord && firstSegment && lastSegment)
-          System.out.println (Utility.getHexDump (buffer, ptr, length));
-      }
+      //      if (false)
+      //      {
+      //        String name = controlRecord ? Utility.getString (buffer, ptr + 2, 6) : "";
+      //        System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
+      //            firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
+      //            recordNumber ? "RN" : "", name);
+      //        if (!controlRecord && firstSegment && lastSegment)
+      //          System.out.println (Utility.getHexDump (buffer, ptr, length));
+      //      }
 
-      if (false)
-      {
-        System.out.println (Utility.getHexDump (buffer, ptr, length));
-        System.out.println ();
-        if (Utility.matches (INMR06, buffer, ptr))
-          break;
-        ptr += length;
-        continue;
-      }
+      //      if (false)
+      //      {
+      //        System.out.println (Utility.getHexDump (buffer, ptr, length));
+      //        System.out.println ();
+      //        if (Utility.matches (INMR06, buffer, ptr))
+      //          break;
+      //        ptr += length;
+      //        continue;
+      //      }
 
       if (firstSegment)
         currentSegment = new Segment (buffer);
@@ -126,13 +126,13 @@ public class Reader
     if (datasets.size () > 1)
       System.out.printf ("Processed %d datasets%n", datasets.size ());
 
-    if (false)
-      for (ControlRecord controlRecord : controlRecords)
-        System.out.println (controlRecord);
+    //    if (false)
+    //      for (ControlRecord controlRecord : controlRecords)
+    //        System.out.println (controlRecord);
 
-    if (false && datasets.size () > 1)
-      for (Segment bpl : datasets.get (0).segments)
-        System.out.println (Utility.getString (bpl.getRawBuffer ()));
+    //    if (false && datasets.size () > 1)
+    //      for (Segment segment : datasets.get (0).segments)
+    //        System.out.println (Utility.getString (segment.getRawBuffer ()));
 
     // set active dataset
     activeDataset = datasets.get (datasets.size () - 1);     // always last
