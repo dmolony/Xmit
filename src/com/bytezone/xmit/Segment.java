@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BlockPointerList implements Iterable<DataBlock>
+public class Segment implements Iterable<DataBlock>
 {
   private final byte[] buffer;          // all block pointers refer to this
 
@@ -24,17 +24,16 @@ public class BlockPointerList implements Iterable<DataBlock>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public BlockPointerList (byte[] buffer)
+  public Segment (byte[] buffer)
   {
     this.buffer = buffer;
   }
 
   // ---------------------------------------------------------------------------------//
-  // addSegment
+  // addRawBlock
   // ---------------------------------------------------------------------------------//
 
-  public void addSegment (boolean firstSegment, boolean lastSegment,
-      BlockPointer blockPointer)
+  public void addBlockPointer (BlockPointer blockPointer)
   {
     if (blockPointer.offset + blockPointer.length > buffer.length)
     {
@@ -143,21 +142,21 @@ public class BlockPointerList implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDataLength
-  // ---------------------------------------------------------------------------------//
-
-  public int getDataLength ()
-  {
-    return dataBufferLength;
-  }
-
-  // ---------------------------------------------------------------------------------//
   // getRawBufferLength
   // ---------------------------------------------------------------------------------//
 
   public int getRawBufferLength ()
   {
     return rawBufferLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDataLength
+  // ---------------------------------------------------------------------------------//
+
+  public int getDataLength ()
+  {
+    return dataBufferLength;
   }
 
   // ---------------------------------------------------------------------------------//

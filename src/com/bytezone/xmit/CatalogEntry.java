@@ -12,7 +12,7 @@ public class CatalogEntry
 {
   final Reader reader;
 
-  final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  final List<Segment> blockPointerLists = new ArrayList<> ();
   final List<String> lines = new ArrayList<> ();
 
   int lrecl;
@@ -221,7 +221,7 @@ public class CatalogEntry
   // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
-  private void addBlockPointerList (BlockPointerList blockPointerList)
+  private void addBlockPointerList (Segment blockPointerList)
   {
     blockPointerLists.add (blockPointerList);
     dataLength += blockPointerList.getDataLength ();
@@ -497,7 +497,7 @@ public class CatalogEntry
     if (isPdse)       // recalculate data length
     {
       dataLength = 0;
-      for (BlockPointerList blockPointerList : blockPointerLists)
+      for (Segment blockPointerList : blockPointerLists)
       {
         dataLength += blockPointerList.getDataLength ();
         if (blockPointerList.isLastBlock ())        // PDSEs end early
@@ -508,7 +508,7 @@ public class CatalogEntry
     byte[] dataBuffer = new byte[dataLength];
     int ptr = 0;
 
-    for (BlockPointerList blockPointerList : blockPointerLists)
+    for (Segment blockPointerList : blockPointerLists)
     {
       ptr = blockPointerList.getDataBuffer (dataBuffer, ptr);
       if (blockPointerList.isLastBlock ())        // PDSEs end early
@@ -530,7 +530,7 @@ public class CatalogEntry
     text.append (this);
     text.append ("\n\n");
 
-    for (BlockPointerList blockPointerList : blockPointerLists)
+    for (Segment blockPointerList : blockPointerLists)
     {
       for (DataBlock dataBlock : blockPointerList)
       {
@@ -541,7 +541,7 @@ public class CatalogEntry
     }
 
     int count = 0;
-    for (BlockPointerList blockPointerList : blockPointerLists)
+    for (Segment blockPointerList : blockPointerLists)
     {
       text.append ("\n");
       text.append (String.format (
@@ -611,7 +611,7 @@ public class CatalogEntry
     if (blockPointerLists.size () == 0)
       return false;
 
-    for (BlockPointerList bpl : blockPointerLists)
+    for (Segment bpl : blockPointerLists)
     {
       if (bpl.isLastBlock ())        // PDSEs end early
         break;
@@ -633,7 +633,7 @@ public class CatalogEntry
 
   void rdw ()         // see SOURCE.XMI
   {
-    for (BlockPointerList bpl : blockPointerLists)
+    for (Segment bpl : blockPointerLists)
     {
       if (bpl.isLastBlock ())        // PDSEs end early
         break;
@@ -708,7 +708,7 @@ public class CatalogEntry
 
     for (int i = 0; i < max; i++)
     {
-      BlockPointerList bpl = blockPointerLists.get (i);
+      Segment bpl = blockPointerLists.get (i);
       if (bpl.getDataLength () > 0)
         lines.add (Utility.getHexDump (bpl.getDataBuffer ()));
     }

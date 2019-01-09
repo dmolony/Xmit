@@ -19,7 +19,7 @@ public abstract class Dataset
   Org dsorg;
   int recfm;
 
-  final List<BlockPointerList> blockPointerLists = new ArrayList<> ();
+  final List<Segment> segments = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -43,21 +43,21 @@ public abstract class Dataset
   abstract void process ();
 
   // ---------------------------------------------------------------------------------//
-  // add
+  // addSegment
   // ---------------------------------------------------------------------------------//
 
-  void addBlockPointerList (BlockPointerList blockPointerList)
+  void addSegment (Segment segment)
   {
-    blockPointerLists.add (blockPointerList);
+    segments.add (segment);
   }
 
   // ---------------------------------------------------------------------------------//
   // getBlockPointerList
   // ---------------------------------------------------------------------------------//
 
-  public BlockPointerList getBlockPointerList (int index)
+  public Segment getSegment (int index)
   {
-    return blockPointerLists.get (index);
+    return segments.get (index);
   }
 
   // ---------------------------------------------------------------------------------//

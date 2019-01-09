@@ -77,15 +77,15 @@ public class PdsDataset extends Dataset
     boolean inCatalog = true;
 
     // convert first two BlockPointerList entries
-    copyR1 = new CopyR1 (blockPointerLists.get (0).getRawBuffer ());
-    copyR2 = new CopyR2 (blockPointerLists.get (1).getRawBuffer ());
+    copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
+    copyR2 = new CopyR2 (segments.get (1).getRawBuffer ());
     List<CatalogEntry> catalogEntries = null;
 
     // read catalog data as raw data
     // convert remaining entries to BlockPointers
-    for (int i = 2; i < blockPointerLists.size (); i++)
+    for (int i = 2; i < segments.size (); i++)
     {
-      BlockPointerList bpl = blockPointerLists.get (i);
+      Segment bpl = segments.get (i);
       if (inCatalog)
       {
         inCatalog = addCatalogEntries (bpl.getRawBuffer ());
@@ -123,8 +123,8 @@ public class PdsDataset extends Dataset
     Member currentMember = null;
 
     System.out.println (line);
-    for (int i = firstDataBlock; i < blockPointerLists.size (); i++)
-      for (DataBlock dataBlock : blockPointerLists.get (i))
+    for (int i = firstDataBlock; i < segments.size (); i++)
+      for (DataBlock dataBlock : segments.get (i))
       {
         if (currentMember == null)
         {
@@ -161,8 +161,8 @@ public class PdsDataset extends Dataset
       System.out.printf ("CopyRx ..........       2%n");
       System.out.printf ("Catalog ......... %,7d%n", catalogEndBlock - 1);
       System.out.printf ("Data ............ %,7d%n",
-          blockPointerLists.size () - catalogEndBlock - 1);
-      System.out.printf ("Total ........... %,7d%n", blockPointerLists.size ());
+          segments.size () - catalogEndBlock - 1);
+      System.out.printf ("Total ........... %,7d%n", segments.size ());
     }
   }
 
@@ -238,7 +238,7 @@ public class PdsDataset extends Dataset
     {
       int total = 0;
       text.append ("\n");
-      for (BlockPointerList blockPointerList : catalogEntry.blockPointerLists)
+      for (Segment blockPointerList : catalogEntry.blockPointerLists)
       {
         for (DataBlock dataBlock : blockPointerList)
         {

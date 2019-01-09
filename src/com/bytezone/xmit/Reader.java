@@ -20,7 +20,7 @@ public class Reader
       { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
         (byte) 0xF0, (byte) 0xF6 };
 
-  private final String name;
+  private final String fileName;
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<Dataset> datasets = new ArrayList<> ();
 
@@ -32,8 +32,8 @@ public class Reader
 
   public Reader (String fileName, byte[] buffer)
   {
-    this.name = fileName;
-    BlockPointerList currentBlockPointerList = null;
+    this.fileName = fileName;
+    Segment currentSegment = null;
     Dataset currentDataset = null;
 
     int ptr = 0;
@@ -72,28 +72,24 @@ public class Reader
       }
 
       if (firstSegment)
-        currentBlockPointerList = new BlockPointerList (buffer);
+        currentSegment = new Segment (buffer);
 
-      currentBlockPointerList.addSegment (firstSegment, lastSegment,
-          new BlockPointer (buffer, ptr + 2, length - 2));
+      currentSegment.addBlockPointer (new BlockPointer (buffer, ptr + 2, length - 2));
 
       if (lastSegment)
       {
         if (controlRecord)
         {
-          ControlRecord cr = new ControlRecord (currentBlockPointerList.getRawBuffer ());
+          ControlRecord cr = new ControlRecord (currentSegment.getRawBuffer ());
           controlRecords.add (cr);
           if (cr.nameMatches ("INMR06"))
             break;
-          if (cr.nameMatches ("INMR01"))
-          {
-            TextUnit textUnit = cr.getTextUnit (TextUnit.INMNUMF);
-            if (textUnit != null)
-            {
-              int files = (int) ((TextUnitNumber) textUnit).getNumber ();
-              //              System.out.println (files);
-            }
-          }
+          //          if (cr.nameMatches ("INMR01"))
+          //          {
+          //            TextUnit textUnit = cr.getTextUnit (TextUnit.INMNUMF);
+          //            if (textUnit != null)
+          //              int files = (int) ((TextUnitNumber) textUnit).getNumber ();
+          //          }
           if (cr.nameMatches ("INMR03"))
           {
             Org org = getOrg (datasets.size () + 1);
@@ -117,7 +113,7 @@ public class Reader
           }
         }
         else
-          currentDataset.addBlockPointerList (currentBlockPointerList);
+          currentDataset.addSegment (currentSegment);
       }
 
       ptr += length;
@@ -135,7 +131,7 @@ public class Reader
         System.out.println (controlRecord);
 
     if (false && datasets.size () > 1)
-      for (BlockPointerList bpl : datasets.get (0).blockPointerLists)
+      for (Segment bpl : datasets.get (0).segments)
         System.out.println (Utility.getString (bpl.getRawBuffer ()));
 
     // set active dataset
@@ -148,7 +144,7 @@ public class Reader
 
   public String getName ()
   {
-    return name;
+    return fileName;
   }
 
   // ---------------------------------------------------------------------------------//
