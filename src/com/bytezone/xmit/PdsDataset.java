@@ -1,9 +1,9 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 
@@ -16,7 +16,7 @@ public class PdsDataset extends Dataset
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
-  private final Map<Long, List<CatalogEntry>> catalogMap = new HashMap<> ();
+  private final Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -95,18 +95,64 @@ public class PdsDataset extends Dataset
       else
       {
         bpl.createDataBlocks ();       // create new BlockPointers
-        for (DataBlock dataBlock : bpl)
-        {
-          long ttl = dataBlock.getTtl ();
-          if (catalogMap.containsKey (ttl))
-            catalogEntries = catalogMap.get (ttl);
-          if (catalogEntries != null)
-            for (CatalogEntry catalogEntry : catalogEntries)
-              catalogEntry.addBlockPointerList (bpl);
-          break;        // just need the first DataBlock
-        }
+
+        //        for (DataBlock dataBlock : bpl)
+        //        {
+        //          long ttl = dataBlock.getTtl ();
+        //          if (catalogEntries == null && catalogMap.containsKey (ttl))
+        //            catalogEntries = catalogMap.get (ttl);
+        //          if (catalogEntries != null)
+        //            for (CatalogEntry catalogEntry : catalogEntries)
+        //              catalogEntry.addBlockPointerList (bpl);
+        //          if (bpl.isLastBlock ())
+        //            catalogEntries = null;
+        //          break;        // just need the first DataBlock
+        //        }
       }
     }
+
+    int firstDataBlock = catalogEndBlock + 1 + (copyR1.isPdse () ? 1 : 0);
+
+    String line = "-----------------------------------------------------------";
+    System.out.println (line);
+    System.out.println (copyR2);
+    System.out.println (line);
+    int count = 0;
+
+    List<Member> members = new ArrayList<> ();
+    Member currentMember = null;
+
+    System.out.println (line);
+    for (int i = firstDataBlock; i < blockPointerLists.size (); i++)
+      for (DataBlock dataBlock : blockPointerLists.get (i))
+      {
+        if (currentMember == null)
+        {
+          currentMember = new Member ();
+          members.add (currentMember);
+        }
+        currentMember.add (dataBlock);
+        //        System.out.printf ("%3d  %s%n", i, dataBlock);
+        if (dataBlock.getSize () == 0)
+          currentMember = null;
+        //          System.out.println ();
+      }
+
+    //    for (CatalogEntry catalogEntry : this.catalogEntries)
+    //      System.out.printf ("%3d  %s%n", count++, catalogEntry);
+    for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
+    {
+      Member member = members.get (count);
+      for (CatalogEntry catalogEntry : catalogEntryList)
+        catalogEntry.setMember (member);
+      System.out.printf ("%3d  %s  %s%n", count++,
+          Utility.getHexValues (member.getHeader ()), catalogEntryList.get (0));
+    }
+
+    //    count = 0;
+    //    for (Member member : members)
+    //      System.out.printf ("%3d  %s%n", count++,
+    //          Utility.getHexValues (member.getHeader ()));
 
     if (false)
     {
@@ -159,7 +205,8 @@ public class PdsDataset extends Dataset
 
   private void addToMap (CatalogEntry catalogEntry)
   {
-    long ttl = catalogEntry.setCopyRecords (copyR1, copyR2);
+    catalogEntry.setCopyRecords (copyR1, copyR2);
+    long ttl = catalogEntry.getOffset ();
     List<CatalogEntry> catalogEntriesTtl = catalogMap.get (ttl);
     if (catalogEntriesTtl == null)
     {
