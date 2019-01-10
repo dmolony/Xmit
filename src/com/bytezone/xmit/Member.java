@@ -7,6 +7,8 @@ import java.util.List;
 public class Member implements Iterable<DataBlock>
 {
   List<DataBlock> dataBlocks = new ArrayList<> ();
+  List<DataBlock> extraDataBlocks = new ArrayList<> ();
+  int length = 0;
 
   // ---------------------------------------------------------------------------------//
   // add
@@ -14,7 +16,14 @@ public class Member implements Iterable<DataBlock>
 
   void add (DataBlock dataBlock)
   {
-    dataBlocks.add (dataBlock);
+    byte type = dataBlock.getType ();
+    if (type == (byte) 0x80 || type == 0x00)
+    {
+      dataBlocks.add (dataBlock);
+      length += dataBlock.getSize ();
+    }
+    else
+      extraDataBlocks.add (dataBlock);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -24,6 +33,41 @@ public class Member implements Iterable<DataBlock>
   Header getHeader ()
   {
     return dataBlocks.get (0).getHeader ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDataBuffer
+  // ---------------------------------------------------------------------------------//
+
+  byte[] getDataBuffer ()
+  {
+    byte[] buffer = new byte[length];
+    int ptr = 0;
+    for (DataBlock dataBlock : dataBlocks)
+      ptr = dataBlock.packBuffer (buffer, ptr);
+    assert ptr == length;
+    return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isXmit
+  // ---------------------------------------------------------------------------------//
+
+  boolean isXmit ()
+  {
+    return dataBlocks.get (0).isXmit ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isRdw
+  // ---------------------------------------------------------------------------------//
+
+  boolean isRdw ()
+  {
+    DataBlock dataBlock = dataBlocks.get (0);
+    //    int len = Utility.getTwoBytes (buffer, ptr)
+    System.out.println ("Member not finished");
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

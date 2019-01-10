@@ -13,7 +13,7 @@ public class CatalogEntry
   final Reader reader;
 
   private Member member;                                  // contains DataBlocks
-  final List<Segment> segments = new ArrayList<> ();      // contains DataBlocks
+  //  final List<Segment> segments = new ArrayList<> ();      // contains DataBlocks
 
   final List<String> lines = new ArrayList<> ();
 
@@ -217,15 +217,20 @@ public class CatalogEntry
     //      addBlockPointerList (dataBlock.blockPointerList);
   }
 
+  Member getMember ()
+  {
+    return member;
+  }
+
   // ---------------------------------------------------------------------------------//
   // addBlockPointerList
   // ---------------------------------------------------------------------------------//
 
-  private void addSegment (Segment segment)
-  {
-    segments.add (segment);
-    dataLength += segment.getDataLength ();
-  }
+  //  private void addSegment (Segment segment)
+  //  {
+  //    segments.add (segment);
+  //    dataLength += segment.getDataLength ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // setCopyRecords
@@ -447,16 +452,17 @@ public class CatalogEntry
   {
     if (lines.size () == 0)
     {
-      if (segments.size () == 0)
-        lines.add ("No data");
-      else if (isXmit ())
+      //      if (segments.size () == 0)
+      //        lines.add ("No data");
+      //      else
+      if (isXmit ())
         xmitList ();
-      else if (segments.size () > 100)
-        partialDump (10);      // slow!!
-      else if (recfm == 0x5000 && isRdw ())
-        rdw ();
-      else if (segments.get (0).isBinary ())
-        hexDump ();
+      //      else if (segments.size () > 100)
+      //        partialDump (10);      // slow!!
+      //      else if (recfm == 0x5000 && member.isRdw ())
+      //        rdw ();
+      //      else if (segments.get (0).isBinary ())
+      //        hexDump ();
       else
       {
         byte[] buffer = getDataBuffer ();
@@ -485,29 +491,7 @@ public class CatalogEntry
 
   public byte[] getDataBuffer ()
   {
-    if (isPdse)       // recalculate data length
-    {
-      dataLength = 0;
-      for (Segment segment : segments)
-      {
-        dataLength += segment.getDataLength ();
-        if (segment.isLastBlock ())        // PDSEs end early
-          break;
-      }
-    }
-
-    byte[] dataBuffer = new byte[dataLength];
-    int ptr = 0;
-
-    for (Segment segment : segments)
-    {
-      ptr = segment.getDataBuffer (dataBuffer, ptr);
-      if (segment.isLastBlock ())        // PDSEs end early
-        break;
-    }
-    assert ptr == dataLength;
-
-    return dataBuffer;
+    return member.getDataBuffer ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -521,30 +505,14 @@ public class CatalogEntry
     text.append (this);
     text.append ("\n\n");
 
-    for (Segment segment : segments)
+    for (DataBlock dataBlock : member)
     {
-      for (DataBlock dataBlock : segment)
-      {
-        text.append ("   ");
-        text.append (dataBlock);
-        text.append ("\n");
-      }
-    }
-
-    int count = 0;
-    for (Segment segment : segments)
-    {
-      text.append ("\n");
-      text.append (String.format (
-          "-----------------------< Segment %d of %d >-----------------------\n\n",
-          ++count, segments.size ()));
-
-      text.append (segment.listHeaders ());
+      text.append ("   ");
+      text.append (dataBlock);
       text.append ("\n");
     }
 
-    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
-      text.deleteCharAt (text.length () - 1);
+    Utility.removeTrailingNewlines (text);
 
     return text.toString ();
   }
@@ -582,14 +550,14 @@ public class CatalogEntry
 
   void hexDump ()
   {
-    if (segments.size () == 0)
-      return;
+    //    if (segments.size () == 0)
+    //      return;
 
-    if (segments.get (0).isXmit ())
+    if (member.isXmit ())
       lines.add ("Appears to be XMIT");
 
     // FILE600.XMI
-    byte[] buffer = getDataBuffer ();
+    byte[] buffer = member.getDataBuffer ();
     lines.add (Utility.getHexDump (buffer));
   }
 
@@ -597,49 +565,49 @@ public class CatalogEntry
   // isRdw
   // ---------------------------------------------------------------------------------//
 
-  boolean isRdw ()
-  {
-    if (segments.size () == 0)
-      return false;
-
-    for (Segment segment : segments)
-    {
-      if (segment.isLastBlock ())        // PDSEs end early
-        break;
-      byte[] buffer = segment.getDataBuffer ();
-      if (buffer.length == 0)
-        continue;
-
-      int len = Utility.getTwoBytes (buffer, 0);
-      if (len != buffer.length)
-        return false;
-    }
-
-    return true;
-  }
+  //  boolean isRdw ()
+  //  {
+  ////    if (segments.size () == 0)
+  ////      return false;
+  //
+  //    for (Segment segment : segments)
+  //    {
+  //      if (segment.isLastBlock ())        // PDSEs end early
+  //        break;
+  //      byte[] buffer = segment.getDataBuffer ();
+  //      if (buffer.length == 0)
+  //        continue;
+  //
+  //      int len = Utility.getTwoBytes (buffer, 0);
+  //      if (len != buffer.length)
+  //        return false;
+  //    }
+  //
+  //    return true;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // rdw
   // ---------------------------------------------------------------------------------//
 
-  void rdw ()         // see SOURCE.XMI
-  {
-    for (Segment segment : segments)
-    {
-      if (segment.isLastBlock ())        // PDSEs end early
-        break;
-      byte[] buffer = segment.getDataBuffer ();
-      if (buffer.length == 0)
-        continue;
-      int ptr = 4;
-      while (ptr < buffer.length)
-      {
-        int len = Utility.getTwoBytes (buffer, ptr);
-        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
-        ptr += len;
-      }
-    }
-  }
+  //  void rdw ()         // see SOURCE.XMI
+  //  {
+  //    for (Segment segment : segments)
+  //    {
+  //      if (segment.isLastBlock ())        // PDSEs end early
+  //        break;
+  //      byte[] buffer = segment.getDataBuffer ();
+  //      if (buffer.length == 0)
+  //        continue;
+  //      int ptr = 4;
+  //      while (ptr < buffer.length)
+  //      {
+  //        int len = Utility.getTwoBytes (buffer, ptr);
+  //        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+  //        ptr += len;
+  //      }
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // isXmit
@@ -647,7 +615,7 @@ public class CatalogEntry
 
   public boolean isXmit ()
   {
-    return segments.size () > 0 && segments.get (0).isXmit ();
+    return member.isXmit ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -691,17 +659,17 @@ public class CatalogEntry
   {
     lines.add ("Data too large to display");
     lines.add ("");
-    lines.add ("Showing first " + max + " of " + segments.size () + " buffers");
+    lines.add ("Showing first " + max + " of " + member.dataBlocks.size () + " blocks");
     lines.add ("");
 
-    if (segments.get (0).isXmit ())
+    if (isXmit ())
       lines.add ("Appears to be XMIT");
 
     for (int i = 0; i < max; i++)
     {
-      Segment segment = segments.get (i);
-      if (segment.getDataLength () > 0)
-        lines.add (Utility.getHexDump (segment.getDataBuffer ()));
+      DataBlock dataBlock = member.dataBlocks.get (i);
+      if (dataBlock.getSize () > 0)
+        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
     }
   }
 
@@ -714,7 +682,7 @@ public class CatalogEntry
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %s  %8s", name, userName, size,
-        blockFrom, Utility.getHexValues (ttl), date1Text, time, aliasName);
+    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %8s", name, userName, size,
+        blockFrom, date1Text, time, aliasName);
   }
 }

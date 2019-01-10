@@ -1,10 +1,9 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class Segment implements Iterable<DataBlock>
+public class Segment //implements Iterable<DataBlock>
 {
   private final byte[] buffer;          // all block pointers refer to this
 
@@ -13,7 +12,6 @@ public class Segment implements Iterable<DataBlock>
 
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
   private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
-  private final List<DataBlock> dataBlocks = new ArrayList<> ();
 
   private boolean isBinary;
   private boolean isLastBlock;
@@ -48,7 +46,7 @@ public class Segment implements Iterable<DataBlock>
   // createDataBlocks
   // ---------------------------------------------------------------------------------//
 
-  void createDataBlocks ()                        // used only for data blocks
+  List<DataBlock> createDataBlocks ()                     // used only for data blocks
   {
     setBinaryFlag (rawBlockPointers.get (0));
 
@@ -56,6 +54,7 @@ public class Segment implements Iterable<DataBlock>
     int headerPtr = 0;
     Header header = null;
     DataBlock dataBlock = null;
+    List<DataBlock> dataBlocks = new ArrayList<> ();
 
     for (BlockPointer rawBlockPointer : rawBlockPointers)
     {
@@ -110,6 +109,8 @@ public class Segment implements Iterable<DataBlock>
     dataBufferLength = 0;
     for (BlockPointer blockPointer : dataBlockPointers)
       dataBufferLength += blockPointer.length;
+
+    return dataBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -136,10 +137,10 @@ public class Segment implements Iterable<DataBlock>
   // ttlMatches
   // ---------------------------------------------------------------------------------//
 
-  boolean ttlMatches (byte[] ttl)
-  {
-    return dataBlocks.get (0).ttlMatches (ttl);
-  }
+  //  boolean ttlMatches (byte[] ttl)
+  //  {
+  //    return dataBlocks.get (0).ttlMatches (ttl);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getRawBufferLength
@@ -266,36 +267,36 @@ public class Segment implements Iterable<DataBlock>
   // getDataBuffer - contains headers which must be removed
   // ---------------------------------------------------------------------------------//
 
-  byte[] getDataBuffer ()
-  {
-    byte[] fullBlock = new byte[dataBufferLength];
-    int ptr = 0;
-    for (BlockPointer blockPointer : dataBlockPointers)
-    {
-      System.arraycopy (buffer, blockPointer.offset, fullBlock, ptr, blockPointer.length);
-      ptr += blockPointer.length;
-    }
-    assert ptr == dataBufferLength;
-    return fullBlock;
-  }
+  //  private byte[] getDataBuffer ()
+  //  {
+  //    byte[] fullBlock = new byte[dataBufferLength];
+  //    int ptr = 0;
+  //    for (BlockPointer blockPointer : dataBlockPointers)
+  //    {
+  //      System.arraycopy (buffer, blockPointer.offset, fullBlock, ptr, blockPointer.length);
+  //      ptr += blockPointer.length;
+  //    }
+  //    assert ptr == dataBufferLength;
+  //    return fullBlock;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getDataBuffer - contains headers which must be removed
   // ---------------------------------------------------------------------------------//
 
-  int getDataBuffer (byte[] dataBuffer, int ptr)
-  {
-    assert buffer.length >= ptr + dataBufferLength;
-
-    for (BlockPointer blockPointer : dataBlockPointers)
-    {
-      System.arraycopy (buffer, blockPointer.offset, dataBuffer, ptr,
-          blockPointer.length);
-      ptr += blockPointer.length;
-    }
-
-    return ptr;
-  }
+  //  private int getDataBuffer (byte[] dataBuffer, int ptr)
+  //  {
+  //    assert buffer.length >= ptr + dataBufferLength;
+  //
+  //    for (BlockPointer blockPointer : dataBlockPointers)
+  //    {
+  //      System.arraycopy (buffer, blockPointer.offset, dataBuffer, ptr,
+  //          blockPointer.length);
+  //      ptr += blockPointer.length;
+  //    }
+  //
+  //    return ptr;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // isXmit
@@ -356,9 +357,9 @@ public class Segment implements Iterable<DataBlock>
   // Iterator
   // ---------------------------------------------------------------------------------//
 
-  @Override
-  public Iterator<DataBlock> iterator ()
-  {
-    return dataBlocks.iterator ();
-  }
+  //  @Override
+  //  public Iterator<DataBlock> iterator ()
+  //  {
+  //    return dataBlocks.iterator ();
+  //  }
 }

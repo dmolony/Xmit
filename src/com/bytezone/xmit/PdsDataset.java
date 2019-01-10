@@ -11,7 +11,7 @@ public class PdsDataset extends Dataset
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
-  private int catalogEndBlock = 0;
+  //  private int catalogEndBlock = 0;
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -75,94 +75,62 @@ public class PdsDataset extends Dataset
   void process ()
   {
     boolean inCatalog = true;
+    List<DataBlock> dataBlocks = new ArrayList<> ();
 
     // convert first two BlockPointerList entries
     copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
     copyR2 = new CopyR2 (segments.get (1).getRawBuffer ());
-    List<CatalogEntry> catalogEntries = null;
 
-    // read catalog data as raw data
-    // convert remaining entries to BlockPointers
     for (int i = 2; i < segments.size (); i++)
     {
-      Segment bpl = segments.get (i);
+      Segment segment = segments.get (i);
       if (inCatalog)
-      {
-        inCatalog = addCatalogEntries (bpl.getRawBuffer ());
-        if (!inCatalog)
-          catalogEndBlock = i;
-      }
+        inCatalog = addCatalogEntries (segment.getRawBuffer ());
       else
-      {
-        bpl.createDataBlocks ();       // create new BlockPointers
-
-        //        for (DataBlock dataBlock : bpl)
-        //        {
-        //          long ttl = dataBlock.getTtl ();
-        //          if (catalogEntries == null && catalogMap.containsKey (ttl))
-        //            catalogEntries = catalogMap.get (ttl);
-        //          if (catalogEntries != null)
-        //            for (CatalogEntry catalogEntry : catalogEntries)
-        //              catalogEntry.addBlockPointerList (bpl);
-        //          if (bpl.isLastBlock ())
-        //            catalogEntries = null;
-        //          break;        // just need the first DataBlock
-        //        }
-      }
+        dataBlocks.addAll (segment.createDataBlocks ());    // create new BlockPointers
     }
-
-    int firstDataBlock = catalogEndBlock + 1 + (copyR1.isPdse () ? 1 : 0);
-
-    String line = "-----------------------------------------------------------";
-    System.out.println (line);
-    System.out.println (copyR2);
-    System.out.println (line);
-    int count = 0;
 
     List<Member> members = new ArrayList<> ();
     Member currentMember = null;
+    long lastTtl = 0;
 
-    System.out.println (line);
-    for (int i = firstDataBlock; i < segments.size (); i++)
-      for (DataBlock dataBlock : segments.get (i))
+    if (copyR1.isPdse ())
+      for (DataBlock dataBlock : dataBlocks)
+      {
+        long ttl = dataBlock.getTtl ();
+        if (ttl == 0)
+          continue;     // skip first PDSE block
+
+        if (ttl != lastTtl)
+        {
+          currentMember = new Member ();
+          members.add (currentMember);
+          lastTtl = ttl;
+        }
+
+        currentMember.add (dataBlock);
+      }
+    else
+      for (DataBlock dataBlock : dataBlocks)
       {
         if (currentMember == null)
         {
           currentMember = new Member ();
           members.add (currentMember);
         }
+
         currentMember.add (dataBlock);
-        //        System.out.printf ("%3d  %s%n", i, dataBlock);
+
         if (dataBlock.getSize () == 0)
           currentMember = null;
-        //          System.out.println ();
       }
 
-    //    for (CatalogEntry catalogEntry : this.catalogEntries)
-    //      System.out.printf ("%3d  %s%n", count++, catalogEntry);
+    int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
     {
-      Member member = members.get (count);
+      Member member = members.get (count++);
       for (CatalogEntry catalogEntry : catalogEntryList)
         catalogEntry.setMember (member);
-      System.out.printf ("%3d  %s  %s%n", count++, member.getHeader (),
-          catalogEntryList.get (0));
-    }
-
-    //    count = 0;
-    //    for (Member member : members)
-    //      System.out.printf ("%3d  %s%n", count++,
-    //          Utility.getHexValues (member.getHeader ()));
-
-    if (false)
-    {
-      System.out.println (reader.getFileName ());
-      System.out.println ("\nBlock pointers:");
-      System.out.printf ("CopyRx ..........       2%n");
-      System.out.printf ("Catalog ......... %,7d%n", catalogEndBlock - 1);
-      System.out.printf ("Data ............ %,7d%n",
-          segments.size () - catalogEndBlock - 1);
-      System.out.printf ("Total ........... %,7d%n", segments.size ());
     }
   }
 
@@ -238,19 +206,17 @@ public class PdsDataset extends Dataset
     {
       int total = 0;
       text.append ("\n");
-      for (Segment blockPointerList : catalogEntry.segments)
+
+      for (DataBlock dataBlock : catalogEntry.getMember ())
       {
-        for (DataBlock dataBlock : blockPointerList)
-        {
-          int size = dataBlock.getSize ();
-          total += size;
-          if (size > 0)
-            text.append (String.format ("%,5d  %-8s  %s%n", count++,
-                catalogEntry.getMemberName (), dataBlock));
-          else
-            text.append (String.format ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
-                catalogEntry.getMemberName (), dataBlock, total));
-        }
+        int size = dataBlock.getSize ();
+        total += size;
+        if (size > 0)
+          text.append (String.format ("%,5d  %-8s  %s%n", count++,
+              catalogEntry.getMemberName (), dataBlock));
+        else
+          text.append (String.format ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
+              catalogEntry.getMemberName (), dataBlock, total));
       }
     }
 
