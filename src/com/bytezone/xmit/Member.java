@@ -17,7 +17,7 @@ public class Member implements Iterable<DataBlock>
   void add (DataBlock dataBlock)
   {
     byte type = dataBlock.getType ();
-    if (type == (byte) 0x80 || type == 0x00)
+    if (type == 0x00 || type == (byte) 0x80)
     {
       dataBlocks.add (dataBlock);
       length += dataBlock.getSize ();
@@ -27,12 +27,12 @@ public class Member implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getHeader
+  // getExtraDataBlocks
   // ---------------------------------------------------------------------------------//
 
-  Header getHeader ()
+  List<DataBlock> getExtraDataBlocks ()
   {
-    return dataBlocks.get (0).getHeader ();
+    return extraDataBlocks;
   }
 
   // ---------------------------------------------------------------------------------//

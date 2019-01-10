@@ -207,7 +207,8 @@ public class PdsDataset extends Dataset
       int total = 0;
       text.append ("\n");
 
-      for (DataBlock dataBlock : catalogEntry.getMember ())
+      Member member = catalogEntry.getMember ();
+      for (DataBlock dataBlock : member)
       {
         int size = dataBlock.getSize ();
         total += size;
@@ -218,6 +219,10 @@ public class PdsDataset extends Dataset
           text.append (String.format ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
               catalogEntry.getMemberName (), dataBlock, total));
       }
+
+      for (DataBlock dataBlock : member.getExtraDataBlocks ())
+        text.append (String.format ("%,5d  %-8s  %s%n", count++,
+            catalogEntry.getMemberName (), dataBlock));
     }
 
     return text.toString ();

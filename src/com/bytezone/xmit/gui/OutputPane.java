@@ -157,9 +157,9 @@ public class OutputPane extends BorderPane
       debugText.clear ();
     else
     {
-      StringBuilder text = new StringBuilder ();
-      text.append (catalogEntry.list ());
-      debugText.setText (text.toString ());
+      //      StringBuilder text = new StringBuilder ();
+      //      text.append (catalogEntry.list ());
+      debugText.setText (catalogEntry.list ());
     }
   }
 
