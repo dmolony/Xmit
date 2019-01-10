@@ -6,14 +6,14 @@ import java.util.List;
 public class DataBlock
 {
   private final int offset;
-  private final byte[] header;
+  private final Header header;
   private final List<BlockPointer> blockPointers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public DataBlock (int offset, byte[] header)
+  public DataBlock (int offset, Header header)
   {
     this.offset = offset;
     this.header = header;
@@ -28,13 +28,11 @@ public class DataBlock
     blockPointers.add (blockPointer);
   }
 
-  //  Block
-
   // ---------------------------------------------------------------------------------//
   // getHeader
   // ---------------------------------------------------------------------------------//
 
-  byte[] getHeader ()
+  Header getHeader ()
   {
     return header;
   }
@@ -45,7 +43,7 @@ public class DataBlock
 
   public int getSize ()
   {
-    return (int) Utility.getValue (header, 9, 3);
+    return header.getSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -54,7 +52,7 @@ public class DataBlock
 
   boolean ttlMatches (byte[] ttl)
   {
-    return Utility.matches (ttl, header, 4);
+    return header.ttlMatches (ttl);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -63,7 +61,25 @@ public class DataBlock
 
   long getTtl ()
   {
-    return Utility.getValue (header, 4, 5);
+    return header.getTtl ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDataBuffer
+  // ---------------------------------------------------------------------------------//
+
+  int getDataBuffer (byte[] buffer, int offset)
+  {
+    assert buffer.length >= offset + getSize ();
+
+    for (BlockPointer blockPointer : blockPointers)
+    {
+      System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, offset,
+          blockPointer.length);
+      offset += blockPointer.length;
+    }
+
+    return offset;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -73,7 +89,6 @@ public class DataBlock
   @Override
   public String toString ()
   {
-    return String.format ("%06X: %s  %,7d", offset, Utility.getHexValues (header),
-        getSize ());
+    return String.format ("%06X: %s  %,7d", offset, header, getSize ());
   }
 }

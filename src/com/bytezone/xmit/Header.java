@@ -1,29 +1,43 @@
 package com.bytezone.xmit;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-public class Member implements Iterable<DataBlock>
+public class Header
 {
-  List<DataBlock> dataBlocks = new ArrayList<> ();
+  final byte[] buffer;
 
   // ---------------------------------------------------------------------------------//
-  // add
+  // constructor
   // ---------------------------------------------------------------------------------//
 
-  void add (DataBlock dataBlock)
+  public Header ()
   {
-    dataBlocks.add (dataBlock);
+    this.buffer = new byte[12];
   }
 
   // ---------------------------------------------------------------------------------//
-  // getHeader
+  // getSize
   // ---------------------------------------------------------------------------------//
 
-  Header getHeader ()
+  public int getSize ()
   {
-    return dataBlocks.get (0).getHeader ();
+    return (int) Utility.getValue (buffer, 9, 3);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getTtl
+  // ---------------------------------------------------------------------------------//
+
+  long getTtl ()
+  {
+    return Utility.getValue (buffer, 4, 5);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // ttlMatches
+  // ---------------------------------------------------------------------------------//
+
+  boolean ttlMatches (byte[] ttl)
+  {
+    return Utility.matches (ttl, buffer, 4);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -33,26 +47,6 @@ public class Member implements Iterable<DataBlock>
   @Override
   public String toString ()
   {
-    StringBuilder text = new StringBuilder ();
-
-    for (DataBlock dataBlock : dataBlocks)
-    {
-      text.append (dataBlock);
-      text.append ("\n");
-    }
-
-    Utility.removeTrailingNewlines (text);
-
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // iterator
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  public Iterator<DataBlock> iterator ()
-  {
-    return dataBlocks.iterator ();
+    return Utility.getHexValues (buffer);
   }
 }

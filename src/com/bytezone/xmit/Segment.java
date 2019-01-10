@@ -30,7 +30,7 @@ public class Segment implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addRawBlock
+  // addBlockPointer
   // ---------------------------------------------------------------------------------//
 
   public void addBlockPointer (BlockPointer blockPointer)
@@ -54,13 +54,13 @@ public class Segment implements Iterable<DataBlock>
 
     int recLen = 0;
     int headerPtr = 0;
-    byte[] header = null;
+    Header header = null;
     DataBlock dataBlock = null;
 
-    for (BlockPointer blockPointer : rawBlockPointers)
+    for (BlockPointer rawBlockPointer : rawBlockPointers)
     {
-      int ptr = blockPointer.offset;
-      int avail = blockPointer.length;
+      int ptr = rawBlockPointer.offset;
+      int avail = rawBlockPointer.length;
 
       while (avail > 0)
       {
@@ -68,14 +68,14 @@ public class Segment implements Iterable<DataBlock>
         {
           if (headerPtr == 0)
           {
-            header = new byte[12];
+            header = new Header ();
             dataBlock = new DataBlock (ptr, header);
             dataBlocks.add (dataBlock);
           }
 
           if (avail < 12 - headerPtr)
           {
-            System.arraycopy (buffer, ptr, header, headerPtr, avail);
+            System.arraycopy (buffer, ptr, header.buffer, headerPtr, avail);
             ptr += avail;
             headerPtr += avail;
             avail = 0;
@@ -83,12 +83,12 @@ public class Segment implements Iterable<DataBlock>
           }
 
           int needed = 12 - headerPtr;
-          System.arraycopy (buffer, ptr, header, headerPtr, needed);
+          System.arraycopy (buffer, ptr, header.buffer, headerPtr, needed);
           ptr += needed;
           avail -= needed;
           headerPtr = 0;
 
-          recLen = Utility.getTwoBytes (header, 10);
+          recLen = header.getSize ();
 
           if (recLen == 0)
           {
@@ -98,9 +98,9 @@ public class Segment implements Iterable<DataBlock>
         }
 
         int len = Math.min (recLen, avail);
-        BlockPointer blp = new BlockPointer (buffer, ptr, len);
-        dataBlockPointers.add (blp);
-        dataBlock.add (blp);
+        BlockPointer dataBlockPointer = new BlockPointer (buffer, ptr, len);
+        dataBlockPointers.add (dataBlockPointer);
+        dataBlock.add (dataBlockPointer);
         ptr += len;
         avail -= len;
         recLen -= len;

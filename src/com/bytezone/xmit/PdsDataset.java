@@ -145,8 +145,8 @@ public class PdsDataset extends Dataset
       Member member = members.get (count);
       for (CatalogEntry catalogEntry : catalogEntryList)
         catalogEntry.setMember (member);
-      System.out.printf ("%3d  %s  %s%n", count++,
-          Utility.getHexValues (member.getHeader ()), catalogEntryList.get (0));
+      System.out.printf ("%3d  %s  %s%n", count++, member.getHeader (),
+          catalogEntryList.get (0));
     }
 
     //    count = 0;

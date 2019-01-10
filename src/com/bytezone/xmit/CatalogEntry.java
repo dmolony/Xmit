@@ -488,10 +488,10 @@ public class CatalogEntry
     if (isPdse)       // recalculate data length
     {
       dataLength = 0;
-      for (Segment blockPointerList : segments)
+      for (Segment segment : segments)
       {
-        dataLength += blockPointerList.getDataLength ();
-        if (blockPointerList.isLastBlock ())        // PDSEs end early
+        dataLength += segment.getDataLength ();
+        if (segment.isLastBlock ())        // PDSEs end early
           break;
       }
     }
@@ -499,10 +499,10 @@ public class CatalogEntry
     byte[] dataBuffer = new byte[dataLength];
     int ptr = 0;
 
-    for (Segment blockPointerList : segments)
+    for (Segment segment : segments)
     {
-      ptr = blockPointerList.getDataBuffer (dataBuffer, ptr);
-      if (blockPointerList.isLastBlock ())        // PDSEs end early
+      ptr = segment.getDataBuffer (dataBuffer, ptr);
+      if (segment.isLastBlock ())        // PDSEs end early
         break;
     }
     assert ptr == dataLength;
