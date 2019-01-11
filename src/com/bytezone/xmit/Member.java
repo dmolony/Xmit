@@ -7,9 +7,9 @@ import java.util.List;
 public class Member implements Iterable<DataBlock>
 {
   private CatalogEntry catalogEntry;
-  List<DataBlock> dataBlocks = new ArrayList<> ();
-  List<DataBlock> extraDataBlocks = new ArrayList<> ();
-  int length = 0;
+  private final List<DataBlock> dataBlocks = new ArrayList<> ();
+  private final List<DataBlock> extraDataBlocks = new ArrayList<> ();     // PDSE
+  private int length = 0;
 
   // ---------------------------------------------------------------------------------//
   // setCatalogEntry
@@ -27,16 +27,20 @@ public class Member implements Iterable<DataBlock>
   void add (DataBlock dataBlock)
   {
     byte type = dataBlock.getType ();
-    if (type == 0x00 || type == (byte) 0x80)
+    if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
     {
       dataBlocks.add (dataBlock);
       length += dataBlock.getSize ();
     }
-    else
+    else                                          // additional PDSE blocks
       extraDataBlocks.add (dataBlock);
   }
 
-  public long getDataLength ()
+  // ---------------------------------------------------------------------------------//
+  // getDataLength
+  // ---------------------------------------------------------------------------------//
+
+  public int getDataLength ()
   {
     return length;
   }

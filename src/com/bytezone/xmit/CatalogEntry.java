@@ -444,7 +444,7 @@ public class CatalogEntry
   // getDataLength
   // ---------------------------------------------------------------------------------//
 
-  public long getDataLength ()
+  public int getDataLength ()
   {
     return member.getDataLength ();
   }
@@ -528,8 +528,6 @@ public class CatalogEntry
     text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
     text.append (String.format ("%44.44s %06X %<,9d", "", total));
 
-    //    Utility.removeTrailingNewlines (text);
-
     return text.toString ();
   }
 
@@ -537,28 +535,25 @@ public class CatalogEntry
   // printLine
   // ---------------------------------------------------------------------------------//
 
-  String getPrintLine ()
-  {
-    return String.format ("%-126s %8s %8s %5d %5d %5d",
-        Utility.getHexValues (directoryData), name, userName, size, init, mod);
-  }
+  //  String getPrintLine ()
+  //  {
+  //    return String.format ("%-126s %8s %8s %5d %5d %5d",
+  //        Utility.getHexValues (directoryData), name, userName, size, init, mod);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // hexDump
   // ---------------------------------------------------------------------------------//
 
-  void hexDump ()
-  {
-    //    if (segments.size () == 0)
-    //      return;
-
-    if (member.isXmit ())
-      lines.add ("Appears to be XMIT");
-
-    // FILE600.XMI
-    byte[] buffer = member.getDataBuffer ();
-    lines.add (Utility.getHexDump (buffer));
-  }
+  //  private void hexDump ()
+  //  {
+  //    if (member.isXmit ())
+  //      lines.add ("Appears to be XMIT");
+  //
+  //    // FILE600.XMI
+  //    byte[] buffer = member.getDataBuffer ();
+  //    lines.add (Utility.getHexDump (buffer));
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // rdw
@@ -566,7 +561,7 @@ public class CatalogEntry
 
   void rdw ()         // see SOURCE.XMI
   {
-    for (DataBlock dataBlock : member.dataBlocks)
+    for (DataBlock dataBlock : member)
     {
       byte[] buffer = dataBlock.getBuffer ();
 
@@ -617,23 +612,23 @@ public class CatalogEntry
   // partialDump
   // ---------------------------------------------------------------------------------//
 
-  void partialDump (int max)
-  {
-    lines.add ("Data too large to display");
-    lines.add ("");
-    lines.add ("Showing first " + max + " of " + member.dataBlocks.size () + " blocks");
-    lines.add ("");
-
-    if (member.isXmit ())
-      lines.add ("Appears to be XMIT");
-
-    for (int i = 0; i < max; i++)
-    {
-      DataBlock dataBlock = member.dataBlocks.get (i);
-      if (dataBlock.getSize () > 0)
-        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
-    }
-  }
+  //  private void partialDump (int max)
+  //  {
+  //    lines.add ("Data too large to display");
+  //    lines.add ("");
+  //    lines.add ("Showing first " + max + " of " + member.dataBlocks.size () + " blocks");
+  //    lines.add ("");
+  //
+  //    if (member.isXmit ())
+  //      lines.add ("Appears to be XMIT");
+  //
+  //    for (int i = 0; i < max; i++)
+  //    {
+  //      DataBlock dataBlock = member.dataBlocks.get (i);
+  //      if (dataBlock.getSize () > 0)
+  //        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // toString

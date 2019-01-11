@@ -15,7 +15,7 @@ public class CatalogEntryItem
   private StringProperty version;
   private StringProperty time;
   private IntegerProperty size;
-  private LongProperty bytes;
+  private IntegerProperty bytes;
   private IntegerProperty init;
   private ObjectProperty<LocalDate> dateCreated;
   private ObjectProperty<LocalDate> dateModified;
@@ -120,23 +120,23 @@ public class CatalogEntryItem
   }
 
   // ---------------------------------------------------------------------------------//
-  // Size
+  // Bytes
   // ---------------------------------------------------------------------------------//
 
-  private void setBytes (long value)
+  private void setBytes (int value)
   {
     bytesProperty ().set (value);
   }
 
-  public final long getBytes ()
+  public final int getBytes ()
   {
     return bytesProperty ().get ();
   }
 
-  private LongProperty bytesProperty ()
+  private IntegerProperty bytesProperty ()
   {
     if (bytes == null)
-      bytes = new SimpleLongProperty ();
+      bytes = new SimpleIntegerProperty ();
     return bytes;
   }
 
