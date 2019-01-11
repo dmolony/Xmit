@@ -74,6 +74,19 @@ public class DataBlock
   }
 
   // ---------------------------------------------------------------------------------//
+  // getTwoBytes
+  // ---------------------------------------------------------------------------------//
+
+  int getTwoBytes ()
+  {
+    if (header.getSize () == 0)
+      return 0;
+
+    BlockPointer blockPointer = blockPointers.get (0);
+    return Utility.getTwoBytes (blockPointer.buffer, blockPointer.offset);
+  }
+
+  // ---------------------------------------------------------------------------------//
   // packBuffer
   // ---------------------------------------------------------------------------------//
 
@@ -118,6 +131,9 @@ public class DataBlock
 
   boolean isXmit ()
   {
+    if (header.getSize () == 0)       // see FILE392.XMI/$NULL
+      return false;
+
     BlockPointer blockPointer = blockPointers.get (0);
     return Utility.matches (INMR01, blockPointer.buffer, blockPointer.offset + 1);
   }
@@ -129,6 +145,6 @@ public class DataBlock
   @Override
   public String toString ()
   {
-    return String.format ("%06X: %s  %04X  %<,7d", offset, header, getSize ());
+    return String.format ("%06X: %s  %,7d", offset, header, getSize ());
   }
 }

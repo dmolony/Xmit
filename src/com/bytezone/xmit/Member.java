@@ -6,9 +6,19 @@ import java.util.List;
 
 public class Member implements Iterable<DataBlock>
 {
+  private CatalogEntry catalogEntry;
   List<DataBlock> dataBlocks = new ArrayList<> ();
   List<DataBlock> extraDataBlocks = new ArrayList<> ();
   int length = 0;
+
+  // ---------------------------------------------------------------------------------//
+  // setCatalogEntry
+  // ---------------------------------------------------------------------------------//
+
+  void setCatalogEntry (CatalogEntry catalogEntry)
+  {
+    this.catalogEntry = catalogEntry;
+  }
 
   // ---------------------------------------------------------------------------------//
   // add
@@ -53,7 +63,7 @@ public class Member implements Iterable<DataBlock>
   // isXmit
   // ---------------------------------------------------------------------------------//
 
-  boolean isXmit ()
+  public boolean isXmit ()
   {
     return dataBlocks.get (0).isXmit ();
   }
@@ -64,10 +74,11 @@ public class Member implements Iterable<DataBlock>
 
   boolean isRdw ()
   {
-    DataBlock dataBlock = dataBlocks.get (0);
-    //    int len = Utility.getTwoBytes (buffer, ptr)
-    System.out.println ("Member not finished");
-    return false;
+    for (DataBlock dataBlock : dataBlocks)
+      if (dataBlock.getTwoBytes () != dataBlock.getSize ())
+        return false;
+
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//

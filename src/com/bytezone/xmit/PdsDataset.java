@@ -11,7 +11,6 @@ public class PdsDataset extends Dataset
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
-  //  private int catalogEndBlock = 0;
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -62,7 +61,7 @@ public class PdsDataset extends Dataset
   {
     List<CatalogEntry> xmitFiles = new ArrayList<> ();
     for (CatalogEntry catalogEntry : catalogEntries)
-      if (catalogEntry.isXmit ())
+      if (catalogEntry.getMember ().isXmit ())
         xmitFiles.add (catalogEntry);
     return xmitFiles;
   }

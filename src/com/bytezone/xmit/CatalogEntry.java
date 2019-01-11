@@ -212,12 +212,17 @@ public class CatalogEntry
   void setMember (Member member)
   {
     this.member = member;
+    member.setCatalogEntry (this);
 
     //    for (DataBlock dataBlock : member)
     //      addBlockPointerList (dataBlock.blockPointerList);
   }
 
-  Member getMember ()
+  // ---------------------------------------------------------------------------------//
+  // getMember
+  // ---------------------------------------------------------------------------------//
+
+  public Member getMember ()
   {
     return member;
   }
@@ -451,24 +456,22 @@ public class CatalogEntry
   public String getLines (boolean showLines)
   {
     if (lines.size () == 0)
-    {
-      //      if (segments.size () == 0)
-      //        lines.add ("No data");
-      //      else
-      if (isXmit ())
-        xmitList ();
-      //      else if (segments.size () > 100)
-      //        partialDump (10);      // slow!!
-      //      else if (recfm == 0x5000 && member.isRdw ())
-      //        rdw ();
-      //      else if (segments.get (0).isBinary ())
-      //        hexDump ();
-      else
-      {
-        byte[] buffer = getDataBuffer ();
-        createDataLines (buffer);
-      }
-    }
+      createDataLines ();
+    //    {
+    //      //      if (segments.size () == 0)
+    //      //        lines.add ("No data");
+    //      //      else
+    //      if (member.isXmit ())
+    //        xmitList ();
+    //      //      else if (segments.size () > 100)
+    //      //        partialDump (10);      // slow!!
+    //      else if (recfm == 0x5000 && member.isRdw ())
+    //        rdw ();
+    //      //      else if (segments.get (0).isBinary ())
+    //      //        hexDump ();
+    //      else
+    //        createDataLines ();
+    //    }
 
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
@@ -483,6 +486,31 @@ public class CatalogEntry
       text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // createDataLines
+  // ---------------------------------------------------------------------------------//
+
+  private void createDataLines ()
+  {
+    if (member.isXmit ())
+      xmitList ();
+    else if (recfm == 0x5000 && member.isRdw ())
+      rdw ();
+    else
+    {
+      byte[] buffer = getDataBuffer ();
+      int ptr = 0;
+      int length = buffer.length;
+      while (length > 0)
+      {
+        int len = Math.min (lrecl == 0 ? 80 : lrecl, length);
+        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+        ptr += len;
+        length -= len;
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -525,23 +553,6 @@ public class CatalogEntry
   {
     return String.format ("%-126s %8s %8s %5d %5d %5d",
         Utility.getHexValues (directoryData), name, userName, size, init, mod);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // createDataLines
-  // ---------------------------------------------------------------------------------//
-
-  void createDataLines (byte[] buffer)
-  {
-    int ptr = 0;
-    int length = buffer.length;
-    while (length > 0)
-    {
-      int len = Math.min (lrecl == 0 ? 80 : lrecl, length);
-      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-      ptr += len;
-      length -= len;
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -590,33 +601,30 @@ public class CatalogEntry
   // rdw
   // ---------------------------------------------------------------------------------//
 
-  //  void rdw ()         // see SOURCE.XMI
-  //  {
-  //    for (Segment segment : segments)
-  //    {
-  //      if (segment.isLastBlock ())        // PDSEs end early
-  //        break;
-  //      byte[] buffer = segment.getDataBuffer ();
-  //      if (buffer.length == 0)
-  //        continue;
-  //      int ptr = 4;
-  //      while (ptr < buffer.length)
-  //      {
-  //        int len = Utility.getTwoBytes (buffer, ptr);
-  //        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
-  //        ptr += len;
-  //      }
-  //    }
-  //  }
+  void rdw ()         // see SOURCE.XMI
+  {
+    for (DataBlock dataBlock : member.dataBlocks)
+    {
+      byte[] buffer = dataBlock.getBuffer ();
+
+      int ptr = 4;
+      while (ptr < buffer.length)
+      {
+        int len = Utility.getTwoBytes (buffer, ptr);
+        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+        ptr += len;
+      }
+    }
+  }
 
   // ---------------------------------------------------------------------------------//
   // isXmit
   // ---------------------------------------------------------------------------------//
 
-  public boolean isXmit ()
-  {
-    return member.isXmit ();
-  }
+  //  public boolean isXmit ()
+  //  {
+  //    return member.isXmit ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // xmitList
@@ -662,7 +670,7 @@ public class CatalogEntry
     lines.add ("Showing first " + max + " of " + member.dataBlocks.size () + " blocks");
     lines.add ("");
 
-    if (isXmit ())
+    if (member.isXmit ())
       lines.add ("Appears to be XMIT");
 
     for (int i = 0; i < max; i++)

@@ -92,7 +92,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     fileChooser.setInitialDirectory (new File (saveFolderName));
 
     String name = catalogEntry.getMemberName ().trim ();
-    if (catalogEntry.isXmit ())
+    if (catalogEntry.getMember ().isXmit ())
       name += ".XMI";
     else if (Utility.matches (pdf, buffer, 0))
       name += ".PDF";

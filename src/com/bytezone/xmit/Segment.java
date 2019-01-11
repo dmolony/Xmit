@@ -8,10 +8,10 @@ public class Segment //implements Iterable<DataBlock>
   private final byte[] buffer;          // all block pointers refer to this
 
   private int rawBufferLength;          // raw data length
-  private int dataBufferLength;         // raw data minus headers
+  //  private int dataBufferLength;         // raw data minus headers
 
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
-  private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
+  //  private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
 
   private boolean isBinary;
   private boolean isLastBlock;
@@ -98,7 +98,7 @@ public class Segment //implements Iterable<DataBlock>
 
         int len = Math.min (recLen, avail);
         BlockPointer dataBlockPointer = new BlockPointer (buffer, ptr, len);
-        dataBlockPointers.add (dataBlockPointer);
+        //        dataBlockPointers.add (dataBlockPointer);
         dataBlock.add (dataBlockPointer);
         ptr += len;
         avail -= len;
@@ -106,9 +106,9 @@ public class Segment //implements Iterable<DataBlock>
       }
     }
 
-    dataBufferLength = 0;
-    for (BlockPointer blockPointer : dataBlockPointers)
-      dataBufferLength += blockPointer.length;
+    //    dataBufferLength = 0;
+    //    for (BlockPointer blockPointer : dataBlockPointers)
+    //      dataBufferLength += blockPointer.length;
 
     return dataBlocks;
   }
@@ -155,10 +155,10 @@ public class Segment //implements Iterable<DataBlock>
   // getDataLength
   // ---------------------------------------------------------------------------------//
 
-  public int getDataLength ()
-  {
-    return dataBufferLength;
-  }
+  //  public int getDataLength ()
+  //  {
+  //    return dataBufferLength;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // isLastBlock
@@ -180,15 +180,16 @@ public class Segment //implements Iterable<DataBlock>
     if (shortDisplay)
     {
       text.append (String.format ("Raw blocks    : %d%n", rawBlockPointers.size ()));
-      text.append (String.format ("Data blocks   : %d%n", dataBlockPointers.size ()));
+      //      text.append (String.format ("Data blocks   : %d%n", dataBlockPointers.size ()));
       text.append (String.format ("Buffer length : %06X  %<,d%n", rawBufferLength));
-      text.append (String.format ("Data length   : %06X  %<,d", dataBufferLength));
+      //      text.append (String.format ("Data length   : %06X  %<,d", dataBufferLength));
       return text.toString ();
     }
 
     int total1 = 0;
     int total2 = 0;
-    int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
+    //    int max = Math.max (rawBlockPointers.size (), dataBlockPointers.size ());
+    int max = rawBlockPointers.size ();
     BlockPointer bp1, bp2;
     for (int i = 0; i < max; i++)
     {
@@ -203,12 +204,12 @@ public class Segment //implements Iterable<DataBlock>
 
       text.append (String.format (" :%3d : ", i));
 
-      if (i < dataBlockPointers.size ())
-      {
-        bp2 = dataBlockPointers.get (i);
-        total2 += bp2.length;
-        text.append (String.format ("  %s", bp2));
-      }
+      //      if (i < dataBlockPointers.size ())
+      //      {
+      //        bp2 = dataBlockPointers.get (i);
+      //        total2 += bp2.length;
+      //        text.append (String.format ("  %s", bp2));
+      //      }
       text.append ("\n");
     }
     text.append (String.format ("            %04X%<,7d                    %04X%<,7d%n",
@@ -251,7 +252,7 @@ public class Segment //implements Iterable<DataBlock>
 
   int getRawBuffer (byte[] dataBuffer, int ptr)
   {
-    assert buffer.length >= ptr + dataBufferLength;
+    assert buffer.length >= ptr + rawBufferLength;
 
     for (BlockPointer blockPointer : rawBlockPointers)
     {
@@ -330,7 +331,7 @@ public class Segment //implements Iterable<DataBlock>
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Data length  : %04X  %<,8d%n", dataBufferLength));
+    //    text.append (String.format ("Data length  : %04X  %<,8d%n", dataBufferLength));
 
     int count = 0;
     for (BlockPointer blockPointer : rawBlockPointers)

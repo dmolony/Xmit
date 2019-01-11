@@ -23,15 +23,15 @@ public class OutputPane extends BorderPane
 
   private final TabPane tabPane = new TabPane ();
 
-  private final Tab fileTab = new Tab ();
+  private final Tab controlTab = new Tab ();
   private final Tab debugTab = new Tab ();
-  private final Tab textTab = new Tab ();
   private final Tab hexTab = new Tab ();
+  private final Tab outputTab = new Tab ();
 
-  private final TextArea fileText = new TextArea ();
+  private final TextArea controlText = new TextArea ();
   private final TextArea debugText = new TextArea ();
-  private final TextArea textText = new TextArea ();
   private final TextArea hexText = new TextArea ();
+  private final TextArea outputText = new TextArea ();
 
   private Reader reader;
   private Dataset dataset;
@@ -51,10 +51,10 @@ public class OutputPane extends BorderPane
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
-    addText (fileTab, fileText, "Control");
+    addText (controlTab, controlText, "Control");
     addText (debugTab, debugText, "Debug");
-    addText (textTab, textText, "Output");
     addText (hexTab, hexText, "Hex");
+    addText (outputTab, outputText, "Output");
 
     setCenter (tabPane);
 
@@ -91,24 +91,24 @@ public class OutputPane extends BorderPane
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
 
-    if (selectedTab == debugTab)
+    if (selectedTab == controlTab)
+      updateControlTab ();
+    else if (selectedTab == debugTab)
       updateDebugTab ();
-    else if (selectedTab == textTab)
-      updateTextTab ();
-    else if (selectedTab == fileTab)
-      updateFileTab ();
     else if (selectedTab == hexTab)
       updateHexTab ();
+    else if (selectedTab == outputTab)
+      updateOutputTab ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateFileTab
+  // updateControlTab
   // ---------------------------------------------------------------------------------//
 
-  private void updateFileTab ()
+  private void updateControlTab ()
   {
     if (reader == null)
-      fileText.clear ();
+      controlText.clear ();
     else
     {
       StringBuilder text = new StringBuilder ();
@@ -137,11 +137,11 @@ public class OutputPane extends BorderPane
           text.append (catalogEntry.debugLine ());
           text.append ("\n");
         }
-        text.append (((PdsDataset) dataset).getBlockListing ());
+        //        text.append (((PdsDataset) dataset).getBlockListing ());
       }
 
       text.deleteCharAt (text.length () - 1);
-      fileText.setText (text.toString ());
+      controlText.setText (text.toString ());
     }
   }
 
@@ -151,30 +151,10 @@ public class OutputPane extends BorderPane
 
   private void updateDebugTab ()
   {
-    if (reader == null)
-      debugText.clear ();
-    else if (catalogEntry == null)
+    if (reader == null || catalogEntry == null)
       debugText.clear ();
     else
-    {
-      //      StringBuilder text = new StringBuilder ();
-      //      text.append (catalogEntry.list ());
       debugText.setText (catalogEntry.list ());
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // updateTextTab
-  // ---------------------------------------------------------------------------------//
-
-  private void updateTextTab ()
-  {
-    if (reader == null)
-      textText.clear ();
-    else if (dataset.getOrg () == Org.PS)                  // flat file
-      textText.setText (((PsDataset) dataset).getLines ());
-    else if (catalogEntry != null)                         // PDS
-      textText.setText (catalogEntry.getLines (showLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -189,6 +169,20 @@ public class OutputPane extends BorderPane
       hexText.setText (Utility.getHexDump (((PsDataset) dataset).getRawBuffer ()));
     else if (catalogEntry != null)                         // PDS
       hexText.setText (Utility.getHexDump (catalogEntry.getDataBuffer ()));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // updateTextTab
+  // ---------------------------------------------------------------------------------//
+
+  private void updateOutputTab ()
+  {
+    if (reader == null)
+      outputText.clear ();
+    else if (dataset.getOrg () == Org.PS)                  // flat file
+      outputText.setText (((PsDataset) dataset).getLines ());
+    else if (catalogEntry != null)                         // PDS
+      outputText.setText (catalogEntry.getLines (showLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -213,16 +207,18 @@ public class OutputPane extends BorderPane
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (boolean fileVisible, boolean debugVisible, boolean hexVisible)
+  void setTabVisible (boolean controlVisible, boolean debugVisible, boolean hexVisible)
   {
     tabPane.getTabs ().clear ();
-    if (fileVisible)
-      tabPane.getTabs ().add (fileTab);
+
+    if (controlVisible)
+      tabPane.getTabs ().add (controlTab);
     if (debugVisible)
       tabPane.getTabs ().add (debugTab);
     if (hexVisible)
       tabPane.getTabs ().add (hexTab);
-    tabPane.getTabs ().add (textTab);
+
+    tabPane.getTabs ().add (outputTab);         // always visible
   }
 
   // ---------------------------------------------------------------------------------//
