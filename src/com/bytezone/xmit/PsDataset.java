@@ -25,17 +25,25 @@ public class PsDataset extends Dataset
   @Override
   void process ()
   {
+    int size = 0;
+    for (Segment segment : segments)
+      size += segment.getRawBufferLength ();
+
     int max = segments.size ();
     if (max > 200)
     {
-      lines.add (String.format ("File contains %,d BlockPointerLists", max));
+      lines.add (String.format ("File contains %,d Segments", max));
+      lines.add (String.format ("File contains %,d bytes", size));
+      lines.add ("");
       max = 10;
+      lines.add ("Displaying first " + max + " segments");
+      lines.add ("");
     }
 
     for (int i = 0; i < max; i++)
     {
-      Segment bpl = segments.get (i);
-      byte[] buffer = bpl.getRawBuffer ();
+      Segment segment = segments.get (i);
+      byte[] buffer = segment.getRawBuffer ();
       if (lrecl == 0)
         lines.add (Utility.getHexDump (buffer));
       else
