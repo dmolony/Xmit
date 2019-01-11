@@ -481,7 +481,7 @@ public class CatalogEntry
   {
     if (member.isXmit ())
       xmitList ();
-    else if (recfm == 0x5000 && member.isRdw ())
+    else if ((recfm == 0x5000 || recfm == 0x5200) && member.isRdw ())
       rdw ();
     else
     {
@@ -519,10 +519,16 @@ public class CatalogEntry
     text.append ("\n\n");
 
     int count = 0;
+    int total = 0;
     for (DataBlock dataBlock : member)
+    {
+      total += dataBlock.getSize ();
       text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+    }
+    text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
+    text.append (String.format ("%44.44s %06X %<,9d", "", total));
 
-    Utility.removeTrailingNewlines (text);
+    //    Utility.removeTrailingNewlines (text);
 
     return text.toString ();
   }
@@ -555,31 +561,6 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  // isRdw
-  // ---------------------------------------------------------------------------------//
-
-  //  boolean isRdw ()
-  //  {
-  ////    if (segments.size () == 0)
-  ////      return false;
-  //
-  //    for (Segment segment : segments)
-  //    {
-  //      if (segment.isLastBlock ())        // PDSEs end early
-  //        break;
-  //      byte[] buffer = segment.getDataBuffer ();
-  //      if (buffer.length == 0)
-  //        continue;
-  //
-  //      int len = Utility.getTwoBytes (buffer, 0);
-  //      if (len != buffer.length)
-  //        return false;
-  //    }
-  //
-  //    return true;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // rdw
   // ---------------------------------------------------------------------------------//
 
@@ -600,15 +581,6 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  // isXmit
-  // ---------------------------------------------------------------------------------//
-
-  //  public boolean isXmit ()
-  //  {
-  //    return member.isXmit ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // xmitList
   // ---------------------------------------------------------------------------------//
 
@@ -627,7 +599,7 @@ public class CatalogEntry
       {
         List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
         lines.add (String.format ("Members: %s%n", members.size ()));
-        lines.add (" Member     User      Size  Offset     Date        Time     Alias");
+        lines.add (" Member     User      Size   ttl       Date        Time     Alias");
         lines.add ("--------  --------  ------  ------  -----------  --------  --------");
         for (CatalogEntry catalogEntry : members)
           lines.add (catalogEntry.toString ());

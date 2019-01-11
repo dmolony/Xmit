@@ -145,6 +145,7 @@ public class DataBlock
   @Override
   public String toString ()
   {
-    return String.format ("%06X: %s  %,7d", offset, header, getSize ());
+    return String.format ("%06X: %s  %,7d  %,5d", offset, header, getSize (),
+        blockPointers.size ());
   }
 }

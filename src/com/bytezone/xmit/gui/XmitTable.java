@@ -45,7 +45,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
 
     addString ("Member", "MemberName", 100, "CENTER-LEFT");
     addString ("Id", "UserName", 100, "CENTER-LEFT");
-    addNumber ("Bytes", "Bytes", 100);
+    addNumber ("Bytes", "Bytes", 90);
     addNumber ("Size", "Size", 70);
     addNumber ("Init", "Init", 70);
     addLocalDate ("Created", "DateCreated", 100);
