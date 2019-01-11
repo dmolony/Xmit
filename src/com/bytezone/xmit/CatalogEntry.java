@@ -446,7 +446,7 @@ public class CatalogEntry
 
   public long getDataLength ()
   {
-    return dataLength;
+    return member.getDataLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -457,21 +457,6 @@ public class CatalogEntry
   {
     if (lines.size () == 0)
       createDataLines ();
-    //    {
-    //      //      if (segments.size () == 0)
-    //      //        lines.add ("No data");
-    //      //      else
-    //      if (member.isXmit ())
-    //        xmitList ();
-    //      //      else if (segments.size () > 100)
-    //      //        partialDump (10);      // slow!!
-    //      else if (recfm == 0x5000 && member.isRdw ())
-    //        rdw ();
-    //      //      else if (segments.get (0).isBinary ())
-    //      //        hexDump ();
-    //      else
-    //        createDataLines ();
-    //    }
 
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
@@ -533,12 +518,9 @@ public class CatalogEntry
     text.append (this);
     text.append ("\n\n");
 
+    int count = 0;
     for (DataBlock dataBlock : member)
-    {
-      text.append ("   ");
-      text.append (dataBlock);
-      text.append ("\n");
-    }
+      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
 
     Utility.removeTrailingNewlines (text);
 

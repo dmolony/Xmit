@@ -15,6 +15,7 @@ public class CatalogEntryItem
   private StringProperty version;
   private StringProperty time;
   private IntegerProperty size;
+  private LongProperty bytes;
   private IntegerProperty init;
   private ObjectProperty<LocalDate> dateCreated;
   private ObjectProperty<LocalDate> dateModified;
@@ -26,6 +27,7 @@ public class CatalogEntryItem
     setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
     setSize (catalogEntry.getSize ());
+    setBytes (catalogEntry.getDataLength ());
     setInit (catalogEntry.getInit ());
     setDateCreated (catalogEntry.getDateCreated ());
     setDateModified (catalogEntry.getDateModified ());
@@ -115,6 +117,27 @@ public class CatalogEntryItem
     if (size == null)
       size = new SimpleIntegerProperty ();
     return size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // Size
+  // ---------------------------------------------------------------------------------//
+
+  private void setBytes (long value)
+  {
+    bytesProperty ().set (value);
+  }
+
+  public final long getBytes ()
+  {
+    return bytesProperty ().get ();
+  }
+
+  private LongProperty bytesProperty ()
+  {
+    if (bytes == null)
+      bytes = new SimpleLongProperty ();
+    return bytes;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -36,6 +36,11 @@ public class Member implements Iterable<DataBlock>
       extraDataBlocks.add (dataBlock);
   }
 
+  public long getDataLength ()
+  {
+    return length;
+  }
+
   // ---------------------------------------------------------------------------------//
   // getExtraDataBlocks
   // ---------------------------------------------------------------------------------//
