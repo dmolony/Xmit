@@ -12,10 +12,10 @@ public class PdsDataset extends Dataset
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
+  private final Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
+
   private CopyR1 copyR1;
   private CopyR2 copyR2;
-
-  private final Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor

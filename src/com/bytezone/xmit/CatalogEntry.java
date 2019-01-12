@@ -74,7 +74,7 @@ public class CatalogEntry
       case 0x2B:                    //
         break;
 
-      case 0x2C:                    // FILE035
+      case 0x2C:                    // FILE035 - load module?
         break;
 
       case 0x2E:                    // FILE035
@@ -497,6 +497,8 @@ public class CatalogEntry
   {
     if (member.isXmit ())
       xmitList ();
+    else if (recfm == 0xC000)
+      hexDump ();
     //    else if (member.getDataLength () > 100000)
     //      partialDump (1);
     else if ((recfm == 0x5000 || recfm == 0x5200) && member.isRdw ())
@@ -555,15 +557,25 @@ public class CatalogEntry
   // hexDump
   // ---------------------------------------------------------------------------------//
 
-  //  private void hexDump ()
-  //  {
-  //    if (member.isXmit ())
-  //      lines.add ("Appears to be XMIT");
-  //
-  //    // FILE600.XMI
-  //    byte[] buffer = member.getDataBuffer ();
-  //    lines.add (Utility.getHexDump (buffer));
-  //  }
+  private void hexDump ()
+  {
+    //    if (member.isXmit ())
+    //      lines.add ("Appears to be XMIT");
+
+    // FILE600.XMI
+    //    byte[] buffer = member.getDataBuffer ();
+
+    int count = 0;
+    for (DataBlock dataBlock : member)
+    {
+      byte[] buffer = dataBlock.getBuffer ();
+      String[] chunks = Utility.getHexDump (buffer).split ("\n");
+      for (String chunk : chunks)
+        lines.add (chunk);
+      if (lines.size () > 500)
+        break;
+    }
+  }
 
   // ---------------------------------------------------------------------------------//
   // extractMessage
