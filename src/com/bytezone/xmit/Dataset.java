@@ -12,12 +12,12 @@ import com.bytezone.xmit.textunit.TextUnitNumber;
 
 public abstract class Dataset
 {
-  Reader reader;
-  ControlRecord inmr02;
+  final Reader reader;
+  final ControlRecord inmr02;
 
-  int lrecl;
-  Org dsorg;
-  int recfm;
+  final int lrecl;
+  final Org dsorg;
+  final int recfm;
 
   final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;
@@ -51,15 +51,6 @@ public abstract class Dataset
   {
     segments.add (segment);
     rawBufferLength += segment.getRawBufferLength ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getBlockPointerList
-  // ---------------------------------------------------------------------------------//
-
-  public Segment getSegment (int index)
-  {
-    return segments.get (index);
   }
 
   // ---------------------------------------------------------------------------------//

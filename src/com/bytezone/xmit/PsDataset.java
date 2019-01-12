@@ -31,9 +31,6 @@ public class PsDataset extends Dataset
       extractMessage ();
       return;
     }
-    //    int size = 0;
-    //    for (Segment segment : segments)
-    //      size += segment.getRawBufferLength ();
 
     int max = segments.size ();
     if (max > 200 && rawBufferLength > 200_000)

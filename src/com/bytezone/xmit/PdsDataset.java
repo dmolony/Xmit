@@ -73,12 +73,12 @@ public class PdsDataset extends Dataset
   @Override
   void process ()
   {
-    boolean inCatalog = true;
-    List<DataBlock> dataBlocks = new ArrayList<> ();
-
     // convert first two BlockPointerList entries
     copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
     copyR2 = new CopyR2 (segments.get (1).getRawBuffer ());
+
+    boolean inCatalog = true;
+    List<DataBlock> dataBlocks = new ArrayList<> ();
 
     for (int i = 2; i < segments.size (); i++)
     {
