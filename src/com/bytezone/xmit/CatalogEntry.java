@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 
@@ -450,6 +451,19 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  // getFileType
+  // ---------------------------------------------------------------------------------//
+
+  public FileType getFileType ()
+  {
+    if (member.isXmit ())
+      return FileType.XMIT;
+
+    byte[] buffer = member.getEightBytes ();
+    return Utility.getFileType (buffer);
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getLines
   // ---------------------------------------------------------------------------------//
 
@@ -476,13 +490,19 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   // createDataLines
   // ---------------------------------------------------------------------------------//
+  // FILE706 - java bytecode
+  // FILE765 - embedded xmit PS file
 
   private void createDataLines ()
   {
     if (member.isXmit ())
       xmitList ();
+    //    else if (member.getDataLength () > 100000)
+    //      partialDump (1);
     else if ((recfm == 0x5000 || recfm == 0x5200) && member.isRdw ())
       rdw ();
+    else if (getFileType () != FileType.BIN)
+      extractMessage ();
     else
     {
       byte[] buffer = getDataBuffer ();
@@ -532,16 +552,6 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  // printLine
-  // ---------------------------------------------------------------------------------//
-
-  //  String getPrintLine ()
-  //  {
-  //    return String.format ("%-126s %8s %8s %5d %5d %5d",
-  //        Utility.getHexValues (directoryData), name, userName, size, init, mod);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // hexDump
   // ---------------------------------------------------------------------------------//
 
@@ -556,6 +566,18 @@ public class CatalogEntry
   //  }
 
   // ---------------------------------------------------------------------------------//
+  // extractMessage
+  // ---------------------------------------------------------------------------------//
+
+  void extractMessage ()
+  {
+    lines.add ("File type: " + getFileType ());
+    lines.add ("");
+    lines.add ("Use File->Extract to save a copy in the correct format,");
+    lines.add ("      or use the HEX tab to view the raw file.");
+  }
+
+  // ---------------------------------------------------------------------------------//
   // rdw
   // ---------------------------------------------------------------------------------//
 
@@ -566,7 +588,7 @@ public class CatalogEntry
       byte[] buffer = dataBlock.getBuffer ();
 
       int ptr = 4;
-      while (ptr < buffer.length)
+      while (ptr < buffer.length && lines.size () < 2000)
       {
         int len = Utility.getTwoBytes (buffer, ptr);
         lines.add (Utility.getString (buffer, ptr + 4, len - 4));
@@ -594,8 +616,8 @@ public class CatalogEntry
       {
         List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
         lines.add (String.format ("Members: %s%n", members.size ()));
-        lines.add (" Member     User      Size   ttl       Date        Time     Alias");
-        lines.add ("--------  --------  ------  ------  -----------  --------  --------");
+        lines.add (" Member     User      Size     Date        Time     Alias");
+        lines.add ("--------  --------  ------  -----------  --------  --------");
         for (CatalogEntry catalogEntry : members)
           lines.add (catalogEntry.toString ());
       }
@@ -612,23 +634,22 @@ public class CatalogEntry
   // partialDump
   // ---------------------------------------------------------------------------------//
 
-  //  private void partialDump (int max)
-  //  {
-  //    lines.add ("Data too large to display");
-  //    lines.add ("");
-  //    lines.add ("Showing first " + max + " of " + member.dataBlocks.size () + " blocks");
-  //    lines.add ("");
-  //
-  //    if (member.isXmit ())
-  //      lines.add ("Appears to be XMIT");
-  //
-  //    for (int i = 0; i < max; i++)
-  //    {
-  //      DataBlock dataBlock = member.dataBlocks.get (i);
-  //      if (dataBlock.getSize () > 0)
-  //        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
-  //    }
-  //  }
+  private void partialDump (int max)
+  {
+    lines.add ("Data too large to display");
+    lines.add ("");
+    lines.add ("Showing first " + max + " of " + member.size () + " blocks");
+    lines.add ("");
+
+    int count = 0;
+    for (DataBlock dataBlock : member)
+    {
+      if (dataBlock.getSize () > 0)
+        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
+      if (++count > max)
+        break;
+    }
+  }
 
   // ---------------------------------------------------------------------------------//
   // toString
@@ -639,7 +660,7 @@ public class CatalogEntry
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %8s  %,6d  %06X  %s  %s  %8s", name, userName, size,
-        blockFrom, date1Text, time, aliasName);
+    return String.format ("%8s  %8s  %,6d  %s  %s  %8s", name, userName, size, date1Text,
+        time, aliasName);
   }
 }

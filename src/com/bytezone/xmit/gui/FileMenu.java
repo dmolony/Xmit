@@ -8,8 +8,8 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Reader;
-import com.bytezone.xmit.Utility;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -40,6 +40,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   private CatalogEntry catalogEntry;
   private Reader reader;
   private Dataset dataset;
+  private String name;
 
   private Alert alert;
   private String saveFolderName;
@@ -83,29 +84,24 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 
   private void extractFile ()
   {
-    assert catalogEntry != null;
+    byte[] buffer = null;
+    String name = "";
 
-    byte[] buffer = catalogEntry.getDataBuffer ();
+    if (dataset instanceof PsDataset)
+    {
+      buffer = ((PsDataset) dataset).getRawBuffer ();
+      name = this.name + "." + ((PsDataset) dataset).getFileType ().name ();
+    }
+    else
+    {
+      buffer = catalogEntry.getDataBuffer ();
+      name = catalogEntry.getMemberName ().trim () + "."
+          + catalogEntry.getFileType ().name ();
+    }
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Extract file to");
     fileChooser.setInitialDirectory (new File (saveFolderName));
-
-    String name = catalogEntry.getMemberName ().trim ();
-    if (catalogEntry.getMember ().isXmit ())
-      name += ".XMI";
-    else if (Utility.matches (pdf, buffer, 0))
-      name += ".PDF";
-    else if (Utility.matches (word, buffer, 0))
-      name += ".DOC";
-    else if (Utility.matches (zip, buffer, 0))
-      name += ".ZIP";
-    else if (Utility.matches (winrar, buffer, 0))
-      name += ".RAR";
-    else if (Utility.matches (png, buffer, 0))
-      name += ".PNG";
-    else
-      name += ".BIN";
     fileChooser.setInitialFileName (name);
 
     File file = fileChooser.showSaveDialog (null);
@@ -158,16 +154,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
     this.catalogEntry = catalogEntry;
-    if (catalogEntry == null)
-    {
-      extractMenuItem.setText ("Extract file");
-      extractMenuItem.setDisable (true);
-    }
-    else
-    {
-      extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
-      extractMenuItem.setDisable (false);
-    }
+    extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -175,9 +162,14 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset)
+  public void treeItemSelected (Reader reader, Dataset dataset, String name)
   {
     this.reader = reader;
     this.dataset = dataset;
+    this.name = name.trim ();
+    catalogEntry = null;
+
+    if (dataset instanceof PsDataset)
+      extractMenuItem.setText ("Extract " + this.name);
   }
 }

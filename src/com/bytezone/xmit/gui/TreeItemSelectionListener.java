@@ -5,5 +5,5 @@ import com.bytezone.xmit.Reader;
 
 public interface TreeItemSelectionListener
 {
-  public void treeItemSelected (Reader reader, Dataset dataset);
+  public void treeItemSelected (Reader reader, Dataset dataset, String name);
 }

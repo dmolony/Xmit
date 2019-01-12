@@ -67,7 +67,7 @@ public class XmitTree extends TreeView<XmitFile>
       if (newSelection == null)
       {
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null);
+          listener.treeItemSelected (null, null, null);
         return;
       }
 
@@ -76,10 +76,11 @@ public class XmitTree extends TreeView<XmitFile>
 
       if (reader == null)
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null);
+          listener.treeItemSelected (null, null, null);
       else
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (reader, reader.getActiveDataset ());
+          listener.treeItemSelected (reader, reader.getActiveDataset (),
+              newSelection.getValue ().getName ());
     });
   }
 

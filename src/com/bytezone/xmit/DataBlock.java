@@ -87,6 +87,22 @@ public class DataBlock
   }
 
   // ---------------------------------------------------------------------------------//
+  // getEightBytes
+  // ---------------------------------------------------------------------------------//
+
+  byte[] getEightBytes ()
+  {
+    byte[] buffer = new byte[8];
+    if (header.getSize () == 0)
+      return buffer;
+
+    BlockPointer blockPointer = blockPointers.get (0);
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, 0, buffer.length);
+    return buffer;
+    //    return Utility.getTwoBytes (blockPointer.buffer, blockPointer.offset);
+  }
+
+  // ---------------------------------------------------------------------------------//
   // packBuffer
   // ---------------------------------------------------------------------------------//
 

@@ -10,8 +10,21 @@ public class Utility
   static CodePage codePage;
   static Map<String, CodePage> codePageMap = new HashMap<> ();
 
+  private static final byte[] doc = { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0,
+                                      (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 };
+  private static final byte[] pdf = { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E };
+  private static final byte[] zip = { 0x50, 0x4B, 0x03, 0x04 };
+  private static final byte[] rar = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 };
+  private static final byte[] png = { (byte) 0x89, 0x50, 0x4E, 0x47 };
+  private static final byte[] rtf = { 0x7B, 0x5C, 0x72, 0x74, 0x66 };
+
+  public enum FileType
+  {
+    DOC, PDF, ZIP, RAR, PNG, RTF, BIN, XMIT
+  }
+
   // ---------------------------------------------------------------------------------//
-  //
+  // setCodePage
   // ---------------------------------------------------------------------------------//
 
   public static void setCodePage (String codePageName)
@@ -23,6 +36,28 @@ public class Utility
       codePage = new CodePage (codePageName);
       codePageMap.put (codePageName, codePage);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getFileType
+  // ---------------------------------------------------------------------------------//
+
+  public static FileType getFileType (byte[] buffer)
+  {
+    if (matches (pdf, buffer, 0))
+      return FileType.PDF;
+    if (matches (doc, buffer, 0))
+      return FileType.DOC;
+    if (matches (zip, buffer, 0))
+      return FileType.ZIP;
+    if (matches (rar, buffer, 0))
+      return FileType.RAR;
+    if (matches (png, buffer, 0))
+      return FileType.PNG;
+    if (matches (rtf, buffer, 0))
+      return FileType.RTF;
+
+    return FileType.BIN;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -69,7 +104,7 @@ public class Utility
 
   public static boolean matches (byte[] key, byte[] buffer, int ptr)
   {
-    if (ptr + key.length >= buffer.length)
+    if (ptr + key.length > buffer.length)
       return false;
 
     for (int i = 0; i < key.length; i++)

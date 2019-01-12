@@ -3,6 +3,7 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 public class PsDataset extends Dataset
@@ -30,12 +31,12 @@ public class PsDataset extends Dataset
       size += segment.getRawBufferLength ();
 
     int max = segments.size ();
-    if (max > 200)
+    if (max > 200 && size > 200_000)
     {
       lines.add (String.format ("File contains %,d Segments", max));
       lines.add (String.format ("File contains %,d bytes", size));
       lines.add ("");
-      max = 10;
+      max = 20;
       lines.add ("Displaying first " + max + " segments");
       lines.add ("");
     }
@@ -65,7 +66,8 @@ public class PsDataset extends Dataset
 
   public byte[] getRawBuffer ()
   {
-    int max = segments.size () > 200 ? 10 : segments.size ();
+    //    int max = segments.size () > 200 ? 10 : segments.size ();
+    int max = segments.size ();
     int bufferLength = 0;
     for (int i = 0; i < max; i++)
       bufferLength += segments.get (i).getRawBufferLength ();
@@ -77,6 +79,19 @@ public class PsDataset extends Dataset
       ptr = segments.get (i).getRawBuffer (buffer, ptr);
 
     return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getFileType
+  // ---------------------------------------------------------------------------------//
+
+  public FileType getFileType ()
+  {
+    //    if (member.isXmit ())
+    //      return FileType.XMIT;
+
+    //    byte[] buffer = member.getEightBytes ();
+    return Utility.getFileType (segments.get (0).getRawBuffer ());
   }
 
   // ---------------------------------------------------------------------------------//

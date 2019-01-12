@@ -54,8 +54,17 @@ public class CopyR1
     scext = (int) Utility.getValue (buffer, 42, 3);
     scalo = (int) Utility.getFourBytes (buffer, 45);
     lstar = (int) Utility.getValue (buffer, 49, 3);
-    trbal = Utility.getTwoBytes (buffer, 52);
-    zero2 = Utility.getTwoBytes (buffer, 54);
+
+    if (buffer.length > 52)       // FILE776.XMI/XMCLOAD
+    {
+      trbal = Utility.getTwoBytes (buffer, 52);
+      zero2 = Utility.getTwoBytes (buffer, 54);
+    }
+    else
+    {
+      trbal = 0;
+      zero2 = 0;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

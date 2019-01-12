@@ -247,7 +247,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset)
+  public void treeItemSelected (Reader reader, Dataset dataset, String name)
   {
     this.reader = reader;
     this.dataset = dataset;

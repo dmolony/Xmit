@@ -235,7 +235,7 @@ public class OutputPane extends BorderPane
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset)
+  public void treeItemSelected (Reader reader, Dataset dataset, String name)
   {
     this.reader = reader;
     this.dataset = dataset;
