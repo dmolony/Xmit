@@ -32,9 +32,9 @@ public class ViewMenu
 
   private final String[][] codePageNames =
       { { "CP037", "CP1140" }, { "CP285", "CP1146" }, { "CP297", "CP1147" },
-        { "CP500", "CP1148" }, { "CP1047", "CP1047" } };
+        { "CP500", "CP1148" }, { "CP1047", "CP1047" }, };
   private final KeyCode[] keyCodes =
-      { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5 };
+      { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5, };
 
   private final ToggleGroup toggleGroup = new ToggleGroup ();
   List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
@@ -60,7 +60,7 @@ public class ViewMenu
     linesMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
     euroMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
+        new KeyCodeCombination (KeyCode.DIGIT9, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     controlMenuItem.setOnAction (e -> setTabs ());

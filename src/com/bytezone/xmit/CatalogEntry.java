@@ -17,6 +17,7 @@ public class CatalogEntry
   //  final List<Segment> segments = new ArrayList<> ();      // contains DataBlocks
 
   final List<String> lines = new ArrayList<> ();
+  CodePage codePage;
 
   int lrecl;
   int recfm;
@@ -469,7 +470,7 @@ public class CatalogEntry
 
   public String getLines (boolean showLines)
   {
-    if (lines.size () == 0)
+    if (lines.size () == 0 || codePage != Utility.codePage)
       createDataLines ();
 
     StringBuilder text = new StringBuilder ();
@@ -492,9 +493,13 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   // FILE706 - java bytecode
   // FILE765 - embedded xmit PS file
+  // FILE714 - tar
 
   private void createDataLines ()
   {
+    codePage = Utility.codePage;
+    lines.clear ();
+
     if (member.isXmit ())
       xmitList ();
     else if (recfm == 0xC000)
@@ -619,11 +624,11 @@ public class CatalogEntry
     try
     {
       Reader reader = new Reader (name, xmitBuffer);
+      Dataset dataset = reader.getActiveDataset ();
 
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
-      Dataset dataset = reader.getActiveDataset ();
       if (dataset.getOrg () == Dsorg.Org.PDS)
       {
         List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
