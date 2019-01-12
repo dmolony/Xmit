@@ -12,9 +12,7 @@ import com.bytezone.xmit.textunit.Dsorg;
 public class CatalogEntry
 {
   final Reader reader;
-
   private Member member;                                  // contains DataBlocks
-  //  final List<Segment> segments = new ArrayList<> ();      // contains DataBlocks
 
   final List<String> lines = new ArrayList<> ();
   CodePage codePage;
@@ -214,10 +212,6 @@ public class CatalogEntry
   void setMember (Member member)
   {
     this.member = member;
-    member.setCatalogEntry (this);
-
-    //    for (DataBlock dataBlock : member)
-    //      addBlockPointerList (dataBlock.blockPointerList);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -230,16 +224,6 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  // addBlockPointerList
-  // ---------------------------------------------------------------------------------//
-
-  //  private void addSegment (Segment segment)
-  //  {
-  //    segments.add (segment);
-  //    dataLength += segment.getDataLength ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // setCopyRecords
   // ---------------------------------------------------------------------------------//
 
@@ -249,6 +233,10 @@ public class CatalogEntry
     this.copyR1 = copyR1;
     this.copyR2 = copyR2;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // not currently used
+  // ---------------------------------------------------------------------------------//
 
   private long nothing ()
   {
@@ -482,8 +470,7 @@ public class CatalogEntry
       else
         text.append (String.format ("%s%n", line));
 
-    if (text.length () > 0)
-      text.deleteCharAt (text.length () - 1);
+    Utility.removeTrailingNewlines (text);
 
     return text.toString ();
   }
@@ -512,7 +499,7 @@ public class CatalogEntry
       extractMessage ();
     else
     {
-      byte[] buffer = getDataBuffer ();
+      byte[] buffer = member.getDataBuffer ();
       int ptr = 0;
       int length = buffer.length;
       while (length > 0)
@@ -529,34 +516,10 @@ public class CatalogEntry
   // getDataBuffer
   // ---------------------------------------------------------------------------------//
 
-  public byte[] getDataBuffer ()
-  {
-    return member.getDataBuffer ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // list
-  // ---------------------------------------------------------------------------------//
-
-  public String list ()
-  {
-    StringBuilder text = new StringBuilder ();
-
-    text.append (this);
-    text.append ("\n\n");
-
-    int count = 0;
-    int total = 0;
-    for (DataBlock dataBlock : member)
-    {
-      total += dataBlock.getSize ();
-      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
-    }
-    text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
-    text.append (String.format ("%44.44s %06X %<,9d", "", total));
-
-    return text.toString ();
-  }
+  //  public byte[] getDataBuffer ()
+  //  {
+  //    return member.getDataBuffer ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // hexDump
@@ -620,7 +583,7 @@ public class CatalogEntry
 
   void xmitList ()
   {
-    byte[] xmitBuffer = getDataBuffer ();
+    byte[] xmitBuffer = member.getDataBuffer ();
     try
     {
       Reader reader = new Reader (name, xmitBuffer);
@@ -651,22 +614,22 @@ public class CatalogEntry
   // partialDump
   // ---------------------------------------------------------------------------------//
 
-  private void partialDump (int max)
-  {
-    lines.add ("Data too large to display");
-    lines.add ("");
-    lines.add ("Showing first " + max + " of " + member.size () + " blocks");
-    lines.add ("");
-
-    int count = 0;
-    for (DataBlock dataBlock : member)
-    {
-      if (dataBlock.getSize () > 0)
-        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
-      if (++count > max)
-        break;
-    }
-  }
+  //  private void partialDump (int max)
+  //  {
+  //    lines.add ("Data too large to display");
+  //    lines.add ("");
+  //    lines.add ("Showing first " + max + " of " + member.size () + " blocks");
+  //    lines.add ("");
+  //
+  //    int count = 0;
+  //    for (DataBlock dataBlock : member)
+  //    {
+  //      if (dataBlock.getSize () > 0)
+  //        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
+  //      if (++count > max)
+  //        break;
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // toString

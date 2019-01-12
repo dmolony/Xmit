@@ -4,27 +4,29 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.bytezone.xmit.textunit.Dsorg.Org;
+
 public class Member implements Iterable<DataBlock>
 {
-  private CatalogEntry catalogEntry;
+  private final Org org;
   private final List<DataBlock> dataBlocks = new ArrayList<> ();
   private final List<DataBlock> extraDataBlocks = new ArrayList<> ();     // PDSE
   private int length = 0;
 
   // ---------------------------------------------------------------------------------//
-  // setCatalogEntry
+  // constructor
   // ---------------------------------------------------------------------------------//
 
-  void setCatalogEntry (CatalogEntry catalogEntry)
+  Member (Org org)        // will be used for PS files too
   {
-    this.catalogEntry = catalogEntry;
+    this.org = org;
   }
 
   // ---------------------------------------------------------------------------------//
-  // add
+  // addPdsDataBlock
   // ---------------------------------------------------------------------------------//
 
-  void add (DataBlock dataBlock)
+  void addPdsDataBlock (DataBlock dataBlock)
   {
     byte type = dataBlock.getType ();
     if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
@@ -58,7 +60,7 @@ public class Member implements Iterable<DataBlock>
   // getDataBuffer
   // ---------------------------------------------------------------------------------//
 
-  byte[] getDataBuffer ()
+  public byte[] getDataBuffer ()
   {
     byte[] buffer = new byte[length];
     int ptr = 0;
@@ -117,11 +119,19 @@ public class Member implements Iterable<DataBlock>
   {
     StringBuilder text = new StringBuilder ();
 
+    int count = 0;
+    int total = 0;
     for (DataBlock dataBlock : dataBlocks)
     {
-      text.append (dataBlock);
-      text.append ("\n");
+      total += dataBlock.getSize ();
+      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
     }
+
+    text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
+    text.append (String.format ("%44.44s %06X %<,9d%n%n", "", total));
+
+    for (DataBlock dataBlock : extraDataBlocks)
+      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
 
     Utility.removeTrailingNewlines (text);
 

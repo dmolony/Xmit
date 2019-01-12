@@ -156,7 +156,8 @@ public class XmitFile
   Reader getReader ()
   {
     if (reader == null && catalogEntry != null)
-      reader = new Reader (catalogEntry.getMemberName (), catalogEntry.getDataBuffer ());
+      reader = new Reader (catalogEntry.getMemberName (),
+          catalogEntry.getMember ().getDataBuffer ());
     else if (reader == null && isFile () && !isCompressed ())
       try
       {

@@ -154,7 +154,7 @@ public class OutputPane extends BorderPane
     if (reader == null || catalogEntry == null)
       debugText.clear ();
     else
-      debugText.setText (catalogEntry.list ());
+      debugText.setText (catalogEntry.getMember ().toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -171,7 +171,7 @@ public class OutputPane extends BorderPane
       if (dataset.getOrg () == Org.PS)                        // flat file
         buffer = ((PsDataset) dataset).getRawBuffer ();
       else if (catalogEntry != null)                          // PDS
-        buffer = catalogEntry.getDataBuffer ();
+        buffer = catalogEntry.getMember ().getDataBuffer ();
       if (buffer != null)
       {
         int max = Math.min (0x20000, buffer.length);

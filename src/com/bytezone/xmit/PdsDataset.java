@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.bytezone.xmit.textunit.ControlRecord;
+import com.bytezone.xmit.textunit.Dsorg.Org;
 
 public class PdsDataset extends Dataset
 {
@@ -114,11 +115,11 @@ public class PdsDataset extends Dataset
     {
       if (currentMember == null)
       {
-        currentMember = new Member ();
+        currentMember = new Member (Org.PDS);
         members.add (currentMember);
       }
 
-      currentMember.add (dataBlock);
+      currentMember.addPdsDataBlock (dataBlock);
 
       if (dataBlock.getSize () == 0)
         currentMember = null;
@@ -144,12 +145,12 @@ public class PdsDataset extends Dataset
 
       if (ttl != lastTtl)
       {
-        currentMember = new Member ();
+        currentMember = new Member (Org.PDS);
         members.add (currentMember);
         lastTtl = ttl;
       }
 
-      currentMember.add (dataBlock);
+      currentMember.addPdsDataBlock (dataBlock);
     }
     return members;
   }

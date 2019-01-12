@@ -51,8 +51,8 @@ public class ViewMenu
     for (int i = 0; i < codePageNames.length; i++)
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
-    viewMenu.getItems ().addAll (linesMenuItem, controlMenuItem, debugMenuItem,
-        hexMenuItem, new SeparatorMenuItem ());
+    viewMenu.getItems ().addAll (linesMenuItem, new SeparatorMenuItem (), controlMenuItem,
+        debugMenuItem, hexMenuItem, new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
       viewMenu.getItems ().add (item);
     viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
