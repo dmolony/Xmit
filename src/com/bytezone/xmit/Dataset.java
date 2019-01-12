@@ -20,6 +20,7 @@ public abstract class Dataset
   int recfm;
 
   final List<Segment> segments = new ArrayList<> ();
+  int rawBufferLength;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -49,6 +50,7 @@ public abstract class Dataset
   void addSegment (Segment segment)
   {
     segments.add (segment);
+    rawBufferLength += segment.getRawBufferLength ();
   }
 
   // ---------------------------------------------------------------------------------//

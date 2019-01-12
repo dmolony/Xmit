@@ -89,40 +89,8 @@ public class PdsDataset extends Dataset
         dataBlocks.addAll (segment.createDataBlocks ());    // create new BlockPointers
     }
 
-    List<Member> members = new ArrayList<> ();
-    Member currentMember = null;
-    long lastTtl = 0;
-
-    if (copyR1.isPdse ())
-      for (DataBlock dataBlock : dataBlocks)
-      {
-        long ttl = dataBlock.getTtl ();
-        if (ttl == 0)
-          continue;     // skip first PDSE block
-
-        if (ttl != lastTtl)
-        {
-          currentMember = new Member ();
-          members.add (currentMember);
-          lastTtl = ttl;
-        }
-
-        currentMember.add (dataBlock);
-      }
-    else
-      for (DataBlock dataBlock : dataBlocks)
-      {
-        if (currentMember == null)
-        {
-          currentMember = new Member ();
-          members.add (currentMember);
-        }
-
-        currentMember.add (dataBlock);
-
-        if (dataBlock.getSize () == 0)
-          currentMember = null;
-      }
+    List<Member> members =
+        copyR1.isPdse () ? allocatePDSE (dataBlocks) : allocatePDS (dataBlocks);
 
     int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
@@ -131,6 +99,59 @@ public class PdsDataset extends Dataset
       for (CatalogEntry catalogEntry : catalogEntryList)
         catalogEntry.setMember (member);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // allocatePDS
+  // ---------------------------------------------------------------------------------//
+
+  private List<Member> allocatePDS (List<DataBlock> dataBlocks)
+  {
+    List<Member> members = new ArrayList<> ();
+    Member currentMember = null;
+
+    for (DataBlock dataBlock : dataBlocks)
+    {
+      if (currentMember == null)
+      {
+        currentMember = new Member ();
+        members.add (currentMember);
+      }
+
+      currentMember.add (dataBlock);
+
+      if (dataBlock.getSize () == 0)
+        currentMember = null;
+    }
+    return members;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // allocatePDSE
+  // ---------------------------------------------------------------------------------//
+
+  private List<Member> allocatePDSE (List<DataBlock> dataBlocks)
+  {
+    List<Member> members = new ArrayList<> ();
+    Member currentMember = null;
+    long lastTtl = 0;
+
+    for (DataBlock dataBlock : dataBlocks)
+    {
+      long ttl = dataBlock.getTtl ();
+      if (ttl == 0)
+        continue;     // skip first PDSE block
+
+      if (ttl != lastTtl)
+      {
+        currentMember = new Member ();
+        members.add (currentMember);
+        lastTtl = ttl;
+      }
+
+      currentMember.add (dataBlock);
+    }
+    return members;
   }
 
   // ---------------------------------------------------------------------------------//

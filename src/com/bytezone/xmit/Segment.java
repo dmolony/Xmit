@@ -230,6 +230,18 @@ public class Segment //implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getEightBytes
+  // ---------------------------------------------------------------------------------//
+
+  byte[] getEightBytes ()
+  {
+    byte[] eightBytes = new byte[8];
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    System.arraycopy (buffer, blockPointer.offset, eightBytes, 0, eightBytes.length);
+    return eightBytes;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getRawBuffer - contains no headers
   // ---------------------------------------------------------------------------------//
 

@@ -155,6 +155,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   {
     this.catalogEntry = catalogEntry;
     extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
+    extractMenuItem.setDisable (false);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -166,10 +167,15 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   {
     this.reader = reader;
     this.dataset = dataset;
-    this.name = name.trim ();
+    this.name = name == null ? null : name.trim ();
     catalogEntry = null;
 
-    if (dataset instanceof PsDataset)
+    if (dataset == null)
+    {
+      extractMenuItem.setText ("Extract file");
+      extractMenuItem.setDisable (true);
+    }
+    else if (dataset instanceof PsDataset)
       extractMenuItem.setText ("Extract " + this.name);
   }
 }

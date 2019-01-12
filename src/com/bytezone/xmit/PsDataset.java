@@ -26,15 +26,20 @@ public class PsDataset extends Dataset
   @Override
   void process ()
   {
-    int size = 0;
-    for (Segment segment : segments)
-      size += segment.getRawBufferLength ();
+    if (getFileType () != FileType.BIN)
+    {
+      extractMessage ();
+      return;
+    }
+    //    int size = 0;
+    //    for (Segment segment : segments)
+    //      size += segment.getRawBufferLength ();
 
     int max = segments.size ();
-    if (max > 200 && size > 200_000)
+    if (max > 200 && rawBufferLength > 200_000)
     {
       lines.add (String.format ("File contains %,d Segments", max));
-      lines.add (String.format ("File contains %,d bytes", size));
+      lines.add (String.format ("File contains %,d bytes", rawBufferLength));
       lines.add ("");
       max = 20;
       lines.add ("Displaying first " + max + " segments");
@@ -61,18 +66,29 @@ public class PsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
+  // extractMessage
+  // ---------------------------------------------------------------------------------//
+
+  void extractMessage ()
+  {
+    lines.add ("File type: " + getFileType ());
+    lines.add ("");
+    lines.add ("Use File->Extract to save a copy in the correct format,");
+    lines.add ("      or use the HEX tab to view the raw file.");
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getRawBuffer
   // ---------------------------------------------------------------------------------//
 
   public byte[] getRawBuffer ()
   {
-    //    int max = segments.size () > 200 ? 10 : segments.size ();
     int max = segments.size ();
-    int bufferLength = 0;
-    for (int i = 0; i < max; i++)
-      bufferLength += segments.get (i).getRawBufferLength ();
+    //    int bufferLength = 0;
+    //    for (int i = 0; i < max; i++)
+    //      bufferLength += segments.get (i).getRawBufferLength ();
 
-    byte[] buffer = new byte[bufferLength];
+    byte[] buffer = new byte[rawBufferLength];
 
     int ptr = 0;
     for (int i = 0; i < max; i++)
@@ -90,8 +106,7 @@ public class PsDataset extends Dataset
     //    if (member.isXmit ())
     //      return FileType.XMIT;
 
-    //    byte[] buffer = member.getEightBytes ();
-    return Utility.getFileType (segments.get (0).getRawBuffer ());
+    return Utility.getFileType (segments.get (0).getEightBytes ());
   }
 
   // ---------------------------------------------------------------------------------//
