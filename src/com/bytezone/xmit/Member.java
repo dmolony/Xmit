@@ -18,7 +18,7 @@ public class Member implements Iterable<DataBlock>
 
   private final List<DataBlock> dataBlocks = new ArrayList<> ();
   private final List<DataBlock> extraDataBlocks = new ArrayList<> ();     // PDSE
-  private int length = 0;
+  private int dataLength = 0;
 
   final List<String> lines = new ArrayList<> ();
   CodePage codePage;
@@ -53,7 +53,7 @@ public class Member implements Iterable<DataBlock>
     if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
     {
       dataBlocks.add (dataBlock);
-      length += dataBlock.getSize ();
+      dataLength += dataBlock.getSize ();
     }
     else                                          // additional PDSE blocks
       extraDataBlocks.add (dataBlock);
@@ -65,7 +65,7 @@ public class Member implements Iterable<DataBlock>
 
   public int getDataLength ()
   {
-    return length;
+    return dataLength;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -83,11 +83,11 @@ public class Member implements Iterable<DataBlock>
 
   public byte[] getDataBuffer ()
   {
-    byte[] buffer = new byte[length];
+    byte[] buffer = new byte[dataLength];
     int ptr = 0;
     for (DataBlock dataBlock : dataBlocks)
       ptr = dataBlock.packBuffer (buffer, ptr);
-    assert ptr == length;
+    assert ptr == dataLength;
     return buffer;
   }
 

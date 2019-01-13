@@ -1,17 +1,14 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class Segment //implements Iterable<DataBlock>
+public class Segment implements Iterable<BlockPointer>
 {
   private final byte[] buffer;          // all block pointers refer to this
-
   private int rawBufferLength;          // raw data length
-  //  private int dataBufferLength;         // raw data minus headers
-
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
-  //  private final List<BlockPointer> dataBlockPointers = new ArrayList<> ();
 
   private boolean isBinary;
   private boolean isLastBlock;
@@ -25,6 +22,15 @@ public class Segment //implements Iterable<DataBlock>
   public Segment (byte[] buffer)
   {
     this.buffer = buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // size
+  // ---------------------------------------------------------------------------------//
+
+  public int size ()
+  {
+    return rawBlockPointers.size ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -343,15 +349,16 @@ public class Segment //implements Iterable<DataBlock>
   {
     StringBuilder text = new StringBuilder ();
 
-    //    text.append (String.format ("Data length  : %04X  %<,8d%n", dataBufferLength));
+    text.append (String.format ("Data length  : %04X  %<,8d%n", rawBufferLength));
 
     int count = 0;
     for (BlockPointer blockPointer : rawBlockPointers)
     {
-      text.append (
-          String.format ("%nBlockPointer %d of %d%n", ++count, rawBlockPointers.size ()));
-      if (false)
+      //      text.append (
+      //          String.format ("%nBlockPointer %d of %d%n", ++count, rawBlockPointers.size ()));
+      if (true)
       {
+        text.append ("      ");
         text.append (blockPointer);
         text.append ("\n");
       }
@@ -370,9 +377,9 @@ public class Segment //implements Iterable<DataBlock>
   // Iterator
   // ---------------------------------------------------------------------------------//
 
-  //  @Override
-  //  public Iterator<DataBlock> iterator ()
-  //  {
-  //    return dataBlocks.iterator ();
-  //  }
+  @Override
+  public Iterator<BlockPointer> iterator ()
+  {
+    return rawBlockPointers.iterator ();
+  }
 }

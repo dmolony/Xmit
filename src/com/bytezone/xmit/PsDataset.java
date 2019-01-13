@@ -81,10 +81,6 @@ public class PsDataset extends Dataset
   public byte[] getRawBuffer ()
   {
     int max = segments.size ();
-    //    int bufferLength = 0;
-    //    for (int i = 0; i < max; i++)
-    //      bufferLength += segments.get (i).getRawBufferLength ();
-
     byte[] buffer = new byte[rawBufferLength];
 
     int ptr = 0;
@@ -100,9 +96,6 @@ public class PsDataset extends Dataset
 
   public FileType getFileType ()
   {
-    //    if (member.isXmit ())
-    //      return FileType.XMIT;
-
     return Utility.getFileType (segments.get (0).getEightBytes ());
   }
 

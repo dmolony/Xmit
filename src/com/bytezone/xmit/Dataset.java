@@ -75,6 +75,37 @@ public abstract class Dataset
   // toString
   // ---------------------------------------------------------------------------------//
 
+  public String listSegments ()
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File contains %,d bytes in %,d Segments%n%n",
+        rawBufferLength, segments.size ()));
+
+    int count = 0;
+    int total = 0;
+    for (Segment segment : segments)
+    {
+      total += segment.getRawBufferLength ();
+      text.append (String.format ("%,5d  %,7d  %,7d  %3d%n", count++,
+          segment.getRawBufferLength (), total, segment.size ()));
+
+      if (count > 500)
+        break;
+    }
+
+    //    text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
+    //    text.append (String.format ("%44.44s %06X %<,9d%n%n", "", total));
+
+    Utility.removeTrailingNewlines (text);
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // toString
+  // ---------------------------------------------------------------------------------//
+
   @Override
   public String toString ()
   {

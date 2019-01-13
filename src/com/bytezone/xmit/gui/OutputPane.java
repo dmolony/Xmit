@@ -151,9 +151,13 @@ public class OutputPane extends BorderPane
 
   private void updateDebugTab ()
   {
-    if (reader == null || catalogEntry == null)
+    if (reader == null)
       debugText.clear ();
-    else
+    else if (dataset.getOrg () == Org.PS)                        // flat file
+    {
+      debugText.setText (dataset.listSegments ());
+    }
+    else if (catalogEntry != null)
       debugText.setText (catalogEntry.getMember ().toString ());
   }
 

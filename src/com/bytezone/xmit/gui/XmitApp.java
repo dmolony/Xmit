@@ -293,7 +293,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   @Override
   public void selectCodePage (String codePageName)
   {
-    Utility.setCodePage (codePageName);
+    Utility.setCodePage (codePageName);     // ensure correct code page is set first
     outputPane.selectCodePage ();
   }
 
