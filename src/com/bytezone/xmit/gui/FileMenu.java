@@ -96,7 +96,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     {
       buffer = catalogEntry.getMember ().getDataBuffer ();
       name = catalogEntry.getMemberName ().trim () + "."
-          + catalogEntry.getFileType ().name ();
+          + catalogEntry.getMember ().getFileType ().name ();
     }
 
     FileChooser fileChooser = new FileChooser ();

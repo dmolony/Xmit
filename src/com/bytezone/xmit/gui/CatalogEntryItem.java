@@ -27,7 +27,7 @@ public class CatalogEntryItem
     setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
     setSize (catalogEntry.getSize ());
-    setBytes (catalogEntry.getDataLength ());
+    setBytes (catalogEntry.getMember ().getDataLength ());
     setInit (catalogEntry.getInit ());
     setDateCreated (catalogEntry.getDateCreated ());
     setDateModified (catalogEntry.getDateModified ());

@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 public class Member implements Iterable<DataBlock>
 {
-  private final Org org;
+  final Org org;
+  final int lrecl;
+  final int recfm;
+
   private final List<DataBlock> dataBlocks = new ArrayList<> ();
   private final List<DataBlock> extraDataBlocks = new ArrayList<> ();     // PDSE
   private int length = 0;
@@ -17,9 +21,11 @@ public class Member implements Iterable<DataBlock>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Member (Org org)        // will be used for PS files too
+  Member (Org org, int lrecl, int recfm)        // will be used for PS files too
   {
     this.org = org;
+    this.lrecl = lrecl;
+    this.recfm = recfm;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -90,6 +96,19 @@ public class Member implements Iterable<DataBlock>
         return false;
 
     return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getFileType
+  // ---------------------------------------------------------------------------------//
+
+  public FileType getFileType ()
+  {
+    if (isXmit ())
+      return FileType.XMIT;
+
+    byte[] buffer = getEightBytes ();
+    return Utility.getFileType (buffer);
   }
 
   // ---------------------------------------------------------------------------------//

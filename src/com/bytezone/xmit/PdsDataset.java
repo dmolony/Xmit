@@ -115,7 +115,7 @@ public class PdsDataset extends Dataset
     {
       if (currentMember == null)
       {
-        currentMember = new Member (Org.PDS);
+        currentMember = new Member (Org.PDS, lrecl, recfm);
         members.add (currentMember);
       }
 
@@ -145,7 +145,7 @@ public class PdsDataset extends Dataset
 
       if (ttl != lastTtl)
       {
-        currentMember = new Member (Org.PDS);
+        currentMember = new Member (Org.PDS, lrecl, recfm);
         members.add (currentMember);
         lastTtl = ttl;
       }
@@ -171,7 +171,7 @@ public class PdsDataset extends Dataset
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2, lrecl, recfm);
+        CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2);
         catalogEntries.add (catalogEntry);
         addToMap (catalogEntry);
 

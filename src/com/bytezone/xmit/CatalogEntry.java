@@ -17,10 +17,7 @@ public class CatalogEntry
   final List<String> lines = new ArrayList<> ();
   CodePage codePage;
 
-  int lrecl;
-  int recfm;
-
-  boolean isPdse;
+  //  boolean isPdse;
   private final String name;
   private String userName = "";
   private String aliasName = "";
@@ -37,7 +34,7 @@ public class CatalogEntry
   private String time = "";
 
   private final int blockFrom;
-  private int dataLength;
+  //  private int dataLength;
 
   private final byte[] directoryData;
   private final int extra;
@@ -50,12 +47,10 @@ public class CatalogEntry
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry (Reader reader, byte[] buffer, int ptr, int lrecl, int recfm)
+  public CatalogEntry (Reader reader, byte[] buffer, int ptr)
   {
     name = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
-    this.lrecl = lrecl;
-    this.recfm = recfm;
     this.reader = reader;
 
     extra = buffer[ptr + 11] & 0xFF;
@@ -229,7 +224,7 @@ public class CatalogEntry
 
   void setCopyRecords (CopyR1 copyR1, CopyR2 copyR2)
   {
-    isPdse = copyR1.isPdse ();
+    //    isPdse = copyR1.isPdse ();
     this.copyR1 = copyR1;
     this.copyR2 = copyR2;
   }
@@ -434,23 +429,10 @@ public class CatalogEntry
   // getDataLength
   // ---------------------------------------------------------------------------------//
 
-  public int getDataLength ()
-  {
-    return member.getDataLength ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getFileType
-  // ---------------------------------------------------------------------------------//
-
-  public FileType getFileType ()
-  {
-    if (member.isXmit ())
-      return FileType.XMIT;
-
-    byte[] buffer = member.getEightBytes ();
-    return Utility.getFileType (buffer);
-  }
+  //  public int getDataLength ()
+  //  {
+  //    return member.getDataLength ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getLines
@@ -489,13 +471,13 @@ public class CatalogEntry
 
     if (member.isXmit ())
       xmitList ();
-    else if (recfm == 0xC000)
+    else if (member.recfm == 0xC000)
       hexDump ();
     //    else if (member.getDataLength () > 100000)
     //      partialDump (1);
-    else if ((recfm == 0x5000 || recfm == 0x5200) && member.isRdw ())
+    else if ((member.recfm == 0x5000 || member.recfm == 0x5200) && member.isRdw ())
       rdw ();
-    else if (getFileType () != FileType.BIN)
+    else if (member.getFileType () != FileType.BIN)
       extractMessage ();
     else
     {
@@ -504,7 +486,7 @@ public class CatalogEntry
       int length = buffer.length;
       while (length > 0)
       {
-        int len = Math.min (lrecl == 0 ? 80 : lrecl, length);
+        int len = Math.min (member.lrecl == 0 ? 80 : member.lrecl, length);
         lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
         ptr += len;
         length -= len;
@@ -513,27 +495,14 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDataBuffer
-  // ---------------------------------------------------------------------------------//
-
-  //  public byte[] getDataBuffer ()
-  //  {
-  //    return member.getDataBuffer ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   // hexDump
   // ---------------------------------------------------------------------------------//
 
   private void hexDump ()
   {
-    //    if (member.isXmit ())
-    //      lines.add ("Appears to be XMIT");
-
     // FILE600.XMI
     //    byte[] buffer = member.getDataBuffer ();
 
-    int count = 0;
     for (DataBlock dataBlock : member)
     {
       byte[] buffer = dataBlock.getBuffer ();
@@ -551,7 +520,7 @@ public class CatalogEntry
 
   void extractMessage ()
   {
-    lines.add ("File type: " + getFileType ());
+    lines.add ("File type: " + member.getFileType ());
     lines.add ("");
     lines.add ("Use File->Extract to save a copy in the correct format,");
     lines.add ("      or use the HEX tab to view the raw file.");
