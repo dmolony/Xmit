@@ -98,7 +98,10 @@ public class PdsDataset extends Dataset
     {
       Member member = members.get (count++);
       for (CatalogEntry catalogEntry : catalogEntryList)
+      {
         catalogEntry.setMember (member);
+        member.setName (catalogEntry.getMemberName ());
+      }
     }
   }
 

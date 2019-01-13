@@ -1,23 +1,13 @@
 package com.bytezone.xmit;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
-import com.bytezone.xmit.Utility.FileType;
-import com.bytezone.xmit.textunit.ControlRecord;
-import com.bytezone.xmit.textunit.Dsorg;
 
 public class CatalogEntry
 {
   final Reader reader;
   private Member member;                                  // contains DataBlocks
 
-  final List<String> lines = new ArrayList<> ();
-  CodePage codePage;
-
-  //  boolean isPdse;
   private final String name;
   private String userName = "";
   private String aliasName = "";
@@ -33,13 +23,12 @@ public class CatalogEntry
   private LocalDate dateModified;
   private String time = "";
 
-  private final int blockFrom;
-  //  private int dataLength;
-
   private final byte[] directoryData;
   private final int extra;
 
+  private final int blockFrom;
   private byte[] ttl = new byte[5];
+
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
@@ -424,181 +413,6 @@ public class CatalogEntry
   {
     return blockFrom;
   }
-
-  // ---------------------------------------------------------------------------------//
-  // getDataLength
-  // ---------------------------------------------------------------------------------//
-
-  //  public int getDataLength ()
-  //  {
-  //    return member.getDataLength ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // getLines
-  // ---------------------------------------------------------------------------------//
-
-  public String getLines (boolean showLines)
-  {
-    if (lines.size () == 0 || codePage != Utility.codePage)
-      createDataLines ();
-
-    StringBuilder text = new StringBuilder ();
-    int lineNo = 0;
-
-    for (String line : lines)
-      if (showLines)
-        text.append (String.format ("%05d %s%n", ++lineNo, line));
-      else
-        text.append (String.format ("%s%n", line));
-
-    Utility.removeTrailingNewlines (text);
-
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // createDataLines
-  // ---------------------------------------------------------------------------------//
-  // FILE706 - java bytecode
-  // FILE765 - embedded xmit PS file
-  // FILE714 - tar
-
-  private void createDataLines ()
-  {
-    codePage = Utility.codePage;
-    lines.clear ();
-
-    if (member.isXmit ())
-      xmitList ();
-    else if (member.recfm == 0xC000)
-      hexDump ();
-    //    else if (member.getDataLength () > 100000)
-    //      partialDump (1);
-    else if ((member.recfm == 0x5000 || member.recfm == 0x5200) && member.isRdw ())
-      rdw ();
-    else if (member.getFileType () != FileType.BIN)
-      extractMessage ();
-    else
-    {
-      byte[] buffer = member.getDataBuffer ();
-      int ptr = 0;
-      int length = buffer.length;
-      while (length > 0)
-      {
-        int len = Math.min (member.lrecl == 0 ? 80 : member.lrecl, length);
-        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-        ptr += len;
-        length -= len;
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // hexDump
-  // ---------------------------------------------------------------------------------//
-
-  private void hexDump ()
-  {
-    // FILE600.XMI
-    //    byte[] buffer = member.getDataBuffer ();
-
-    for (DataBlock dataBlock : member)
-    {
-      byte[] buffer = dataBlock.getBuffer ();
-      String[] chunks = Utility.getHexDump (buffer).split ("\n");
-      for (String chunk : chunks)
-        lines.add (chunk);
-      if (lines.size () > 500)
-        break;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // extractMessage
-  // ---------------------------------------------------------------------------------//
-
-  void extractMessage ()
-  {
-    lines.add ("File type: " + member.getFileType ());
-    lines.add ("");
-    lines.add ("Use File->Extract to save a copy in the correct format,");
-    lines.add ("      or use the HEX tab to view the raw file.");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // rdw
-  // ---------------------------------------------------------------------------------//
-
-  void rdw ()         // see SOURCE.XMI
-  {
-    for (DataBlock dataBlock : member)
-    {
-      byte[] buffer = dataBlock.getBuffer ();
-
-      int ptr = 4;
-      while (ptr < buffer.length && lines.size () < 2000)
-      {
-        int len = Utility.getTwoBytes (buffer, ptr);
-        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
-        ptr += len;
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // xmitList
-  // ---------------------------------------------------------------------------------//
-
-  void xmitList ()
-  {
-    byte[] xmitBuffer = member.getDataBuffer ();
-    try
-    {
-      Reader reader = new Reader (name, xmitBuffer);
-      Dataset dataset = reader.getActiveDataset ();
-
-      for (ControlRecord controlRecord : reader.getControlRecords ())
-        lines.add (String.format ("%s", controlRecord));
-
-      if (dataset.getOrg () == Dsorg.Org.PDS)
-      {
-        List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
-        lines.add (String.format ("Members: %s%n", members.size ()));
-        lines.add (" Member     User      Size     Date        Time     Alias");
-        lines.add ("--------  --------  ------  -----------  --------  --------");
-        for (CatalogEntry catalogEntry : members)
-          lines.add (catalogEntry.toString ());
-      }
-    }
-    catch (Exception e)
-    {
-      lines.add ("Data length: " + xmitBuffer.length);
-      lines.add (e.getMessage ());
-      lines.add (Utility.getHexDump (xmitBuffer));
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // partialDump
-  // ---------------------------------------------------------------------------------//
-
-  //  private void partialDump (int max)
-  //  {
-  //    lines.add ("Data too large to display");
-  //    lines.add ("");
-  //    lines.add ("Showing first " + max + " of " + member.size () + " blocks");
-  //    lines.add ("");
-  //
-  //    int count = 0;
-  //    for (DataBlock dataBlock : member)
-  //    {
-  //      if (dataBlock.getSize () > 0)
-  //        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
-  //      if (++count > max)
-  //        break;
-  //    }
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // toString

@@ -191,7 +191,7 @@ public class OutputPane extends BorderPane
     else if (dataset.getOrg () == Org.PS)                  // flat file
       outputText.setText (((PsDataset) dataset).getLines ());
     else if (catalogEntry != null)                         // PDS
-      outputText.setText (catalogEntry.getLines (showLines));
+      outputText.setText (catalogEntry.getMember ().getLines (showLines));
   }
 
   // ---------------------------------------------------------------------------------//
