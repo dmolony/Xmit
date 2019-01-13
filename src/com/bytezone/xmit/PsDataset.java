@@ -33,12 +33,12 @@ public class PsDataset extends Dataset
     }
 
     int max = segments.size ();
-    if (max > 200 && rawBufferLength > 200_000)
+    if (max > 500 && rawBufferLength > 200_000)
     {
-      lines.add (String.format ("File contains %,d Segments", max));
-      lines.add (String.format ("File contains %,d bytes", rawBufferLength));
+      lines.add (String.format ("File contains %,d bytes in %,d Segments",
+          rawBufferLength, max));
       lines.add ("");
-      max = 20;
+      max = lrecl < 1000 ? 500 : 20;
       lines.add ("Displaying first " + max + " segments");
       lines.add ("");
     }
@@ -55,7 +55,8 @@ public class PsDataset extends Dataset
         while (ptr < buffer.length)
         {
           int len = Math.min (lrecl, buffer.length - ptr);
-          lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+          lines.add (String.format ("%3d  %3d  %s", i, ptr,
+              Utility.getString (buffer, ptr, len).stripTrailing ()));
           ptr += len;
         }
       }

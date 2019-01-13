@@ -31,10 +31,9 @@ public abstract class Dataset
     this.reader = reader;
     this.inmr02 = inmr02;
 
-    this.lrecl =
-        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
-    this.dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
-    this.recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
+    lrecl = (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
+    dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
+    recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
   }
 
   // ---------------------------------------------------------------------------------//
