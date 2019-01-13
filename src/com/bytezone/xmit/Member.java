@@ -16,7 +16,7 @@ public class Member implements Iterable<DataBlock>
   final int lrecl;
   final int recfm;
 
-  private final List<DataBlock> dataBlocks = new ArrayList<> ();
+  private final List<DataBlock> dataBlocks = new ArrayList<> ();          // PDS
   private final List<DataBlock> extraDataBlocks = new ArrayList<> ();     // PDSE
   private int dataLength = 0;
 
@@ -212,7 +212,6 @@ public class Member implements Iterable<DataBlock>
   private void hexDump ()
   {
     // FILE600.XMI
-    //    byte[] buffer = member.getDataBuffer ();
 
     for (DataBlock dataBlock : dataBlocks)
     {

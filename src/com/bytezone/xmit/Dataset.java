@@ -93,9 +93,6 @@ public abstract class Dataset
         break;
     }
 
-    //    text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
-    //    text.append (String.format ("%44.44s %06X %<,9d%n%n", "", total));
-
     Utility.removeTrailingNewlines (text);
 
     return text.toString ();
