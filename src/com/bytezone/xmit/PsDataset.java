@@ -38,7 +38,7 @@ public class PsDataset extends Dataset
       lines.add (String.format ("File contains %,d bytes in %,d Segments",
           rawBufferLength, max));
       lines.add ("");
-      max = lrecl < 1000 ? 500 : 20;
+      max = lrecl < 1000 ? 500 : 30;
       lines.add ("Displaying first " + max + " segments");
       lines.add ("");
     }

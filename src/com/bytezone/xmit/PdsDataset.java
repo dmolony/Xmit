@@ -13,7 +13,7 @@ public class PdsDataset extends Dataset
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  private final Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
+  List<Member> members = new ArrayList<> ();
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -80,18 +80,21 @@ public class PdsDataset extends Dataset
 
     boolean inCatalog = true;
     List<DataBlock> dataBlocks = new ArrayList<> ();
+    Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
 
     for (int i = 2; i < segments.size (); i++)
     {
       Segment segment = segments.get (i);
       if (inCatalog)
-        inCatalog = addCatalogEntries (segment.getRawBuffer ());
+        inCatalog = addCatalogEntries (segment.getRawBuffer (), catalogMap);
       else
         dataBlocks.addAll (segment.createDataBlocks ());    // create new BlockPointers
     }
 
-    List<Member> members =
-        copyR1.isPdse () ? allocatePDSE (dataBlocks) : allocatePDS (dataBlocks);
+    if (copyR1.isPdse ())
+      allocatePDSE (dataBlocks);
+    else
+      allocatePDS (dataBlocks);
 
     int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
@@ -109,9 +112,8 @@ public class PdsDataset extends Dataset
   // allocatePDS
   // ---------------------------------------------------------------------------------//
 
-  private List<Member> allocatePDS (List<DataBlock> dataBlocks)
+  private void allocatePDS (List<DataBlock> dataBlocks)
   {
-    List<Member> members = new ArrayList<> ();
     Member currentMember = null;
 
     for (DataBlock dataBlock : dataBlocks)
@@ -127,16 +129,14 @@ public class PdsDataset extends Dataset
       if (dataBlock.getSize () == 0)
         currentMember = null;
     }
-    return members;
   }
 
   // ---------------------------------------------------------------------------------//
   // allocatePDSE
   // ---------------------------------------------------------------------------------//
 
-  private List<Member> allocatePDSE (List<DataBlock> dataBlocks)
+  private void allocatePDSE (List<DataBlock> dataBlocks)
   {
-    List<Member> members = new ArrayList<> ();
     Member currentMember = null;
     long lastTtl = 0;
 
@@ -155,14 +155,14 @@ public class PdsDataset extends Dataset
 
       currentMember.addPdsDataBlock (dataBlock);
     }
-    return members;
   }
 
   // ---------------------------------------------------------------------------------//
   // addCatalogEntries
   // ---------------------------------------------------------------------------------//
 
-  private boolean addCatalogEntries (byte[] buffer)
+  private boolean addCatalogEntries (byte[] buffer,
+      Map<Long, List<CatalogEntry>> catalogMap)
   {
     int ptr = 0;
     while (ptr + 22 < buffer.length)
@@ -176,7 +176,7 @@ public class PdsDataset extends Dataset
 
         CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2);
         catalogEntries.add (catalogEntry);
-        addToMap (catalogEntry);
+        addToMap (catalogEntry, catalogMap);
 
         // check for last member
         if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
@@ -195,7 +195,8 @@ public class PdsDataset extends Dataset
   // addToMap
   // ---------------------------------------------------------------------------------//
 
-  private void addToMap (CatalogEntry catalogEntry)
+  private void addToMap (CatalogEntry catalogEntry,
+      Map<Long, List<CatalogEntry>> catalogMap)
   {
     catalogEntry.setCopyRecords (copyR1, copyR2);
     long ttl = catalogEntry.getOffset ();
