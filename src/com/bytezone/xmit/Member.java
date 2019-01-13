@@ -251,7 +251,18 @@ public class Member implements Iterable<DataBlock>
       while (ptr < buffer.length && lines.size () < 2000)
       {
         int len = Utility.getTwoBytes (buffer, ptr);
-        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+
+        if (Utility.isBinary (buffer, ptr + 4, len - 4))
+        {
+          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
+          String[] chunks = text.split ("\n");
+          for (String chunk : chunks)
+            lines.add (chunk);
+          lines.add ("");
+        }
+        else
+          lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+
         ptr += len;
       }
     }

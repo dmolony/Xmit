@@ -1,6 +1,7 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -8,7 +9,7 @@ import java.util.TreeMap;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
-public class PdsDataset extends Dataset
+public class PdsDataset extends Dataset implements Iterable<Member>
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
@@ -251,5 +252,15 @@ public class PdsDataset extends Dataset
     }
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // iterator
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public Iterator<Member> iterator ()
+  {
+    return members.iterator ();
   }
 }

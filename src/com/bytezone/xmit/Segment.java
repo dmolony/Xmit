@@ -10,8 +10,8 @@ public class Segment implements Iterable<BlockPointer>
   private int rawBufferLength;          // raw data length
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
 
-  private boolean isBinary;
-  private boolean isLastBlock;
+  //  private boolean isBinary;
+  //  private boolean isLastBlock;
 
   private final boolean shortDisplay = false;
 
@@ -54,7 +54,7 @@ public class Segment implements Iterable<BlockPointer>
 
   List<DataBlock> createDataBlocks ()                     // used only for data blocks
   {
-    setBinaryFlag (rawBlockPointers.get (0));
+    //    setBinaryFlag (rawBlockPointers.get (0));
 
     int recLen = 0;
     int headerPtr = 0;
@@ -97,7 +97,7 @@ public class Segment implements Iterable<BlockPointer>
 
           if (recLen == 0)
           {
-            isLastBlock = true;
+            //            isLastBlock = true;
             break;
           }
         }
@@ -123,21 +123,23 @@ public class Segment implements Iterable<BlockPointer>
   // setBinaryFlag
   // ---------------------------------------------------------------------------------//
 
-  private void setBinaryFlag (BlockPointer blockPointer)
-  {
-    for (int i = 0; i < 10; i++)
-    {
-      int ptr = blockPointer.offset + 12 + i;
-      if (ptr >= buffer.length)
-        break;
-      int b = buffer[ptr] & 0xFF;
-      if (b < 0x40 || b == 0xFF)
-      {
-        isBinary = true;
-        break;
-      }
-    }
-  }
+  //  private void setBinaryFlag (BlockPointer blockPointer)
+  //  {
+  //    //    for (int i = 0; i < 10; i++)
+  //    //    {
+  //    //      int ptr = blockPointer.offset + 12 + i;
+  //    //      if (ptr >= buffer.length)
+  //    //        break;
+  //    //      int b = buffer[ptr] & 0xFF;
+  //    //      if (b < 0x40 || b == 0xFF)
+  //    //      {
+  //    //        isBinary = true;
+  //    //        break;
+  //    //      }
+  //    //    }
+  //    isBinary =
+  //        Utility.isBinary (buffer, blockPointer.offset + 12, blockPointer.length - 12);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // ttlMatches
@@ -170,10 +172,10 @@ public class Segment implements Iterable<BlockPointer>
   // isLastBlock
   // ---------------------------------------------------------------------------------//
 
-  boolean isLastBlock ()
-  {
-    return isLastBlock;
-  }
+  //  boolean isLastBlock ()
+  //  {
+  //    return isLastBlock;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // listHeaders
@@ -230,10 +232,10 @@ public class Segment implements Iterable<BlockPointer>
   // isBinary
   // ---------------------------------------------------------------------------------//
 
-  boolean isBinary ()
-  {
-    return isBinary;
-  }
+  //  boolean isBinary ()
+  //  {
+  //    return isBinary;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getEightBytes
