@@ -9,15 +9,19 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
-public class Member implements Iterable<DataBlock>
+public class Member implements Iterable<DataBlock>, Comparable<Member>
 {
   String name;
+  CatalogEntry catalogEntry;
+
   final Org org;
   final int lrecl;
   final int recfm;
 
-  private final List<DataBlock> dataBlocks = new ArrayList<> ();          // PDS
-  private final List<DataBlock> extraDataBlocks = new ArrayList<> ();     // PDSE
+  private final List<Segment> segments;                        // PS
+  private final List<DataBlock> dataBlocks;                    // PDS
+  private final List<DataBlock> extraDataBlocks;               // PDSE
+
   private int dataLength = 0;
 
   final List<String> lines = new ArrayList<> ();
@@ -32,6 +36,38 @@ public class Member implements Iterable<DataBlock>
     this.org = org;
     this.lrecl = lrecl;
     this.recfm = recfm;
+
+    if (org == Org.PS)
+    {
+      segments = new ArrayList<> ();
+      dataBlocks = null;
+      extraDataBlocks = null;
+    }
+    else
+    {
+      segments = null;
+      dataBlocks = new ArrayList<> ();
+      extraDataBlocks = new ArrayList<> ();
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setCatalogEntry
+  // ---------------------------------------------------------------------------------//
+
+  void setCatalogEntry (CatalogEntry catalogEntry)
+  {
+    this.catalogEntry = catalogEntry;
+    this.name = catalogEntry.getMemberName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getCatalogEntry
+  // ---------------------------------------------------------------------------------//
+
+  public CatalogEntry getCatalogEntry ()
+  {
+    return catalogEntry;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -44,10 +80,19 @@ public class Member implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addPdsDataBlock
+  // getName
   // ---------------------------------------------------------------------------------//
 
-  void addPdsDataBlock (DataBlock dataBlock)
+  public String getName ()
+  {
+    return name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addDataBlock
+  // ---------------------------------------------------------------------------------//
+
+  void addDataBlock (DataBlock dataBlock)
   {
     byte type = dataBlock.getType ();
     if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
@@ -57,6 +102,16 @@ public class Member implements Iterable<DataBlock>
     }
     else                                          // additional PDSE blocks
       extraDataBlocks.add (dataBlock);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addSegment
+  // ---------------------------------------------------------------------------------//
+
+  void addSegment (Segment segment)
+  {
+    segments.add (segment);
+    dataLength += segment.getRawBufferLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -284,12 +339,13 @@ public class Member implements Iterable<DataBlock>
 
       if (dataset.getOrg () == Dsorg.Org.PDS)
       {
-        List<CatalogEntry> members = ((PdsDataset) dataset).getMembers ();
-        lines.add (String.format ("Members: %s%n", members.size ()));
+        //        List<CatalogEntry> catalogEntries = ((PdsDataset) dataset).getMembers ();
+
+        lines.add (String.format ("Members: %s%n", ((PdsDataset) dataset).size ()));
         lines.add (" Member     User      Size     Date        Time     Alias");
         lines.add ("--------  --------  ------  -----------  --------  --------");
-        for (CatalogEntry catalogEntry : members)
-          lines.add (catalogEntry.toString ());
+        for (Member member : (PdsDataset) dataset)
+          lines.add (member.getCatalogEntry ().toString ());
       }
     }
     catch (Exception e)
@@ -357,5 +413,15 @@ public class Member implements Iterable<DataBlock>
   public Iterator<DataBlock> iterator ()
   {
     return dataBlocks.iterator ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // compareTo
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public int compareTo (Member o)
+  {
+    return this.name.compareTo (o.name);
   }
 }

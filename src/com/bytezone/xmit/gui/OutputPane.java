@@ -132,9 +132,10 @@ public class OutputPane extends BorderPane
         text.append (
             "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
         text.append ("Size1 Size2       -------- user ---------\n");
-        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
+        //        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
+        for (Member member : (PdsDataset) dataset)
         {
-          text.append (catalogEntry.debugLine ());
+          text.append (member.getCatalogEntry ().debugLine ());
           text.append ("\n");
         }
         //        text.append (((PdsDataset) dataset).getBlockListing ());

@@ -1,10 +1,6 @@
 package com.bytezone.xmit;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
@@ -14,7 +10,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  List<Member> members = new ArrayList<> ();
+  private final List<Member> members = new ArrayList<> ();
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -29,12 +25,12 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getCatalogEntries
+  // size
   // ---------------------------------------------------------------------------------//
 
-  public List<CatalogEntry> getMembers ()
+  public int size ()
   {
-    return catalogEntries;
+    return members.size ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -62,9 +58,10 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   public List<CatalogEntry> getXmitMembers ()
   {
     List<CatalogEntry> xmitFiles = new ArrayList<> ();
-    for (CatalogEntry catalogEntry : catalogEntries)
-      if (catalogEntry.getMember ().isXmit ())
-        xmitFiles.add (catalogEntry);
+    for (Member member : members)
+      //    for (CatalogEntry catalogEntry : catalogEntries)
+      if (member.isXmit ())
+        xmitFiles.add (member.getCatalogEntry ());
     return xmitFiles;
   }
 
@@ -104,9 +101,10 @@ public class PdsDataset extends Dataset implements Iterable<Member>
       for (CatalogEntry catalogEntry : catalogEntryList)
       {
         catalogEntry.setMember (member);
-        member.setName (catalogEntry.getMemberName ());
+        member.setCatalogEntry (catalogEntry);
       }
     }
+    Collections.sort (members);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -125,7 +123,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
         members.add (currentMember);
       }
 
-      currentMember.addPdsDataBlock (dataBlock);
+      currentMember.addDataBlock (dataBlock);
 
       if (dataBlock.getSize () == 0)
         currentMember = null;
@@ -154,7 +152,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
         lastTtl = ttl;
       }
 
-      currentMember.addPdsDataBlock (dataBlock);
+      currentMember.addDataBlock (dataBlock);
     }
   }
 
