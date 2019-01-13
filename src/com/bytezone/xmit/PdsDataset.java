@@ -11,6 +11,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
   private final List<Member> members = new ArrayList<> ();
+  private final List<Member> xmitMembers = new ArrayList<> ();
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -55,14 +56,9 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   // getXmitMembers
   // ---------------------------------------------------------------------------------//
 
-  public List<CatalogEntry> getXmitMembers ()
+  public List<Member> getXmitMembers ()
   {
-    List<CatalogEntry> xmitFiles = new ArrayList<> ();
-    for (Member member : members)
-      //    for (CatalogEntry catalogEntry : catalogEntries)
-      if (member.isXmit ())
-        xmitFiles.add (member.getCatalogEntry ());
-    return xmitFiles;
+    return xmitMembers;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,6 +99,8 @@ public class PdsDataset extends Dataset implements Iterable<Member>
         catalogEntry.setMember (member);
         member.setCatalogEntry (catalogEntry);
       }
+      if (member.isXmit ())
+        xmitMembers.add (member);
     }
     Collections.sort (members);
   }
