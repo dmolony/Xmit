@@ -123,8 +123,11 @@ public class Segment implements Iterable<BlockPointer>
   byte[] getEightBytes ()
   {
     byte[] eightBytes = new byte[8];
+
     BlockPointer blockPointer = rawBlockPointers.get (0);
-    System.arraycopy (buffer, blockPointer.offset, eightBytes, 0, eightBytes.length);
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0,
+        eightBytes.length);
+
     return eightBytes;
   }
 
@@ -149,7 +152,7 @@ public class Segment implements Iterable<BlockPointer>
   // getRawBuffer - contains no headers
   // ---------------------------------------------------------------------------------//
 
-  int getRawBuffer (byte[] dataBuffer, int ptr)
+  int packBuffer (byte[] dataBuffer, int ptr)
   {
     assert buffer.length >= ptr + rawBufferLength;
 
@@ -161,6 +164,16 @@ public class Segment implements Iterable<BlockPointer>
     }
 
     return ptr;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isXmit
+  // ---------------------------------------------------------------------------------//
+
+  boolean isXmit ()
+  {
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    return Utility.matches (Reader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
   }
 
   // ---------------------------------------------------------------------------------//

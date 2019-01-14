@@ -140,8 +140,14 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   {
     byte[] buffer = new byte[dataLength];
     int ptr = 0;
-    for (DataBlock dataBlock : dataBlocks)
-      ptr = dataBlock.packBuffer (buffer, ptr);
+
+    if (org == Org.PS)
+      for (Segment segment : segments)
+        ptr = segment.packBuffer (buffer, ptr);
+    else
+      for (DataBlock dataBlock : dataBlocks)
+        ptr = dataBlock.packBuffer (buffer, ptr);
+
     assert ptr == dataLength;
     return buffer;
   }
@@ -152,7 +158,10 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
   public boolean isXmit ()
   {
-    return dataBlocks.get (0).isXmit ();
+    if (org == Org.PS)
+      return segments.get (0).isXmit ();
+    else
+      return dataBlocks.get (0).isXmit ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -187,7 +196,10 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
   byte[] getEightBytes ()
   {
-    return dataBlocks.get (0).getEightBytes ();
+    if (org == Org.PS)
+      return segments.get (0).getEightBytes ();
+    else
+      return dataBlocks.get (0).getEightBytes ();
   }
 
   // ---------------------------------------------------------------------------------//

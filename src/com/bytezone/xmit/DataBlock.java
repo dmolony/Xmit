@@ -92,32 +92,15 @@ public class DataBlock
 
   byte[] getEightBytes ()
   {
-    byte[] buffer = new byte[8];
+    byte[] eightBytes = new byte[8];
     if (header.getSize () == 0)
-      return buffer;
+      return eightBytes;
 
     BlockPointer blockPointer = blockPointers.get (0);
-    System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, 0, buffer.length);
-    return buffer;
-    //    return Utility.getTwoBytes (blockPointer.buffer, blockPointer.offset);
-  }
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0,
+        eightBytes.length);
 
-  // ---------------------------------------------------------------------------------//
-  // packBuffer
-  // ---------------------------------------------------------------------------------//
-
-  int packBuffer (byte[] buffer, int offset)
-  {
-    assert buffer.length >= offset + getSize ();
-
-    for (BlockPointer blockPointer : blockPointers)
-    {
-      System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, offset,
-          blockPointer.length);
-      offset += blockPointer.length;
-    }
-
-    return offset;
+    return eightBytes;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -139,11 +122,26 @@ public class DataBlock
   }
 
   // ---------------------------------------------------------------------------------//
-  // isXmit
+  // packBuffer
   // ---------------------------------------------------------------------------------//
 
-  private static byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
-                                   (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
+  int packBuffer (byte[] buffer, int offset)
+  {
+    assert buffer.length >= offset + getSize ();
+
+    for (BlockPointer blockPointer : blockPointers)
+    {
+      System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, offset,
+          blockPointer.length);
+      offset += blockPointer.length;
+    }
+
+    return offset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isXmit
+  // ---------------------------------------------------------------------------------//
 
   boolean isXmit ()
   {
@@ -151,7 +149,7 @@ public class DataBlock
       return false;
 
     BlockPointer blockPointer = blockPointers.get (0);
-    return Utility.matches (INMR01, blockPointer.buffer, blockPointer.offset + 1);
+    return Utility.matches (Reader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
   }
 
   // ---------------------------------------------------------------------------------//

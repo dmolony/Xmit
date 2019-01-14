@@ -41,6 +41,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   XmitTable ()
   {
     setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
+    //    setFixedCellSize (12);
     setItems (items);
 
     addString ("Member", "MemberName", 100, "CENTER-LEFT");

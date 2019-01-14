@@ -8,6 +8,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 public class PsDataset extends Dataset
 {
+  private Member member;
   private final List<String> lines = new ArrayList<> ();        // sequential file
 
   // ---------------------------------------------------------------------------------//
@@ -20,12 +21,27 @@ public class PsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
+  // getMember
+  // ---------------------------------------------------------------------------------//
+
+  public Member getMember ()
+  {
+    return member;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // process
   // ---------------------------------------------------------------------------------//
 
   @Override
   void allocateSegments ()
   {
+    // create a Member (without a CatalogEntry)
+    member = new Member (dsorg, lrecl, recfm);
+    member.setName (reader.getFileName ());
+    for (Segment segment : segments)
+      member.addSegment (segment);
+
     if (getFileType () != FileType.BIN)
     {
       extractMessage ();
@@ -97,7 +113,7 @@ public class PsDataset extends Dataset
     //    for (int i = 0; i < max; i++)
     //    ptr = segments.get (i).getRawBuffer (buffer, ptr);
     for (Segment segment : segments)
-      ptr = segment.getRawBuffer (buffer, ptr);
+      ptr = segment.packBuffer (buffer, ptr);
 
     return buffer;
   }

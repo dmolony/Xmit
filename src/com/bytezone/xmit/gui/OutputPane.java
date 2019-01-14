@@ -7,12 +7,16 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
 public class OutputPane extends BorderPane
@@ -32,6 +36,8 @@ public class OutputPane extends BorderPane
   private final TextArea debugText = new TextArea ();
   private final TextArea hexText = new TextArea ();
   private final TextArea outputText = new TextArea ();
+
+  private final Label fileName = new Label ();
 
   private Reader reader;
   private Dataset dataset;
@@ -56,7 +62,17 @@ public class OutputPane extends BorderPane
     addText (hexTab, hexText, "Hex");
     addText (outputTab, outputText, "Output");
 
+    HBox hbox = new HBox (10);
+    hbox.getChildren ().add (fileName);
+    hbox.setPrefHeight (20);
+    hbox.setAlignment (Pos.CENTER_LEFT);
+    hbox.setPadding (new Insets (6, 10, 6, 10));
+
+    Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
+    fileName.setFont (headingFont);
+
     setCenter (tabPane);
+    setTop (hbox);
 
     restore ();
   }
@@ -247,6 +263,11 @@ public class OutputPane extends BorderPane
 
     catalogEntry = null;
     updateCurrentTab ();
+
+    if (dataset == null)
+      fileName.setText ("");
+    else if (dataset.getOrg () == Org.PS)
+      fileName.setText (((PsDataset) dataset).getMember ().getName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -258,6 +279,12 @@ public class OutputPane extends BorderPane
   {
     this.catalogEntry = catalogEntry;
     updateCurrentTab ();
+
+    if (catalogEntry.isAlias ())
+      fileName.setText (
+          catalogEntry.getMemberName ().trim () + " -> " + catalogEntry.getAliasName ());
+    else
+      fileName.setText (catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
