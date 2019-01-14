@@ -16,9 +16,9 @@ public class Reader
   //  private static final byte[] INMR03 =
   //      { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9, (byte) 0xF0,
   //        (byte) 0xF3 };
-  private static final byte[] INMR06 =
-      { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
-        (byte) 0xF0, (byte) 0xF6 };
+  //  private static final byte[] INMR06 =
+  //      { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
+  //        (byte) 0xF0, (byte) 0xF6 };
 
   private final String fileName;
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
@@ -121,18 +121,10 @@ public class Reader
 
     // allocate the data records
     for (Dataset dataset : datasets)
-      dataset.process ();
+      dataset.allocateSegments ();
 
     if (datasets.size () > 1)
       System.out.printf ("Processed %d datasets%n", datasets.size ());
-
-    //    if (false)
-    //      for (ControlRecord controlRecord : controlRecords)
-    //        System.out.println (controlRecord);
-
-    //    if (false && datasets.size () > 1)
-    //      for (Segment segment : datasets.get (0).segments)
-    //        System.out.println (Utility.getString (segment.getRawBuffer ()));
 
     // set active dataset
     activeDataset = datasets.get (datasets.size () - 1);     // always last

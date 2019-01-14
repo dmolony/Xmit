@@ -24,7 +24,7 @@ public class PsDataset extends Dataset
   // ---------------------------------------------------------------------------------//
 
   @Override
-  void process ()
+  void allocateSegments ()
   {
     if (getFileType () != FileType.BIN)
     {
@@ -55,8 +55,17 @@ public class PsDataset extends Dataset
         while (ptr < buffer.length)
         {
           int len = Math.min (lrecl, buffer.length - ptr);
-          lines.add (String.format ("%3d  %3d  %s", i, ptr,
-              Utility.getString (buffer, ptr, len).stripTrailing ()));
+          if (Utility.isBinary (buffer, ptr, len))
+          {
+            String[] chunks = Utility.getHexDump (buffer).split ("\n");
+            for (String chunk : chunks)
+              lines.add (chunk);
+            lines.add ("");
+            //            lines.add (String.format ("%3d  %3d  %s", i, ptr,
+            //                Utility.getString (buffer, ptr, len).stripTrailing ()));
+          }
+          else
+            lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
           ptr += len;
         }
       }
@@ -81,12 +90,14 @@ public class PsDataset extends Dataset
 
   public byte[] getRawBuffer ()
   {
-    int max = segments.size ();
+    //    int max = segments.size ();
     byte[] buffer = new byte[rawBufferLength];
 
     int ptr = 0;
-    for (int i = 0; i < max; i++)
-      ptr = segments.get (i).getRawBuffer (buffer, ptr);
+    //    for (int i = 0; i < max; i++)
+    //    ptr = segments.get (i).getRawBuffer (buffer, ptr);
+    for (Segment segment : segments)
+      ptr = segment.getRawBuffer (buffer, ptr);
 
     return buffer;
   }

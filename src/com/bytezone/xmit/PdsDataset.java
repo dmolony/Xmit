@@ -66,7 +66,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  void process ()
+  void allocateSegments ()
   {
     // convert first two BlockPointerList entries
     copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
