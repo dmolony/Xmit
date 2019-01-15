@@ -142,7 +142,7 @@ public class XmitFile
     if (reader != null)
     {
       Dataset dataset = reader.getActiveDataset ();
-      Org org = dataset.getOrg ();
+      Org org = dataset.getDisposition ().getOrg ();
       if (org == Org.PDS && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
         fileTreeItem.buildChildren ();
     }

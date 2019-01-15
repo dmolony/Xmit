@@ -254,7 +254,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
     this.dataset = dataset;
 
     items.clear ();
-    if (dataset != null && dataset.getOrg () == Org.PDS)
+    if (dataset != null && dataset.getDisposition ().getOrg () == Org.PDS)
     {
       //      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
       for (Member member : (PdsDataset) dataset)

@@ -120,7 +120,7 @@ public class FileTreeItem extends TreeItem<XmitFile>
 
     Reader reader = xmitFile.getReader ();
     Dataset dataset = reader.getActiveDataset ();
-    Org org = dataset.getOrg ();
+    Org org = dataset.getDisposition ().getOrg ();
     ObservableList<TreeItem<XmitFile>> children = FXCollections.observableArrayList ();
 
     if (org == Org.PDS)

@@ -14,9 +14,10 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   String name;
   CatalogEntry catalogEntry;
 
-  final Org org;
-  final int lrecl;
-  final int recfm;
+  //  final Org org;
+  //  final int lrecl;
+  //  final int recfm;
+  final Disposition disposition;
 
   private final List<Segment> segments;                        // PS
   private final List<DataBlock> dataBlocks;                    // PDS
@@ -31,13 +32,14 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Member (Org org, int lrecl, int recfm)        // will be used for PS files too
+  Member (Disposition disposition)        // will be used for PS files too
   {
-    this.org = org;
-    this.lrecl = lrecl;
-    this.recfm = recfm;
+    //    this.org = org;
+    //    this.lrecl = lrecl;
+    //    this.recfm = recfm;
+    this.disposition = disposition;
 
-    if (org == Org.PS)
+    if (disposition.dsorg == Org.PS)
     {
       segments = new ArrayList<> ();
       dataBlocks = null;
@@ -141,7 +143,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
     byte[] buffer = new byte[dataLength];
     int ptr = 0;
 
-    if (org == Org.PS)
+    if (disposition.dsorg == Org.PS)
       for (Segment segment : segments)
         ptr = segment.packBuffer (buffer, ptr);
     else
@@ -158,7 +160,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
   public boolean isXmit ()
   {
-    if (org == Org.PS)
+    if (disposition.dsorg == Org.PS)
       return segments.get (0).isXmit ();
     else
       return dataBlocks.get (0).isXmit ();
@@ -196,7 +198,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
   byte[] getEightBytes ()
   {
-    if (org == Org.PS)
+    if (disposition.dsorg == Org.PS)
       return segments.get (0).getEightBytes ();
     else
       return dataBlocks.get (0).getEightBytes ();
@@ -249,11 +251,11 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
     if (isXmit ())
       xmitList ();
-    else if (recfm == 0xC000)
+    else if (disposition.recfm == 0xC000)
       hexDump ();
     //    else if (member.getDataLength () > 100000)
     //      partialDump (1);
-    else if ((recfm == 0x5000 || recfm == 0x5200) && isRdw ())
+    else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200) && isRdw ())
       rdw ();
     else if (getFileType () != FileType.BIN)
       extractMessage ();
@@ -264,7 +266,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
       int length = buffer.length;
       while (length > 0)
       {
-        int len = Math.min (lrecl == 0 ? 80 : lrecl, length);
+        int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
         lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
         ptr += len;
         length -= len;
@@ -349,7 +351,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
-      if (dataset.getOrg () == Dsorg.Org.PDS)
+      if (dataset.getDisposition ().getOrg () == Dsorg.Org.PDS)
       {
         //        List<CatalogEntry> catalogEntries = ((PdsDataset) dataset).getMembers ();
 

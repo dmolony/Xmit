@@ -17,6 +17,8 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 public class OutputPane extends BorderPane
@@ -37,12 +39,14 @@ public class OutputPane extends BorderPane
   private final TextArea hexText = new TextArea ();
   private final TextArea outputText = new TextArea ();
 
-  private final Label fileName = new Label ();
+  private final Label lblFileName = new Label ();
+  private final Label lblDisposition = new Label ();
 
   private Reader reader;
   private Dataset dataset;
   private CatalogEntry catalogEntry;
   private boolean showLines;
+  private Disposition disposition;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -63,13 +67,18 @@ public class OutputPane extends BorderPane
     addText (outputTab, outputText, "Output");
 
     HBox hbox = new HBox (10);
-    hbox.getChildren ().add (fileName);
     hbox.setPrefHeight (20);
     hbox.setAlignment (Pos.CENTER_LEFT);
     hbox.setPadding (new Insets (6, 10, 6, 10));
+    //    HBox.setHgrow (lblDisposition, Priority.ALWAYS);
+    Region filler = new Region ();
+    HBox.setHgrow (filler, Priority.ALWAYS);
+    hbox.getChildren ().addAll (lblFileName, filler, lblDisposition);
 
     Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
-    fileName.setFont (headingFont);
+    lblFileName.setFont (headingFont);
+    lblDisposition.setFont (headingFont);
+    lblDisposition.setAlignment (Pos.CENTER_RIGHT);
 
     setCenter (tabPane);
     setTop (hbox);
@@ -135,7 +144,7 @@ public class OutputPane extends BorderPane
       }
       text.deleteCharAt (text.length () - 1);
 
-      if (dataset.getOrg () == Org.PDS)
+      if (disposition.getOrg () == Org.PDS)
       {
         text.append ("COPYR1\n");
         text.append (((PdsDataset) dataset).getCopyR1 ());
@@ -170,7 +179,7 @@ public class OutputPane extends BorderPane
   {
     if (reader == null)
       debugText.clear ();
-    else if (dataset.getOrg () == Org.PS)                        // flat file
+    else if (disposition.getOrg () == Org.PS)                        // flat file
     {
       debugText.setText (dataset.listSegments ());
     }
@@ -189,7 +198,7 @@ public class OutputPane extends BorderPane
     else
     {
       byte[] buffer = null;
-      if (dataset.getOrg () == Org.PS)                        // flat file
+      if (disposition.getOrg () == Org.PS)                        // flat file
         buffer = ((PsDataset) dataset).getRawBuffer ();
       else if (catalogEntry != null)                          // PDS
         buffer = catalogEntry.getMember ().getDataBuffer ();
@@ -209,7 +218,7 @@ public class OutputPane extends BorderPane
   {
     if (reader == null)
       outputText.clear ();
-    else if (dataset.getOrg () == Org.PS)                  // flat file
+    else if (disposition.getOrg () == Org.PS)                  // flat file
       outputText.setText (((PsDataset) dataset).getLines ());
     else if (catalogEntry != null)                         // PDS
       outputText.setText (catalogEntry.getMember ().getLines (showLines));
@@ -260,14 +269,19 @@ public class OutputPane extends BorderPane
   {
     this.reader = reader;
     this.dataset = dataset;
+    disposition = dataset.getDisposition ();
 
     catalogEntry = null;
     updateCurrentTab ();
 
     if (dataset == null)
-      fileName.setText ("");
-    else if (dataset.getOrg () == Org.PS)
-      fileName.setText (((PsDataset) dataset).getMember ().getName ());
+      lblFileName.setText ("");
+    else
+    {
+      lblDisposition.setText (disposition.toString ());
+      if (disposition.getOrg () == Org.PS)
+        lblFileName.setText (((PsDataset) dataset).getMember ().getName ());
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -281,10 +295,10 @@ public class OutputPane extends BorderPane
     updateCurrentTab ();
 
     if (catalogEntry.isAlias ())
-      fileName.setText (
+      lblFileName.setText (
           catalogEntry.getMemberName ().trim () + " -> " + catalogEntry.getAliasName ());
     else
-      fileName.setText (catalogEntry.getMemberName ());
+      lblFileName.setText (catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//

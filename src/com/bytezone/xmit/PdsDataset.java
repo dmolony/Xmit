@@ -3,7 +3,6 @@ package com.bytezone.xmit;
 import java.util.*;
 
 import com.bytezone.xmit.textunit.ControlRecord;
-import com.bytezone.xmit.textunit.Dsorg.Org;
 
 public class PdsDataset extends Dataset implements Iterable<Member>
 {
@@ -117,7 +116,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
     {
       if (currentMember == null)
       {
-        currentMember = new Member (Org.PDS, lrecl, recfm);
+        currentMember = new Member (disposition);
         members.add (currentMember);
       }
 
@@ -145,7 +144,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
 
       if (ttl != lastTtl)
       {
-        currentMember = new Member (Org.PDS, lrecl, recfm);
+        currentMember = new Member (disposition);
         members.add (currentMember);
         lastTtl = ttl;
       }

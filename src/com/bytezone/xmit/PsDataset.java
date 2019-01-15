@@ -37,7 +37,7 @@ public class PsDataset extends Dataset
   void allocateSegments ()
   {
     // create a Member (without a CatalogEntry)
-    member = new Member (dsorg, lrecl, recfm);
+    member = new Member (disposition);
     member.setName (reader.getFileName ());
     for (Segment segment : segments)
       member.addSegment (segment);
@@ -54,7 +54,7 @@ public class PsDataset extends Dataset
       lines.add (String.format ("File contains %,d bytes in %,d Segments",
           rawBufferLength, max));
       lines.add ("");
-      max = lrecl < 1000 ? 500 : 30;
+      max = disposition.lrecl < 1000 ? 500 : 30;
       lines.add ("Displaying first " + max + " segments");
       lines.add ("");
     }
@@ -63,14 +63,14 @@ public class PsDataset extends Dataset
     {
       Segment segment = segments.get (i);
       byte[] buffer = segment.getRawBuffer ();
-      if (lrecl == 0)
+      if (disposition.lrecl == 0)
         lines.add (Utility.getHexDump (buffer));
       else
       {
         int ptr = 0;
         while (ptr < buffer.length)
         {
-          int len = Math.min (lrecl, buffer.length - ptr);
+          int len = Math.min (disposition.lrecl, buffer.length - ptr);
           if (Utility.isBinary (buffer, ptr, len))
           {
             String[] chunks = Utility.getHexDump (buffer).split ("\n");

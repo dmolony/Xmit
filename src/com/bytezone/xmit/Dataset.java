@@ -15,9 +15,11 @@ public abstract class Dataset
   final Reader reader;
   final ControlRecord inmr02;
 
-  final int lrecl;
-  final Org dsorg;
-  final int recfm;
+  final Disposition disposition;
+  //  final int lrecl;
+  //  final int blksize;
+  //  final Org dsorg;
+  //  final int recfm;
 
   final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;
@@ -31,9 +33,22 @@ public abstract class Dataset
     this.reader = reader;
     this.inmr02 = inmr02;
 
-    lrecl = (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
-    dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
-    recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
+    int lrecl =
+        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
+    int blksize =
+        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMBLKSZ)).getNumber ();
+    Org dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
+    int recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
+    disposition = new Disposition (dsorg, recfm, lrecl, blksize);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getDisposition
+  // ---------------------------------------------------------------------------------//
+
+  public Disposition getDisposition ()
+  {
+    return disposition;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -50,15 +65,6 @@ public abstract class Dataset
   {
     segments.add (segment);
     rawBufferLength += segment.getRawBufferLength ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getOrg
-  // ---------------------------------------------------------------------------------//
-
-  public Org getOrg ()
-  {
-    return dsorg;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -105,7 +111,6 @@ public abstract class Dataset
   @Override
   public String toString ()
   {
-    return String.format ("%-20s %-3s %,6d  %04X", reader.getFileName (), dsorg, lrecl,
-        recfm);
+    return String.format ("%-20s %s", reader.getFileName (), disposition);
   }
 }
