@@ -243,6 +243,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // FILE765 - embedded xmit PS file
   // FILE714 - tar
   // FILE910 - xmit/xmit/PS
+  // FILE784 - PAXFILE FB1
 
   private void createDataLines ()
   {
@@ -251,7 +252,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
     if (isXmit ())
       xmitList ();
-    else if (disposition.recfm == 0xC000)
+    else if (disposition.recfm == 0xC000 || disposition.lrecl <= 1)
       hexDump ();
     //    else if (member.getDataLength () > 100000)
     //      partialDump (1);

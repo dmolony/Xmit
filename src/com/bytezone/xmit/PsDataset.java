@@ -63,7 +63,7 @@ public class PsDataset extends Dataset
     {
       Segment segment = segments.get (i);
       byte[] buffer = segment.getRawBuffer ();
-      if (disposition.lrecl == 0)
+      if (disposition.lrecl <= 1)
         lines.add (Utility.getHexDump (buffer));
       else
       {

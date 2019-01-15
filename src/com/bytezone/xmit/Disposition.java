@@ -73,6 +73,6 @@ public class Disposition
   @Override
   public String toString ()
   {
-    return String.format ("%-3s  %s %,6d / %,6d", dsorg, getRecfm (), lrecl, blksize);
+    return String.format ("%-3s %s %d / %d", dsorg, getRecfm (), lrecl, blksize);
   }
 }

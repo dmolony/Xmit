@@ -7,21 +7,16 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
-public class OutputPane extends BorderPane
+public class OutputPane extends DefaultPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -39,7 +34,7 @@ public class OutputPane extends BorderPane
   private final TextArea hexText = new TextArea ();
   private final TextArea outputText = new TextArea ();
 
-  private final Label lblFileName = new Label ();
+  private final Label lblMemberName = new Label ();
   private final Label lblDisposition = new Label ();
 
   private Reader reader;
@@ -66,19 +61,7 @@ public class OutputPane extends BorderPane
     addText (hexTab, hexText, "Hex");
     addText (outputTab, outputText, "Output");
 
-    HBox hbox = new HBox (10);
-    hbox.setPrefHeight (20);
-    hbox.setAlignment (Pos.CENTER_LEFT);
-    hbox.setPadding (new Insets (6, 10, 6, 10));
-    //    HBox.setHgrow (lblDisposition, Priority.ALWAYS);
-    Region filler = new Region ();
-    HBox.setHgrow (filler, Priority.ALWAYS);
-    hbox.getChildren ().addAll (lblFileName, filler, lblDisposition);
-
-    Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
-    lblFileName.setFont (headingFont);
-    lblDisposition.setFont (headingFont);
-    lblDisposition.setAlignment (Pos.CENTER_RIGHT);
+    HBox hbox = getHBox (lblMemberName, lblDisposition);
 
     setCenter (tabPane);
     setTop (hbox);
@@ -269,19 +252,24 @@ public class OutputPane extends BorderPane
   {
     this.reader = reader;
     this.dataset = dataset;
-    disposition = dataset.getDisposition ();
 
     catalogEntry = null;
-    updateCurrentTab ();
 
     if (dataset == null)
-      lblFileName.setText ("");
+    {
+      lblMemberName.setText ("");
+      disposition = null;
+      lblDisposition.setText ("");
+    }
     else
     {
+      disposition = dataset.getDisposition ();
       lblDisposition.setText (disposition.toString ());
       if (disposition.getOrg () == Org.PS)
-        lblFileName.setText (((PsDataset) dataset).getMember ().getName ());
+        lblMemberName.setText (((PsDataset) dataset).getMember ().getName ());
     }
+
+    updateCurrentTab ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -292,13 +280,14 @@ public class OutputPane extends BorderPane
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
     this.catalogEntry = catalogEntry;
-    updateCurrentTab ();
 
     if (catalogEntry.isAlias ())
-      lblFileName.setText (
+      lblMemberName.setText (
           catalogEntry.getMemberName ().trim () + " -> " + catalogEntry.getAliasName ());
     else
-      lblFileName.setText (catalogEntry.getMemberName ());
+      lblMemberName.setText (catalogEntry.getMemberName ());
+
+    updateCurrentTab ();
   }
 
   // ---------------------------------------------------------------------------------//

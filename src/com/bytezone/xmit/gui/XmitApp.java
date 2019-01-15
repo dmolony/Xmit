@@ -29,7 +29,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private Alert alert;
 
   private String rootFolderName;
-  //  private Path rootFolderPath;
 
   private Stage primaryStage;
   private final OutputPane outputPane = new OutputPane ();
@@ -59,14 +58,17 @@ public class XmitApp extends Application implements CodePageSelectedListener
     // get root folder
     validateRootFolderOrExit ();
 
+    xmitTable = new XmitTable ();
+    TablePane tablePane = new TablePane (xmitTable);
+
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     xmitTree.addListener (outputPane);
+    xmitTree.addListener (tablePane);
     xmitTree.setShowRoot (false);
 
-    xmitTable = new XmitTable ();
     xmitTree.addListener (xmitTable);
 
-    splitPane.getItems ().addAll (xmitTree, xmitTable, outputPane);
+    splitPane.getItems ().addAll (xmitTree, tablePane, outputPane);
 
     fileMenu = new FileMenu (this, xmitTree);
     viewMenu = new ViewMenu (this, xmitTree);
