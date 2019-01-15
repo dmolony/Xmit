@@ -75,8 +75,7 @@ public class CatalogEntry
         String someName = Utility.getString (buffer, ptr + 46, 8);
         break;
 
-      case 0x8F:                    //
-        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
+      case 0x8F:                    // FILE134/REVHELP
         basic (buffer, ptr);       // alias without the alias' name ??
         break;
 

@@ -36,7 +36,10 @@ public class Segment implements Iterable<BlockPointer>
   {
     if (blockPointer.offset + blockPointer.length > buffer.length)
     {
+      // FILE185.XMI / FILE234I
       System.out.println ("invalid block pointer");
+      System.out.printf ("%06X  %02X  %06X%n", blockPointer.offset, blockPointer.length,
+          buffer.length);
       return;
     }
     rawBlockPointers.add (blockPointer);

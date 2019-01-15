@@ -25,11 +25,12 @@ public class TablePane extends DefaultPane implements TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset, String name)
+  public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
   {
     if (reader == null)
       lblFileName.setText ("");
     else
       lblFileName.setText (reader.getFileName ());
+    //      lblFileName.setText (path);
   }
 }

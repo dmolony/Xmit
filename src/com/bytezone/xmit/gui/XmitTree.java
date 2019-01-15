@@ -67,7 +67,7 @@ public class XmitTree extends TreeView<XmitFile>
       if (newSelection == null)
       {
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null, null);
+          listener.treeItemSelected (null, null, null, null);
         return;
       }
 
@@ -76,11 +76,11 @@ public class XmitTree extends TreeView<XmitFile>
 
       if (reader == null)
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null, null);
+          listener.treeItemSelected (null, null, null, null);
       else
         for (TreeItemSelectionListener listener : listeners)
           listener.treeItemSelected (reader, reader.getActiveDataset (),
-              newSelection.getValue ().getName ());
+              newSelection.getValue ().getName (), getSelectedItemPath ());
     });
   }
 
@@ -103,10 +103,12 @@ public class XmitTree extends TreeView<XmitFile>
 
     if (!lastPath.isEmpty ())
     {
-      Optional<FileTreeItem> optionalNode = getNode (lastPath);
+      Optional<TreeItem<XmitFile>> optionalNode = getNode (lastPath);
       if (optionalNode.isPresent ())
       {
-        model.select (optionalNode.get ());
+        int row = getRow (optionalNode.get ());
+        model.clearAndSelect (row);
+        //  System.out.println (focusModel.isFocused (model.getSelectedIndex ()));
         scrollTo (model.getSelectedIndex ());
       }
     }
@@ -126,15 +128,16 @@ public class XmitTree extends TreeView<XmitFile>
   // getNode
   // ---------------------------------------------------------------------------------//
 
-  Optional<FileTreeItem> getNode (String path)
+  Optional<TreeItem<XmitFile>> getNode (String path)
   {
-    FileTreeItem node = (FileTreeItem) getRoot ();
-    Optional<FileTreeItem> optionalNode = Optional.empty ();
+    TreeItem<XmitFile> node = getRoot ();
+    Optional<TreeItem<XmitFile>> optionalNode = Optional.empty ();
 
     String[] chunks = path.split (SEPARATOR);
 
     for (int i = 2; i < chunks.length; i++)
     {
+      //      model.select (node);
       optionalNode = search (node, chunks[i]);
       if (!optionalNode.isPresent ())
         break;
@@ -147,13 +150,12 @@ public class XmitTree extends TreeView<XmitFile>
   // search
   // ---------------------------------------------------------------------------------//
 
-  private Optional<FileTreeItem> search (FileTreeItem parentNode, String name)
+  private Optional<TreeItem<XmitFile>> search (TreeItem<XmitFile> parentNode, String name)
   {
     parentNode.setExpanded (true);
-
     for (TreeItem<XmitFile> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
-        return Optional.of ((FileTreeItem) childNode);
+        return Optional.of (childNode);
 
     return Optional.empty ();
   }
@@ -166,15 +168,41 @@ public class XmitTree extends TreeView<XmitFile>
   {
     StringBuilder pathBuilder = new StringBuilder ();
 
-    FileTreeItem item = (FileTreeItem) model.getSelectedItem ();
+    TreeItem<XmitFile> item = model.getSelectedItem ();
     while (item != null)
     {
       pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());
-      item = (FileTreeItem) item.getParent ();
+      item = item.getParent ();
     }
 
     return pathBuilder.toString ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  //
+  // ---------------------------------------------------------------------------------//
+
+  //  private void findNode (TreeItem<XmitFile> treeNode, String name)
+  //  {
+  //    if (treeNode.getChildren ().isEmpty ())
+  //    {
+  //      // Do nothing node is empty.
+  //    }
+  //    else
+  //    {
+  //      // Loop through each child node.
+  //      for (TreeItem<XmitFile> node : treeNode.getChildren ())
+  //      {
+  //        node.setExpanded (true);
+  //        if (node.getValue ().getName ().equals (name))
+  //          model.select (node);
+  //
+  //        // If the current node has children then check them.
+  //        if (!treeNode.getChildren ().isEmpty ())
+  //          findNode (node, name);
+  //      }
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // addListener

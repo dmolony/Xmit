@@ -13,10 +13,6 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 {
   String name;
   CatalogEntry catalogEntry;
-
-  //  final Org org;
-  //  final int lrecl;
-  //  final int recfm;
   final Disposition disposition;
 
   private final List<Segment> segments;                        // PS

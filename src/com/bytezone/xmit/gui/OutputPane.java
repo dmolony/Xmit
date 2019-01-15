@@ -248,7 +248,7 @@ public class OutputPane extends DefaultPane
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset, String name)
+  public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
   {
     this.reader = reader;
     this.dataset = dataset;
