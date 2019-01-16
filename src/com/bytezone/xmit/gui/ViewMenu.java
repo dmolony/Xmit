@@ -12,9 +12,10 @@ import javafx.scene.input.KeyCombination;
 public class ViewMenu
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
-  private static final String PREFS_SHOW_CONTROL = "ShowControl";
-  private static final String PREFS_SHOW_DEBUG = "ShowDebug";
+  private static final String PREFS_SHOW_HEADERS = "ShowHeaders";
+  private static final String PREFS_SHOW_BLOCKS = "ShowBlocks";
   private static final String PREFS_SHOW_HEX = "ShowHex";
+
   private static final String PREFS_CODE_PAGE = "CodePage";
   private static final String PREFS_EURO_PAGE = "EuroPage";
 
@@ -26,13 +27,13 @@ public class ViewMenu
 
   private final Menu viewMenu = new Menu ("View");
   private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Line numbers");
-  private final CheckMenuItem controlMenuItem = new CheckMenuItem ("Control tab");
-  private final CheckMenuItem debugMenuItem = new CheckMenuItem ("Debug tab");
+  private final CheckMenuItem headersMenuItem = new CheckMenuItem ("Headers tab");
+  private final CheckMenuItem blocksMenuItem = new CheckMenuItem ("Blocks tab");
   private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
 
   private final String[][] codePageNames =
       { { "CP037", "CP1140" }, { "CP285", "CP1146" }, { "CP297", "CP1147" },
-        { "CP500", "CP1148" }, { "CP1047", "CP1047" }, };
+        { "CP500", "CP1148" }, { "CP1047", "CP1047" } };
   private final KeyCode[] keyCodes =
       { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5, };
 
@@ -51,8 +52,8 @@ public class ViewMenu
     for (int i = 0; i < codePageNames.length; i++)
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
-    viewMenu.getItems ().addAll (linesMenuItem, new SeparatorMenuItem (), controlMenuItem,
-        debugMenuItem, hexMenuItem, new SeparatorMenuItem ());
+    viewMenu.getItems ().addAll (linesMenuItem, new SeparatorMenuItem (), headersMenuItem,
+        blocksMenuItem, hexMenuItem, new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
       viewMenu.getItems ().add (item);
     viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
@@ -63,8 +64,8 @@ public class ViewMenu
         new KeyCodeCombination (KeyCode.DIGIT9, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
-    controlMenuItem.setOnAction (e -> setTabs ());
-    debugMenuItem.setOnAction (e -> setTabs ());
+    headersMenuItem.setOnAction (e -> setTabs ());
+    blocksMenuItem.setOnAction (e -> setTabs ());
     hexMenuItem.setOnAction (e -> setTabs ());
     euroMenuItem.setOnAction (e -> setEuroAndNotifyListeners ());
   }
@@ -126,7 +127,7 @@ public class ViewMenu
 
   private void setTabs ()
   {
-    xmitApp.setTabVisible (controlMenuItem.isSelected (), debugMenuItem.isSelected (),
+    xmitApp.setTabVisible (headersMenuItem.isSelected (), blocksMenuItem.isSelected (),
         hexMenuItem.isSelected ());
   }
 
@@ -139,8 +140,8 @@ public class ViewMenu
     linesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
     notifyLinesListeners ();
 
-    controlMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_CONTROL, false));
-    debugMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_DEBUG, false));
+    headersMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEADERS, false));
+    blocksMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_BLOCKS, false));
     hexMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEX, false));
     setTabs ();
 
@@ -166,8 +167,8 @@ public class ViewMenu
   void exit ()
   {
     prefs.putBoolean (PREFS_SHOW_LINES, linesMenuItem.isSelected ());
-    prefs.putBoolean (PREFS_SHOW_CONTROL, controlMenuItem.isSelected ());
-    prefs.putBoolean (PREFS_SHOW_DEBUG, debugMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_SHOW_HEADERS, headersMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_SHOW_BLOCKS, blocksMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());
     prefs.putBoolean (PREFS_EURO_PAGE, euroMenuItem.isSelected ());
 

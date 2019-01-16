@@ -3,6 +3,8 @@ package com.bytezone.xmit.gui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -32,5 +34,18 @@ abstract class DefaultPane extends BorderPane
     label2.setAlignment (Pos.CENTER_RIGHT);
 
     return hbox;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addText
+  // ---------------------------------------------------------------------------------//
+
+  void addText (Tab tab, TextArea text, String title)
+  {
+    tab.setContent (text);
+    tab.setText (title);
+    text.setFont (Font.font ("Monospaced", 13));
+    text.setEditable (false);
+    text.setWrapText (false);
   }
 }

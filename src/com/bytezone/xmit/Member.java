@@ -243,6 +243,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // FILE714 - tar
   // FILE910 - xmit/xmit/PS
   // FILE784 - PAXFILE FB1
+  // FILE600 - XMITPDSC VB
 
   private void createDataLines ()
   {
@@ -463,23 +464,40 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
     int count = 0;
     int total = 0;
 
-    for (DataBlock dataBlock : dataBlocks)          // PDS
+    if (disposition.dsorg == Org.PDS)
     {
-      total += dataBlock.getSize ();
-      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+      text.append (
+          "\n    #   Offset     Header                    Data      Data      Ptr\n");
+      text.append (
+          "  ----  ------  -----------------------------------  --------    ---\n");
+      for (DataBlock dataBlock : dataBlocks)          // PDS
+      {
+        total += dataBlock.getSize ();
+        text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+      }
+      text.append (String.format ("%42.42s %s%n", "", "--------  --------"));
+
+      int b1 = (total & 0xFF0000) >>> 16;
+      int b2 = (total & 0x00FF00) >>> 8;
+      int b3 = (total & 0x0000FF);
+      text.append (
+          String.format ("%42.42s %02X %02X %02X %,9d%n%n", "", b1, b2, b3, total));
     }
 
-    for (Segment segment : segments)                // PS
+    if (disposition.dsorg == Org.PS)
     {
-      total += segment.getRawBufferLength ();
-      text.append (String.format ("   %3d  %s%n", count++, segment));
+      text.append ("\n    #   Offset     Data     Data     Ptr\n");
+      text.append ("  ----  ------    ------   ------    ---\n");
+      for (Segment segment : segments)                // PS
+      {
+        total += segment.getRawBufferLength ();
+        text.append (String.format ("   %3d  %s%n", count++, segment));
+      }
     }
 
-    text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
-    text.append (String.format ("%44.44s %06X %<,9d%n%n", "", total));
-
-    for (DataBlock dataBlock : extraDataBlocks)
-      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+    if (extraDataBlocks != null)
+      for (DataBlock dataBlock : extraDataBlocks)
+        text.append (String.format ("   %3d  %s%n", count++, dataBlock));
 
     Utility.removeTrailingNewlines (text);
 

@@ -201,6 +201,18 @@ public class Segment implements Iterable<BlockPointer>
   //  }
 
   // ---------------------------------------------------------------------------------//
+  // toString
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public String toString ()
+  {
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset,
+        rawBufferLength, rawBlockPointers.size ());
+  }
+
+  // ---------------------------------------------------------------------------------//
   // Iterator
   // ---------------------------------------------------------------------------------//
 

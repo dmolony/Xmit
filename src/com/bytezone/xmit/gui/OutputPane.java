@@ -14,7 +14,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Font;
 
 public class OutputPane extends DefaultPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener
@@ -24,13 +23,13 @@ public class OutputPane extends DefaultPane
 
   private final TabPane tabPane = new TabPane ();
 
-  private final Tab controlTab = new Tab ();
-  private final Tab debugTab = new Tab ();
+  private final Tab headersTab = new Tab ();
+  private final Tab blocksTab = new Tab ();
   private final Tab hexTab = new Tab ();
   private final Tab outputTab = new Tab ();
 
-  private final TextArea controlText = new TextArea ();
-  private final TextArea debugText = new TextArea ();
+  private final TextArea headersText = new TextArea ();
+  private final TextArea blocksText = new TextArea ();
   private final TextArea hexText = new TextArea ();
   private final TextArea outputText = new TextArea ();
 
@@ -57,8 +56,8 @@ public class OutputPane extends DefaultPane
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
-    addText (controlTab, controlText, "Control");
-    addText (debugTab, debugText, "Debug");
+    addText (headersTab, headersText, "Headers");
+    addText (blocksTab, blocksText, "Blocks");
     addText (hexTab, hexText, "Hex");
     addText (outputTab, outputText, "Output");
 
@@ -68,19 +67,6 @@ public class OutputPane extends DefaultPane
     setTop (hbox);
 
     restore ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // addText
-  // ---------------------------------------------------------------------------------//
-
-  private void addText (Tab tab, TextArea text, String title)
-  {
-    tab.setContent (text);
-    tab.setText (title);
-    text.setFont (Font.font ("Monospaced", 13));
-    text.setEditable (false);
-    text.setWrapText (false);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -100,10 +86,10 @@ public class OutputPane extends DefaultPane
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
 
-    if (selectedTab == controlTab)
-      updateControlTab ();
-    else if (selectedTab == debugTab)
-      updateDebugTab ();
+    if (selectedTab == headersTab)
+      updateHeadersTab ();
+    else if (selectedTab == blocksTab)
+      updateBlocksTab ();
     else if (selectedTab == hexTab)
       updateHexTab ();
     else if (selectedTab == outputTab)
@@ -111,13 +97,13 @@ public class OutputPane extends DefaultPane
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateControlTab
+  // updateHeadersTab
   // ---------------------------------------------------------------------------------//
 
-  private void updateControlTab ()
+  private void updateHeadersTab ()
   {
     if (reader == null)
-      controlText.clear ();
+      headersText.clear ();
     else
     {
       StringBuilder text = new StringBuilder ();
@@ -151,24 +137,27 @@ public class OutputPane extends DefaultPane
       }
 
       text.deleteCharAt (text.length () - 1);
-      controlText.setText (text.toString ());
+      headersText.setText (text.toString ());
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateDebugTab
+  // updateBlocksTab
   // ---------------------------------------------------------------------------------//
 
-  private void updateDebugTab ()
+  private void updateBlocksTab ()
   {
-    if (reader == null)
-      debugText.clear ();
-    else if (disposition.getOrg () == Org.PS)                        // flat file
-    {
-      debugText.setText (dataset.listSegments ());
-    }
-    else if (catalogEntry != null)
-      debugText.setText (catalogEntry.getMember ().toString ());
+    if (member == null)
+      blocksText.clear ();
+    else
+      blocksText.setText (member.toString ());
+
+    //    else if (disposition.getOrg () == Org.PS)                        // flat file
+    //    {
+    //      blocksText.setText (dataset.listSegments ());
+    //    }
+    //    else if (catalogEntry != null)
+    //      blocksText.setText (catalogEntry.getMember ().toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -237,9 +226,9 @@ public class OutputPane extends DefaultPane
     tabPane.getTabs ().clear ();
 
     if (controlVisible)
-      tabPane.getTabs ().add (controlTab);
+      tabPane.getTabs ().add (headersTab);
     if (debugVisible)
-      tabPane.getTabs ().add (debugTab);
+      tabPane.getTabs ().add (blocksTab);
     if (hexVisible)
       tabPane.getTabs ().add (hexTab);
 
