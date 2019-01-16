@@ -14,12 +14,7 @@ public abstract class Dataset
 {
   final Reader reader;
   final ControlRecord inmr02;
-
   final Disposition disposition;
-  //  final int lrecl;
-  //  final int blksize;
-  //  final Org dsorg;
-  //  final int recfm;
 
   final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;
@@ -39,6 +34,7 @@ public abstract class Dataset
         (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMBLKSZ)).getNumber ();
     Org dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
     int recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
+
     disposition = new Disposition (dsorg, recfm, lrecl, blksize);
   }
 

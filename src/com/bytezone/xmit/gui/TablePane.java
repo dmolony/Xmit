@@ -31,6 +31,5 @@ public class TablePane extends DefaultPane implements TreeItemSelectionListener
       lblFileName.setText ("");
     else
       lblFileName.setText (reader.getFileName ());
-    //      lblFileName.setText (path);
   }
 }

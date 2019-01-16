@@ -130,7 +130,10 @@ public class OutputPane extends DefaultPane
         //        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
         for (Member member : (PdsDataset) dataset)
         {
-          text.append (member.getCatalogEntry ().debugLine ());
+          if (member.getCatalogEntry () != null)
+            text.append (member.getCatalogEntry ().debugLine ());
+          else
+            text.append ("not found");
           text.append ("\n");
         }
         //        text.append (((PdsDataset) dataset).getBlockListing ());

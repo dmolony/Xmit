@@ -11,7 +11,7 @@ import com.bytezone.xmit.textunit.Dsorg.Org;
 
 public class Member implements Iterable<DataBlock>, Comparable<Member>
 {
-  String name;
+  String name = "???";
   CatalogEntry catalogEntry;
   final Disposition disposition;
 
@@ -414,8 +414,6 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
       if (dataset.getDisposition ().getOrg () == Dsorg.Org.PDS)
       {
-        //        List<CatalogEntry> catalogEntries = ((PdsDataset) dataset).getMembers ();
-
         lines.add (String.format ("Members: %s%n", ((PdsDataset) dataset).size ()));
         lines.add (" Member     User      Size     Date        Time     Alias");
         lines.add ("--------  --------  ------  -----------  --------  --------");
