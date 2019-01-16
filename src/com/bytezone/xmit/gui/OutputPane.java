@@ -40,6 +40,7 @@ public class OutputPane extends DefaultPane
   private Reader reader;
   private Dataset dataset;
   private CatalogEntry catalogEntry;
+  private Member member;
   private boolean showLines;
   private Disposition disposition;
 
@@ -176,15 +177,15 @@ public class OutputPane extends DefaultPane
 
   private void updateHexTab ()
   {
-    if (reader == null)
+    if (member == null)
       hexText.clear ();
     else
     {
-      byte[] buffer = null;
-      if (disposition.getOrg () == Org.PS)                        // flat file
-        buffer = ((PsDataset) dataset).getRawBuffer ();
-      else if (catalogEntry != null)                          // PDS
-        buffer = catalogEntry.getMember ().getDataBuffer ();
+      byte[] buffer = member.getDataBuffer ();
+      //      if (disposition.getOrg () == Org.PS)                        // flat file
+      //        buffer = ((PsDataset) dataset).getRawBuffer ();
+      //      else if (catalogEntry != null)                          // PDS
+      //        buffer = catalogEntry.getMember ().getDataBuffer ();
       if (buffer != null)
       {
         int max = Math.min (0x20000, buffer.length);
@@ -199,12 +200,14 @@ public class OutputPane extends DefaultPane
 
   private void updateOutputTab ()
   {
-    if (reader == null)
+    if (reader == null || member == null)
       outputText.clear ();
-    else if (disposition.getOrg () == Org.PS)                  // flat file
-      outputText.setText (((PsDataset) dataset).getLines ());
-    else if (catalogEntry != null)                         // PDS
-      outputText.setText (catalogEntry.getMember ().getLines (showLines));
+    //    else if (disposition.getOrg () == Org.PS)                  // flat file
+    //      outputText.setText (((PsDataset) dataset).getLines ());
+    //    else if (catalogEntry != null)                         // PDS
+    //      outputText.setText (catalogEntry.getMember ().getLines (showLines));
+    else
+      outputText.setText (member.getLines (showLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -254,6 +257,7 @@ public class OutputPane extends DefaultPane
     this.dataset = dataset;
 
     catalogEntry = null;
+    member = null;
 
     if (dataset == null)
     {
@@ -266,7 +270,10 @@ public class OutputPane extends DefaultPane
       disposition = dataset.getDisposition ();
       lblDisposition.setText (disposition.toString ());
       if (disposition.getOrg () == Org.PS)
-        lblMemberName.setText (((PsDataset) dataset).getMember ().getName ());
+      {
+        member = ((PsDataset) dataset).getMember ();
+        lblMemberName.setText (member.getName ());
+      }
     }
 
     updateCurrentTab ();
@@ -280,6 +287,7 @@ public class OutputPane extends DefaultPane
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
     this.catalogEntry = catalogEntry;
+    this.member = catalogEntry.getMember ();
 
     if (catalogEntry.isAlias ())
       lblMemberName.setText (

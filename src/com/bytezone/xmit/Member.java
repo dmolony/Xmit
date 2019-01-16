@@ -28,11 +28,8 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Member (Disposition disposition)        // will be used for PS files too
+  Member (Disposition disposition)
   {
-    //    this.org = org;
-    //    this.lrecl = lrecl;
-    //    this.recfm = recfm;
     this.disposition = disposition;
 
     if (disposition.dsorg == Org.PS)
@@ -168,9 +165,15 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
   boolean isRdw ()
   {
-    for (DataBlock dataBlock : dataBlocks)
-      if (dataBlock.getTwoBytes () != dataBlock.getSize ())
-        return false;
+    if (disposition.dsorg == Org.PS)
+    {
+      System.out.println ("not written");
+      return false;
+    }
+    else
+      for (DataBlock dataBlock : dataBlocks)
+        if (dataBlock.getTwoBytes () != dataBlock.getSize ())
+          return false;
 
     return true;
   }
@@ -192,7 +195,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // getEightBytes
   // ---------------------------------------------------------------------------------//
 
-  byte[] getEightBytes ()
+  private byte[] getEightBytes ()
   {
     if (disposition.dsorg == Org.PS)
       return segments.get (0).getEightBytes ();
@@ -258,15 +261,75 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
       extractMessage ();
     else
     {
-      byte[] buffer = getDataBuffer ();
-      int ptr = 0;
-      int length = buffer.length;
-      while (length > 0)
+      if (disposition.dsorg == Org.PS)
+        ps ();
+      else
+        pds ();
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // pds
+  // ---------------------------------------------------------------------------------//
+
+  private void pds ()
+  {
+    byte[] buffer = getDataBuffer ();
+    int ptr = 0;
+    int length = buffer.length;
+    while (length > 0)
+    {
+      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
+      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+      ptr += len;
+      length -= len;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // ps
+  // ---------------------------------------------------------------------------------//
+
+  private void ps ()
+  {
+    int max = segments.size ();
+    int rawBufferLength = dataLength;
+
+    if (max > 500 && rawBufferLength > 200_000)
+    {
+      lines.add (String.format ("File contains %,d bytes in %,d Segments",
+          rawBufferLength, max));
+      lines.add ("");
+      max = disposition.lrecl < 1000 ? 500 : 30;
+      lines.add ("Displaying first " + max + " segments");
+      lines.add ("");
+    }
+
+    for (int i = 0; i < max; i++)
+    {
+      Segment segment = segments.get (i);
+      byte[] buffer = segment.getRawBuffer ();
+      if (disposition.lrecl <= 1)
+        lines.add (Utility.getHexDump (buffer));
+      else
       {
-        int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
-        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-        ptr += len;
-        length -= len;
+        int ptr = 0;
+        while (ptr < buffer.length)
+        {
+          int len = Math.min (disposition.lrecl, buffer.length - ptr);
+          if (Utility.isBinary (buffer, ptr, len))
+          {
+            String[] chunks = Utility.getHexDump (buffer).split ("\n");
+            for (String chunk : chunks)
+              lines.add (chunk);
+            lines.add ("");
+            //            lines.add (String.format ("%3d  %3d  %s", i, ptr,
+            //                Utility.getString (buffer, ptr, len).stripTrailing ()));
+          }
+          else
+            lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+          ptr += len;
+        }
       }
     }
   }
@@ -399,10 +462,17 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
 
     int count = 0;
     int total = 0;
-    for (DataBlock dataBlock : dataBlocks)
+
+    for (DataBlock dataBlock : dataBlocks)          // PDS
     {
       total += dataBlock.getSize ();
       text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+    }
+
+    for (Segment segment : segments)                // PS
+    {
+      total += segment.getRawBufferLength ();
+      text.append (String.format ("   %3d  %s%n", count++, segment));
     }
 
     text.append (String.format ("%44.44s %s%n", "", "------ ---------"));
