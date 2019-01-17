@@ -39,7 +39,7 @@ public class OutputPane extends DefaultPane
   private Reader reader;
   private Dataset dataset;
   //  private CatalogEntry catalogEntry;
-  private Member member;
+  private NamedData member;
   private boolean showLines;
   private Disposition disposition;
 

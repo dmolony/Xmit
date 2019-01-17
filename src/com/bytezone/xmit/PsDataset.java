@@ -4,7 +4,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 public class PsDataset extends Dataset
 {
-  private PsMember member;
+  private FlatFile member;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -19,7 +19,7 @@ public class PsDataset extends Dataset
   // getMember
   // ---------------------------------------------------------------------------------//
 
-  public PsMember getMember ()
+  public FlatFile getMember ()
   {
     return member;
   }
@@ -31,7 +31,7 @@ public class PsDataset extends Dataset
   @Override
   void allocateSegments ()
   {
-    member = new PsMember (disposition);
+    member = new FlatFile (disposition);
     member.setName (reader.getFileName ());
     for (Segment segment : segments)
       member.addSegment (segment);

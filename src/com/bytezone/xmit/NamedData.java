@@ -7,7 +7,7 @@ import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 // rename to File at some stage
-public abstract class Member implements Comparable<Member>
+public abstract class NamedData implements Comparable<NamedData>
 {
   String name = "???";
   final Disposition disposition;
@@ -21,7 +21,7 @@ public abstract class Member implements Comparable<Member>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Member (Disposition disposition)
+  NamedData (Disposition disposition)
   {
     this.disposition = disposition;
   }
@@ -230,7 +230,7 @@ public abstract class Member implements Comparable<Member>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public int compareTo (Member o)
+  public int compareTo (NamedData o)
   {
     return this.name.compareTo (o.name);
   }
