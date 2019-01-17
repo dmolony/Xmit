@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
-import com.bytezone.xmit.textunit.Dsorg;
 
 // rename to File at some stage
 public abstract class Member implements Comparable<Member>
@@ -110,6 +109,8 @@ public abstract class Member implements Comparable<Member>
     //      partialDump (1);
     else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200) && isRdw ())
       rdw ();
+    else if (isObject ())
+      object ();
     else if (getFileType () != FileType.BIN)
       showExtractMessage ();
     else
@@ -133,6 +134,31 @@ public abstract class Member implements Comparable<Member>
   abstract void hexDump ();
 
   abstract void rdw ();         // see SOURCE.XMI
+
+  // ---------------------------------------------------------------------------------//
+  // isObject
+  // ---------------------------------------------------------------------------------//
+
+  // https://www.ibm.com/support/knowledgecenter/en
+  //         /SSLTBW_2.1.0/com.ibm.zos.v2r1.asma100/object.htm
+  static private final byte[] object =
+      { 0x02, (byte) 0xC5, (byte) 0xE2, (byte) 0xC4, 0x40, 0x40, 0x40, 0x40 };
+
+  boolean isObject ()
+  {
+    return Utility.matches (object, getEightBytes (), 0);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // object
+  // ---------------------------------------------------------------------------------//
+
+  void object ()
+  {
+    lines.add ("Object Deck Output:");
+    lines.add ("");
+    hexDump ();
+  }
 
   // ---------------------------------------------------------------------------------//
   // extractMessage
@@ -161,13 +187,13 @@ public abstract class Member implements Comparable<Member>
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
-      if (dataset.getDisposition ().getOrg () == Dsorg.Org.PDS)
+      if (dataset.isPds ())
       {
         lines.add (String.format ("Members: %s%n", ((PdsDataset) dataset).size ()));
         lines.add (" Member     User      Size     Date        Time     Alias");
         lines.add ("--------  --------  ------  -----------  --------  --------");
-        for (Member member : (PdsDataset) dataset)
-          lines.add (((PdsMember) member).getCatalogEntry ().toString ());
+        for (PdsMember member : (PdsDataset) dataset)
+          lines.add (member.getCatalogEntry ().toString ());
       }
     }
     catch (Exception e)

@@ -160,8 +160,9 @@ public class PdsMember extends Member implements Iterable<DataBlock>
       String[] chunks = Utility.getHexDump (buffer).split ("\n");
       for (String chunk : chunks)
         lines.add (chunk);
-      if (lines.size () > 500)
+      if (lines.size () > 5000)
         break;
+      lines.add ("");
     }
   }
 

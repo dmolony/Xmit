@@ -51,8 +51,8 @@ public class Reader
 
       if (ptr + length > buffer.length)
       {
-        System.out.println ("Unexpected EOF in record: " + recNo);
-        System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
+        //        System.out.println ("Unexpected EOF in record: " + recNo);
+        //        System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
         incomplete = true;
         break;
       }

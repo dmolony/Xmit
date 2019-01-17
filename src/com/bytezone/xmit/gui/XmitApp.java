@@ -64,7 +64,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     xmitTree.addListener (outputPane);
     xmitTree.addListener (tablePane);
-    xmitTree.setShowRoot (false);
 
     xmitTree.addListener (xmitTable);
 
@@ -90,6 +89,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     primaryStage.setOnCloseRequest (e -> exit ());
 
     restore ();
+    //    xmitTree.setShowRoot (false);
 
     return mainPane;
   }

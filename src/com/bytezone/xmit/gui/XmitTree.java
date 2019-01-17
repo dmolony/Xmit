@@ -22,6 +22,7 @@ public class XmitTree extends TreeView<XmitFile>
 
   private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
   private final FocusModel<TreeItem<XmitFile>> focusModel = getFocusModel ();
+
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
@@ -108,7 +109,7 @@ public class XmitTree extends TreeView<XmitFile>
       {
         int row = getRow (optionalNode.get ());
         model.clearAndSelect (row);
-        //  System.out.println (focusModel.isFocused (model.getSelectedIndex ()));
+        focusModel.focus (model.getSelectedIndex ());
         scrollTo (model.getSelectedIndex ());
       }
     }
@@ -137,12 +138,13 @@ public class XmitTree extends TreeView<XmitFile>
 
     for (int i = 2; i < chunks.length; i++)
     {
-      //      model.select (node);
+      model.select (node);
       optionalNode = search (node, chunks[i]);
       if (!optionalNode.isPresent ())
         break;
       node = optionalNode.get ();
     }
+    setShowRoot (false);        // workaround for stupid javafx bug
     return optionalNode;
   }
 
