@@ -7,6 +7,7 @@ import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
 
+// rename to File at some stage
 public abstract class Member implements Comparable<Member>
 {
   String name = "???";
@@ -54,41 +55,13 @@ public abstract class Member implements Comparable<Member>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDataBuffer
-  // ---------------------------------------------------------------------------------//
-
-  public abstract byte[] getDataBuffer ();
-
-  // ---------------------------------------------------------------------------------//
-  // isXmit
-  // ---------------------------------------------------------------------------------//
-
-  public abstract boolean isXmit ();
-
-  // ---------------------------------------------------------------------------------//
-  // isRdw
-  // ---------------------------------------------------------------------------------//
-
-  abstract boolean isRdw ();
-
-  // ---------------------------------------------------------------------------------//
   // getFileType
   // ---------------------------------------------------------------------------------//
 
   public FileType getFileType ()
   {
-    if (isXmit ())
-      return FileType.XMIT;
-
-    byte[] buffer = getEightBytes ();
-    return Utility.getFileType (buffer);
+    return isXmit () ? FileType.XMIT : Utility.getFileType (getEightBytes ());
   }
-
-  // ---------------------------------------------------------------------------------//
-  // getEightBytes
-  // ---------------------------------------------------------------------------------//
-
-  abstract byte[] getEightBytes ();
 
   // ---------------------------------------------------------------------------------//
   // getLines
@@ -138,42 +111,40 @@ public abstract class Member implements Comparable<Member>
     else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200) && isRdw ())
       rdw ();
     else if (getFileType () != FileType.BIN)
-      extractMessage ();
+      showExtractMessage ();
     else
-    {
       createLines ();
-      //      if (disposition.dsorg == Org.PS)
-      //        ps ();
-      //      else
-      //        pds ();
-    }
   }
+
+  // ---------------------------------------------------------------------------------//
+  // abstract methods
+  // ---------------------------------------------------------------------------------//
+
+  public abstract byte[] getDataBuffer ();
+
+  public abstract boolean isXmit ();
+
+  abstract boolean isRdw ();
+
+  abstract byte[] getEightBytes ();
 
   abstract void createLines ();
 
-  // ---------------------------------------------------------------------------------//
-  // hexDump
-  // ---------------------------------------------------------------------------------//
-
   abstract void hexDump ();
+
+  abstract void rdw ();         // see SOURCE.XMI
 
   // ---------------------------------------------------------------------------------//
   // extractMessage
   // ---------------------------------------------------------------------------------//
 
-  void extractMessage ()
+  void showExtractMessage ()
   {
     lines.add ("File type: " + getFileType ());
     lines.add ("");
     lines.add ("Use File->Extract to save a copy in the correct format,");
     lines.add ("      or use the HEX tab to view the raw file.");
   }
-
-  // ---------------------------------------------------------------------------------//
-  // rdw
-  // ---------------------------------------------------------------------------------//
-
-  abstract void rdw ();         // see SOURCE.XMI
 
   // ---------------------------------------------------------------------------------//
   // xmitList
