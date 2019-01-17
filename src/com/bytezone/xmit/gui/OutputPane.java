@@ -128,7 +128,7 @@ public class OutputPane extends DefaultPane
             "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
         text.append ("Size1 Size2       -------- user ---------\n");
         //        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
-        for (Member member : (PdsDataset) dataset)
+        for (PdsMember member : (PdsDataset) dataset)
         {
           if (member.getCatalogEntry () != null)
             text.append (member.getCatalogEntry ().debugLine ());

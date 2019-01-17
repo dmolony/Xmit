@@ -4,13 +4,13 @@ import java.util.*;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 
-public class PdsDataset extends Dataset implements Iterable<Member>
+public class PdsDataset extends Dataset implements Iterable<PdsMember>
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  private final List<Member> members = new ArrayList<> ();
-  private final List<Member> xmitMembers = new ArrayList<> ();
+  private final List<PdsMember> members = new ArrayList<> ();
+  private final List<PdsMember> xmitMembers = new ArrayList<> ();
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -55,7 +55,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   // getXmitMembers
   // ---------------------------------------------------------------------------------//
 
-  public List<Member> getXmitMembers ()
+  public List<PdsMember> getXmitMembers ()
   {
     return xmitMembers;
   }
@@ -95,7 +95,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
     int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
     {
-      Member member = members.get (count++);
+      PdsMember member = members.get (count++);
       for (CatalogEntry catalogEntry : catalogEntryList)
       {
         catalogEntry.setMember (member);
@@ -113,13 +113,13 @@ public class PdsDataset extends Dataset implements Iterable<Member>
 
   private void allocatePDS (List<DataBlock> dataBlocks)
   {
-    Member currentMember = null;
+    PdsMember currentMember = null;
 
     for (DataBlock dataBlock : dataBlocks)
     {
       if (currentMember == null)
       {
-        currentMember = new Member (disposition);
+        currentMember = new PdsMember (disposition);
         members.add (currentMember);
       }
 
@@ -136,7 +136,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
 
   private void allocatePDSE (List<DataBlock> dataBlocks)
   {
-    Member currentMember = null;
+    PdsMember currentMember = null;
     long lastTtl = 0;
 
     for (DataBlock dataBlock : dataBlocks)
@@ -147,7 +147,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
 
       if (ttl != lastTtl)
       {
-        currentMember = new Member (disposition);
+        currentMember = new PdsMember (disposition);
         members.add (currentMember);
         lastTtl = ttl;
       }
@@ -231,7 +231,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
       int total = 0;
       text.append ("\n");
 
-      Member member = catalogEntry.getMember ();
+      PdsMember member = catalogEntry.getMember ();
       for (DataBlock dataBlock : member)
       {
         int size = dataBlock.getSize ();
@@ -257,7 +257,7 @@ public class PdsDataset extends Dataset implements Iterable<Member>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public Iterator<Member> iterator ()
+  public Iterator<PdsMember> iterator ()
   {
     return members.iterator ();
   }

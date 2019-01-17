@@ -1,25 +1,18 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg;
-import com.bytezone.xmit.textunit.Dsorg.Org;
 
-public class Member implements Iterable<DataBlock>, Comparable<Member>
+public abstract class Member implements Comparable<Member>
 {
   String name = "???";
-  CatalogEntry catalogEntry;
   final Disposition disposition;
 
-  private final List<Segment> segments;                        // PS
-  private final List<DataBlock> dataBlocks;                    // PDS
-  private final List<DataBlock> extraDataBlocks;               // PDSE
-
-  private int dataLength = 0;
+  int dataLength = 0;
 
   final List<String> lines = new ArrayList<> ();
   CodePage codePage;
@@ -31,38 +24,6 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   Member (Disposition disposition)
   {
     this.disposition = disposition;
-
-    if (disposition.dsorg == Org.PS)
-    {
-      segments = new ArrayList<> ();
-      dataBlocks = null;
-      extraDataBlocks = null;
-    }
-    else
-    {
-      segments = null;
-      dataBlocks = new ArrayList<> ();
-      extraDataBlocks = new ArrayList<> ();
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // setCatalogEntry
-  // ---------------------------------------------------------------------------------//
-
-  void setCatalogEntry (CatalogEntry catalogEntry)
-  {
-    this.catalogEntry = catalogEntry;
-    this.name = catalogEntry.getMemberName ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getCatalogEntry
-  // ---------------------------------------------------------------------------------//
-
-  public CatalogEntry getCatalogEntry ()
-  {
-    return catalogEntry;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -84,32 +45,6 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addDataBlock
-  // ---------------------------------------------------------------------------------//
-
-  void addDataBlock (DataBlock dataBlock)
-  {
-    byte type = dataBlock.getType ();
-    if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
-    {
-      dataBlocks.add (dataBlock);
-      dataLength += dataBlock.getSize ();
-    }
-    else                                          // additional PDSE blocks
-      extraDataBlocks.add (dataBlock);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // addSegment
-  // ---------------------------------------------------------------------------------//
-
-  void addSegment (Segment segment)
-  {
-    segments.add (segment);
-    dataLength += segment.getRawBufferLength ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   // getDataLength
   // ---------------------------------------------------------------------------------//
 
@@ -119,64 +54,22 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getExtraDataBlocks
-  // ---------------------------------------------------------------------------------//
-
-  List<DataBlock> getExtraDataBlocks ()
-  {
-    return extraDataBlocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
   // getDataBuffer
   // ---------------------------------------------------------------------------------//
 
-  public byte[] getDataBuffer ()
-  {
-    byte[] buffer = new byte[dataLength];
-    int ptr = 0;
-
-    if (disposition.dsorg == Org.PS)
-      for (Segment segment : segments)
-        ptr = segment.packBuffer (buffer, ptr);
-    else
-      for (DataBlock dataBlock : dataBlocks)
-        ptr = dataBlock.packBuffer (buffer, ptr);
-
-    assert ptr == dataLength;
-    return buffer;
-  }
+  public abstract byte[] getDataBuffer ();
 
   // ---------------------------------------------------------------------------------//
   // isXmit
   // ---------------------------------------------------------------------------------//
 
-  public boolean isXmit ()
-  {
-    if (disposition.dsorg == Org.PS)
-      return segments.get (0).isXmit ();
-    else
-      return dataBlocks.get (0).isXmit ();
-  }
+  public abstract boolean isXmit ();
 
   // ---------------------------------------------------------------------------------//
   // isRdw
   // ---------------------------------------------------------------------------------//
 
-  boolean isRdw ()
-  {
-    if (disposition.dsorg == Org.PS)
-    {
-      System.out.println ("not written");
-      return false;
-    }
-    else
-      for (DataBlock dataBlock : dataBlocks)
-        if (dataBlock.getTwoBytes () != dataBlock.getSize ())
-          return false;
-
-    return true;
-  }
+  abstract boolean isRdw ();
 
   // ---------------------------------------------------------------------------------//
   // getFileType
@@ -195,22 +88,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // getEightBytes
   // ---------------------------------------------------------------------------------//
 
-  private byte[] getEightBytes ()
-  {
-    if (disposition.dsorg == Org.PS)
-      return segments.get (0).getEightBytes ();
-    else
-      return dataBlocks.get (0).getEightBytes ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // size
-  // ---------------------------------------------------------------------------------//
-
-  int size ()
-  {
-    return dataBlocks.size ();
-  }
+  abstract byte[] getEightBytes ();
 
   // ---------------------------------------------------------------------------------//
   // getLines
@@ -263,108 +141,21 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
       extractMessage ();
     else
     {
-      if (disposition.dsorg == Org.PS)
-        ps ();
-      else
-        pds ();
+      createLines ();
+      //      if (disposition.dsorg == Org.PS)
+      //        ps ();
+      //      else
+      //        pds ();
     }
   }
 
-  // ---------------------------------------------------------------------------------//
-  // pds
-  // ---------------------------------------------------------------------------------//
-
-  private void pds ()
-  {
-    byte[] buffer = getDataBuffer ();
-    int ptr = 0;
-    int length = buffer.length;
-    while (length > 0)
-    {
-      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
-      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-      ptr += len;
-      length -= len;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // ps
-  // ---------------------------------------------------------------------------------//
-
-  private void ps ()
-  {
-    int max = segments.size ();
-    int rawBufferLength = dataLength;
-
-    if (max > 500 && rawBufferLength > 200_000)
-    {
-      lines.add (String.format ("File contains %,d bytes in %,d Segments",
-          rawBufferLength, max));
-      lines.add ("");
-      max = disposition.lrecl < 1000 ? 500 : 30;
-      lines.add ("Displaying first " + max + " segments");
-      lines.add ("");
-    }
-
-    for (int i = 0; i < max; i++)
-    {
-      Segment segment = segments.get (i);
-      byte[] buffer = segment.getRawBuffer ();
-      if (disposition.lrecl <= 1)
-        lines.add (Utility.getHexDump (buffer));
-      else
-      {
-        int ptr = 0;
-        while (ptr < buffer.length)
-        {
-          int len = Math.min (disposition.lrecl, buffer.length - ptr);
-          if (Utility.isBinary (buffer, ptr, len))
-          {
-            String[] chunks = Utility.getHexDump (buffer).split ("\n");
-            for (String chunk : chunks)
-              lines.add (chunk);
-            lines.add ("");
-            //            lines.add (String.format ("%3d  %3d  %s", i, ptr,
-            //                Utility.getString (buffer, ptr, len).stripTrailing ()));
-          }
-          else
-            lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-          ptr += len;
-        }
-      }
-    }
-  }
+  abstract void createLines ();
 
   // ---------------------------------------------------------------------------------//
   // hexDump
   // ---------------------------------------------------------------------------------//
 
-  private void hexDump ()
-  {
-    // FILE600.XMI
-
-    if (disposition.dsorg == Org.PS)
-      for (Segment segment : segments)
-      {
-        byte[] buffer = segment.getRawBuffer ();
-        String[] chunks = Utility.getHexDump (buffer).split ("\n");
-        for (String chunk : chunks)
-          lines.add (chunk);
-        if (lines.size () > 500)
-          break;
-      }
-    else
-      for (DataBlock dataBlock : dataBlocks)
-      {
-        byte[] buffer = dataBlock.getBuffer ();
-        String[] chunks = Utility.getHexDump (buffer).split ("\n");
-        for (String chunk : chunks)
-          lines.add (chunk);
-        if (lines.size () > 500)
-          break;
-      }
-  }
+  abstract void hexDump ();
 
   // ---------------------------------------------------------------------------------//
   // extractMessage
@@ -382,32 +173,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // rdw
   // ---------------------------------------------------------------------------------//
 
-  void rdw ()         // see SOURCE.XMI
-  {
-    for (DataBlock dataBlock : dataBlocks)
-    {
-      byte[] buffer = dataBlock.getBuffer ();
-
-      int ptr = 4;
-      while (ptr < buffer.length && lines.size () < 2000)
-      {
-        int len = Utility.getTwoBytes (buffer, ptr);
-
-        if (Utility.isBinary (buffer, ptr + 4, len - 4))
-        {
-          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
-          String[] chunks = text.split ("\n");
-          for (String chunk : chunks)
-            lines.add (chunk);
-          lines.add ("");
-        }
-        else
-          lines.add (Utility.getString (buffer, ptr + 4, len - 4));
-
-        ptr += len;
-      }
-    }
-  }
+  abstract void rdw ();         // see SOURCE.XMI
 
   // ---------------------------------------------------------------------------------//
   // xmitList
@@ -430,7 +196,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
         lines.add (" Member     User      Size     Date        Time     Alias");
         lines.add ("--------  --------  ------  -----------  --------  --------");
         for (Member member : (PdsDataset) dataset)
-          lines.add (member.getCatalogEntry ().toString ());
+          lines.add (((PdsMember) member).getCatalogEntry ().toString ());
       }
     }
     catch (Exception e)
@@ -461,68 +227,6 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   //        break;
   //    }
   //  }
-
-  // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  public String toString ()
-  {
-    StringBuilder text = new StringBuilder ();
-
-    int count = 0;
-    int total = 0;
-
-    if (disposition.dsorg == Org.PDS)
-    {
-      text.append (
-          "\n    #   Offset     Header                    Data      Data      Ptr\n");
-      text.append (
-          "  ----  ------  -----------------------------------  --------    ---\n");
-      for (DataBlock dataBlock : dataBlocks)          // PDS
-      {
-        total += dataBlock.getSize ();
-        text.append (String.format ("   %3d  %s%n", count++, dataBlock));
-      }
-      text.append (String.format ("%42.42s %s%n", "", "--------  --------"));
-
-      int b1 = (total & 0xFF0000) >>> 16;
-      int b2 = (total & 0x00FF00) >>> 8;
-      int b3 = (total & 0x0000FF);
-      text.append (
-          String.format ("%42.42s %02X %02X %02X %,9d%n%n", "", b1, b2, b3, total));
-    }
-
-    if (disposition.dsorg == Org.PS)
-    {
-      text.append ("\n    #   Offset     Data     Data     Ptr\n");
-      text.append ("  ----  ------    ------   ------    ---\n");
-      for (Segment segment : segments)                // PS
-      {
-        total += segment.getRawBufferLength ();
-        text.append (String.format ("   %3d  %s%n", count++, segment));
-      }
-    }
-
-    if (extraDataBlocks != null)
-      for (DataBlock dataBlock : extraDataBlocks)
-        text.append (String.format ("   %3d  %s%n", count++, dataBlock));
-
-    Utility.removeTrailingNewlines (text);
-
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // iterator
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  public Iterator<DataBlock> iterator ()
-  {
-    return dataBlocks.iterator ();
-  }
 
   // ---------------------------------------------------------------------------------//
   // compareTo

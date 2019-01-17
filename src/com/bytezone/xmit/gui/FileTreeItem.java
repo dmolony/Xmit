@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.Member;
 import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
@@ -125,11 +125,11 @@ public class FileTreeItem extends TreeItem<XmitFile>
 
     if (org == Org.PDS)
     {
-      List<Member> members = ((PdsDataset) dataset).getXmitMembers ();
+      List<PdsMember> members = ((PdsDataset) dataset).getXmitMembers ();
       if (members.size () > 0)
       {
         isLeaf = false;
-        for (Member member : members)
+        for (PdsMember member : members)
           children.add (new FileTreeItem (new XmitFile (member.getCatalogEntry ())));
         Collections.sort (children, comparator);
       }

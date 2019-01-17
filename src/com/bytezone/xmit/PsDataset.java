@@ -4,7 +4,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 public class PsDataset extends Dataset
 {
-  private Member member;
+  private PsMember member;
   //  private final List<String> lines = new ArrayList<> ();        // sequential file
 
   // ---------------------------------------------------------------------------------//
@@ -20,7 +20,7 @@ public class PsDataset extends Dataset
   // getMember
   // ---------------------------------------------------------------------------------//
 
-  public Member getMember ()
+  public PsMember getMember ()
   {
     return member;
   }
@@ -32,7 +32,7 @@ public class PsDataset extends Dataset
   @Override
   void allocateSegments ()
   {
-    member = new Member (disposition);
+    member = new PsMember (disposition);
     member.setName (reader.getFileName ());
     for (Segment segment : segments)
       member.addSegment (segment);

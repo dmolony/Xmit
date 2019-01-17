@@ -6,7 +6,7 @@ import java.util.Optional;
 public class CatalogEntry
 {
   final Reader reader;
-  private Member member;                                  // contains DataBlocks
+  private PdsMember member;                                  // contains DataBlocks
 
   private final String name;
   private String userName = "";
@@ -192,7 +192,7 @@ public class CatalogEntry
   // setMember
   // ---------------------------------------------------------------------------------//
 
-  void setMember (Member member)
+  void setMember (PdsMember member)
   {
     this.member = member;
   }
@@ -201,7 +201,7 @@ public class CatalogEntry
   // getMember
   // ---------------------------------------------------------------------------------//
 
-  public Member getMember ()
+  public PdsMember getMember ()
   {
     return member;
   }
