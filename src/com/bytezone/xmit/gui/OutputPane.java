@@ -38,7 +38,7 @@ public class OutputPane extends DefaultPane
 
   private Reader reader;
   private Dataset dataset;
-  private CatalogEntry catalogEntry;
+  //  private CatalogEntry catalogEntry;
   private Member member;
   private boolean showLines;
   private Disposition disposition;
@@ -248,7 +248,6 @@ public class OutputPane extends DefaultPane
     this.reader = reader;
     this.dataset = dataset;
 
-    catalogEntry = null;
     member = null;
 
     if (dataset == null)
@@ -278,7 +277,6 @@ public class OutputPane extends DefaultPane
   @Override
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
-    this.catalogEntry = catalogEntry;
     this.member = catalogEntry.getMember ();
 
     if (catalogEntry.isAlias ())
