@@ -28,6 +28,8 @@ public class Reader
   private final List<Dataset> datasets = new ArrayList<> ();
 
   private final Dataset activeDataset;
+  private int files;
+  private boolean incomplete;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -38,6 +40,7 @@ public class Reader
     this.fileName = fileName;
     Segment currentSegment = null;
     Dataset currentDataset = null;
+    int recNo = 0;
 
     int ptr = 0;
 
@@ -45,6 +48,14 @@ public class Reader
     {
       int length = buffer[ptr] & 0xFF;
       byte flags = buffer[ptr + 1];
+
+      if (ptr + length > buffer.length)
+      {
+        System.out.println ("Unexpected EOF in record: " + recNo);
+        System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
+        incomplete = true;
+        break;
+      }
 
       boolean firstSegment = (flags & 0x80) != 0;
       boolean lastSegment = (flags & 0x40) != 0;
@@ -54,25 +65,11 @@ public class Reader
       if (recordNumber)
         System.out.println ("******** Found a record number");
 
-      //      if (false)
-      //      {
-      //        String name = controlRecord ? Utility.getString (buffer, ptr + 2, 6) : "";
+      //        String name =
+      //            controlRecord && firstSegment ? Utility.getString (buffer, ptr + 2, 6) : "";
       //        System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
       //            firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
       //            recordNumber ? "RN" : "", name);
-      //        if (!controlRecord && firstSegment && lastSegment)
-      //          System.out.println (Utility.getHexDump (buffer, ptr, length));
-      //      }
-
-      //      if (false)
-      //      {
-      //        System.out.println (Utility.getHexDump (buffer, ptr, length));
-      //        System.out.println ();
-      //        if (Utility.matches (INMR06, buffer, ptr))
-      //          break;
-      //        ptr += length;
-      //        continue;
-      //      }
 
       if (firstSegment)
         currentSegment = new Segment (buffer);
@@ -87,12 +84,12 @@ public class Reader
           controlRecords.add (cr);
           if (cr.nameMatches ("INMR06"))
             break;
-          //          if (cr.nameMatches ("INMR01"))
-          //          {
-          //            TextUnit textUnit = cr.getTextUnit (TextUnit.INMNUMF);
-          //            if (textUnit != null)
-          //              int files = (int) ((TextUnitNumber) textUnit).getNumber ();
-          //          }
+          if (cr.nameMatches ("INMR01"))
+          {
+            TextUnit textUnit = cr.getTextUnit (TextUnit.INMNUMF);
+            if (textUnit != null)
+              files = (int) ((TextUnitNumber) textUnit).getNumber ();
+          }
           if (cr.nameMatches ("INMR03"))
           {
             Org org = getOrg (datasets.size () + 1);
@@ -120,6 +117,7 @@ public class Reader
       }
 
       ptr += length;
+      ++recNo;
     }
 
     // allocate the data records
@@ -140,6 +138,15 @@ public class Reader
   public String getName ()
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //isIncomplete
+  // ---------------------------------------------------------------------------------//
+
+  public boolean isIncomplete ()
+  {
+    return incomplete;
   }
 
   // ---------------------------------------------------------------------------------//

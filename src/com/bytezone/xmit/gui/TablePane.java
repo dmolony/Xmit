@@ -4,6 +4,7 @@ import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 
 public class TablePane extends DefaultPane implements TreeItemSelectionListener
 {
@@ -30,6 +31,13 @@ public class TablePane extends DefaultPane implements TreeItemSelectionListener
     if (reader == null)
       lblFileName.setText ("");
     else
+    {
       lblFileName.setText (reader.getFileName ());
+
+      if (reader.isIncomplete ())
+        lblFileName.setTextFill (Color.RED);
+      else
+        lblFileName.setTextFill (Color.BLACK);
+    }
   }
 }

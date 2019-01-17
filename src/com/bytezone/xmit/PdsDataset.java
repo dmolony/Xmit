@@ -89,17 +89,13 @@ public class PdsDataset extends Dataset implements Iterable<Member>
     else
       allocatePDS (dataBlocks);
 
-    //    System.out.printf ("%d %d%n", catalogMap.values ().size (), members.size ());
+    if (catalogMap.values ().size () != members.size ())
+      System.out.printf ("%d %d%n", catalogMap.values ().size (), members.size ());
 
     int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
     {
-      Member member = null;
-      do
-      {
-        member = members.get (count++);
-      } while (member.getDataLength () == 0);
-
+      Member member = members.get (count++);
       for (CatalogEntry catalogEntry : catalogEntryList)
       {
         catalogEntry.setMember (member);

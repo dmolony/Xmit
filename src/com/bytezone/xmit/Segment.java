@@ -93,7 +93,8 @@ public class Segment implements Iterable<BlockPointer>
 
           if (recLen == 0)
           {
-            //            isLastBlock = true;
+            if (header.isEmpty ())                // all zeroes
+              dataBlocks.remove (dataBlock);
             break;
           }
         }
@@ -105,6 +106,12 @@ public class Segment implements Iterable<BlockPointer>
         avail -= len;
         recLen -= len;
       }
+    }
+
+    //    System.out.println (dataBlocks.size ());
+    if (dataBlocks.size () > 0 && dataBlocks.get (0).getHeader ().isEmpty ())
+    {
+      System.out.println ("empty header found");
     }
 
     return dataBlocks;

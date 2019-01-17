@@ -244,6 +244,7 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   // FILE910 - xmit/xmit/PS
   // FILE784 - PAXFILE FB1
   // FILE600 - XMITPDSC VB
+  // FILE185 - FILE234I - incomplete
 
   private void createDataLines ()
   {
@@ -343,15 +344,26 @@ public class Member implements Iterable<DataBlock>, Comparable<Member>
   {
     // FILE600.XMI
 
-    for (DataBlock dataBlock : dataBlocks)
-    {
-      byte[] buffer = dataBlock.getBuffer ();
-      String[] chunks = Utility.getHexDump (buffer).split ("\n");
-      for (String chunk : chunks)
-        lines.add (chunk);
-      if (lines.size () > 500)
-        break;
-    }
+    if (disposition.dsorg == Org.PS)
+      for (Segment segment : segments)
+      {
+        byte[] buffer = segment.getRawBuffer ();
+        String[] chunks = Utility.getHexDump (buffer).split ("\n");
+        for (String chunk : chunks)
+          lines.add (chunk);
+        if (lines.size () > 500)
+          break;
+      }
+    else
+      for (DataBlock dataBlock : dataBlocks)
+      {
+        byte[] buffer = dataBlock.getBuffer ();
+        String[] chunks = Utility.getHexDump (buffer).split ("\n");
+        for (String chunk : chunks)
+          lines.add (chunk);
+        if (lines.size () > 500)
+          break;
+      }
   }
 
   // ---------------------------------------------------------------------------------//
