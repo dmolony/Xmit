@@ -5,7 +5,6 @@ import com.bytezone.xmit.textunit.ControlRecord;
 public class PsDataset extends Dataset
 {
   private PsMember member;
-  //  private final List<String> lines = new ArrayList<> ();        // sequential file
 
   // ---------------------------------------------------------------------------------//
   // constructor
