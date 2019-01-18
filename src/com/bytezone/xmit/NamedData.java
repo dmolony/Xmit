@@ -162,7 +162,7 @@ public abstract class NamedData implements Comparable<NamedData>
     lines.add ("");
     hexDump ();
 
-    ObjectDeck objectDeck = new ObjectDeck (getDataBuffer (), disposition.lrecl);
+    //    ObjectDeck objectDeck = new ObjectDeck (getDataBuffer (), disposition.lrecl);
   }
 
   // ---------------------------------------------------------------------------------//
