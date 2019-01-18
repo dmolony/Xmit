@@ -93,6 +93,33 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getDataBuffer
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public byte[] getDataBuffer (int limit)
+  {
+    int length = 0;
+    List<DataBlock> tmpBlocks = new ArrayList<> ();
+    for (DataBlock dataBlock : dataBlocks)
+    {
+      tmpBlocks.add (dataBlock);
+      length += dataBlock.getSize ();
+      if (length >= limit)
+        break;
+    }
+
+    byte[] buffer = new byte[length];
+    int ptr = 0;
+
+    for (DataBlock dataBlock : tmpBlocks)
+      ptr = dataBlock.packBuffer (buffer, ptr);
+
+    assert ptr == length;
+    return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // isXmit
   // ---------------------------------------------------------------------------------//
 
@@ -152,8 +179,6 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   @Override
   void hexDump ()
   {
-    // FILE600.XMI
-
     for (DataBlock dataBlock : dataBlocks)
     {
       byte[] buffer = dataBlock.getBuffer ();

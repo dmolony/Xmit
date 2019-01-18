@@ -12,6 +12,10 @@ public class CatalogEntry
   private String userName = "";
   private String aliasName = "";
 
+  private final boolean usesAlias;
+  private final int numTtr;
+  private final int usrd;
+
   private int size;
   private int init;
   private int mod;
@@ -42,7 +46,13 @@ public class CatalogEntry
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
     this.reader = reader;
 
-    extra = buffer[ptr + 11] & 0xFF;
+    extra = buffer[ptr + 11] & 0xFF;      // indicator byte
+    numTtr = (extra & 0x60) >>> 5;
+    usesAlias = (extra & 0x80) != 0;
+
+    usrd = buffer[ptr + 12] & 0xFF;       // start of user data
+
+    //    assert buffer[ptr + 15] == 0;
 
     switch (extra)
     {
@@ -119,7 +129,8 @@ public class CatalogEntry
             name);
     }
 
-    int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
+    //    int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
+    int extraLength = 12 + (extra & 0x1F) * 2;
     directoryData = new byte[extraLength];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
   }
@@ -157,26 +168,29 @@ public class CatalogEntry
   // basic
   // ---------------------------------------------------------------------------------//
 
-  private void basic (byte[] buffer, int offset)
+  private void basic (byte[] buffer, int ptr)
   {
-    userName = Utility.getString (buffer, offset + 32, 8);
-    size = Utility.getTwoBytes (buffer, offset + 26);
-    init = Utility.getTwoBytes (buffer, offset + 28);
-    mod = Utility.getTwoBytes (buffer, offset + 30);
+    vv = buffer[ptr + 12] & 0xFF;
+    mm = buffer[ptr + 13] & 0xFF;
 
-    vv = buffer[offset + 12] & 0xFF;
-    mm = buffer[offset + 13] & 0xFF;
-
-    Optional<LocalDate> opt = Utility.getLocalDate (buffer, offset + 16);
+    Optional<LocalDate> opt = Utility.getLocalDate (buffer, ptr + 16);
     if (opt.isPresent ())
       dateCreated = opt.get ();
 
-    opt = Utility.getLocalDate (buffer, offset + 20);
+    opt = Utility.getLocalDate (buffer, ptr + 20);
     if (opt.isPresent ())
       dateModified = opt.get ();
 
-    time = String.format ("%02X:%02X:%02X", buffer[offset + 24], buffer[offset + 25],
-        buffer[offset + 15]);
+    //    int moduleAttrs1 = buffer[ptr + 20] & 0xFF;
+    //    int moduleAttrs2 = buffer[ptr + 21] & 0xFF;
+
+    time = String.format ("%02X:%02X:%02X", buffer[ptr + 24], buffer[ptr + 25],
+        buffer[ptr + 15]);
+
+    size = Utility.getTwoBytes (buffer, ptr + 26);
+    init = Utility.getTwoBytes (buffer, ptr + 28);
+    mod = Utility.getTwoBytes (buffer, ptr + 30);
+    userName = Utility.getString (buffer, ptr + 32, 8);
 
     if (false)
     {

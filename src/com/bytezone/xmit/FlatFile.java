@@ -47,6 +47,33 @@ public class FlatFile extends NamedData implements Iterable<Segment>
   }
 
   // ---------------------------------------------------------------------------------//
+  // getDataBuffer
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public byte[] getDataBuffer (int limit)
+  {
+    int length = 0;
+    List<Segment> tmpSegments = new ArrayList<> ();
+    for (Segment segment : segments)
+    {
+      tmpSegments.add (segment);
+      length += segment.getRawBufferLength ();
+      if (length >= limit)
+        break;
+    }
+
+    byte[] buffer = new byte[length];
+    int ptr = 0;
+
+    for (Segment segment : tmpSegments)
+      ptr = segment.packBuffer (buffer, ptr);
+
+    assert ptr == length;
+    return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // isXmit
   // ---------------------------------------------------------------------------------//
 
@@ -133,7 +160,19 @@ public class FlatFile extends NamedData implements Iterable<Segment>
   @Override
   void hexDump ()
   {
-    // FILE600.XMI
+    if (disposition.lrecl < 80)
+    {
+      byte[] buffer = getDataBuffer ();
+      int ptr = 0;
+      while (ptr + 80 < buffer.length)
+      {
+        String[] chunks = Utility.getHexDump (buffer, ptr, 80).split ("\n");
+        for (String chunk : chunks)
+          lines.add (chunk);
+        ptr += 80;
+      }
+      return;
+    }
 
     for (Segment segment : segments)
     {

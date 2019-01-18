@@ -6,10 +6,9 @@ import java.util.List;
 import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
-// rename to File at some stage
 public abstract class NamedData implements Comparable<NamedData>
 {
-  String name = "???";
+  String name = "";
   final Disposition disposition;
 
   int dataLength = 0;
@@ -92,9 +91,10 @@ public abstract class NamedData implements Comparable<NamedData>
   // FILE765 - embedded xmit PS file
   // FILE714 - tar
   // FILE910 - xmit/xmit/PS
-  // FILE784 - PAXFILE FB1
-  // FILE600 - XMITPDSC VB
+  // FILE784 - PAXFILE  - PS FB1 / 23778
+  // FILE600 - XMITPDSC - VB
   // FILE185 - FILE234I - incomplete
+  // FILE859 - $OBJECT  - Object Deck
 
   private void createDataLines ()
   {
@@ -107,7 +107,8 @@ public abstract class NamedData implements Comparable<NamedData>
       hexDump ();
     //    else if (member.getDataLength () > 100000)
     //      partialDump (1);
-    else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200) && isRdw ())
+    else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200
+        || disposition.recfm == 0x5400) && isRdw ())
       rdw ();
     else if (isObject ())
       object ();
@@ -122,6 +123,8 @@ public abstract class NamedData implements Comparable<NamedData>
   // ---------------------------------------------------------------------------------//
 
   public abstract byte[] getDataBuffer ();
+
+  public abstract byte[] getDataBuffer (int limit);
 
   public abstract boolean isXmit ();
 
@@ -158,6 +161,8 @@ public abstract class NamedData implements Comparable<NamedData>
     lines.add ("Object Deck Output:");
     lines.add ("");
     hexDump ();
+
+    ObjectDeck objectDeck = new ObjectDeck (getDataBuffer (), disposition.lrecl);
   }
 
   // ---------------------------------------------------------------------------------//
