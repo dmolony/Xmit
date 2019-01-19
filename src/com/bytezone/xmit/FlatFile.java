@@ -53,6 +53,9 @@ public class FlatFile extends NamedData implements Iterable<Segment>
   @Override
   public byte[] getDataBuffer (int limit)
   {
+    if (dataLength <= limit)
+      return getDataBuffer ();
+
     int length = 0;
     List<Segment> tmpSegments = new ArrayList<> ();
     for (Segment segment : segments)
@@ -90,8 +93,18 @@ public class FlatFile extends NamedData implements Iterable<Segment>
   @Override
   boolean isRdw ()
   {
-    System.out.println ("not written");
+    System.out.println ("not written: " + name);       // haven't seen one yet
     return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // rdw
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  void getRdw ()
+  {
+
   }
 
   // ---------------------------------------------------------------------------------//
@@ -185,16 +198,6 @@ public class FlatFile extends NamedData implements Iterable<Segment>
   //      lines.add ("");
   //    }
   //  }
-
-  // ---------------------------------------------------------------------------------//
-  // rdw
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  void getRdw ()         // see SOURCE.XMI
-  {
-
-  }
 
   // ---------------------------------------------------------------------------------//
   // toString

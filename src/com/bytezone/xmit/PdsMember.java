@@ -99,6 +99,9 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   @Override
   public byte[] getDataBuffer (int limit)
   {
+    if (dataLength <= limit)
+      return getDataBuffer ();
+
     int length = 0;
     List<DataBlock> tmpBlocks = new ArrayList<> ();
     for (DataBlock dataBlock : dataBlocks)

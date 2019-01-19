@@ -12,6 +12,7 @@ import javafx.scene.input.KeyCombination;
 public class ViewMenu
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
+  private static final String PREFS_TRUNCATE = "Truncate";
   private static final String PREFS_SHOW_HEADERS = "ShowHeaders";
   private static final String PREFS_SHOW_BLOCKS = "ShowBlocks";
   private static final String PREFS_SHOW_HEX = "ShowHex";
@@ -27,6 +28,7 @@ public class ViewMenu
 
   private final Menu viewMenu = new Menu ("View");
   private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Line numbers");
+  private final CheckMenuItem truncateMenuItem = new CheckMenuItem ("Truncate");
   private final CheckMenuItem headersMenuItem = new CheckMenuItem ("Headers tab");
   private final CheckMenuItem blocksMenuItem = new CheckMenuItem ("Blocks tab");
   private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
@@ -52,18 +54,23 @@ public class ViewMenu
     for (int i = 0; i < codePageNames.length; i++)
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
-    viewMenu.getItems ().addAll (linesMenuItem, new SeparatorMenuItem (), headersMenuItem,
-        blocksMenuItem, hexMenuItem, new SeparatorMenuItem ());
+    viewMenu.getItems ().addAll (linesMenuItem, truncateMenuItem,
+        new SeparatorMenuItem (), headersMenuItem, blocksMenuItem, hexMenuItem,
+        new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
       viewMenu.getItems ().add (item);
     viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
 
     linesMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+    truncateMenuItem.setAccelerator (
+        new KeyCodeCombination (KeyCode.T, KeyCombination.SHORTCUT_DOWN));
     euroMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.DIGIT9, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
+    truncateMenuItem.setOnAction (e -> notifyLinesListeners ());
+
     headersMenuItem.setOnAction (e -> setTabs ());
     blocksMenuItem.setOnAction (e -> setTabs ());
     hexMenuItem.setOnAction (e -> setTabs ());
@@ -92,7 +99,8 @@ public class ViewMenu
   private void notifyLinesListeners ()
   {
     for (ShowLinesListener listener : showLinesListeners)
-      listener.showLinesSelected (linesMenuItem.isSelected ());
+      listener.showLinesSelected (linesMenuItem.isSelected (),
+          truncateMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -138,6 +146,7 @@ public class ViewMenu
   void restore ()
   {
     linesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
+    truncateMenuItem.setSelected (prefs.getBoolean (PREFS_TRUNCATE, false));
     notifyLinesListeners ();
 
     headersMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEADERS, false));
@@ -167,6 +176,7 @@ public class ViewMenu
   void exit ()
   {
     prefs.putBoolean (PREFS_SHOW_LINES, linesMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_TRUNCATE, truncateMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_HEADERS, headersMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_BLOCKS, blocksMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());

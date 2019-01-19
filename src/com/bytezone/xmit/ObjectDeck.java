@@ -68,7 +68,14 @@ public class ObjectDeck
           break;
 
         case "END":
-          System.out.printf ("%s %s %n", recordType, deckId);
+          int entryAddress = (int) Utility.getValue (buffer, ptr + 5, 3);
+          int entryPoint = Utility.getTwoBytes (buffer, ptr + 14);
+          String name = Utility.getString (buffer, ptr + 16, 8);
+          int idr = buffer[ptr + 32] & 0xFF;
+          int idr2 = idr == 0x40 ? 0 : idr == 0xF1 ? 1 : 2;
+          text = Utility.getString (buffer, ptr + 33, 19);
+          System.out.printf ("%s %s %06X %04X %-8s %d %s %n", recordType, deckId,
+              entryAddress, entryPoint, name, idr2, text);
           break;
 
         case "SYM":

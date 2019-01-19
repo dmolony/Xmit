@@ -38,9 +38,10 @@ public class OutputPane extends DefaultPane
 
   private Reader reader;
   private Dataset dataset;
-  //  private CatalogEntry catalogEntry;
   private NamedData member;
+
   private boolean showLines;
+  private boolean truncateLines;
   private Disposition disposition;
 
   // ---------------------------------------------------------------------------------//
@@ -185,7 +186,7 @@ public class OutputPane extends DefaultPane
     if (member == null)
       outputText.clear ();
     else
-      outputText.setText (member.getLines (showLines));
+      outputText.setText (member.getLines (showLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -279,9 +280,10 @@ public class OutputPane extends DefaultPane
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void showLinesSelected (boolean showLines)
+  public void showLinesSelected (boolean showLines, boolean truncateLines)
   {
     this.showLines = showLines;
+    this.truncateLines = truncateLines;
     updateCurrentTab ();
   }
 

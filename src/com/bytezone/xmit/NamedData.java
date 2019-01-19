@@ -1,6 +1,7 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.bytezone.xmit.Utility.FileType;
@@ -8,14 +9,14 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 public abstract class NamedData implements Comparable<NamedData>
 {
-  private static final int MAX_BUFFER = 1_000_000;
+  private static final int MAX_BUFFER = 100_000;
 
   String name = "";
   final Disposition disposition;
 
   int dataLength = 0;
 
-  final List<String> lines = new ArrayList<> ();
+  List<String> lines = new ArrayList<> ();
   CodePage codePage;
 
   // ---------------------------------------------------------------------------------//
@@ -67,7 +68,7 @@ public abstract class NamedData implements Comparable<NamedData>
   // getLines
   // ---------------------------------------------------------------------------------//
 
-  public String getLines (boolean showLines)
+  public String getLines (boolean showLines, boolean truncate)
   {
     if (lines.size () == 0 || codePage != Utility.codePage)
       createDataLines ();
@@ -75,11 +76,15 @@ public abstract class NamedData implements Comparable<NamedData>
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
 
-    for (String line : lines)
-      if (showLines)
+    if (showLines)
+      for (String line : lines)
         text.append (String.format ("%05d %s%n", ++lineNo, line));
-      else
-        text.append (String.format ("%s%n", line));
+    else
+      for (String line : lines)
+        if (truncate && line.length () > 0)
+          text.append (String.format ("%s%n", line.substring (1)));
+        else
+          text.append (String.format ("%s%n", line));
 
     Utility.removeTrailingNewlines (text);
 
@@ -125,14 +130,20 @@ public abstract class NamedData implements Comparable<NamedData>
   void createLines ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
-    int ptr = 0;
-    int length = buffer.length;
-    while (length > 0)
+
+    if (Utility.isBinary (buffer, 0, 256))
+      lines = Arrays.asList (Utility.getHexDump (buffer).split ("\n"));
+    else
     {
-      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
-      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-      ptr += len;
-      length -= len;
+      int ptr = 0;
+      int length = buffer.length;
+      while (length > 0)
+      {
+        int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
+        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+        ptr += len;
+        length -= len;
+      }
     }
   }
 
@@ -151,10 +162,6 @@ public abstract class NamedData implements Comparable<NamedData>
   abstract boolean isRdw ();
 
   abstract void getRdw ();         // see SOURCE.XMI
-
-  //  abstract void createLines ();
-
-  //  abstract void hexDump ();
 
   // ---------------------------------------------------------------------------------//
   // isObject
@@ -176,9 +183,11 @@ public abstract class NamedData implements Comparable<NamedData>
 
   void object ()
   {
+    byte[] buffer = getDataBuffer (MAX_BUFFER);
     lines.add ("Object Deck Output:");
     lines.add ("");
-    hexDump ();
+
+    lines.addAll (Arrays.asList (Utility.getHexDump (buffer).split ("\n")));
 
     //    ObjectDeck objectDeck = new ObjectDeck (getDataBuffer (), disposition.lrecl);
   }
@@ -202,12 +211,7 @@ public abstract class NamedData implements Comparable<NamedData>
   void hexDump ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
-    String[] chunks = Utility.getHexDump (buffer).split ("\n");
-    for (String chunk : chunks)
-      lines.add (chunk);
-    if (lines.size () > 5000)
-      return;
-    lines.add ("");
+    lines = Arrays.asList (Utility.getHexDump (buffer).split ("\n"));
   }
 
   // ---------------------------------------------------------------------------------//

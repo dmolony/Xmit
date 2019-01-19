@@ -75,7 +75,8 @@ public class Utility
 
   public static boolean isBinary (byte[] buffer, int offset, int length)
   {
-    for (int i = offset, max = offset + length; i < max; i++)
+    int max = Math.min (buffer.length, offset + length);
+    for (int i = offset; i < max; i++)
     {
       int b = buffer[i] & 0xFF;
       if (b < 0x40 || b == 0xFF)
