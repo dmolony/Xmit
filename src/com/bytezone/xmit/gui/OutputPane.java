@@ -7,13 +7,13 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 
 public class OutputPane extends DefaultPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener
@@ -23,15 +23,11 @@ public class OutputPane extends DefaultPane
 
   private final TabPane tabPane = new TabPane ();
 
-  private final Tab headersTab = new Tab ();
-  private final Tab blocksTab = new Tab ();
-  private final Tab hexTab = new Tab ();
-  private final Tab outputTab = new Tab ();
-
-  private final TextArea headersText = new TextArea ();
-  private final TextArea blocksText = new TextArea ();
-  private final TextArea hexText = new TextArea ();
-  private final TextArea outputText = new TextArea ();
+  private final XmitTab[] tabs = new XmitTab[4];
+  private final int HEADERS = 0;
+  private final int BLOCKS = 1;
+  private final int HEX = 2;
+  private final int OUTPUT = 3;
 
   private final Label lblMemberName = new Label ();
   private final Label lblDisposition = new Label ();
@@ -57,15 +53,13 @@ public class OutputPane extends DefaultPane
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
 
-    addText (headersTab, headersText, "Headers");
-    addText (blocksTab, blocksText, "Blocks");
-    addText (hexTab, hexText, "Hex");
-    addText (outputTab, outputText, "Output");
-
-    HBox hbox = getHBox (lblMemberName, lblDisposition);
+    tabs[HEADERS] = createTab ("Headers", KeyCode.H);
+    tabs[BLOCKS] = createTab ("Blocks", KeyCode.B);
+    tabs[HEX] = createTab ("Hex", KeyCode.X);
+    tabs[OUTPUT] = createTab ("Output", KeyCode.O);
 
     setCenter (tabPane);
-    setTop (hbox);
+    setTop (getHBox (lblMemberName, lblDisposition));
 
     restore ();
   }
@@ -87,14 +81,16 @@ public class OutputPane extends DefaultPane
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
 
-    if (selectedTab == headersTab)
+    if (selectedTab == tabs[HEADERS].tab)
       updateHeadersTab ();
-    else if (selectedTab == blocksTab)
+    else if (selectedTab == tabs[BLOCKS].tab)
       updateBlocksTab ();
-    else if (selectedTab == hexTab)
+    else if (selectedTab == tabs[HEX].tab)
       updateHexTab ();
-    else if (selectedTab == outputTab)
+    else if (selectedTab == tabs[OUTPUT].tab)
       updateOutputTab ();
+    else
+      System.out.println ("Unknown Tab:" + selectedTab);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,7 +99,7 @@ public class OutputPane extends DefaultPane
 
   private void updateHeadersTab ()
   {
-    if (member != null && headersText.getText ().isEmpty ())
+    if (member != null && tabs[HEADERS].isTextEmpty ())
     {
       StringBuilder text = new StringBuilder ();
 
@@ -139,7 +135,7 @@ public class OutputPane extends DefaultPane
       }
 
       Utility.removeTrailingNewlines (text);
-      headersText.setText (text.toString ());
+      tabs[HEADERS].setText (text.toString ());
     }
   }
 
@@ -149,8 +145,8 @@ public class OutputPane extends DefaultPane
 
   private void updateBlocksTab ()
   {
-    if (member != null && blocksText.getText ().isEmpty ())
-      blocksText.setText (member.toString ());
+    if (member != null && tabs[BLOCKS].isTextEmpty ())
+      tabs[BLOCKS].setText (member.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -159,14 +155,14 @@ public class OutputPane extends DefaultPane
 
   private void updateHexTab ()
   {
-    if (member != null && hexText.getText ().isEmpty ())
+    if (member != null && tabs[HEX].isTextEmpty ())
     {
       byte[] buffer = member.getDataBuffer ();
 
       if (buffer != null)
       {
         int max = Math.min (0x20000, buffer.length);
-        hexText.setText (Utility.getHexDump (buffer, 0, max));
+        tabs[HEX].setText (Utility.getHexDump (buffer, 0, max));
       }
     }
   }
@@ -177,8 +173,8 @@ public class OutputPane extends DefaultPane
 
   private void updateOutputTab ()
   {
-    if (member != null && outputText.getText ().isEmpty ())
-      outputText.setText (member.getLines (showLines, truncateLines));
+    if (member != null && tabs[OUTPUT].isTextEmpty ())
+      tabs[OUTPUT].setText (member.getLines (showLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -203,18 +199,18 @@ public class OutputPane extends DefaultPane
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (boolean controlVisible, boolean debugVisible, boolean hexVisible)
+  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
   {
     tabPane.getTabs ().clear ();
 
-    if (controlVisible)
-      tabPane.getTabs ().add (headersTab);
-    if (debugVisible)
-      tabPane.getTabs ().add (blocksTab);
+    if (headersVisible)
+      tabPane.getTabs ().add (tabs[HEADERS].tab);
+    if (blocksVisible)
+      tabPane.getTabs ().add (tabs[BLOCKS].tab);
     if (hexVisible)
-      tabPane.getTabs ().add (hexTab);
+      tabPane.getTabs ().add (tabs[HEX].tab);
 
-    tabPane.getTabs ().add (outputTab);         // always visible
+    tabPane.getTabs ().add (tabs[OUTPUT].tab);         // always visible
   }
 
   // ---------------------------------------------------------------------------------//
@@ -246,7 +242,7 @@ public class OutputPane extends DefaultPane
       }
     }
 
-    resetTabs ();
+    clearText ();
     updateCurrentTab ();
   }
 
@@ -259,7 +255,7 @@ public class OutputPane extends DefaultPane
   {
     this.member = catalogEntry.getMember ();
     updateName ();
-    resetTabs ();
+    clearText ();
     updateCurrentTab ();
   }
 
@@ -297,9 +293,11 @@ public class OutputPane extends DefaultPane
     this.showLines = showLines;
     this.truncateLines = truncateLines;
 
-    resetTabs ();
+    saveScrollBars ();
+    clearText ();
     updateCurrentTab ();
     updateName ();
+    restoreScrollBars ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -308,40 +306,40 @@ public class OutputPane extends DefaultPane
 
   public void selectCodePage ()
   {
-    resetTabs ();
+    saveScrollBars ();
+    clearText ();
     updateCurrentTab ();
+    restoreScrollBars ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // resetTabs
+  // saveScrollBars
   // ---------------------------------------------------------------------------------//
 
-  private void resetTabs ()
+  private void saveScrollBars ()
   {
-    headersText.clear ();
-    blocksText.clear ();
-    hexText.clear ();
-    outputText.clear ();
+    for (XmitTab tab : tabs)
+      tab.saveScrollBar ();
   }
 
   // ---------------------------------------------------------------------------------//
-  //
+  // restoreScrollBars
   // ---------------------------------------------------------------------------------//
 
-  private ScrollBar getScrollBar (TabPane tree, Orientation orientation)
+  private void restoreScrollBars ()
   {
-    // Get the ScrollBar with the given Orientation using lookupAll
-    for (Node n : tree.lookupAll (".scroll-bar"))
-    {
-      if (n instanceof ScrollBar)
-      {
-        ScrollBar bar = (ScrollBar) n;
+    for (XmitTab tab : tabs)
+      tab.restoreScrollBar ();
+  }
 
-        if (bar.getOrientation ().equals (orientation))
-          return bar;
-      }
-    }
-    return null;
+  // ---------------------------------------------------------------------------------//
+  // clearText
+  // ---------------------------------------------------------------------------------//
+
+  private void clearText ()
+  {
+    for (XmitTab tab : tabs)
+      tab.textArea.clear ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -351,22 +349,12 @@ public class OutputPane extends DefaultPane
   public void keyPressed (KeyCode keyCode)
   {
     SingleSelectionModel<Tab> model = tabPane.getSelectionModel ();
-    switch (keyCode)
-    {
-      case H:
-        model.select (headersTab);
-        break;
-      case B:
-        model.select (blocksTab);
-        break;
-      case X:
-        model.select (hexTab);
-        break;
-      case O:
-        model.select (outputTab);
-        break;
-      default:
-        break;
-    }
+
+    for (XmitTab tab : tabs)
+      if (tab.keyCode == keyCode)
+      {
+        model.select (tab.tab);
+        return;
+      }
   }
 }

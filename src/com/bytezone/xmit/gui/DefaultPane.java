@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -38,15 +39,17 @@ abstract class DefaultPane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  // addText
+  // createTab
   // ---------------------------------------------------------------------------------//
 
-  void addText (Tab tab, TextArea text, String title)
+  XmitTab createTab (String title, KeyCode keyCode)
   {
+    Tab tab = new Tab (title);
+    TextArea text = new TextArea ();
     tab.setContent (text);
-    tab.setText (title);
     text.setFont (monospacedFont);
     text.setEditable (false);
     text.setWrapText (false);
+    return new XmitTab (tab, text, keyCode);
   }
 }

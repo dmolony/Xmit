@@ -287,9 +287,9 @@ public class XmitApp extends Application implements CodePageSelectedListener
   // setTabVisible
   // ---------------------------------------------------------------------------------//
 
-  void setTabVisible (boolean metaVisible, boolean debugVisible, boolean hexVisible)
+  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
   {
-    outputPane.setTabVisible (metaVisible, debugVisible, hexVisible);
+    outputPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -16,7 +16,7 @@ public abstract class NamedData implements Comparable<NamedData>
 
   int dataLength = 0;
 
-  List<String> lines = new ArrayList<> ();
+  final List<String> lines = new ArrayList<> ();
   CodePage codePage;
 
   // ---------------------------------------------------------------------------------//
@@ -134,7 +134,8 @@ public abstract class NamedData implements Comparable<NamedData>
     byte[] buffer = getDataBuffer (MAX_BUFFER);
 
     if (Utility.isBinary (buffer, 0, 256))
-      lines = Arrays.asList (Utility.getHexDump (buffer).split ("\n"));
+      for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
+        lines.add (line);
     else
     {
       int ptr = 0;
@@ -213,7 +214,8 @@ public abstract class NamedData implements Comparable<NamedData>
   void hexDump ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
-    lines = Arrays.asList (Utility.getHexDump (buffer).split ("\n"));
+    for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
+      lines.add (line);
   }
 
   // ---------------------------------------------------------------------------------//
