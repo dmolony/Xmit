@@ -8,6 +8,8 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 public abstract class NamedData implements Comparable<NamedData>
 {
+  private static final int MAX_BUFFER = 1_000_000;
+
   String name = "";
   final Disposition disposition;
 
@@ -105,11 +107,9 @@ public abstract class NamedData implements Comparable<NamedData>
       xmitList ();
     else if (disposition.recfm == 0xC000 || disposition.lrecl <= 1)
       hexDump ();
-    //    else if (member.getDataLength () > 100000)
-    //      partialDump (1);
     else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200
         || disposition.recfm == 0x5400) && isRdw ())
-      rdw ();
+      getRdw ();
     else if (isObject ())
       object ();
     else if (getFileType () != FileType.BIN)
@@ -119,8 +119,28 @@ public abstract class NamedData implements Comparable<NamedData>
   }
 
   // ---------------------------------------------------------------------------------//
+  // createLines
+  // ---------------------------------------------------------------------------------//
+
+  void createLines ()
+  {
+    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    int ptr = 0;
+    int length = buffer.length;
+    while (length > 0)
+    {
+      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
+      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+      ptr += len;
+      length -= len;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   // abstract methods
   // ---------------------------------------------------------------------------------//
+
+  abstract byte[] getEightBytes ();
 
   public abstract byte[] getDataBuffer ();
 
@@ -130,13 +150,11 @@ public abstract class NamedData implements Comparable<NamedData>
 
   abstract boolean isRdw ();
 
-  abstract byte[] getEightBytes ();
+  abstract void getRdw ();         // see SOURCE.XMI
 
-  abstract void createLines ();
+  //  abstract void createLines ();
 
-  abstract void hexDump ();
-
-  abstract void rdw ();         // see SOURCE.XMI
+  //  abstract void hexDump ();
 
   // ---------------------------------------------------------------------------------//
   // isObject
@@ -178,6 +196,21 @@ public abstract class NamedData implements Comparable<NamedData>
   }
 
   // ---------------------------------------------------------------------------------//
+  // hexDump
+  // ---------------------------------------------------------------------------------//
+
+  void hexDump ()
+  {
+    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    String[] chunks = Utility.getHexDump (buffer).split ("\n");
+    for (String chunk : chunks)
+      lines.add (chunk);
+    if (lines.size () > 5000)
+      return;
+    lines.add ("");
+  }
+
+  // ---------------------------------------------------------------------------------//
   // xmitList
   // ---------------------------------------------------------------------------------//
 
@@ -208,27 +241,6 @@ public abstract class NamedData implements Comparable<NamedData>
       lines.add (Utility.getHexDump (xmitBuffer));
     }
   }
-
-  // ---------------------------------------------------------------------------------//
-  // partialDump
-  // ---------------------------------------------------------------------------------//
-
-  //  private void partialDump (int max)
-  //  {
-  //    lines.add ("Data too large to display");
-  //    lines.add ("");
-  //    lines.add ("Showing first " + max + " of " + member.size () + " blocks");
-  //    lines.add ("");
-  //
-  //    int count = 0;
-  //    for (DataBlock dataBlock : member)
-  //    {
-  //      if (dataBlock.getSize () > 0)
-  //        lines.add (Utility.getHexDump (dataBlock.getBuffer ()));
-  //      if (++count > max)
-  //        break;
-  //    }
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // compareTo

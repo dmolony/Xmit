@@ -154,49 +154,49 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // pds
+  // createLines
   // ---------------------------------------------------------------------------------//
 
-  @Override
-  void createLines ()
-  {
-    byte[] buffer = getDataBuffer ();
-    int ptr = 0;
-    int length = buffer.length;
-    while (length > 0)
-    {
-      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
-      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-      ptr += len;
-      length -= len;
-    }
-  }
+  //  @Override
+  //  void createLines ()
+  //  {
+  //    byte[] buffer = getDataBuffer ();
+  //    int ptr = 0;
+  //    int length = buffer.length;
+  //    while (length > 0)
+  //    {
+  //      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
+  //      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+  //      ptr += len;
+  //      length -= len;
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // hexDump
   // ---------------------------------------------------------------------------------//
 
-  @Override
-  void hexDump ()
-  {
-    for (DataBlock dataBlock : dataBlocks)
-    {
-      byte[] buffer = dataBlock.getBuffer ();
-      String[] chunks = Utility.getHexDump (buffer).split ("\n");
-      for (String chunk : chunks)
-        lines.add (chunk);
-      if (lines.size () > 5000)
-        break;
-      lines.add ("");
-    }
-  }
+  //  @Override
+  //  void hexDump ()
+  //  {
+  //    for (DataBlock dataBlock : dataBlocks)
+  //    {
+  //      byte[] buffer = dataBlock.getBuffer ();
+  //      String[] chunks = Utility.getHexDump (buffer).split ("\n");
+  //      for (String chunk : chunks)
+  //        lines.add (chunk);
+  //      if (lines.size () > 5000)
+  //        break;
+  //      lines.add ("");
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // rdw
   // ---------------------------------------------------------------------------------//
 
   @Override
-  void rdw ()         // see SOURCE.XMI
+  void getRdw ()         // see SOURCE.XMI
   {
     for (DataBlock dataBlock : dataBlocks)
     {

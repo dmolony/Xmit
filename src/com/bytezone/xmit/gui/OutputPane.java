@@ -107,6 +107,7 @@ public class OutputPane extends DefaultPane
     else
     {
       StringBuilder text = new StringBuilder ();
+
       for (ControlRecord controlRecord : reader.getControlRecords ())
       {
         text.append (controlRecord.toString ());
@@ -127,7 +128,7 @@ public class OutputPane extends DefaultPane
         text.append (
             "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
         text.append ("Size1 Size2       -------- user ---------\n");
-        //        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
+
         for (PdsMember member : (PdsDataset) dataset)
         {
           if (member.getCatalogEntry () != null)
@@ -136,10 +137,9 @@ public class OutputPane extends DefaultPane
             text.append ("not found");
           text.append ("\n");
         }
-        //        text.append (((PdsDataset) dataset).getBlockListing ());
       }
 
-      text.deleteCharAt (text.length () - 1);
+      Utility.removeTrailingNewlines (text);
       headersText.setText (text.toString ());
     }
   }
@@ -154,13 +154,6 @@ public class OutputPane extends DefaultPane
       blocksText.clear ();
     else
       blocksText.setText (member.toString ());
-
-    //    else if (disposition.getOrg () == Org.PS)                        // flat file
-    //    {
-    //      blocksText.setText (dataset.listSegments ());
-    //    }
-    //    else if (catalogEntry != null)
-    //      blocksText.setText (catalogEntry.getMember ().toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -174,10 +167,7 @@ public class OutputPane extends DefaultPane
     else
     {
       byte[] buffer = member.getDataBuffer ();
-      //      if (disposition.getOrg () == Org.PS)                        // flat file
-      //        buffer = ((PsDataset) dataset).getRawBuffer ();
-      //      else if (catalogEntry != null)                          // PDS
-      //        buffer = catalogEntry.getMember ().getDataBuffer ();
+
       if (buffer != null)
       {
         int max = Math.min (0x20000, buffer.length);
@@ -192,12 +182,8 @@ public class OutputPane extends DefaultPane
 
   private void updateOutputTab ()
   {
-    if (reader == null || member == null)
+    if (member == null)
       outputText.clear ();
-    //    else if (disposition.getOrg () == Org.PS)                  // flat file
-    //      outputText.setText (((PsDataset) dataset).getLines ());
-    //    else if (catalogEntry != null)                         // PDS
-    //      outputText.setText (catalogEntry.getMember ().getLines (showLines));
     else
       outputText.setText (member.getLines (showLines));
   }
