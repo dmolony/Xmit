@@ -13,6 +13,7 @@ import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 
 public class OutputPane extends DefaultPane
@@ -28,6 +29,12 @@ public class OutputPane extends DefaultPane
   private final int BLOCKS = 1;
   private final int HEX = 2;
   private final int OUTPUT = 3;
+
+  private final ScrollBarState[] scrollBarStates =
+      { new ScrollBarState (headersText, Orientation.VERTICAL),
+        new ScrollBarState (blocksText, Orientation.VERTICAL),
+        new ScrollBarState (hexText, Orientation.VERTICAL),
+        new ScrollBarState (outputText, Orientation.VERTICAL) };
 
   private final Label lblMemberName = new Label ();
   private final Label lblDisposition = new Label ();
