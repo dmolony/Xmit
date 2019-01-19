@@ -9,9 +9,12 @@ import com.bytezone.xmit.textunit.Dsorg.Org;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 
@@ -32,6 +35,12 @@ public class OutputPane extends DefaultPane
   private final TextArea blocksText = new TextArea ();
   private final TextArea hexText = new TextArea ();
   private final TextArea outputText = new TextArea ();
+
+  private final ScrollBarState[] scrollBarStates =
+      { new ScrollBarState (headersText, Orientation.VERTICAL),
+        new ScrollBarState (blocksText, Orientation.VERTICAL),
+        new ScrollBarState (hexText, Orientation.VERTICAL),
+        new ScrollBarState (outputText, Orientation.VERTICAL) };
 
   private final Label lblMemberName = new Label ();
   private final Label lblDisposition = new Label ();
@@ -246,7 +255,7 @@ public class OutputPane extends DefaultPane
       }
     }
 
-    resetTabs ();
+    clearText ();
     updateCurrentTab ();
   }
 
@@ -259,7 +268,7 @@ public class OutputPane extends DefaultPane
   {
     this.member = catalogEntry.getMember ();
     updateName ();
-    resetTabs ();
+    clearText ();
     updateCurrentTab ();
   }
 
@@ -297,9 +306,11 @@ public class OutputPane extends DefaultPane
     this.showLines = showLines;
     this.truncateLines = truncateLines;
 
-    resetTabs ();
+    saveScrollBars ();
+    clearText ();
     updateCurrentTab ();
     updateName ();
+    restoreScrollBars ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -308,40 +319,42 @@ public class OutputPane extends DefaultPane
 
   public void selectCodePage ()
   {
-    resetTabs ();
+    saveScrollBars ();
+    clearText ();
     updateCurrentTab ();
+    restoreScrollBars ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // resetTabs
+  // saveScrollBars
   // ---------------------------------------------------------------------------------//
 
-  private void resetTabs ()
+  private void saveScrollBars ()
+  {
+    for (ScrollBarState state : scrollBarStates)
+      state.save ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // restoreScrollBars
+  // ---------------------------------------------------------------------------------//
+
+  private void restoreScrollBars ()
+  {
+    for (ScrollBarState state : scrollBarStates)
+      state.restore ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // clearText
+  // ---------------------------------------------------------------------------------//
+
+  private void clearText ()
   {
     headersText.clear ();
     blocksText.clear ();
     hexText.clear ();
     outputText.clear ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  //
-  // ---------------------------------------------------------------------------------//
-
-  private ScrollBar getScrollBar (TabPane tree, Orientation orientation)
-  {
-    // Get the ScrollBar with the given Orientation using lookupAll
-    for (Node n : tree.lookupAll (".scroll-bar"))
-    {
-      if (n instanceof ScrollBar)
-      {
-        ScrollBar bar = (ScrollBar) n;
-
-        if (bar.getOrientation ().equals (orientation))
-          return bar;
-      }
-    }
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
