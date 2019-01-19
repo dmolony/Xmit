@@ -147,6 +147,40 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
+  // rdw
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  void getRdw ()         // see SOURCE.XMI
+  {
+    for (DataBlock dataBlock : dataBlocks)
+    {
+      byte[] buffer = dataBlock.getBuffer ();
+      //      System.out.println (isBinary);
+
+      int ptr = 4;
+      while (ptr < buffer.length && lines.size () < 2000)
+      {
+        int len = Utility.getTwoBytes (buffer, ptr);
+
+        boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
+        if (isBinary)
+        {
+          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
+          String[] chunks = text.split ("\n");
+          for (String chunk : chunks)
+            lines.add (chunk);
+          lines.add ("");
+        }
+        else
+          lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+
+        ptr += len;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getEightBytes
   // ---------------------------------------------------------------------------------//
 
@@ -193,38 +227,6 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   //      lines.add ("");
   //    }
   //  }
-
-  // ---------------------------------------------------------------------------------//
-  // rdw
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  void getRdw ()         // see SOURCE.XMI
-  {
-    for (DataBlock dataBlock : dataBlocks)
-    {
-      byte[] buffer = dataBlock.getBuffer ();
-
-      int ptr = 4;
-      while (ptr < buffer.length && lines.size () < 2000)
-      {
-        int len = Utility.getTwoBytes (buffer, ptr);
-
-        if (Utility.isBinary (buffer, ptr + 4, len - 4))
-        {
-          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
-          String[] chunks = text.split ("\n");
-          for (String chunk : chunks)
-            lines.add (chunk);
-          lines.add ("");
-        }
-        else
-          lines.add (Utility.getString (buffer, ptr + 4, len - 4));
-
-        ptr += len;
-      }
-    }
-  }
 
   // ---------------------------------------------------------------------------------//
   // toString

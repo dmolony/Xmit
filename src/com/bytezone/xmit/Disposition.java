@@ -11,6 +11,8 @@ public class Disposition
   Org dsorg;
   int recfm;
 
+  boolean isPdse;
+
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
@@ -21,6 +23,15 @@ public class Disposition
     this.recfm = recfm;
     this.lrecl = lrecl;
     this.blksize = blksize;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setPdse
+  // ---------------------------------------------------------------------------------//
+
+  void setPdse (boolean value)
+  {
+    this.isPdse = value;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -73,6 +84,7 @@ public class Disposition
   @Override
   public String toString ()
   {
-    return String.format ("%-3s %s %d / %d", dsorg, getRecfm (), lrecl, blksize);
+    String org = isPdse ? "PDSE" : dsorg.toString ();
+    return String.format ("%-3s %s %d / %d", org, getRecfm (), lrecl, blksize);
   }
 }

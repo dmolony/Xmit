@@ -71,6 +71,8 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
     copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
     copyR2 = new CopyR2 (segments.get (1).getRawBuffer ());
 
+    disposition.setPdse (copyR1.isPdse ());
+
     boolean inCatalog = true;
     List<DataBlock> dataBlocks = new ArrayList<> ();
     Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();

@@ -34,10 +34,10 @@ public class ViewMenu
   private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
 
   private final String[][] codePageNames =
-      { { "CP037", "CP1140" }, { "CP285", "CP1146" }, { "CP297", "CP1147" },
-        { "CP500", "CP1148" }, { "CP1047", "CP1047" } };
-  private final KeyCode[] keyCodes =
-      { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5, };
+      { { "CP037", "CP1140" }, { "CP273", "CP1141" }, { "CP285", "CP1146" },
+        { "CP297", "CP1147" }, { "CP500", "CP1148" }, { "CP1047", "CP1047" } };
+  private final KeyCode[] keyCodes = { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3,
+                                       KeyCode.DIGIT4, KeyCode.DIGIT5, KeyCode.DIGIT6, };
 
   private final ToggleGroup toggleGroup = new ToggleGroup ();
   List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();

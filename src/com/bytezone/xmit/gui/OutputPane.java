@@ -7,12 +7,12 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
 import javafx.geometry.Side;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.TabPane.TabClosingPolicy;
-import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 
 public class OutputPane extends DefaultPane
@@ -103,9 +103,7 @@ public class OutputPane extends DefaultPane
 
   private void updateHeadersTab ()
   {
-    if (reader == null)
-      headersText.clear ();
-    else
+    if (member != null && headersText.getText ().isEmpty ())
     {
       StringBuilder text = new StringBuilder ();
 
@@ -151,9 +149,7 @@ public class OutputPane extends DefaultPane
 
   private void updateBlocksTab ()
   {
-    if (member == null)
-      blocksText.clear ();
-    else
+    if (member != null && blocksText.getText ().isEmpty ())
       blocksText.setText (member.toString ());
   }
 
@@ -163,9 +159,7 @@ public class OutputPane extends DefaultPane
 
   private void updateHexTab ()
   {
-    if (member == null)
-      hexText.clear ();
-    else
+    if (member != null && hexText.getText ().isEmpty ())
     {
       byte[] buffer = member.getDataBuffer ();
 
@@ -178,14 +172,12 @@ public class OutputPane extends DefaultPane
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateTextTab
+  // updateOutputTab
   // ---------------------------------------------------------------------------------//
 
   private void updateOutputTab ()
   {
-    if (member == null)
-      outputText.clear ();
-    else
+    if (member != null && outputText.getText ().isEmpty ())
       outputText.setText (member.getLines (showLines, truncateLines));
   }
 
@@ -250,10 +242,11 @@ public class OutputPane extends DefaultPane
       if (disposition.getOrg () == Org.PS)
       {
         member = ((PsDataset) dataset).getMember ();
-        lblMemberName.setText (member.getName ());
+        updateName ();
       }
     }
 
+    resetTabs ();
     updateCurrentTab ();
   }
 
@@ -265,14 +258,33 @@ public class OutputPane extends DefaultPane
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
     this.member = catalogEntry.getMember ();
-
-    if (catalogEntry.isAlias ())
-      lblMemberName.setText (
-          catalogEntry.getMemberName ().trim () + " -> " + catalogEntry.getAliasName ());
-    else
-      lblMemberName.setText (catalogEntry.getMemberName ());
-
+    updateName ();
+    resetTabs ();
     updateCurrentTab ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // updateName
+  // ---------------------------------------------------------------------------------//
+
+  private void updateName ()
+  {
+    if (dataset == null)
+      return;
+
+    String indicator = truncateLines ? "<- " : "";
+
+    if (dataset.isPds ())
+    {
+      CatalogEntry catalogEntry = ((PdsMember) member).getCatalogEntry ();
+      if (catalogEntry.isAlias ())
+        lblMemberName.setText (indicator + catalogEntry.getMemberName ().trim () + " -> "
+            + catalogEntry.getAliasName ());
+      else
+        lblMemberName.setText (indicator + catalogEntry.getMemberName ());
+    }
+    else
+      lblMemberName.setText (indicator + member.getName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -284,7 +296,10 @@ public class OutputPane extends DefaultPane
   {
     this.showLines = showLines;
     this.truncateLines = truncateLines;
+
+    resetTabs ();
     updateCurrentTab ();
+    updateName ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -293,6 +308,65 @@ public class OutputPane extends DefaultPane
 
   public void selectCodePage ()
   {
+    resetTabs ();
     updateCurrentTab ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // resetTabs
+  // ---------------------------------------------------------------------------------//
+
+  private void resetTabs ()
+  {
+    headersText.clear ();
+    blocksText.clear ();
+    hexText.clear ();
+    outputText.clear ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //
+  // ---------------------------------------------------------------------------------//
+
+  private ScrollBar getScrollBar (TabPane tree, Orientation orientation)
+  {
+    // Get the ScrollBar with the given Orientation using lookupAll
+    for (Node n : tree.lookupAll (".scroll-bar"))
+    {
+      if (n instanceof ScrollBar)
+      {
+        ScrollBar bar = (ScrollBar) n;
+
+        if (bar.getOrientation ().equals (orientation))
+          return bar;
+      }
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // keyPressed
+  // ---------------------------------------------------------------------------------//
+
+  public void keyPressed (KeyCode keyCode)
+  {
+    SingleSelectionModel<Tab> model = tabPane.getSelectionModel ();
+    switch (keyCode)
+    {
+      case H:
+        model.select (headersTab);
+        break;
+      case B:
+        model.select (blocksTab);
+        break;
+      case X:
+        model.select (hexTab);
+        break;
+      case O:
+        model.select (outputTab);
+        break;
+      default:
+        break;
+    }
   }
 }

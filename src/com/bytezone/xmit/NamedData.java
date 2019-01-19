@@ -102,6 +102,8 @@ public abstract class NamedData implements Comparable<NamedData>
   // FILE600 - XMITPDSC - VB
   // FILE185 - FILE234I - incomplete
   // FILE859 - $OBJECT  - Object Deck
+  // FILE880 - CPP      - PDSE
+  // FILE880 - HPP      - requires different codepages
 
   private void createDataLines ()
   {

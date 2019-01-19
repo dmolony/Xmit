@@ -117,7 +117,11 @@ public class XmitApp extends Application implements CodePageSelectedListener
   {
     this.primaryStage = primaryStage;
     primaryStage.setTitle ("XmitApp");
-    primaryStage.setScene (new Scene (createContent ()));
+    Scene scene = new Scene (createContent ());
+    primaryStage.setScene (scene);
+
+    scene.setOnKeyPressed (e -> outputPane.keyPressed (e.getCode ()));
+
     primaryStage.show ();
 
     splitPane.setDividerPosition (0, dividerPosition1);      // must happen after show()

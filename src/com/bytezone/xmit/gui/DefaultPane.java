@@ -13,7 +13,8 @@ import javafx.scene.text.Font;
 
 abstract class DefaultPane extends BorderPane
 {
-  Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
+  static Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
+  static Font monospacedFont = Font.font ("Monospaced", 13);
 
   // ---------------------------------------------------------------------------------//
   // getHBox
@@ -44,7 +45,7 @@ abstract class DefaultPane extends BorderPane
   {
     tab.setContent (text);
     tab.setText (title);
-    text.setFont (Font.font ("Monospaced", 13));
+    text.setFont (monospacedFont);
     text.setEditable (false);
     text.setWrapText (false);
   }
