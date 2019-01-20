@@ -42,12 +42,8 @@ public class ScrollBarState
 
   public void save ()
   {
-    if (scrollBar == null)
-    {
-      setScrollBar ();
-      if (scrollBar == null)
-        return;
-    }
+    if (scrollBar == null && !setScrollBar ())
+      return;
 
     this.min = scrollBar.getMin ();
     this.max = scrollBar.getMax ();
@@ -76,14 +72,15 @@ public class ScrollBarState
   // getScrollBar
   // ---------------------------------------------------------------------------------//
 
-  private void setScrollBar ()
+  private boolean setScrollBar ()
   {
     for (Node node : textArea.lookupAll (".scroll-bar"))
       if (node instanceof ScrollBar
           && ((ScrollBar) node).getOrientation ().equals (orientation))
       {
         scrollBar = (ScrollBar) node;
-        return;
+        return true;
       }
+    return false;
   }
 }

@@ -247,7 +247,7 @@ public class XmitFile
         String entryName = entry.getName ();
         if (entryName.endsWith ("/"))
         {
-          System.out.println ("folder");
+          //          System.out.println ("folder");
         }
         else if (XmitFile.isValidFileName (entryName))
         {
