@@ -155,19 +155,30 @@ public class XmitFile
 
   Reader getReader ()
   {
-    if (reader == null && catalogEntry != null)
-      reader = new Reader (catalogEntry.getMemberName (),
-          catalogEntry.getMember ().getDataBuffer ());
-    else if (reader == null && isFile () && !isCompressed ())
-      try
-      {
-        reader = new Reader (file.getName (), Files.readAllBytes (file.toPath ()));
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace ();
-      }
+    if (reader == null)
+      if (catalogEntry != null)
+        reader = new Reader (catalogEntry.getMember ());
+      else if (isFile () && !isCompressed ())
+        reader = new Reader (file.getName (), getBuffer (file));
+
     return reader;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getBuffer
+  // ---------------------------------------------------------------------------------//
+
+  private byte[] getBuffer (File file)
+  {
+    try
+    {
+      return Files.readAllBytes (file.toPath ());
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+      return null;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

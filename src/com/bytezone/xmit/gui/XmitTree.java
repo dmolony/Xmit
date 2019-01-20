@@ -29,6 +29,7 @@ public class XmitTree extends TreeView<XmitFile>
 
   private final Image zipImage;
   private final Image xImage;
+  private final Image yImage;
   private final Image folderImage;
 
   // ---------------------------------------------------------------------------------//
@@ -42,6 +43,7 @@ public class XmitTree extends TreeView<XmitFile>
     setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
     xImage = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
+    yImage = new Image (getClass ().getResourceAsStream ("/icons/X-pink-icon.png"));
     folderImage = new Image (getClass ().getResourceAsStream ("/icons/folder-icon.png"));
     zipImage = new Image (getClass ().getResourceAsStream ("/icons/zip-icon.png"));
 
@@ -74,6 +76,8 @@ public class XmitTree extends TreeView<XmitFile>
                 imageView.setImage (zipImage);
               else if (fileItem.isDirectory ())
                 imageView.setImage (folderImage);
+              else if (xmitFile.isMember ())
+                imageView.setImage (yImage);
               else
                 imageView.setImage (xImage);
               setGraphic (imageView);
