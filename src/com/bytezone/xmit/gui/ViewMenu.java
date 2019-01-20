@@ -109,9 +109,18 @@ public class ViewMenu
 
   private void notifyCodePageListeners ()
   {
-    String codePageName = toggleGroup.getSelectedToggle ().getUserData ().toString ();
-    for (CodePageSelectedListener listener : codePageListeners)
-      listener.selectCodePage (codePageName);
+    Toggle toggle = toggleGroup.getSelectedToggle ();
+    if (toggle == null)
+    {
+      System.out.println ("Nothing selected");        // windows bug
+    }
+    else
+    {
+      Object o = toggle.getUserData ();
+      String codePageName = o.toString ();
+      for (CodePageSelectedListener listener : codePageListeners)
+        listener.selectCodePage (codePageName);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -182,8 +191,9 @@ public class ViewMenu
     prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());
     prefs.putBoolean (PREFS_EURO_PAGE, euroMenuItem.isSelected ());
 
-    prefs.put (PREFS_CODE_PAGE,
-        toggleGroup.getSelectedToggle ().getUserData ().toString ());
+    Toggle toggle = toggleGroup.getSelectedToggle ();
+    if (toggle != null)
+      prefs.put (PREFS_CODE_PAGE, toggle.getUserData ().toString ());
   }
 
   // ---------------------------------------------------------------------------------//

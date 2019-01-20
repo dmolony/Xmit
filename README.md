@@ -9,7 +9,7 @@
 ### MacOS
 ![Mac](resources/xmitosx.png?raw=true "Mac")
 ### Windows
-![Windows](resources/xmitwin.png?raw=true "Windows")
+![Windows](resources/xmit-win.png?raw=true "Windows")
 ### Linux
 ![Linux](resources/xmitlinux.png?raw=true "Linux")
 
