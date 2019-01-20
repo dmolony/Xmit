@@ -151,7 +151,7 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  void getRdw ()         // see SOURCE.XMI
+  void rdwLines ()         // see SOURCE.XMI
   {
     for (DataBlock dataBlock : dataBlocks)
     {

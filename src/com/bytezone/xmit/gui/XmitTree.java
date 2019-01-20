@@ -72,14 +72,9 @@ public class XmitTree extends TreeView<XmitFile>
               if (imageView == null)
                 imageView = new ImageView ();
               XmitFile fileItem = getTreeItem ().getValue ();
-              if (fileItem.isCompressed ())
-                imageView.setImage (zipImage);
-              else if (fileItem.isDirectory ())
-                imageView.setImage (folderImage);
-              else if (xmitFile.isMember ())
-                imageView.setImage (yImage);
-              else
-                imageView.setImage (xImage);
+              Image image = fileItem.isCompressed () ? zipImage : fileItem.isDirectory ()
+                  ? folderImage : xmitFile.isMember () ? yImage : xImage;
+              imageView.setImage (image);
               setGraphic (imageView);
               //              setGraphic (getTreeItem ().getGraphic ());
             }

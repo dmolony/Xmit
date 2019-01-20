@@ -102,7 +102,7 @@ public class FlatFile extends NamedData implements Iterable<Segment>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  void getRdw ()
+  void rdwLines ()
   {
 
   }

@@ -113,12 +113,17 @@ public abstract class NamedData implements Comparable<NamedData>
     lines.clear ();
 
     if (isXmit ())
-      xmitList ();
-    else if (disposition.recfm == 0xC000 || disposition.lrecl <= 1)
+      xmitLines ();
+    else if (disposition.recfm == 0xC000        // undefined
+        || disposition.lrecl <= 1)
       hexDump ();
-    else if ((disposition.recfm == 0x5000 || disposition.recfm == 0x5200
-        || disposition.recfm == 0x5400) && isRdw ())
-      getRdw ();
+    else if ((disposition.recfm == 0x5000       // VB
+        || disposition.recfm == 0x5200          // VBA
+        || disposition.recfm == 0x5400)         // VBA
+        && isRdw ())
+      rdwLines ();
+    else if (disposition.recfm == 0x9200)       // FBA
+      createTextLines (getDataBuffer ());
     else if (isObject ())
       object ();
     else if (getFileType () != FileType.BIN)
@@ -135,20 +140,27 @@ public abstract class NamedData implements Comparable<NamedData>
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
 
-    if (Utility.isBinary (buffer, 0, 256))
+    if (Utility.isBinary (buffer, 0, 128))
       for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
         lines.add (line);
     else
+      createTextLines (buffer);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // createTextLines
+  // ---------------------------------------------------------------------------------//
+
+  private void createTextLines (byte[] buffer)
+  {
+    int ptr = 0;
+    int length = buffer.length;
+    while (length > 0)
     {
-      int ptr = 0;
-      int length = buffer.length;
-      while (length > 0)
-      {
-        int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
-        lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-        ptr += len;
-        length -= len;
-      }
+      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
+      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+      ptr += len;
+      length -= len;
     }
   }
 
@@ -166,7 +178,7 @@ public abstract class NamedData implements Comparable<NamedData>
 
   abstract boolean isRdw ();
 
-  abstract void getRdw ();         // see SOURCE.XMI
+  abstract void rdwLines ();         // see SOURCE.XMI
 
   // ---------------------------------------------------------------------------------//
   // isObject
@@ -221,10 +233,10 @@ public abstract class NamedData implements Comparable<NamedData>
   }
 
   // ---------------------------------------------------------------------------------//
-  // xmitList
+  // xmitLines
   // ---------------------------------------------------------------------------------//
 
-  void xmitList ()
+  void xmitLines ()
   {
     byte[] xmitBuffer = getDataBuffer ();
     try
