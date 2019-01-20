@@ -3,7 +3,7 @@
 - view xmit files [stored as PDS members](resources/embedded.md)
 - view [compressed xmit files](resources/compressed.md)
 - extract [individual PDS members](resources/extract.md)
-- selectable codepages
+- selectable [codepages](resources/view.md)
 
 ## Sample screens
 ### MacOS
