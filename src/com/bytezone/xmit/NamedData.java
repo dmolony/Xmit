@@ -105,6 +105,8 @@ public abstract class NamedData implements Comparable<NamedData>
   // FILE880 - CPP      - PDSE
   // FILE880 - HPP      - requires different codepages
 
+  // FILE404 - $$PREZ18 - possibly corrupt
+
   private void createDataLines ()
   {
     codePage = Utility.codePage;

@@ -39,7 +39,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   private final MenuItem extractMenuItem = new MenuItem ("Extract file");
 
   private CatalogEntry catalogEntry;
-  private Reader reader;
+  //  private Reader reader;
   private Dataset dataset;
   private String name;
 
@@ -168,7 +168,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   @Override
   public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
   {
-    this.reader = reader;
+    //    this.reader = reader;
     this.dataset = dataset;
     this.name = name == null ? null : name.trim ();
     catalogEntry = null;

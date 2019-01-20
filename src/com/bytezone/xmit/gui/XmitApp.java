@@ -30,8 +30,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
   private String rootFolderName;
 
+  XmitTree xmitTree;
+  XmitTable xmitTable = new XmitTable ();
+
   private Stage primaryStage;
   private final OutputPane outputPane = new OutputPane ();
+  private final TablePane tablePane = new TablePane (xmitTable);
+  private TreePane treePane;
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
@@ -40,9 +45,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   SplitPane splitPane = new SplitPane ();
   private double dividerPosition1;
   private double dividerPosition2;
-
-  XmitTree xmitTree;
-  XmitTable xmitTable;
 
   // ---------------------------------------------------------------------------------//
   // createContent
@@ -58,16 +60,15 @@ public class XmitApp extends Application implements CodePageSelectedListener
     // get root folder
     validateRootFolderOrExit ();
 
-    xmitTable = new XmitTable ();
-    TablePane tablePane = new TablePane (xmitTable);
-
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     xmitTree.addListener (outputPane);
     xmitTree.addListener (tablePane);
 
     xmitTree.addListener (xmitTable);
 
-    splitPane.getItems ().addAll (xmitTree, tablePane, outputPane);
+    treePane = new TreePane (xmitTree);
+
+    splitPane.getItems ().addAll (treePane, tablePane, outputPane);
 
     fileMenu = new FileMenu (this, xmitTree);
     viewMenu = new ViewMenu (this, xmitTree);
@@ -209,11 +210,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   void changeRootFolder ()
   {
     if (setRootFolder ())
-    {
-      //      rootFolderPath = Paths.get (rootFolderName);
-      xmitTree
+      treePane
           .setRootFolder (new FileTreeItem (new XmitFile (new File (rootFolderName))));
-    }
   }
 
   // ---------------------------------------------------------------------------------//

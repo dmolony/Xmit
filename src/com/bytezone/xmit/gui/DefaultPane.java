@@ -39,6 +39,25 @@ abstract class DefaultPane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
+  // getHBox
+  // ---------------------------------------------------------------------------------//
+
+  HBox getHBox (Label label1)
+  {
+    HBox hbox = new HBox (10);
+    hbox.setPrefHeight (20);
+    hbox.setAlignment (Pos.CENTER_LEFT);
+    hbox.setPadding (new Insets (6, 10, 6, 10));
+    Region filler = new Region ();
+    HBox.setHgrow (filler, Priority.ALWAYS);
+    hbox.getChildren ().add (label1);
+
+    label1.setFont (headingFont);
+
+    return hbox;
+  }
+
+  // ---------------------------------------------------------------------------------//
   // createTab
   // ---------------------------------------------------------------------------------//
 

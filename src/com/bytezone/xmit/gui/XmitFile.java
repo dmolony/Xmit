@@ -109,7 +109,7 @@ public class XmitFile
   // toPath
   // ---------------------------------------------------------------------------------//
 
-  Path toPath ()
+  public Path toPath ()
   {
     return file.toPath ();
   }
