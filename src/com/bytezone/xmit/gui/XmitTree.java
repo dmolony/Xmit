@@ -12,6 +12,8 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
 public class XmitTree extends TreeView<XmitFile>
@@ -25,6 +27,10 @@ public class XmitTree extends TreeView<XmitFile>
 
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
+  private final Image zipImage;
+  private final Image xImage;
+  private final Image folderImage;
+
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
@@ -35,6 +41,10 @@ public class XmitTree extends TreeView<XmitFile>
 
     setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
+    xImage = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
+    folderImage = new Image (getClass ().getResourceAsStream ("/icons/folder-icon.png"));
+    zipImage = new Image (getClass ().getResourceAsStream ("/icons/zip-icon.png"));
+
     fileTreeItem.setExpanded (true);
 
     setCellFactory (new Callback<TreeView<XmitFile>, TreeCell<XmitFile>> ()
@@ -44,6 +54,8 @@ public class XmitTree extends TreeView<XmitFile>
       {
         TreeCell<XmitFile> cell = new TreeCell<> ()
         {
+          private ImageView imageView;
+
           public void updateItem (XmitFile xmitFile, boolean empty)
           {
             super.updateItem (xmitFile, empty);
@@ -55,7 +67,17 @@ public class XmitTree extends TreeView<XmitFile>
             else
             {
               setText (xmitFile.getName ());
-              setGraphic (getTreeItem ().getGraphic ());
+              if (imageView == null)
+                imageView = new ImageView ();
+              XmitFile fileItem = getTreeItem ().getValue ();
+              if (fileItem.isCompressed ())
+                imageView.setImage (zipImage);
+              else if (fileItem.isDirectory ())
+                imageView.setImage (folderImage);
+              else
+                imageView.setImage (xImage);
+              setGraphic (imageView);
+              //              setGraphic (getTreeItem ().getGraphic ());
             }
           }
         };
