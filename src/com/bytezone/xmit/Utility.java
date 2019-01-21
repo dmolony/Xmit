@@ -79,7 +79,7 @@ public class Utility
     for (int i = offset; i < max; i++)
     {
       int b = buffer[i] & 0xFF;
-      if (b < 0x40 || b == 0xFF)
+      if ((b < 0x40 && b != 0x05) || b == 0xFF)
         return true;
     }
     return false;
@@ -117,7 +117,10 @@ public class Utility
     for (int i = 0; i < length; i++)
     {
       int c = buffer[ptr + i] & 0xFF;
-      text.append (c < 0x40 || c == 0xFF ? "." : (char) codePage.ebc2asc[c]);
+      if (c == 5)
+        text.append ("  ");     // tab
+      else
+        text.append (c < 0x40 || c == 0xFF ? "." : (char) codePage.ebc2asc[c]);
     }
 
     return text.toString ();

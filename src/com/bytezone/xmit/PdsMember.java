@@ -147,7 +147,7 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // rdw
+  // rdwLines
   // ---------------------------------------------------------------------------------//
 
   @Override
@@ -156,7 +156,6 @@ public class PdsMember extends NamedData implements Iterable<DataBlock>
     for (DataBlock dataBlock : dataBlocks)
     {
       byte[] buffer = dataBlock.getBuffer ();
-      //      System.out.println (isBinary);
 
       int ptr = 4;
       while (ptr < buffer.length && lines.size () < 2000)

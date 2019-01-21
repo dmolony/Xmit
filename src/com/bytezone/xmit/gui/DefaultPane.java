@@ -16,6 +16,7 @@ abstract class DefaultPane extends BorderPane
 {
   static Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
   static Font monospacedFont = Font.font ("Monospaced", 13);
+  //  static Font monospacedFont = Font.font ("IBM Plex Mono Light", 13);
 
   // ---------------------------------------------------------------------------------//
   // getHBox
