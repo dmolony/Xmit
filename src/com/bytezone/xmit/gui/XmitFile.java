@@ -36,7 +36,7 @@ public class XmitFile
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitFile (File file)                   // plain .xmi file
+  public XmitFile (File file)                       // plain .xmi file
   {
     this.file = file;
     name = file.getName ();
@@ -47,7 +47,7 @@ public class XmitFile
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitFile (File file, String name)      // an unzipped .xmi file
+  public XmitFile (File file, String name)          // an unzipped .xmi file
   {
     this.file = file;
     this.name = name;             // display this name instead of the tmp file name
@@ -92,6 +92,15 @@ public class XmitFile
   public boolean isMember ()
   {
     return catalogEntry != null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getLevel
+  // ---------------------------------------------------------------------------------//
+
+  int getLevel ()
+  {
+    return catalogEntry == null ? 0 : catalogEntry.getLevel ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -157,7 +166,7 @@ public class XmitFile
   {
     if (reader == null)
       if (catalogEntry != null)
-        reader = new Reader (catalogEntry.getMember ());
+        reader = new Reader (catalogEntry.getReader (), catalogEntry.getMember ());
       else if (isFile () && !isCompressed ())
         reader = new Reader (file.getName (), getBuffer (file));
 

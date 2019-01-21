@@ -30,16 +30,16 @@ public class Reader
   private final Dataset activeDataset;
   private int files;
   private boolean incomplete;
-  private boolean topLevel;
+  private int level;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Reader (NamedData member)
+  public Reader (Reader parent, NamedData member)
   {
     this (member.name, member.getDataBuffer ());
-    topLevel = false;
+    this.level = parent.level + 1;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -49,7 +49,7 @@ public class Reader
   public Reader (String fileName, byte[] buffer)
   {
     this.fileName = fileName;
-    topLevel = true;
+    level = 0;
     Segment currentSegment = null;
     Dataset currentDataset = null;
     int recNo = 0;
@@ -150,6 +150,15 @@ public class Reader
   public String getName ()
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getLevel
+  // ---------------------------------------------------------------------------------//
+
+  public int getLevel ()
+  {
+    return level;
   }
 
   // ---------------------------------------------------------------------------------//

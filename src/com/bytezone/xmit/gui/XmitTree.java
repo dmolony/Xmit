@@ -28,8 +28,10 @@ public class XmitTree extends TreeView<XmitFile>
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
   private final Image zipImage;
-  private final Image xImage;
-  private final Image yImage;
+  private final Image[] xImage = new Image[4];
+  //  private final Image xImage2;
+  //  private final Image xImage3;
+  //  private final Image xImage4;
   private final Image folderImage;
 
   // ---------------------------------------------------------------------------------//
@@ -42,8 +44,10 @@ public class XmitTree extends TreeView<XmitFile>
 
     setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
-    xImage = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
-    yImage = new Image (getClass ().getResourceAsStream ("/icons/X-pink-icon.png"));
+    xImage[0] = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
+    xImage[1] = new Image (getClass ().getResourceAsStream ("/icons/X-pink-icon.png"));
+    xImage[2] = new Image (getClass ().getResourceAsStream ("/icons/X-blue-icon.png"));
+    xImage[3] = new Image (getClass ().getResourceAsStream ("/icons/X-black-icon.png"));
     folderImage = new Image (getClass ().getResourceAsStream ("/icons/folder-icon.png"));
     zipImage = new Image (getClass ().getResourceAsStream ("/icons/zip-icon.png"));
 
@@ -71,9 +75,9 @@ public class XmitTree extends TreeView<XmitFile>
               setText (xmitFile.getName ());
               if (imageView == null)
                 imageView = new ImageView ();
-              XmitFile fileItem = getTreeItem ().getValue ();
-              Image image = fileItem.isCompressed () ? zipImage : fileItem.isDirectory ()
-                  ? folderImage : xmitFile.isMember () ? yImage : xImage;
+
+              Image image = xmitFile.isCompressed () ? zipImage : xmitFile.isDirectory ()
+                  ? folderImage : xImage[xmitFile.getLevel () % 4];
               imageView.setImage (image);
               setGraphic (imageView);
               //              setGraphic (getTreeItem ().getGraphic ());
