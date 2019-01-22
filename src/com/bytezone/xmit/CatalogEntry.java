@@ -14,7 +14,6 @@ public class CatalogEntry
 
   private final boolean usesAlias;
   private final int numTtr;
-  private final int usrd;
 
   private int size;
   private int init;
@@ -36,26 +35,29 @@ public class CatalogEntry
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
+  // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
+  //           com.ibm.zos.v2r3.ieab200/destow.htm
+
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
   public CatalogEntry (Reader reader, byte[] buffer, int ptr)
   {
-    name = Utility.getString (buffer, ptr, 8);
-    blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);
     this.reader = reader;
 
+    name = Utility.getString (buffer, ptr, 8);
+    blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
+
     extra = buffer[ptr + 11] & 0xFF;      // indicator byte
-    numTtr = (extra & 0x60) >>> 5;
-    usesAlias = (extra & 0x80) != 0;
-
-    usrd = buffer[ptr + 12] & 0xFF;       // start of user data
-
-    //    assert buffer[ptr + 15] == 0;
+    numTtr = (extra & 0x60) >>> 5;        // number of TTRs in user data
+    usesAlias = (extra & 0x80) != 0;      // name in the first field is an alias
 
     switch (extra)
     {
+      case 0:
+        break;
+
       case 0x0F:
         basic (buffer, ptr);
         break;
@@ -64,75 +66,73 @@ public class CatalogEntry
         basic (buffer, ptr);
         break;
 
-      case 0x2B:                    //
-        break;
+      //      case 0x2B:                    //
+      //        break;
 
-      case 0x2C:                    // FILE035 - load module?
-        break;
+      //      case 0x2C:                    // FILE035 - load module?
+      //        break;
 
-      case 0x2E:                    // FILE035
-        break;
+      //      case 0x2E:                    // FILE035
+      //        break;
 
-      case 0x31:                    // FILE242
-        //        dateCreated = Utility.getLocalDate (buffer, ptr + 34);  NFE
-        break;
+      //      case 0x31:                    // FILE242
+      //        //        dateCreated = Utility.getLocalDate (buffer, ptr + 34);  NFE
+      //        break;
 
-      case 0x36:                    // file242    // 0xB6 alias of itself?
-        aliasName = Utility.getString (buffer, ptr + 36, 8);
-        break;
+      //      case 0x36:                    // file242    // 0xB6 alias of itself?
+      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
+      //        break;
 
-      case 0x37:                    // FILE135
-        String someName = Utility.getString (buffer, ptr + 46, 8);
-        break;
+      //      case 0x37:                    // FILE135
+      //        String someName = Utility.getString (buffer, ptr + 46, 8);
+      //        break;
+
+      //      case 0x4B:
+      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
+      //        break;
+
+      //      case 0x4E:
+      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
+      //        break;
 
       case 0x8F:                    // FILE134/REVHELP
         basic (buffer, ptr);       // alias without the alias' name ??
         break;
 
-      case 0xB1:                    // alias of 0x2C
-        aliasName = Utility.getString (buffer, ptr + 36, 8);
-        break;
+      //      case 0xB1:                    // alias of 0x2C
+      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
+      //        break;
 
-      case 0xB3:                    // FILE035
-        aliasName = Utility.getString (buffer, ptr + 36, 8);
-        break;
+      //      case 0xB3:                    // FILE035
+      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
+      //        break;
 
-      case 0xB6:      // file242    // alias of 0x31
-        aliasName = Utility.getString (buffer, ptr + 36, 8);
-        Optional<LocalDate> opt = Utility.getLocalDate (buffer, ptr + 44);
-        if (opt.isPresent ())
-          dateCreated = opt.get ();
-        break;
+      //      case 0xB6:      // file242    // alias of 0x31
+      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
+      //        Optional<LocalDate> opt = Utility.getLocalDate (buffer, ptr + 44);
+      //        if (opt.isPresent ())
+      //          dateCreated = opt.get ();
+      //        break;
 
-      case 0xD3:
-        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-        aliasName = Utility.getString (buffer, ptr + 36, 8);
-        break;
+      //      case 0xCB:
+      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
+      //        break;
 
-      case 0x4E:
-        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-        break;
-
-      case 0xCB:
-        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-        break;
-
-      case 0x4B:
-        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-        break;
-
-      case 0:
-        break;
+      //      case 0xD3:
+      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
+      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
+      //        break;
 
       default:
-        System.out.printf ("********************** Unknown extra: %02X in %s%n", extra,
-            name);
+        //        System.out.printf ("********************** Unknown extra: %02X in %s%n", extra,
+        //            name);
     }
 
-    //    int extraLength = 12 + (extra & 0x0F) * 2 + ((extra & 0x10) >> 4) * 32;
-    int extraLength = 12 + (extra & 0x1F) * 2;
-    directoryData = new byte[extraLength];
+    directoryData = new byte[12 + (extra & 0x1F) * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
+
+    if (usesAlias && directoryData.length >= 43)
+      aliasName = Utility.getString (buffer, ptr + 36, 8);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -16,7 +16,7 @@ abstract class DefaultPane extends BorderPane
 {
   static Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
   static Font monospacedFont = Font.font ("Monospaced", 13);
-  //  static Font monospacedFont = Font.font ("IBM Plex Mono Light", 13);
+  //  static Font monospacedFont = Font.font ("IBM Plex Mono", 13);
 
   // ---------------------------------------------------------------------------------//
   // getHBox
@@ -24,15 +24,11 @@ abstract class DefaultPane extends BorderPane
 
   HBox getHBox (Label label1, Label label2)
   {
-    HBox hbox = new HBox (10);
-    hbox.setPrefHeight (20);
-    hbox.setAlignment (Pos.CENTER_LEFT);
-    hbox.setPadding (new Insets (6, 10, 6, 10));
+    HBox hbox = getHBox (label1);
     Region filler = new Region ();
     HBox.setHgrow (filler, Priority.ALWAYS);
-    hbox.getChildren ().addAll (label1, filler, label2);
+    hbox.getChildren ().addAll (filler, label2);
 
-    label1.setFont (headingFont);
     label2.setFont (headingFont);
     label2.setAlignment (Pos.CENTER_RIGHT);
 
@@ -49,8 +45,6 @@ abstract class DefaultPane extends BorderPane
     hbox.setPrefHeight (20);
     hbox.setAlignment (Pos.CENTER_LEFT);
     hbox.setPadding (new Insets (6, 10, 6, 10));
-    Region filler = new Region ();
-    HBox.setHgrow (filler, Priority.ALWAYS);
     hbox.getChildren ().add (label1);
 
     label1.setFont (headingFont);

@@ -7,10 +7,10 @@ import javafx.scene.input.KeyCode;
 
 public class XmitTab
 {
-  public Tab tab;
-  public TextArea textArea;
-  public KeyCode keyCode;
-  ScrollBarState scrollBarState;
+  final Tab tab;
+  final TextArea textArea;
+  final KeyCode keyCode;
+  final ScrollBarState scrollBarState;
 
   // ---------------------------------------------------------------------------------//
   // constructor
