@@ -19,6 +19,8 @@ public class Utility
   private static final byte[] png = { (byte) 0x89, 0x50, 0x4E, 0x47 };
   private static final byte[] rtf = { 0x7B, 0x5C, 0x72, 0x74, 0x66 };
 
+  private static final byte[][] signatures = { doc, pdf, zip, rar, png, rtf };
+
   public enum FileType
   {
     DOC, PDF, ZIP, RAR, PNG, RTF, BIN, XMIT
@@ -45,18 +47,13 @@ public class Utility
 
   public static FileType getFileType (byte[] buffer)
   {
-    if (matches (pdf, buffer, 0))
-      return FileType.PDF;
-    if (matches (doc, buffer, 0))
-      return FileType.DOC;
-    if (matches (zip, buffer, 0))
-      return FileType.ZIP;
-    if (matches (rar, buffer, 0))
-      return FileType.RAR;
-    if (matches (png, buffer, 0))
-      return FileType.PNG;
-    if (matches (rtf, buffer, 0))
-      return FileType.RTF;
+    int count = 0;
+    for (byte[] signature : signatures)
+    {
+      if (matches (signature, buffer, 0))
+        return FileType.values ()[count];
+      ++count;
+    }
 
     return FileType.BIN;
   }
