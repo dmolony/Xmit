@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class FlatFile extends NamedData implements Iterable<Segment>
+public class FlatFile extends DataFile implements Iterable<Segment>
 {
   private final List<Segment> segments;                        // PS
 

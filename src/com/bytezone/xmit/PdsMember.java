@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class PdsMember extends NamedData implements Iterable<DataBlock>
+public class PdsMember extends DataFile implements Iterable<DataBlock>
 {
   CatalogEntry catalogEntry;
   private final List<DataBlock> dataBlocks;                    // PDS

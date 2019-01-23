@@ -34,7 +34,7 @@ public class OutputPane extends DefaultPane
 
   private Reader reader;
   private Dataset dataset;
-  private NamedData member;
+  private DataFile member;
 
   private boolean showLines;
   private boolean truncateLines;

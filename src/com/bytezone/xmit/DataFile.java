@@ -7,7 +7,7 @@ import java.util.List;
 import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
-public abstract class NamedData implements Comparable<NamedData>
+public abstract class DataFile implements Comparable<DataFile>
 {
   private static final int MAX_BUFFER = 200_000;
 
@@ -23,7 +23,7 @@ public abstract class NamedData implements Comparable<NamedData>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  NamedData (Disposition disposition)
+  DataFile (Disposition disposition)
   {
     this.disposition = disposition;
   }
@@ -269,7 +269,7 @@ public abstract class NamedData implements Comparable<NamedData>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public int compareTo (NamedData o)
+  public int compareTo (DataFile o)
   {
     return this.name.compareTo (o.name);
   }

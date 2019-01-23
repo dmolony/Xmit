@@ -8,7 +8,7 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.NamedData;
+import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Reader;
 
@@ -91,7 +91,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     if (dataset instanceof PsDataset)
     {
       //      buffer = ((PsDataset) dataset).getRawBuffer ();
-      NamedData member = ((PsDataset) dataset).getMember ();
+      DataFile member = ((PsDataset) dataset).getMember ();
       buffer = member.getDataBuffer ();
       name = this.name + "." + member.getFileType ().name ();
     }

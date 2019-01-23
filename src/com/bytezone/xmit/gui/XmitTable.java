@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.NamedData;
+import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Reader;
@@ -275,7 +275,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   {
     int index = 0;
     //    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
-    for (NamedData member : (PdsDataset) dataset)
+    for (DataFile member : (PdsDataset) dataset)
     {
       //      if (memberName.equals (catalogEntry.getMemberName ()))
       if (memberName.equals (member.getName ()))
