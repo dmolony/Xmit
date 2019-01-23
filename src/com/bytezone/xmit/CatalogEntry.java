@@ -36,6 +36,8 @@ public class CatalogEntry
 
   // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
   //           com.ibm.zos.v2r3.ieab200/destow.htm
+  // https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/
+  //           com.ibm.zos.v2r3.idad400/pdsd.htm#pdsd__fg43
 
   // ---------------------------------------------------------------------------------//
   // constructor

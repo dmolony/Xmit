@@ -29,9 +29,6 @@ public class XmitTree extends TreeView<XmitFile>
 
   private final Image zipImage;
   private final Image[] xImage = new Image[4];
-  //  private final Image xImage2;
-  //  private final Image xImage3;
-  //  private final Image xImage4;
   private final Image folderImage;
 
   // ---------------------------------------------------------------------------------//

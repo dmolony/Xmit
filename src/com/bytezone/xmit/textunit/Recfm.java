@@ -16,6 +16,9 @@ public class Recfm extends TextUnitNumber
    * X'8000' Fixed-length records
    * X'C000' Undefined records
    */
+  private static final char[] types1 = { '?', 'V', 'F', 'U' };
+  private static final char[] types2 = { '?', 'B', '.', '?' };
+  private static final char[] types3 = { '?', 'A', 'A', '?', 'S', '?', '?', '?' };
 
   public String type;
 
@@ -30,7 +33,7 @@ public class Recfm extends TextUnitNumber
     type = "?";
 
     if (number == 0xC000)
-      type = "Undefined";
+      type = "U";
     else
     {
       if ((number & 0x8000) != 0)
@@ -39,24 +42,33 @@ public class Recfm extends TextUnitNumber
         type = "V";
 
       if ((number & 0x1000) != 0)
-        type = type + "B";
+        type += "B";
 
       if ((number & 0x0400) != 0 || (number & 0x0200) != 0)
-        type = type + "A";
+        type += "A";
 
       if ((number & 0x0800) != 0)
       {
         if (type.startsWith ("V"))
-          type = type + " spanned";
+          type += "S";                    // spanned
         else if (type.startsWith ("F"))
-          type = type + " last block may be short";
+          type += " last block may be short";
       }
 
       if ((number & 0x0002) != 0)
-        type = type + " (no 4-byte header)";
+        type += " (no 4-byte header)";
 
       if ((number & 0x0001) != 0)
         type = "Shortened VBS format used for transmission records";
+    }
+
+    if (false)
+    {
+      int t1 = (int) ((number & 0xC000) >>> 14);
+      int t2 = (int) ((number & 0x3000) >>> 12);
+      int t3 = (int) ((number & 0x0E00) >>> 9);
+      System.out.printf ("%04X  %s  %s  %s%n", number, types1[t1], types2[t2],
+          types3[t3]);
     }
   }
 
