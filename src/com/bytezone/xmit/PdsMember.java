@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PdsMember extends DataFile implements Iterable<DataBlock>
 {
-  CatalogEntry catalogEntry;
+  private CatalogEntry catalogEntry;
   private final List<DataBlock> dataBlocks;                    // PDS
   private final List<DataBlock> extraDataBlocks;               // PDSE
 
@@ -38,7 +38,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   void setCatalogEntry (CatalogEntry catalogEntry)
   {
     this.catalogEntry = catalogEntry;
-    this.name = catalogEntry.getMemberName ();
+    setName (catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//

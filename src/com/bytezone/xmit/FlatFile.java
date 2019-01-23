@@ -93,7 +93,7 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   @Override
   boolean isRdw ()
   {
-    System.out.println ("not written: " + name);       // haven't seen one yet
+    System.out.println ("not written: " + getName ());       // haven't seen one yet
     return false;
   }
 

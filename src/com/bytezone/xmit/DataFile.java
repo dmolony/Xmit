@@ -11,13 +11,13 @@ public abstract class DataFile implements Comparable<DataFile>
 {
   private static final int MAX_BUFFER = 200_000;
 
-  String name = "";
-  final Disposition disposition;
+  private String name = "";
+  private final Disposition disposition;
 
   int dataLength = 0;
 
   final List<String> lines = new ArrayList<> ();
-  CodePage codePage;
+  private CodePage codePage;
 
   // ---------------------------------------------------------------------------------//
   // constructor

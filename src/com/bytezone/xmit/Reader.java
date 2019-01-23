@@ -36,9 +36,9 @@ public class Reader
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Reader (Reader parent, DataFile member)
+  public Reader (Reader parent, DataFile dataFile)
   {
-    this (member.name, member.getDataBuffer ());
+    this (dataFile.getName (), dataFile.getDataBuffer ());
     this.level = parent.level + 1;
   }
 
