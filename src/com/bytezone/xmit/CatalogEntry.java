@@ -27,7 +27,6 @@ public class CatalogEntry
   private String time = "";
 
   private final byte[] directoryData;
-  private final int extra;
 
   private final int blockFrom;
   private byte[] ttl = new byte[5];
@@ -49,89 +48,25 @@ public class CatalogEntry
     name = Utility.getString (buffer, ptr, 8);
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
 
-    extra = buffer[ptr + 11] & 0xFF;      // indicator byte
-    numTtr = (extra & 0x60) >>> 5;        // number of TTRs in user data
-    usesAlias = (extra & 0x80) != 0;      // name in the first field is an alias
+    numTtr = (buffer[ptr + 11] & 0x60) >>> 5;      // number of TTRs in user data
+    usesAlias = (buffer[ptr + 11] & 0x80) != 0;    // name in the first field is an alias
 
-    switch (extra)
-    {
-      case 0:
-        break;
-
-      case 0x0F:
-        basic (buffer, ptr);
-        break;
-
-      case 0x14:
-        basic (buffer, ptr);
-        break;
-
-      //      case 0x2B:                    //
-      //        break;
-
-      //      case 0x2C:                    // FILE035 - load module?
-      //        break;
-
-      //      case 0x2E:                    // FILE035
-      //        break;
-
-      //      case 0x31:                    // FILE242
-      //        //        dateCreated = Utility.getLocalDate (buffer, ptr + 34);  NFE
-      //        break;
-
-      //      case 0x36:                    // file242    // 0xB6 alias of itself?
-      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
-      //        break;
-
-      //      case 0x37:                    // FILE135
-      //        String someName = Utility.getString (buffer, ptr + 46, 8);
-      //        break;
-
-      //      case 0x4B:
-      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-      //        break;
-
-      //      case 0x4E:
-      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-      //        break;
-
-      case 0x8F:                    // FILE134/REVHELP
-        basic (buffer, ptr);       // alias without the alias' name ??
-        break;
-
-      //      case 0xB1:                    // alias of 0x2C
-      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
-      //        break;
-
-      //      case 0xB3:                    // FILE035
-      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
-      //        break;
-
-      //      case 0xB6:      // file242    // alias of 0x31
-      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
-      //        Optional<LocalDate> opt = Utility.getLocalDate (buffer, ptr + 44);
-      //        if (opt.isPresent ())
-      //          dateCreated = opt.get ();
-      //        break;
-
-      //      case 0xCB:
-      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-      //        break;
-
-      //      case 0xD3:
-      //        System.out.printf ("%02X  %s  %s%n", extra, reader.getName (), name);
-      //        aliasName = Utility.getString (buffer, ptr + 36, 8);
-      //        break;
-
-      default:
-        //        System.out.printf ("********************** Unknown extra: %02X in %s%n", extra,
-        //            name);
-    }
-
-    directoryData = new byte[12 + (extra & 0x1F) * 2];
+    int size = buffer[ptr + 11] & 0x1F;
+    directoryData = new byte[12 + size * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    if (usesAlias && directoryData.length >= 43)
+    if (numTtr == 0 && size > 0)
+      basic (directoryData);
+
+    if (false)
+    {
+      System.out.print (Utility.getHexValuesWithText (directoryData, 0, 11));
+      System.out.printf (" | %d %d %02X |  ", usesAlias ? 1 : 0, numTtr, size);
+      System.out.println (
+          Utility.getHexValuesWithText (directoryData, 11, directoryData.length - 11));
+    }
+
+    if (usesAlias && directoryData.length >= 44)
       aliasName = Utility.getString (buffer, ptr + 36, 8);
   }
 
@@ -139,11 +74,12 @@ public class CatalogEntry
   // debugLine
   // ---------------------------------------------------------------------------------//
 
-  public String debugLine ()
+  public String debugLine ()        // called by OutputPane/HeaderTab
   {
     String hex = "";
     String t1 = "";
 
+    int extra = directoryData[11] & 0xFF;      // indicator byte
     if (extra == 0x2E)
       hex =
           Utility.getHexValues (directoryData, 12, 22) + "                              "
@@ -168,38 +104,37 @@ public class CatalogEntry
   // basic
   // ---------------------------------------------------------------------------------//
 
-  private void basic (byte[] buffer, int ptr)
+  private void basic (byte[] buffer)
   {
-    vv = buffer[ptr + 12] & 0xFF;
-    mm = buffer[ptr + 13] & 0xFF;
+    vv = buffer[12] & 0xFF;
+    mm = buffer[13] & 0xFF;
 
-    Optional<LocalDate> opt = Utility.getLocalDate (buffer, ptr + 16);
+    Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
     if (opt.isPresent ())
       dateCreated = opt.get ();
 
-    opt = Utility.getLocalDate (buffer, ptr + 20);
+    opt = Utility.getLocalDate (buffer, 20);
     if (opt.isPresent ())
       dateModified = opt.get ();
 
-    //    int moduleAttrs1 = buffer[ptr + 20] & 0xFF;
-    //    int moduleAttrs2 = buffer[ptr + 21] & 0xFF;
+    //    int moduleAttrs1 = buffer[ptr] & 0xFF;
+    //    int moduleAttrs2 = buffer[ptr] & 0xFF;
 
-    time = String.format ("%02X:%02X:%02X", buffer[ptr + 24], buffer[ptr + 25],
-        buffer[ptr + 15]);
+    time = String.format ("%02X:%02X:%02X", buffer[24], buffer[25], buffer[15]);
 
-    size = Utility.getTwoBytes (buffer, ptr + 26);
-    init = Utility.getTwoBytes (buffer, ptr + 28);
-    mod = Utility.getTwoBytes (buffer, ptr + 30);
-    userName = Utility.getString (buffer, ptr + 32, 8);
+    size = Utility.getTwoBytes (buffer, 26);
+    init = Utility.getTwoBytes (buffer, 28);
+    mod = Utility.getTwoBytes (buffer, 30);
+    userName = Utility.getString (buffer, 32, 8);
 
-    if (false)
-    {
-      String vvmmText = String.format ("%02d.%02d", vv, mm);
-      String date1Text = String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-      String date2Text = String.format ("%td %<tb %<tY", dateModified).replace (".", "");
-      System.out.println (String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s",
-          name, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
-    }
+    //    if (false)
+    //    {
+    //      String vvmmText = String.format ("%02d.%02d", vv, mm);
+    //      String date1Text = String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
+    //      String date2Text = String.format ("%td %<tb %<tY", dateModified).replace (".", "");
+    //      System.out.println (String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s",
+    //          name, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
+    //    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -244,7 +179,6 @@ public class CatalogEntry
 
   void setCopyRecords (CopyR1 copyR1, CopyR2 copyR2)
   {
-    //    isPdse = copyR1.isPdse ();
     this.copyR1 = copyR1;
     this.copyR2 = copyR2;
   }

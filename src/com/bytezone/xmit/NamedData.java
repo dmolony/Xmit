@@ -9,7 +9,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 public abstract class NamedData implements Comparable<NamedData>
 {
-  private static final int MAX_BUFFER = 100_000;
+  private static final int MAX_BUFFER = 200_000;
 
   String name = "";
   final Disposition disposition;

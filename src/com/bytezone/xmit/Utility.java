@@ -1,5 +1,6 @@
 package com.bytezone.xmit;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -211,6 +212,11 @@ public class Utility
       System.out.printf ("NFE: %s%n", Utility.getHexValues (buffer, offset, 4));
       return Optional.empty ();
     }
+    catch (DateTimeException dte)
+    {
+      System.out.printf ("DTE: %s%n", Utility.getHexValues (buffer, offset, 4));
+      return Optional.empty ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -232,6 +238,61 @@ public class Utility
     for (int i = offset, max = offset + length; i < max; i++)
       text.append (String.format ("%02X ", buffer[i]));
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getHexValuesWithText
+  // ---------------------------------------------------------------------------------//
+
+  public static String getHexValuesWithText (byte[] buffer)
+  {
+    return getHexValuesWithText (buffer, 0, buffer.length);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getHexValuesWithText
+  // ---------------------------------------------------------------------------------//
+
+  public static String getHexValuesWithText (byte[] buffer, int offset, int length)
+  {
+    StringBuilder text = new StringBuilder ();
+    for (int i = offset, max = offset + length; i < max; i++)
+    {
+      int c = buffer[i] & 0xFF;
+      if (isLetter (c) || isDigit (c) || isOther (c))
+        text.append (String.format ("%s. ", (char) codePage.ebc2asc[c]));
+      else
+        text.append (String.format ("%02X ", c));
+    }
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isDigit
+  // ---------------------------------------------------------------------------------//
+
+  private static boolean isLetter (int c)
+  {
+    return c >= 0xF0 && c <= 0xF9;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isDigit
+  // ---------------------------------------------------------------------------------//
+
+  private static boolean isDigit (int c)
+  {
+    return (c >= 0xC1 && c <= 0xC9) || (c >= 0xD1 && c <= 0xD9)
+        || (c >= 0xE2 && c <= 0xE9);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // isOther
+  // ---------------------------------------------------------------------------------//
+
+  private static boolean isOther (int c)
+  {
+    return c == 0x40 || c == 0x5B || c == 0x60 || c == 0x7B || c == 0x7C;
   }
 
   // ---------------------------------------------------------------------------------//
