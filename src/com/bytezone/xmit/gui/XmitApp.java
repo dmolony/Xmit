@@ -15,6 +15,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -37,6 +39,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final OutputPane outputPane = new OutputPane ();
   private final TablePane tablePane = new TablePane (xmitTable);
   private TreePane treePane;
+  private final FontManager fontManager = new FontManager ();
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
@@ -77,6 +80,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTable.addListener (outputPane);
     viewMenu.addShowLinesListener (outputPane);
     viewMenu.addCodePageListener (this);
+    fontManager.addFontChangeListener (outputPane);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
@@ -105,6 +109,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     viewMenu.restore ();        // ensure codepage is set before tree
     xmitTree.restore ();
     xmitTable.restore ();
+    fontManager.restore ();
 
     restoreWindowLocation ();
   }
@@ -121,12 +126,27 @@ public class XmitApp extends Application implements CodePageSelectedListener
     Scene scene = new Scene (createContent ());
     primaryStage.setScene (scene);
 
-    scene.setOnKeyPressed (e -> outputPane.keyPressed (e.getCode ()));
+    scene.setOnKeyPressed (e -> keyPressed (e));
 
     primaryStage.show ();
 
     splitPane.setDividerPosition (0, dividerPosition1);      // must happen after show()
     splitPane.setDividerPosition (1, dividerPosition2);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // keyPressed
+  // ---------------------------------------------------------------------------------//
+
+  private void keyPressed (KeyEvent keyEvent)
+  {
+    KeyCode keyCode = keyEvent.getCode ();
+
+    if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
+        || keyCode == KeyCode.O)
+      outputPane.keyPressed (keyCode);
+    else
+      fontManager.keyPressed (keyEvent);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -199,6 +219,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     fileMenu.exit ();
     viewMenu.exit ();
     outputPane.exit ();
+    fontManager.exit ();
 
     Platform.exit ();
   }

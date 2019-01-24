@@ -4,6 +4,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.scene.text.Font;
 
 public class XmitTab
 {
@@ -40,6 +41,15 @@ public class XmitTab
   void setText (String text)
   {
     textArea.setText (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setFont
+  // ---------------------------------------------------------------------------------//
+
+  void setFont (Font font)
+  {
+    textArea.setFont (font);
   }
 
   // ---------------------------------------------------------------------------------//

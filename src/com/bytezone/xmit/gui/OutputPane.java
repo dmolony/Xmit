@@ -14,9 +14,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
+import javafx.scene.text.Font;
 
-public class OutputPane extends DefaultPane
-    implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener
+public class OutputPane extends DefaultPane implements TreeItemSelectionListener,
+    TableItemSelectionListener, ShowLinesListener, FontChangeListener
 {
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -357,5 +358,17 @@ public class OutputPane extends DefaultPane
         model.select (tab.tab);
         return;
       }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setFont
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void setFont (Font font)
+  {
+    for (XmitTab tab : tabs)
+      tab.setFont (font);
+    //    System.out.printf ("Setting: %s%n", font);
   }
 }

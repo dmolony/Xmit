@@ -14,9 +14,15 @@ import javafx.scene.text.Font;
 
 abstract class DefaultPane extends BorderPane
 {
+  static String[] fontNames =
+      { "A2like", "Andale Mono", "Anonymous Pro", "Apple2Forever", "Apple2Forever80",
+        "Consolas", "Courier", "Courier New", "Fira Code", "IBM Plex Mono", "Iosevka",
+        "Menlo", "Monaco", "Monospaced", "PR Number 3", "PT Mono", "Print Char 21",
+        "VT220-mod" };
   static Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
-  static Font monospacedFont = Font.font ("Monospaced", 13);
-  //  static Font monospacedFont = Font.font ("IBM Plex Mono", 13);
+  static Font monospacedFont = Font.font (fontNames[17], 13);
+
+  // Courier
 
   // ---------------------------------------------------------------------------------//
   // getHBox

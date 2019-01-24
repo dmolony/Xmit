@@ -197,7 +197,7 @@ public class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // addListener
+  // addShowLinesListener
   // ---------------------------------------------------------------------------------//
 
   public void addShowLinesListener (ShowLinesListener listener)
@@ -207,7 +207,7 @@ public class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // addListener
+  // addCodePageListener
   // ---------------------------------------------------------------------------------//
 
   public void addCodePageListener (CodePageSelectedListener listener)
