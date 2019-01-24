@@ -4,6 +4,7 @@
 - view [compressed xmit files](resources/compressed.md)
 - extract [individual PDS members](resources/extract.md)
 - selectable [codepages](resources/view.md)
+- selectable fonts
 
 ## Sample screens
 ### MacOS
