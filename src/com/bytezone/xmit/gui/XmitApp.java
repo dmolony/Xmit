@@ -81,6 +81,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     viewMenu.addShowLinesListener (outputPane);
     viewMenu.addCodePageListener (this);
     fontManager.addFontChangeListener (outputPane);
+    fontManager.addFontChangeListener (xmitTable);
+    fontManager.addFontChangeListener (xmitTree);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);

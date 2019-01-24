@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.DataFile;
+import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Reader;
@@ -20,10 +20,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 public class XmitTable extends TableView<CatalogEntryItem>
-    implements TreeItemSelectionListener
+    implements TreeItemSelectionListener, FontChangeListener
 {
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -34,6 +35,7 @@ public class XmitTable extends TableView<CatalogEntryItem>
   private Reader reader;
   private Dataset dataset;
   private final Map<Reader, String> selectedMembers = new HashMap<> ();
+  private Font font;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -135,7 +137,10 @@ public class XmitTable extends TableView<CatalogEntryItem>
             if (item == null || empty)
               setText (null);
             else
+            {
               setText (String.format ("%,d", item));
+              setFont (font);
+            }
           }
         };
         return cell;
@@ -166,7 +171,10 @@ public class XmitTable extends TableView<CatalogEntryItem>
             if (item == null || empty)
               setText (null);
             else
+            {
               setText (item);
+              setFont (font);
+            }
           }
         };
         return cell;
@@ -198,7 +206,10 @@ public class XmitTable extends TableView<CatalogEntryItem>
                 if (item == null || empty)
                   setText (null);
                 else
+                {
                   setText (String.format ("%s", item));
+                  setFont (font);
+                }
               }
             };
         return cell;
@@ -294,5 +305,16 @@ public class XmitTable extends TableView<CatalogEntryItem>
     getFocusModel ().focus (index);
     getSelectionModel ().select (index);
     scrollTo (index);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setFont
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void setFont (Font font)
+  {
+    this.font = font;
+    refresh ();
   }
 }

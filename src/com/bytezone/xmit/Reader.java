@@ -16,13 +16,6 @@ public class Reader
   static byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
                            (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
 
-  //  private static final byte[] INMR03 =
-  //      { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9, (byte) 0xF0,
-  //        (byte) 0xF3 };
-  //  private static final byte[] INMR06 =
-  //      { 0x08, (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4, (byte) 0xD9,
-  //        (byte) 0xF0, (byte) 0xF6 };
-
   private final String fileName;
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<Dataset> datasets = new ArrayList<> ();
@@ -63,8 +56,11 @@ public class Reader
 
       if (ptr + length > buffer.length)
       {
-        //        System.out.println ("Unexpected EOF in record: " + recNo);
-        //        System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
+        if (false)
+        {
+          System.out.println ("Unexpected EOF in record: " + recNo);
+          System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
+        }
         incomplete = true;
         break;
       }
@@ -141,6 +137,7 @@ public class Reader
 
     // set active dataset
     activeDataset = datasets.get (datasets.size () - 1);     // always last
+    assert files == datasets.size ();
   }
 
   // ---------------------------------------------------------------------------------//

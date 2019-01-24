@@ -14,9 +14,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-public class XmitTree extends TreeView<XmitFile>
+public class XmitTree extends TreeView<XmitFile> implements FontChangeListener
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
@@ -30,6 +31,7 @@ public class XmitTree extends TreeView<XmitFile>
   private final Image zipImage;
   private final Image[] xImage = new Image[4];
   private final Image folderImage;
+  private Font font;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -72,6 +74,7 @@ public class XmitTree extends TreeView<XmitFile>
               setText (xmitFile.getName ());
               setImageView (xmitFile);
               setGraphic (imageView);
+              setFont (font);
             }
           }
 
@@ -249,5 +252,16 @@ public class XmitTree extends TreeView<XmitFile>
   public void removeListener (TreeItemSelectionListener listener)
   {
     listeners.remove (listener);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setFont
+  // ---------------------------------------------------------------------------------//
+
+  @Override
+  public void setFont (Font font)
+  {
+    this.font = font;
+    refresh ();
   }
 }
