@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -20,6 +21,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.KeyCode;
@@ -37,15 +40,19 @@ class FontManager
 {
   private static final String PREFS_FONT_NAME = "FontName";
   private static final String PREFS_FONT_SIZE = "FontSize";
+  private static final String PREFS_FONTS_SELECTED = "FontsSelected";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   List<FontChangeListener> listeners = new ArrayList<> ();
-  List<FontName> fontNames = getMonospacedFonts ();
+  List<FontName> fontNames;// = getMonospacedFonts ();
   int currentFont;
   int currentSize;
   Font font;
   Stage stage;
   TextArea text;
+
+  ListView<FontName> fontList;
+  IntegerSpinnerValueFactory factory = new IntegerSpinnerValueFactory (9, 15);
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -74,10 +81,10 @@ class FontManager
       BorderPane borderPane = new BorderPane ();
       ObservableList<FontName> names = FXCollections.observableArrayList ();
       names.addAll (fontNames);
-      ListView<FontName> fontList = new ListView<> (names);
+      fontList = new ListView<> (names);
 
       fontList.getSelectionModel ().selectedItemProperty ()
-          .addListener ( (a, b, c) -> change (a, b, c));
+          .addListener ( (a, b, c) -> text.setFont (getFont ()));
       fontList.getSelectionModel ().select (currentFont);
 
       fontList.setCellFactory (CheckBoxListCell
@@ -96,12 +103,19 @@ class FontManager
       hbox.setPadding (new Insets (6, 10, 6, 10));
       Button btnApply = new Button ("Apply");
       Button btnCancel = new Button ("Cancel");
-      Button btnClose = new Button ("Close");
-      hbox.getChildren ().addAll (btnCancel, btnApply, btnClose);
+      Button btnClose = new Button ("Accept");
+      Spinner<Integer> fontSize;
+      fontSize = new Spinner<> (factory);
+      hbox.getChildren ().addAll (fontSize, btnCancel, btnApply, btnClose);
+
+      factory.setWrapAround (true);
+      factory.valueProperty ().addListener ( (a, b, c) -> text.setFont (getFont ()));
+      factory.setValue (currentSize);
 
       borderPane.setLeft (fontList);
       borderPane.setCenter (text);
       borderPane.setBottom (hbox);
+
       stage.setScene (new Scene (borderPane, 1000, 600));
     }
 
@@ -109,16 +123,13 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // change
+  // getFont
   // ---------------------------------------------------------------------------------//
 
-  void change (ObservableValue<? extends FontName> ov, FontName oldFontName,
-      FontName newFontName)
+  Font getFont ()
   {
-    int index = fontNames.indexOf (newFontName);
-
-    Font font = Font.font (fontNames.get (index).getName (), 13);
-    text.setFont (font);
+    FontName name = fontList.getSelectionModel ().getSelectedItem ();
+    return Font.font (name.getName (), factory.getValue ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -228,6 +239,13 @@ class FontManager
 
   void restore ()
   {
+    List<String> fontsSelected =
+        Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, "Monospaced").split (";"));
+    fontNames = getMonospacedFonts ();
+    for (FontName fontName : fontNames)
+      if (fontsSelected.contains (fontName.getName ()))
+        fontName.setOn (true);
+
     currentSize = prefs.getInt (PREFS_FONT_SIZE, 13);
     setCurrentFont (prefs.get (PREFS_FONT_NAME, "Monospaced"));
     notifyListeners ();
@@ -241,6 +259,17 @@ class FontManager
   {
     prefs.put (PREFS_FONT_NAME, fontNames.get (currentFont).getName ());
     prefs.putInt (PREFS_FONT_SIZE, currentSize);
+
+    StringBuilder text = new StringBuilder ();
+    for (FontName fontName : fontNames)
+    {
+      if (fontName.isOn ())
+        text.append (fontName + ";");
+    }
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+    prefs.put (PREFS_FONTS_SELECTED, text.toString ());
+    System.out.println (text.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -267,8 +296,8 @@ class FontManager
 
   List<FontName> getMonospacedFonts ()
   {
-    final Text thinTxt = new Text ("1 l");
-    final Text thikTxt = new Text ("MWX");
+    final Text thinTxt = new Text ("ii11");
+    final Text thikTxt = new Text ("WWMM");
 
     List<String> fontFamilyList = Font.getFamilies ();
     List<FontName> monospacedFonts = new ArrayList<> ();
@@ -284,11 +313,12 @@ class FontManager
       {
         FontName item = new FontName (fontFamilyName, true);
         monospacedFonts.add (item);
-        item.onProperty ().addListener ( (obs, wasOn, isNowOn) ->
-        {
-          System.out.println (
-              item.getName () + " changed on state from " + wasOn + " to " + isNowOn);
-        });
+        //        item.onProperty ().addListener ( (obs, wasOn, isNowOn) ->
+        //        {
+        //          System.out.println (
+        //              item.getName () + " changed on state from "
+        //+ wasOn + " to " + isNowOn);
+        //        });
       }
     }
 
@@ -329,7 +359,7 @@ class FontManager
   {
     private final StringProperty name = new SimpleStringProperty ();
     private final BooleanProperty on = new SimpleBooleanProperty ();
-    private Font font;
+    //    private Font font;
 
     public FontName (String name, boolean on)
     {
