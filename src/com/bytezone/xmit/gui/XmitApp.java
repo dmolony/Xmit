@@ -74,7 +74,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     splitPane.getItems ().addAll (treePane, tablePane, outputPane);
 
     fileMenu = new FileMenu (this, xmitTree);
-    viewMenu = new ViewMenu (this, xmitTree);
+    viewMenu = new ViewMenu (this, xmitTree, fontManager);
     xmitTree.addListener (fileMenu);
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (outputPane);

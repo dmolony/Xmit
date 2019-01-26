@@ -29,6 +29,7 @@ public class ViewMenu
   private final Menu viewMenu = new Menu ("View");
   private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Line numbers");
   private final CheckMenuItem truncateMenuItem = new CheckMenuItem ("Truncate");
+  private final MenuItem fontMenuItem = new CheckMenuItem ("Set Font...");
   private final CheckMenuItem headersMenuItem = new CheckMenuItem ("Headers tab");
   private final CheckMenuItem blocksMenuItem = new CheckMenuItem ("Blocks tab");
   private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
@@ -47,14 +48,14 @@ public class ViewMenu
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree)
+  public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree, FontManager fontManager)
   {
     this.xmitApp = xmitApp;
 
     for (int i = 0; i < codePageNames.length; i++)
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
-    viewMenu.getItems ().addAll (linesMenuItem, truncateMenuItem,
+    viewMenu.getItems ().addAll (linesMenuItem, truncateMenuItem, fontMenuItem,
         new SeparatorMenuItem (), headersMenuItem, blocksMenuItem, hexMenuItem,
         new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
@@ -65,11 +66,14 @@ public class ViewMenu
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
     truncateMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.T, KeyCombination.SHORTCUT_DOWN));
+    fontMenuItem.setAccelerator (
+        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
     euroMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.DIGIT9, KeyCombination.SHORTCUT_DOWN));
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     truncateMenuItem.setOnAction (e -> notifyLinesListeners ());
+    fontMenuItem.setOnAction (e -> fontManager.manageFonts ());
 
     headersMenuItem.setOnAction (e -> setTabs ());
     blocksMenuItem.setOnAction (e -> setTabs ());

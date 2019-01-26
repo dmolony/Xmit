@@ -1,15 +1,33 @@
 package com.bytezone.xmit.gui;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 
 class FontManager
 {
@@ -18,10 +36,76 @@ class FontManager
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   List<FontChangeListener> listeners = new ArrayList<> ();
-  List<String> fontNames = getMonospacedFonts ();
+  List<FontName> fontNames = getMonospacedFonts ();
   int currentFont;
   int currentSize;
   Font font;
+  Stage stage;
+  TextArea text;
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
+  public FontManager ()
+  {
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // fontHandler
+  // ---------------------------------------------------------------------------------//
+
+  void manageFonts ()
+  {
+    if (stage == null)
+    {
+      stage = new Stage ();
+      stage.setTitle ("Font Manager");
+
+      text = getTextArea ();
+      text.setPrefWidth (750);
+      text.setEditable (false);
+
+      BorderPane borderPane = new BorderPane ();
+      ObservableList<FontName> names = FXCollections.observableArrayList ();
+      names.addAll (fontNames);
+      ListView<FontName> fontList = new ListView<> (names);
+
+      fontList.getSelectionModel ().selectedItemProperty ()
+          .addListener ( (a, b, c) -> change (a, b, c));
+      fontList.getSelectionModel ().select (currentFont);
+
+      fontList.setCellFactory (CheckBoxListCell
+          .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
+          {
+            @Override
+            public ObservableValue<Boolean> call (FontName item)
+            {
+              return item.onProperty ();
+            }
+          }));
+
+      borderPane.setLeft (fontList);
+      borderPane.setCenter (text);
+      stage.setScene (new Scene (borderPane, 1000, 500));
+    }
+
+    stage.show ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // change
+  // ---------------------------------------------------------------------------------//
+
+  void change (ObservableValue<? extends FontName> ov, FontName oldFontName,
+      FontName newFontName)
+  {
+    int index = fontNames.indexOf (newFontName);
+
+    Font font = Font.font (fontNames.get (index).getName (), 13);
+    text.setFont (font);
+  }
 
   // ---------------------------------------------------------------------------------//
   // addShowLinesListener
@@ -30,10 +114,7 @@ class FontManager
   public void addFontChangeListener (FontChangeListener listener)
   {
     if (!listeners.contains (listener))
-    {
       listeners.add (listener);
-      //      listener.setFont (font);
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -113,7 +194,7 @@ class FontManager
     else if (currentSize > 20)
       currentSize = 7;
 
-    font = Font.font (fontNames.get (currentFont), currentSize);
+    font = Font.font (fontNames.get (currentFont).getName (), currentSize);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -144,7 +225,7 @@ class FontManager
 
   void exit ()
   {
-    prefs.put (PREFS_FONT_NAME, fontNames.get (currentFont));
+    prefs.put (PREFS_FONT_NAME, fontNames.get (currentFont).getName ());
     prefs.putInt (PREFS_FONT_SIZE, currentSize);
   }
 
@@ -155,9 +236,9 @@ class FontManager
   private void setCurrentFont (String fontName)
   {
     int count = 0;
-    for (String name : fontNames)
+    for (FontName name : fontNames)
     {
-      if (name.equals (fontName))
+      if (name.getName ().equals (fontName))
       {
         currentFont = count;
         break;
@@ -170,13 +251,13 @@ class FontManager
   //getMonospacedFonts
   // ---------------------------------------------------------------------------------//
 
-  List<String> getMonospacedFonts ()
+  List<FontName> getMonospacedFonts ()
   {
     final Text thinTxt = new Text ("1 l");
     final Text thikTxt = new Text ("MWX");
 
     List<String> fontFamilyList = Font.getFamilies ();
-    List<String> monospacedFonts = new ArrayList<> ();
+    List<FontName> monospacedFonts = new ArrayList<> ();
 
     for (String fontFamilyName : fontFamilyList)
     {
@@ -186,9 +267,106 @@ class FontManager
       thikTxt.setFont (font);
       if (thinTxt.getLayoutBounds ().getWidth () == thikTxt.getLayoutBounds ()
           .getWidth ())
-        monospacedFonts.add (fontFamilyName);
+      {
+        FontName item = new FontName (fontFamilyName, true);
+        monospacedFonts.add (item);
+        item.onProperty ().addListener ( (obs, wasOn, isNowOn) ->
+        {
+          System.out.println (
+              item.getName () + " changed on state from " + wasOn + " to " + isNowOn);
+        });
+      }
     }
 
     return monospacedFonts;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getTextArea
+  // ---------------------------------------------------------------------------------//
+
+  TextArea getTextArea ()
+  {
+    TextArea textArea = new TextArea ();
+    StringBuilder text = new StringBuilder ();
+
+    DataInputStream inputEquates = new DataInputStream (XmitApp.class.getClassLoader ()
+        .getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
+    BufferedReader in = new BufferedReader (new InputStreamReader (inputEquates));
+    String line;
+    try
+    {
+      while ((line = in.readLine ()) != null)
+      {
+        if (!line.isEmpty ())
+        {
+          text.append (line);
+          text.append ("\n");
+        }
+      }
+      in.close ();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+    }
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+
+    textArea.setText (text.toString ());
+
+    return textArea;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // FontName
+  // ---------------------------------------------------------------------------------//
+
+  static class FontName
+  {
+    private final StringProperty name = new SimpleStringProperty ();
+    private final BooleanProperty on = new SimpleBooleanProperty ();
+
+    public FontName (String name, boolean on)
+    {
+      setName (name);
+      setOn (on);
+    }
+
+    public final StringProperty nameProperty ()
+    {
+      return this.name;
+    }
+
+    public final String getName ()
+    {
+      return this.nameProperty ().get ();
+    }
+
+    public final void setName (final String name)
+    {
+      this.nameProperty ().set (name);
+    }
+
+    public final BooleanProperty onProperty ()
+    {
+      return this.on;
+    }
+
+    public final boolean isOn ()
+    {
+      return this.onProperty ().get ();
+    }
+
+    public final void setOn (final boolean on)
+    {
+      this.onProperty ().set (on);
+    }
+
+    @Override
+    public String toString ()
+    {
+      return getName ();
+    }
   }
 }
