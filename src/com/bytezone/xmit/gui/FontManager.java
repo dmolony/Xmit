@@ -15,13 +15,17 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -86,9 +90,19 @@ class FontManager
             }
           }));
 
+      HBox hbox = new HBox (10);
+      hbox.setPrefHeight (20);
+      hbox.setAlignment (Pos.CENTER);
+      hbox.setPadding (new Insets (6, 10, 6, 10));
+      Button btnApply = new Button ("Apply");
+      Button btnCancel = new Button ("Cancel");
+      Button btnClose = new Button ("Close");
+      hbox.getChildren ().addAll (btnCancel, btnApply, btnClose);
+
       borderPane.setLeft (fontList);
       borderPane.setCenter (text);
-      stage.setScene (new Scene (borderPane, 1000, 500));
+      borderPane.setBottom (hbox);
+      stage.setScene (new Scene (borderPane, 1000, 600));
     }
 
     stage.show ();
@@ -287,24 +301,15 @@ class FontManager
 
   TextArea getTextArea ()
   {
-    TextArea textArea = new TextArea ();
     StringBuilder text = new StringBuilder ();
+    String line;
 
     DataInputStream inputEquates = new DataInputStream (XmitApp.class.getClassLoader ()
         .getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
-    BufferedReader in = new BufferedReader (new InputStreamReader (inputEquates));
-    String line;
-    try
+    try (BufferedReader in = new BufferedReader (new InputStreamReader (inputEquates)))
     {
       while ((line = in.readLine ()) != null)
-      {
-        if (!line.isEmpty ())
-        {
-          text.append (line);
-          text.append ("\n");
-        }
-      }
-      in.close ();
+        text.append (line + "\n");
     }
     catch (IOException e)
     {
@@ -313,19 +318,18 @@ class FontManager
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
 
-    textArea.setText (text.toString ());
-
-    return textArea;
+    return new TextArea (text.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
   // FontName
   // ---------------------------------------------------------------------------------//
 
-  static class FontName
+  private static class FontName
   {
     private final StringProperty name = new SimpleStringProperty ();
     private final BooleanProperty on = new SimpleBooleanProperty ();
+    private Font font;
 
     public FontName (String name, boolean on)
     {
