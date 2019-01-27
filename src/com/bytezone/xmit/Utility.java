@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 public class Utility
 {
   static CodePage codePage;
@@ -20,6 +23,7 @@ public class Utility
   private static final byte[] rtf = { 0x7B, 0x5C, 0x72, 0x74, 0x66 };
 
   private static final byte[][] signatures = { doc, pdf, zip, rar, png, rtf };
+  private static Alert alert;
 
   public enum FileType
   {
@@ -355,6 +359,23 @@ public class Utility
       text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // showAlert
+  // ---------------------------------------------------------------------------------//
+
+  public static void showAlert (AlertType alertType, String title, String message)
+  {
+    if (alert == null)
+    {
+      alert = new Alert (alertType);
+      alert.setTitle (title);
+      alert.setHeaderText (null);
+    }
+
+    alert.setContentText (message);
+    alert.showAndWait ();
   }
 
   // ---------------------------------------------------------------------------------//

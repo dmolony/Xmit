@@ -6,13 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.PsDataset;
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.*;
 
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -25,25 +20,16 @@ import javafx.stage.FileChooser;
 class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 {
   private static final String PREFS_SAVE_FOLDER = "SaveFolder";
-  private static final byte[] pdf = { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E };
-  private static final byte[] zip = { 0x50, 0x4B, 0x03, 0x04 };
-  private static final byte[] word = { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0,
-                                       (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 };
-  private static final byte[] winrar = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 };
-  private static final byte[] png = { (byte) 0x89, 0x50, 0x4E, 0x47 };
-
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final Menu fileMenu = new Menu ("File");
-  private final MenuItem rootMenuItem = new MenuItem ("Set XMIT file folder");
+  private final MenuItem rootMenuItem = new MenuItem ("Set XMIT root folder");
   private final MenuItem extractMenuItem = new MenuItem ("Extract file");
 
   private CatalogEntry catalogEntry;
-  //  private Reader reader;
   private Dataset dataset;
   private String name;
 
-  private Alert alert;
   private String saveFolderName;
 
   // ---------------------------------------------------------------------------------//
@@ -60,23 +46,6 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 
     rootMenuItem.setOnAction (e -> owner.changeRootFolder ());
     extractMenuItem.setOnAction (e -> extractFile ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // showAlert
-  // ---------------------------------------------------------------------------------//
-
-  void showAlert (AlertType alertType, String title, String message)
-  {
-    if (alert == null)
-    {
-      alert = new Alert (alertType);
-      alert.setTitle (title);
-      alert.setHeaderText (null);
-    }
-
-    alert.setContentText (message);
-    alert.showAndWait ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -113,12 +82,12 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
       {
         Files.write (Paths.get (file.getAbsolutePath ()), buffer);
         saveFolderName = file.getParent ();
-        showAlert (AlertType.INFORMATION, "Success",
+        Utility.showAlert (AlertType.INFORMATION, "Success",
             "File Extracted: " + file.getName ());
       }
       catch (IOException e)
       {
-        showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
+        Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
       }
   }
 
