@@ -178,7 +178,6 @@ class FontManager
   {
     if (listHasChanged)
     {
-      System.out.println ("Rebuilding");
       fontNameSubList.clear ();
       for (FontName fontName : fontNameListView.getItems ())
         if (fontName.isOn () || fontName.getName ().equals (REQUIRED_FONT))
@@ -198,9 +197,12 @@ class FontManager
   private void cancel ()
   {
     // this doesn't revert the checkboxes
-    currentFontIndex = savedFontIndex;
-    currentFontSize = savedFontSize;
-    notifyListeners ();
+    if (currentFontIndex != savedFontIndex || currentFontSize != savedFontSize)
+    {
+      currentFontIndex = savedFontIndex;
+      currentFontSize = savedFontSize;
+      notifyListeners ();
+    }
 
     stage.hide ();
   }
@@ -211,12 +213,20 @@ class FontManager
 
   private void apply ()
   {
-    currentFontIndex = fontNameSubList.indexOf (getSelectedName ());
-    if (currentFontIndex < 0)
-      currentFontIndex = fontNameSubList.indexOf (REQUIRED_FONT);
+    setCurrentFontIndex (getSelectedName ());
     currentFontSize = factory.getValue ();
     notifyListeners ();
-    System.out.println ("Applying: " + fontNameSubList.get (currentFontIndex));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setCurrentFontIndex
+  // ---------------------------------------------------------------------------------//
+
+  private void setCurrentFontIndex (String name)
+  {
+    currentFontIndex = fontNameSubList.indexOf (name);
+    if (currentFontIndex < 0)
+      currentFontIndex = fontNameSubList.indexOf (REQUIRED_FONT);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -326,21 +336,11 @@ class FontManager
 
   public void restore ()
   {
-    System.out.println ("Restoring:");
     fontNameSubList.addAll (
         Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT).split (";")));
+
     currentFontSize = prefs.getInt (PREFS_FONT_SIZE, DEFAULT_SIZE);
-
-    for (String fontName : fontNameSubList)
-      System.out.println ("  " + fontName);
-
-    String name = prefs.get (PREFS_FONT_NAME, REQUIRED_FONT);
-    System.out.println ("Selecting: " + name);
-
-    currentFontIndex = fontNameSubList.indexOf (name);
-    if (currentFontIndex < 0)
-      currentFontIndex = fontNameSubList.indexOf (REQUIRED_FONT);
-    System.out.println (currentFontIndex);
+    setCurrentFontIndex (prefs.get (PREFS_FONT_NAME, REQUIRED_FONT));
 
     notifyListeners ();
   }
@@ -360,18 +360,14 @@ class FontManager
     prefs.put (PREFS_FONT_NAME, fontNameSubList.get (currentFontIndex));
     prefs.putInt (PREFS_FONT_SIZE, currentFontSize);
 
-    System.out.println ("Saving:");
     StringBuilder text = new StringBuilder ();
     for (String fontName : fontNameSubList)
-    {
-      System.out.println ("  " + fontName);
       text.append (fontName + ";");
-    }
+
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
+
     prefs.put (PREFS_FONTS_SELECTED, text.toString ());
-    System.out.println ("Saving: " + fontNameSubList.get (currentFontIndex));
-    System.out.println (currentFontIndex);
   }
 
   // ---------------------------------------------------------------------------------//
