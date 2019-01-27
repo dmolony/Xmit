@@ -49,31 +49,20 @@ class FontManager
   private static final int MIN_FONT_SIZE = 9;
   private static final int MAX_FONT_SIZE = 15;
 
-  List<FontChangeListener> listeners = new ArrayList<> ();
-  int currentFontIndex;
-  int currentSize;
-  Font currentFont;
+  private final List<FontChangeListener> listeners = new ArrayList<> ();
+  private int currentFontIndex;
+  private int currentSize;
 
-  Stage stage;
-  TextArea text;
+  private Stage stage;
+  private TextArea text;
 
-  ArrayList<String> fontNameSubList = new ArrayList<> (); // sublist to cycle through
-  ListView<FontName> fontNameListView;                    // list used to create sublist
-  IntegerSpinnerValueFactory factory =
+  private final ArrayList<String> fontNameSubList = new ArrayList<> ();
+  private ListView<FontName> fontNameListView;
+  private final IntegerSpinnerValueFactory factory =
       new IntegerSpinnerValueFactory (MIN_FONT_SIZE, MAX_FONT_SIZE);
 
-  //  String savedFontName;
-  int savedFontIndex;
-  int savedFontSize;
-
-  // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
-  public FontManager ()
-  {
-
-  }
+  private int savedFontIndex;
+  private int savedFontSize;
 
   // ---------------------------------------------------------------------------------//
   // fontHandler
@@ -139,11 +128,41 @@ class FontManager
     savedFontIndex = currentFontIndex;
     savedFontSize = currentSize;
 
-    fontNameListView.getSelectionModel ()
-        .select (getIndex (fontNameSubList.get (currentFontIndex)));
-    factory.setValue (savedFontSize);
+    setSelections ();
 
     stage.show ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // setSelections
+  // ---------------------------------------------------------------------------------//
+
+  private void setSelections ()
+  {
+    String name = fontNameSubList.get (currentFontIndex);
+    int count = 0;
+    for (FontName fontName : fontNameListView.getItems ())
+    {
+      if (fontName.getName ().equals (name))
+      {
+        fontNameListView.getSelectionModel ().select (count);
+        break;
+      }
+      ++count;
+    }
+    factory.setValue (currentSize);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getFont
+  // ---------------------------------------------------------------------------------//
+
+  private Font getFont ()
+  {
+    FontName fontName = fontNameListView.getSelectionModel ().getSelectedItem ();
+    System.out.println ("Selected: " + fontName);
+    System.out.println (factory.getValue ());
+    return Font.font (fontName.getName (), factory.getValue ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -170,9 +189,10 @@ class FontManager
   private void cancel ()
   {
     // this doesn't revert the checkboxes
-    currentFontIndex = savedFontIndex;//fontNameSubList.indexOf (savedFontName);
+    currentFontIndex = savedFontIndex;
     currentSize = savedFontSize;
     notifyListeners ();
+
     stage.hide ();
   }
 
@@ -189,18 +209,6 @@ class FontManager
     currentSize = factory.getValue ();
     notifyListeners ();
     System.out.println ("Applying: " + fontNameSubList.get (currentFontIndex));
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getFont
-  // ---------------------------------------------------------------------------------//
-
-  Font getFont ()
-  {
-    FontName name = fontNameListView.getSelectionModel ().getSelectedItem ();
-    System.out.println ("Selected: " + name);
-    System.out.println (factory.getValue ());
-    return Font.font (name.getName (), factory.getValue ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -235,16 +243,6 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // bigger
-  // ---------------------------------------------------------------------------------//
-
-  private void bigger ()
-  {
-    ++currentSize;
-    notifyListeners ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   // smaller
   // ---------------------------------------------------------------------------------//
 
@@ -255,12 +253,12 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // next
+  // bigger
   // ---------------------------------------------------------------------------------//
 
-  private void next ()
+  private void bigger ()
   {
-    ++currentFontIndex;
+    ++currentSize;
     notifyListeners ();
   }
 
@@ -275,10 +273,20 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // setFont
+  // next
   // ---------------------------------------------------------------------------------//
 
-  private void setCurrentFont ()
+  private void next ()
+  {
+    ++currentFontIndex;
+    notifyListeners ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // notify
+  // ---------------------------------------------------------------------------------//
+
+  private void notifyListeners ()
   {
     if (currentFontIndex >= fontNameSubList.size ())
       currentFontIndex = 0;
@@ -290,16 +298,7 @@ class FontManager
     else if (currentSize > MAX_FONT_SIZE)
       currentSize = MIN_FONT_SIZE;
 
-    currentFont = Font.font (fontNameSubList.get (currentFontIndex), currentSize);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // notify
-  // ---------------------------------------------------------------------------------//
-
-  private void notifyListeners ()
-  {
-    setCurrentFont ();
+    Font currentFont = Font.font (fontNameSubList.get (currentFontIndex), currentSize);
     for (FontChangeListener fontChangeListener : listeners)
       fontChangeListener.setFont (currentFont);
   }
@@ -308,19 +307,21 @@ class FontManager
   //restore
   // ---------------------------------------------------------------------------------//
 
-  void restore ()
+  public void restore ()
   {
     System.out.println ("Restoring:");
     fontNameSubList.addAll (
         Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT).split (";")));
+    currentSize = prefs.getInt (PREFS_FONT_SIZE, 13);
     for (String fontName : fontNameSubList)
       System.out.println ("  " + fontName);
 
-    currentSize = prefs.getInt (PREFS_FONT_SIZE, 13);
     String name = prefs.get (PREFS_FONT_NAME, REQUIRED_FONT);
     System.out.println ("Selecting: " + name);
-    currentFontIndex = getCurrentFont (name);
+
+    currentFontIndex = getCurrentFontIndex (name);
     System.out.println (currentFontIndex);
+
     notifyListeners ();
   }
 
@@ -328,7 +329,7 @@ class FontManager
   // exit
   // ---------------------------------------------------------------------------------//
 
-  void exit ()
+  public void exit ()
   {
     prefs.put (PREFS_FONT_NAME, fontNameSubList.get (currentFontIndex));
     prefs.putInt (PREFS_FONT_SIZE, currentSize);
@@ -347,10 +348,10 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // setCurrentFont
+  // getCurrentFontIndex
   // ---------------------------------------------------------------------------------//
 
-  private int getCurrentFont (String fontName)
+  private int getCurrentFontIndex (String fontName)
   {
     int count = 0;
     for (String name : fontNameSubList)
@@ -363,26 +364,10 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // getIndex
-  // ---------------------------------------------------------------------------------//
-
-  private int getIndex (String name)
-  {
-    int count = 0;
-    for (FontName fontName : fontNameListView.getItems ())
-    {
-      if (fontName.getName ().equals (name))
-        return count;
-      ++count;
-    }
-    return -1;
-  }
-
-  // ---------------------------------------------------------------------------------//
   // getMonospacedFonts
   // ---------------------------------------------------------------------------------//
 
-  List<FontName> getMonospacedFonts ()
+  private List<FontName> getMonospacedFonts ()
   {
     final Text thinTxt = new Text ("ii11");
     final Text thikTxt = new Text ("WWMM");
@@ -422,7 +407,7 @@ class FontManager
   // getTextArea
   // ---------------------------------------------------------------------------------//
 
-  TextArea getTextArea ()
+  private TextArea getTextArea ()
   {
     StringBuilder text = new StringBuilder ();
     String line;
