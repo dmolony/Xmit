@@ -31,6 +31,7 @@ abstract class DefaultPane extends BorderPane
   HBox getHBox (Label label1, Label label2)
   {
     HBox hbox = getHBox (label1);
+
     Region filler = new Region ();
     HBox.setHgrow (filler, Priority.ALWAYS);
     hbox.getChildren ().addAll (filler, label2);
