@@ -6,7 +6,6 @@ import com.bytezone.xmit.*;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
 import javafx.scene.control.SingleSelectionModel;
@@ -52,26 +51,17 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
     tabPane.setTabMinWidth (100);
 
     tabPane.getSelectionModel ().selectedItemProperty ()
-        .addListener ( (ov, oldTab, newTab) -> tabSelected (ov, oldTab, newTab));
+        .addListener ( (ov, oldTab, newTab) -> updateCurrentTab ());
 
-    tabs[HEADERS] = createTab ("Headers", KeyCode.H);
-    tabs[BLOCKS] = createTab ("Blocks", KeyCode.B);
-    tabs[HEX] = createTab ("Hex", KeyCode.X);
-    tabs[OUTPUT] = createTab ("Output", KeyCode.O);
+    tabs[HEADERS] = createTab ("Headers", KeyCode.H, () -> updateHeadersTab ());
+    tabs[BLOCKS] = createTab ("Blocks", KeyCode.B, () -> updateBlocksTab ());
+    tabs[HEX] = createTab ("Hex", KeyCode.X, () -> updateHexTab ());
+    tabs[OUTPUT] = createTab ("Output", KeyCode.O, () -> updateOutputTab ());
 
     setCenter (tabPane);
     setTop (getHBox (lblMemberName, lblDisposition));
 
     restore ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // tabSelected
-  // ---------------------------------------------------------------------------------//
-
-  private void tabSelected (ObservableValue<? extends Tab> ov, Tab oldTab, Tab newTab)
-  {
-    updateCurrentTab ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -82,17 +72,12 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
 
-    if (selectedTab != null)
-      if (selectedTab == tabs[HEADERS].tab)
-        updateHeadersTab ();
-      else if (selectedTab == tabs[BLOCKS].tab)
-        updateBlocksTab ();
-      else if (selectedTab == tabs[HEX].tab)
-        updateHexTab ();
-      else if (selectedTab == tabs[OUTPUT].tab)
-        updateOutputTab ();
-      else
-        System.out.println ("Unknown Tab:" + selectedTab);
+    for (XmitTab xmitTab : tabs)
+      if (xmitTab.tab == selectedTab)
+      {
+        xmitTab.update ();
+        break;
+      }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -369,6 +354,5 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
   {
     for (XmitTab tab : tabs)
       tab.setFont (font);
-    //    System.out.printf ("Setting: %s%n", font);
   }
 }

@@ -6,23 +6,34 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
-public class XmitTab
+class XmitTab
 {
   final Tab tab;
   final TextArea textArea;
   final KeyCode keyCode;
   final ScrollBarState scrollBarState;
+  final TabUpdater tabUpdater;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitTab (Tab tab, TextArea textArea, KeyCode keyCode)
+  public XmitTab (Tab tab, TextArea textArea, KeyCode keyCode, TabUpdater tabUpdater)
   {
     this.tab = tab;
     this.textArea = textArea;
     this.keyCode = keyCode;
+    this.tabUpdater = tabUpdater;
     scrollBarState = new ScrollBarState (textArea, Orientation.VERTICAL);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // update
+  // ---------------------------------------------------------------------------------//
+
+  void update ()
+  {
+    tabUpdater.update ();
   }
 
   // ---------------------------------------------------------------------------------//
