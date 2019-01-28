@@ -13,7 +13,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -37,7 +36,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 class FontManager
 {
@@ -47,7 +45,7 @@ class FontManager
   private static final String PREFS_FONTS_SELECTED = "FontsSelected";
 
   private static final String REQUIRED_FONT = "Monospaced";
-  private static final int DEFAULT_SIZE = 13;
+  private static final int DEFAULT_FONT_SIZE = 13;
   private static final int MIN_FONT_SIZE = 9;
   private static final int MAX_FONT_SIZE = 15;
 
@@ -90,15 +88,17 @@ class FontManager
       fontNameListView.getSelectionModel ().selectedItemProperty ()
           .addListener ( (obs, o, n) -> setTextFont ());
 
-      fontNameListView.setCellFactory (CheckBoxListCell
-          .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
-          {
-            @Override
-            public ObservableValue<Boolean> call (FontName item)
-            {
-              return item.onProperty ();
-            }
-          }));
+      //      fontNameListView.setCellFactory (CheckBoxListCell
+      //          .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
+      //          {
+      //            @Override
+      //            public ObservableValue<Boolean> call (FontName item)
+      //            {
+      //              return item.onProperty ();
+      //            }
+      //          }));
+      fontNameListView
+          .setCellFactory (CheckBoxListCell.forListView (FontName::onProperty));
 
       factory.setWrapAround (true);
       factory.valueProperty ().addListener ( (obs, o, n) -> setTextFont ());
@@ -182,6 +182,11 @@ class FontManager
     for (FontName fontName : fontNameListView.getItems ())
       if (fontName.isOn () || fontName.getName ().equals (REQUIRED_FONT))
         fontNameSubList.add (fontName.getName ());
+
+    //    ObservableList<FontName> selectedFontNames =
+    //        fontNameListView.getItems ().filtered (FontName::isOn);
+    //    for (FontName fontName : selectedFontNames)
+    //      System.out.println (fontName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -344,7 +349,7 @@ class FontManager
     fontNameSubList.addAll (
         Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT).split (";")));
 
-    currentFontSize = prefs.getInt (PREFS_FONT_SIZE, DEFAULT_SIZE);
+    currentFontSize = prefs.getInt (PREFS_FONT_SIZE, DEFAULT_FONT_SIZE);
     setCurrentFontIndex (prefs.get (PREFS_FONT_NAME, REQUIRED_FONT));
 
     notifyListeners ();
