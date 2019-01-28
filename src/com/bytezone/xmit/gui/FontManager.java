@@ -17,8 +17,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
@@ -63,7 +65,6 @@ class FontManager
   private int currentFontSize;
   private int savedFontIndex;
   private int savedFontSize;
-  private boolean listHasChanged;
 
   // ---------------------------------------------------------------------------------//
   // manageFonts
@@ -87,7 +88,7 @@ class FontManager
       fontNameListView = new ListView<> (names);
 
       fontNameListView.getSelectionModel ().selectedItemProperty ()
-          .addListener ( (a, b, c) -> setTextFont ());
+          .addListener ( (obs, o, n) -> setTextFont ());
 
       fontNameListView.setCellFactory (CheckBoxListCell
           .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
@@ -100,11 +101,12 @@ class FontManager
           }));
 
       factory.setWrapAround (true);
-      factory.valueProperty ().addListener ( (a, b, c) -> setTextFont ());
+      factory.valueProperty ().addListener ( (obs, o, n) -> setTextFont ());
 
       HBox controlBox = new HBox (10);
       controlBox.setPrefHeight (20);
       controlBox.setPadding (new Insets (6, 10, 6, 10));
+      controlBox.setAlignment (Pos.CENTER_LEFT);
 
       Button btnApply = getButton ("Apply");
       Button btnCancel = getButton ("Cancel");
@@ -116,8 +118,8 @@ class FontManager
 
       Region filler = new Region ();
       HBox.setHgrow (filler, Priority.ALWAYS);
-      controlBox.getChildren ().addAll (new Spinner<> (factory), filler, btnCancel,
-          btnApply, btnAccept);
+      controlBox.getChildren ().addAll (new Label ("Font size"), new Spinner<> (factory),
+          filler, btnCancel, btnApply, btnAccept);
 
       borderPane.setLeft (fontNameListView);
       borderPane.setCenter (text);
@@ -171,20 +173,23 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
+  // rebuild
+  // ---------------------------------------------------------------------------------//
+
+  private void rebuildSubList ()
+  {
+    fontNameSubList.clear ();
+    for (FontName fontName : fontNameListView.getItems ())
+      if (fontName.isOn () || fontName.getName ().equals (REQUIRED_FONT))
+        fontNameSubList.add (fontName.getName ());
+  }
+
+  // ---------------------------------------------------------------------------------//
   // accept
   // ---------------------------------------------------------------------------------//
 
   private void accept ()
   {
-    if (listHasChanged)
-    {
-      fontNameSubList.clear ();
-      for (FontName fontName : fontNameListView.getItems ())
-        if (fontName.isOn () || fontName.getName ().equals (REQUIRED_FONT))
-          fontNameSubList.add (fontName.getName ());
-      listHasChanged = false;
-    }
-
     apply ();
 
     stage.hide ();
@@ -392,8 +397,7 @@ class FontManager
         FontName fontName = new FontName (familyName);
         fontName.setOn (fontNameSubList.contains (familyName));
         monospacedFonts.add (fontName);
-        fontName.onProperty ()
-            .addListener ( (obs, wasOn, isNowOn) -> listHasChanged = true);
+        fontName.onProperty ().addListener ( (obs, o, n) -> rebuildSubList ());
       }
     }
 
