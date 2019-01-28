@@ -67,10 +67,10 @@ class FontManager
   private int savedFontSize;
 
   // ---------------------------------------------------------------------------------//
-  // manageFonts
+  // showWindow
   // ---------------------------------------------------------------------------------//
 
-  void manageFonts ()
+  void showWindow ()
   {
     if (stage == null)
     {
@@ -125,7 +125,7 @@ class FontManager
       borderPane.setCenter (text);
       borderPane.setBottom (controlBox);
 
-      stage.setScene (new Scene (borderPane, 1200, 700));
+      stage.setScene (new Scene (borderPane, 1000, 700));
     }
 
     savedFontIndex = currentFontIndex;
@@ -173,7 +173,7 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // rebuild
+  // rebuildSubList
   // ---------------------------------------------------------------------------------//
 
   private void rebuildSubList ()
@@ -305,7 +305,7 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // notify
+  // notifyListeners
   // ---------------------------------------------------------------------------------//
 
   private void notifyListeners ()
@@ -326,7 +326,7 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  // addShowLinesListener
+  // addFontChangeListener
   // ---------------------------------------------------------------------------------//
 
   public void addFontChangeListener (FontChangeListener listener)
@@ -336,7 +336,7 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  //restore
+  // restore
   // ---------------------------------------------------------------------------------//
 
   public void restore ()
@@ -381,7 +381,7 @@ class FontManager
 
   private List<FontName> getMonospacedFonts ()
   {
-    final Text thinTxt = new Text ("ii11");
+    final Text thinTxt = new Text ("....");
     final Text thikTxt = new Text ("WWMM");
 
     List<FontName> monospacedFonts = new ArrayList<> ();

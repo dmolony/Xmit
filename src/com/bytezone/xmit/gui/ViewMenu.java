@@ -73,7 +73,7 @@ public class ViewMenu
 
     linesMenuItem.setOnAction (e -> notifyLinesListeners ());
     truncateMenuItem.setOnAction (e -> notifyLinesListeners ());
-    fontMenuItem.setOnAction (e -> fontManager.manageFonts ());
+    fontMenuItem.setOnAction (e -> fontManager.showWindow ());
 
     headersMenuItem.setOnAction (e -> setTabs ());
     blocksMenuItem.setOnAction (e -> setTabs ());
