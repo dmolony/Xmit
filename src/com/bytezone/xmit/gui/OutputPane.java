@@ -8,14 +8,12 @@ import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
-import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
-import javafx.scene.text.Font;
 
-public class OutputPane extends DefaultPane implements TreeItemSelectionListener,
+public class OutputPane extends DefaultTabPane implements TreeItemSelectionListener,
     TableItemSelectionListener, ShowLinesListener, FontChangeListener
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -23,7 +21,6 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   private final TabPane tabPane = new TabPane ();
 
-  private final XmitTab[] tabs = new XmitTab[4];
   private final int HEADERS = 0;
   private final int BLOCKS = 1;
   private final int HEX = 2;
@@ -46,6 +43,8 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   public OutputPane ()
   {
+    super (4);
+
     tabPane.setSide (Side.BOTTOM);
     tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
     tabPane.setTabMinWidth (100);
@@ -70,14 +69,16 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   private void updateCurrentTab ()
   {
-    Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
-
-    for (XmitTab xmitTab : tabs)
-      if (xmitTab.tab == selectedTab)
+    if (member != null)
+    {
+      Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
+      if (selectedTab != null)
       {
-        xmitTab.update ();
-        break;
+        XmitTab xmitTab = (XmitTab) selectedTab.getUserData ();
+        if (xmitTab.isTextEmpty ())
+          xmitTab.update ();
       }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -86,44 +87,41 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   private void updateHeadersTab ()
   {
-    if (member != null && tabs[HEADERS].isTextEmpty ())
-    {
-      StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder ();
 
-      for (ControlRecord controlRecord : reader.getControlRecords ())
+    for (ControlRecord controlRecord : reader.getControlRecords ())
+    {
+      text.append (controlRecord.toString ());
+      text.append ("\n");
+    }
+    text.deleteCharAt (text.length () - 1);
+
+    if (disposition.getOrg () == Org.PDS)
+    {
+      text.append ("COPYR1\n");
+      text.append (((PdsDataset) dataset).getCopyR1 ());
+      text.append ("\n\n");
+      text.append ("COPYR2\n");
+      text.append (((PdsDataset) dataset).getCopyR2 ());
+      text.append ("\n\n");
+
+      text.append (String.format ("%s Catalog Blocks:%n", reader.getName ()));
+      text.append (
+          "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
+      text.append ("Size1 Size2       -------- user ---------\n");
+
+      for (PdsMember member : (PdsDataset) dataset)
       {
-        text.append (controlRecord.toString ());
+        if (member.getCatalogEntry () != null)
+          text.append (member.getCatalogEntry ().debugLine ());
+        else
+          text.append ("not found");
         text.append ("\n");
       }
-      text.deleteCharAt (text.length () - 1);
-
-      if (disposition.getOrg () == Org.PDS)
-      {
-        text.append ("COPYR1\n");
-        text.append (((PdsDataset) dataset).getCopyR1 ());
-        text.append ("\n\n");
-        text.append ("COPYR2\n");
-        text.append (((PdsDataset) dataset).getCopyR2 ());
-        text.append ("\n\n");
-
-        text.append (String.format ("%s Catalog Blocks:%n", reader.getName ()));
-        text.append (
-            "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
-        text.append ("Size1 Size2       -------- user ---------\n");
-
-        for (PdsMember member : (PdsDataset) dataset)
-        {
-          if (member.getCatalogEntry () != null)
-            text.append (member.getCatalogEntry ().debugLine ());
-          else
-            text.append ("not found");
-          text.append ("\n");
-        }
-      }
-
-      Utility.removeTrailingNewlines (text);
-      tabs[HEADERS].setText (text.toString ());
     }
+
+    Utility.removeTrailingNewlines (text);
+    tabs[HEADERS].setText (text.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -132,8 +130,7 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   private void updateBlocksTab ()
   {
-    if (member != null && tabs[BLOCKS].isTextEmpty ())
-      tabs[BLOCKS].setText (member.toString ());
+    tabs[BLOCKS].setText (member.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -142,15 +139,12 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   private void updateHexTab ()
   {
-    if (member != null && tabs[HEX].isTextEmpty ())
-    {
-      byte[] buffer = member.getDataBuffer ();
+    byte[] buffer = member.getDataBuffer ();
 
-      if (buffer != null)
-      {
-        int max = Math.min (0x20000, buffer.length);
-        tabs[HEX].setText (Utility.getHexDump (buffer, 0, max));
-      }
+    if (buffer != null)
+    {
+      int max = Math.min (0x20000, buffer.length);
+      tabs[HEX].setText (Utility.getHexDump (buffer, 0, max));
     }
   }
 
@@ -160,8 +154,7 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
 
   private void updateOutputTab ()
   {
-    if (member != null && tabs[OUTPUT].isTextEmpty ())
-      tabs[OUTPUT].setText (member.getLines (showLines, truncateLines));
+    tabs[OUTPUT].setText (member.getLines (showLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -283,7 +276,7 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
     saveScrollBars ();
     clearText ();
     updateCurrentTab ();
-    updateName ();
+    updateName ();              // toggle the '<-' indicator
     restoreScrollBars ();
   }
 
@@ -300,59 +293,16 @@ public class OutputPane extends DefaultPane implements TreeItemSelectionListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // saveScrollBars
-  // ---------------------------------------------------------------------------------//
-
-  private void saveScrollBars ()
-  {
-    for (XmitTab tab : tabs)
-      tab.saveScrollBar ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // restoreScrollBars
-  // ---------------------------------------------------------------------------------//
-
-  private void restoreScrollBars ()
-  {
-    for (XmitTab tab : tabs)
-      tab.restoreScrollBar ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // clearText
-  // ---------------------------------------------------------------------------------//
-
-  private void clearText ()
-  {
-    for (XmitTab tab : tabs)
-      tab.textArea.clear ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   // keyPressed
   // ---------------------------------------------------------------------------------//
 
   public void keyPressed (KeyCode keyCode)
   {
-    SingleSelectionModel<Tab> model = tabPane.getSelectionModel ();
-
     for (XmitTab tab : tabs)
       if (tab.keyCode == keyCode)
       {
-        model.select (tab.tab);
+        tabPane.getSelectionModel ().select (tab.tab);
         return;
       }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // setFont
-  // ---------------------------------------------------------------------------------//
-
-  @Override
-  public void setFont (Font font)
-  {
-    for (XmitTab tab : tabs)
-      tab.setFont (font);
   }
 }
