@@ -1,21 +1,38 @@
 package com.bytezone.xmit.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.geometry.Side;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
+// ---------------------------------------------------------------------------------//
+// DefaultTabPane
+// ---------------------------------------------------------------------------------//
+
 public abstract class DefaultTabPane extends DefaultPane
 {
-  final XmitTab[] tabs;
+  final TabPane tabPane = new TabPane ();
+  final List<XmitTab> tabs = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public DefaultTabPane (int numTabs)
+  public DefaultTabPane ()
   {
-    tabs = new XmitTab[numTabs];
+    tabPane.setSide (Side.BOTTOM);
+    tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
+    tabPane.setTabMinWidth (100);
+
+    tabPane.getSelectionModel ().selectedItemProperty ()
+        .addListener ( (ov, oldTab, newTab) -> updateCurrentTab ());
+    setCenter (tabPane);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -24,14 +41,29 @@ public abstract class DefaultTabPane extends DefaultPane
 
   XmitTab createTab (String title, KeyCode keyCode, TabUpdater tabUpdater)
   {
-    Tab tab = new Tab (title);
     TextArea text = new TextArea ();
     text.setWrapText (false);
-    tab.setContent (text);
     text.setEditable (false);
-    XmitTab xmitTab = new XmitTab (tab, text, keyCode, tabUpdater);
-    tab.setUserData (xmitTab);
+
+    XmitTab xmitTab = new XmitTab (title, text, keyCode, tabUpdater);
+    tabs.add (xmitTab);
+
     return xmitTab;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // updateCurrentTab
+  // ---------------------------------------------------------------------------------//
+
+  void updateCurrentTab ()
+  {
+    Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
+    if (selectedTab != null)
+    {
+      XmitTab xmitTab = (XmitTab) selectedTab.getUserData ();
+      if (xmitTab.isTextEmpty ())
+        xmitTab.update ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -62,6 +94,20 @@ public abstract class DefaultTabPane extends DefaultPane
   {
     for (XmitTab tab : tabs)
       tab.restoreScrollBar ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // keyPressed
+  // ---------------------------------------------------------------------------------//
+
+  public void keyPressed (KeyCode keyCode)
+  {
+    for (XmitTab tab : tabs)
+      if (tab.keyCode == keyCode)
+      {
+        tabPane.getSelectionModel ().select (tab.tab);
+        return;
+      }
   }
 
   // ---------------------------------------------------------------------------------//

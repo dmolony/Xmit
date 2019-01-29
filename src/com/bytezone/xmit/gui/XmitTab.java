@@ -18,13 +18,14 @@ class XmitTab
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitTab (Tab tab, TextArea textArea, KeyCode keyCode, TabUpdater tabUpdater)
+  public XmitTab (String title, TextArea textArea, KeyCode keyCode, TabUpdater tabUpdater)
   {
-    this.tab = tab;
+    this.tab = new Tab (title, textArea);
     this.textArea = textArea;
     this.keyCode = keyCode;
     this.tabUpdater = tabUpdater;
     scrollBarState = new ScrollBarState (textArea, Orientation.VERTICAL);
+    tab.setUserData (this);
   }
 
   // ---------------------------------------------------------------------------------//

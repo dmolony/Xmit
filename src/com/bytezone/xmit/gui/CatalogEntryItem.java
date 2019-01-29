@@ -6,6 +6,10 @@ import com.bytezone.xmit.CatalogEntry;
 
 import javafx.beans.property.*;
 
+// ---------------------------------------------------------------------------------//
+// CatalogEntryItem
+// ---------------------------------------------------------------------------------//
+
 public class CatalogEntryItem
 {
   CatalogEntry catalogEntry;

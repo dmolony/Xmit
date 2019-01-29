@@ -41,7 +41,7 @@ public class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   {
     super (fileTreeItem);
 
-    setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
+    //    setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
     xImage[0] = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
     xImage[1] = new Image (getClass ().getResourceAsStream ("/icons/X-pink-icon.png"));

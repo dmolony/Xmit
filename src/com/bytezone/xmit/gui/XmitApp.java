@@ -64,12 +64,11 @@ public class XmitApp extends Application implements CodePageSelectedListener
     validateRootFolderOrExit ();
 
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
+    treePane = new TreePane (xmitTree);
+
     xmitTree.addListener (outputPane);
     xmitTree.addListener (tablePane);
-
     xmitTree.addListener (xmitTable);
-
-    treePane = new TreePane (xmitTree);
 
     splitPane.getItems ().addAll (treePane, tablePane, outputPane);
 
@@ -96,7 +95,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
     primaryStage.setOnCloseRequest (e -> exit ());
 
     restore ();
-    //    xmitTree.setShowRoot (false);
 
     return mainPane;
   }
@@ -107,6 +105,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
   private void restore ()
   {
+    outputPane.restore ();
     fileMenu.restore ();
     viewMenu.restore ();        // ensure codepage is set before tree
     xmitTree.restore ();

@@ -6,12 +6,12 @@ import com.bytezone.xmit.*;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
-import javafx.geometry.Side;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
+
+// ---------------------------------------------------------------------------------//
+// OutputPane
+// ---------------------------------------------------------------------------------//
 
 public class OutputPane extends DefaultTabPane implements TreeItemSelectionListener,
     TableItemSelectionListener, ShowLinesListener, FontChangeListener
@@ -19,12 +19,10 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
-  private final TabPane tabPane = new TabPane ();
-
-  private final int HEADERS = 0;
-  private final int BLOCKS = 1;
-  private final int HEX = 2;
-  private final int OUTPUT = 3;
+  private final XmitTab headersTab;
+  private final XmitTab blocksTab;
+  private final XmitTab hexTab;
+  private final XmitTab outputTab;
 
   private final Label lblMemberName = new Label ();
   private final Label lblDisposition = new Label ();
@@ -43,42 +41,12 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
 
   public OutputPane ()
   {
-    super (4);
+    headersTab = createTab ("Headers", KeyCode.H, () -> updateHeadersTab ());
+    blocksTab = createTab ("Blocks", KeyCode.B, () -> updateBlocksTab ());
+    hexTab = createTab ("Hex", KeyCode.X, () -> updateHexTab ());
+    outputTab = createTab ("Output", KeyCode.O, () -> updateOutputTab ());
 
-    tabPane.setSide (Side.BOTTOM);
-    tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
-    tabPane.setTabMinWidth (100);
-
-    tabPane.getSelectionModel ().selectedItemProperty ()
-        .addListener ( (ov, oldTab, newTab) -> updateCurrentTab ());
-
-    tabs[HEADERS] = createTab ("Headers", KeyCode.H, () -> updateHeadersTab ());
-    tabs[BLOCKS] = createTab ("Blocks", KeyCode.B, () -> updateBlocksTab ());
-    tabs[HEX] = createTab ("Hex", KeyCode.X, () -> updateHexTab ());
-    tabs[OUTPUT] = createTab ("Output", KeyCode.O, () -> updateOutputTab ());
-
-    setCenter (tabPane);
     setTop (getHBox (lblMemberName, lblDisposition));
-
-    restore ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // updateCurrentTab
-  // ---------------------------------------------------------------------------------//
-
-  private void updateCurrentTab ()
-  {
-    if (member != null)
-    {
-      Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
-      if (selectedTab != null)
-      {
-        XmitTab xmitTab = (XmitTab) selectedTab.getUserData ();
-        if (xmitTab.isTextEmpty ())
-          xmitTab.update ();
-      }
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -87,6 +55,9 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
 
   private void updateHeadersTab ()
   {
+    if (reader == null)
+      return;
+
     StringBuilder text = new StringBuilder ();
 
     for (ControlRecord controlRecord : reader.getControlRecords ())
@@ -121,7 +92,7 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
     }
 
     Utility.removeTrailingNewlines (text);
-    tabs[HEADERS].setText (text.toString ());
+    headersTab.setText (text.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -130,7 +101,8 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
 
   private void updateBlocksTab ()
   {
-    tabs[BLOCKS].setText (member.toString ());
+    if (member != null)
+      blocksTab.setText (member.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -139,12 +111,15 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
 
   private void updateHexTab ()
   {
+    if (member == null)
+      return;
+
     byte[] buffer = member.getDataBuffer ();
 
     if (buffer != null)
     {
       int max = Math.min (0x20000, buffer.length);
-      tabs[HEX].setText (Utility.getHexDump (buffer, 0, max));
+      hexTab.setText (Utility.getHexDump (buffer, 0, max));
     }
   }
 
@@ -154,14 +129,15 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
 
   private void updateOutputTab ()
   {
-    tabs[OUTPUT].setText (member.getLines (showLines, truncateLines));
+    if (member != null)
+      outputTab.setText (member.getLines (showLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//
   // restore
   // ---------------------------------------------------------------------------------//
 
-  private void restore ()
+  void restore ()
   {
     tabPane.getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
   }
@@ -184,13 +160,13 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
     tabPane.getTabs ().clear ();
 
     if (headersVisible)
-      tabPane.getTabs ().add (tabs[HEADERS].tab);
+      tabPane.getTabs ().add (headersTab.tab);
     if (blocksVisible)
-      tabPane.getTabs ().add (tabs[BLOCKS].tab);
+      tabPane.getTabs ().add (blocksTab.tab);
     if (hexVisible)
-      tabPane.getTabs ().add (tabs[HEX].tab);
+      tabPane.getTabs ().add (hexTab.tab);
 
-    tabPane.getTabs ().add (tabs[OUTPUT].tab);         // always visible
+    tabPane.getTabs ().add (outputTab.tab);         // always visible
   }
 
   // ---------------------------------------------------------------------------------//
@@ -290,19 +266,5 @@ public class OutputPane extends DefaultTabPane implements TreeItemSelectionListe
     clearText ();
     updateCurrentTab ();
     restoreScrollBars ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // keyPressed
-  // ---------------------------------------------------------------------------------//
-
-  public void keyPressed (KeyCode keyCode)
-  {
-    for (XmitTab tab : tabs)
-      if (tab.keyCode == keyCode)
-      {
-        tabPane.getSelectionModel ().select (tab.tab);
-        return;
-      }
   }
 }
