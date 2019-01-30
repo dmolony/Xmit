@@ -29,7 +29,7 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
 
   private Reader reader;
   private Dataset dataset;
-  private DataFile member;
+  private DataFile dataFile;
 
   private boolean showLines;
   private boolean truncateLines;
@@ -101,8 +101,8 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
 
   private void updateBlocksTab ()
   {
-    if (member != null)
-      blocksTab.setText (member.toString ());
+    if (dataFile != null)
+      blocksTab.setText (dataFile.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -111,10 +111,10 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
 
   private void updateHexTab ()
   {
-    if (member == null)
+    if (dataFile == null)
       return;
 
-    byte[] buffer = member.getDataBuffer ();
+    byte[] buffer = dataFile.getDataBuffer ();
 
     if (buffer != null)
     {
@@ -129,8 +129,8 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
 
   private void updateOutputTab ()
   {
-    if (member != null)
-      outputTab.setText (member.getLines (showLines, truncateLines));
+    if (dataFile != null)
+      outputTab.setText (dataFile.getLines (showLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -179,7 +179,7 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
     this.reader = reader;
     this.dataset = dataset;
 
-    member = null;
+    dataFile = null;
 
     if (dataset == null)
     {
@@ -193,7 +193,7 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
       lblDisposition.setText (disposition.toString ());
       if (disposition.getOrg () == Org.PS)
       {
-        member = ((PsDataset) dataset).getMember ();
+        dataFile = ((PsDataset) dataset).getMember ();
         updateName ();
       }
     }
@@ -209,7 +209,7 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
   @Override
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
-    this.member = catalogEntry.getMember ();
+    this.dataFile = catalogEntry.getMember ();
     updateName ();
     clearText ();
     updateCurrentTab ();
@@ -228,7 +228,7 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
 
     if (dataset.isPds ())
     {
-      CatalogEntry catalogEntry = ((PdsMember) member).getCatalogEntry ();
+      CatalogEntry catalogEntry = ((PdsMember) dataFile).getCatalogEntry ();
       if (catalogEntry.isAlias ())
         lblMemberName.setText (indicator + catalogEntry.getMemberName ().trim () + " -> "
             + catalogEntry.getAliasName ());
@@ -236,7 +236,7 @@ public class OutputPane extends HeaderTabPane implements TreeItemSelectionListen
         lblMemberName.setText (indicator + catalogEntry.getMemberName ());
     }
     else
-      lblMemberName.setText (indicator + member.getName ());
+      lblMemberName.setText (indicator + dataFile.getName ());
   }
 
   // ---------------------------------------------------------------------------------//

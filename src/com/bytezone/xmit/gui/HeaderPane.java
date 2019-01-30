@@ -10,12 +10,29 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-// DefaultPane
+// HeaderPane
 // ---------------------------------------------------------------------------------//
 
 abstract class HeaderPane extends BorderPane
 {
   static Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
+
+  // ---------------------------------------------------------------------------------//
+  // getHBox
+  // ---------------------------------------------------------------------------------//
+
+  HBox getHBox (Label label1)
+  {
+    HBox hbox = new HBox (10);
+    hbox.setPrefHeight (20);
+    hbox.setAlignment (Pos.CENTER_LEFT);
+    hbox.setPadding (new Insets (6, 10, 6, 10));
+    hbox.getChildren ().add (label1);
+
+    label1.setFont (headingFont);
+
+    return hbox;
+  }
 
   // ---------------------------------------------------------------------------------//
   // getHBox
@@ -31,23 +48,6 @@ abstract class HeaderPane extends BorderPane
 
     label2.setFont (headingFont);
     label2.setAlignment (Pos.CENTER_RIGHT);
-
-    return hbox;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getHBox
-  // ---------------------------------------------------------------------------------//
-
-  HBox getHBox (Label label1)
-  {
-    HBox hbox = new HBox (10);
-    hbox.setPrefHeight (20);
-    hbox.setAlignment (Pos.CENTER_LEFT);
-    hbox.setPadding (new Insets (6, 10, 6, 10));
-    hbox.getChildren ().add (label1);
-
-    label1.setFont (headingFont);
 
     return hbox;
   }

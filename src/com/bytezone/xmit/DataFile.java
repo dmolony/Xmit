@@ -7,6 +7,10 @@ import java.util.List;
 import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
+// ---------------------------------------------------------------------------------//
+// DataFile
+// ---------------------------------------------------------------------------------//
+
 public abstract class DataFile implements Comparable<DataFile>
 {
   private static final int MAX_BUFFER = 200_000;
@@ -124,8 +128,8 @@ public abstract class DataFile implements Comparable<DataFile>
       rdwLines ();
     else if (disposition.recfm == 0x9200)       // FBA
       createTextLines (getDataBuffer ());
-    else if (isObject ())
-      object ();
+    else if (isObjectDeck ())
+      objectDeck ();
     else if (getFileType () != FileType.BIN)
       showExtractMessage ();
     else
@@ -181,7 +185,7 @@ public abstract class DataFile implements Comparable<DataFile>
   abstract void rdwLines ();         // see SOURCE.XMI
 
   // ---------------------------------------------------------------------------------//
-  // isObject
+  // isObjectDeck
   // ---------------------------------------------------------------------------------//
 
   // https://www.ibm.com/support/knowledgecenter/en
@@ -189,7 +193,7 @@ public abstract class DataFile implements Comparable<DataFile>
   static private final byte[] object =
       { 0x02, (byte) 0xC5, (byte) 0xE2, (byte) 0xC4, 0x40, 0x40, 0x40, 0x40 };
 
-  boolean isObject ()
+  boolean isObjectDeck ()
   {
     return Utility.matches (object, getEightBytes (), 0);
   }
@@ -198,7 +202,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // object
   // ---------------------------------------------------------------------------------//
 
-  void object ()
+  void objectDeck ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
     lines.add ("Object Deck Output:");

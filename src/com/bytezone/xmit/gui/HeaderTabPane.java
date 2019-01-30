@@ -12,7 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-// DefaultTabPane
+// HeaderTabPane
 // ---------------------------------------------------------------------------------//
 
 public abstract class HeaderTabPane extends HeaderPane

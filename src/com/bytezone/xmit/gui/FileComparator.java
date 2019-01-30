@@ -9,15 +9,17 @@ class FileComparator implements Comparator<TreeItem<XmitFile>>
   @Override
   public int compare (TreeItem<XmitFile> thisFile, TreeItem<XmitFile> thatFile)
   {
-    boolean thisFileIsDirectory = thisFile.getValue ().isDirectory ();
-    boolean thatFileIsDirectory = thatFile.getValue ().isDirectory ();
+    XmitFile thisXmitFile = thisFile.getValue ();
+    XmitFile thatXmitFile = thatFile.getValue ();
+
+    boolean thisFileIsDirectory = thisXmitFile.isDirectory ();
+    boolean thatFileIsDirectory = thatXmitFile.isDirectory ();
 
     if (thisFileIsDirectory && !thatFileIsDirectory)
       return 1;
     if (!thisFileIsDirectory && thatFileIsDirectory)
       return -1;
 
-    return thisFile.getValue ().getName ()
-        .compareToIgnoreCase (thatFile.getValue ().getName ());
+    return thisXmitFile.getName ().compareToIgnoreCase (thatXmitFile.getName ());
   }
 }
