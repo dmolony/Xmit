@@ -13,7 +13,7 @@ import javafx.scene.input.KeyCode;
 // OutputPane
 // ---------------------------------------------------------------------------------//
 
-public class OutputPane extends DefaultTabPane implements TreeItemSelectionListener,
+public class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     TableItemSelectionListener, ShowLinesListener, FontChangeListener
 {
   private static final String PREFS_LAST_TAB = "lastTab";

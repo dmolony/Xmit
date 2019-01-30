@@ -6,7 +6,7 @@ import com.bytezone.xmit.Reader;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
-public class TablePane extends DefaultPane implements TreeItemSelectionListener
+public class TablePane extends HeaderPane implements TreeItemSelectionListener
 {
   private final Label lblPdsInfo = new Label ();
   private final Label lblFileName = new Label ();

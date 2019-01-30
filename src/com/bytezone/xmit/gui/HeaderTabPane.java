@@ -15,7 +15,7 @@ import javafx.scene.text.Font;
 // DefaultTabPane
 // ---------------------------------------------------------------------------------//
 
-public abstract class DefaultTabPane extends DefaultPane
+public abstract class HeaderTabPane extends HeaderPane
 {
   final TabPane tabPane = new TabPane ();
   final List<XmitTab> tabs = new ArrayList<> ();
@@ -24,7 +24,7 @@ public abstract class DefaultTabPane extends DefaultPane
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public DefaultTabPane ()
+  public HeaderTabPane ()
   {
     tabPane.setSide (Side.BOTTOM);
     tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
@@ -41,11 +41,11 @@ public abstract class DefaultTabPane extends DefaultPane
 
   XmitTab createTab (String title, KeyCode keyCode, TabUpdater tabUpdater)
   {
-    TextArea text = new TextArea ();
-    text.setWrapText (false);
-    text.setEditable (false);
+    TextArea textArea = new TextArea ();
+    textArea.setWrapText (false);
+    textArea.setEditable (false);
 
-    XmitTab xmitTab = new XmitTab (title, text, keyCode, tabUpdater);
+    XmitTab xmitTab = new XmitTab (title, textArea, keyCode, tabUpdater);
     tabs.add (xmitTab);
 
     return xmitTab;

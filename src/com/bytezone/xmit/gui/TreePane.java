@@ -2,7 +2,7 @@ package com.bytezone.xmit.gui;
 
 import javafx.scene.control.Label;
 
-public class TreePane extends DefaultPane
+public class TreePane extends HeaderPane
 {
   private final Label lblSaveFolder = new Label ();
   private final String home = System.getProperty ("user.home");
