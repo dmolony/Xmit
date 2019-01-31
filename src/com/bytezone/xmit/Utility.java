@@ -9,10 +9,14 @@ import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
+// ---------------------------------------------------------------------------------//
+// Utility
+// ---------------------------------------------------------------------------------//
+
 public class Utility
 {
-  static CodePage codePage;
-  static Map<String, CodePage> codePageMap = new HashMap<> ();
+  private static CodePage codePage;
+  private static Map<String, CodePage> codePageMap = new HashMap<> ();
 
   private static final byte[] doc = { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0,
                                       (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 };
@@ -28,6 +32,15 @@ public class Utility
   public enum FileType
   {
     DOC, PDF, ZIP, RAR, PNG, RTF, BIN, XMIT
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getCodePage
+  // ---------------------------------------------------------------------------------//
+
+  public static CodePage getCodePage ()
+  {
+    return codePage;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -81,7 +94,7 @@ public class Utility
     for (int i = offset; i < max; i++)
     {
       int b = buffer[i] & 0xFF;
-      if ((b < 0x40 && b != 0x05) || b == 0xFF)
+      if ((b < 0x40 && b != 0x05 && b != 0x0C) || b == 0xFF)
         return true;
     }
     return false;
@@ -119,8 +132,10 @@ public class Utility
     for (int i = 0; i < length; i++)
     {
       int c = buffer[ptr + i] & 0xFF;
-      if (c == 5)
-        text.append ("  ");     // tab
+      if (c == 0x05)                 // tab
+        text.append ("  ");
+      else if (c == 0x0C)            // form feed    
+        text.append ("\n");
       else
         text.append (c < 0x40 || c == 0xFF ? "." : (char) codePage.ebc2asc[c]);
     }

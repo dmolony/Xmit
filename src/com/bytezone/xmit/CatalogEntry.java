@@ -3,6 +3,10 @@ package com.bytezone.xmit;
 import java.time.LocalDate;
 import java.util.Optional;
 
+// ---------------------------------------------------------------------------------//
+// CatalogEntry
+// ---------------------------------------------------------------------------------//
+
 public class CatalogEntry
 {
   final Reader reader;
@@ -47,7 +51,7 @@ public class CatalogEntry
   {
     this.reader = reader;
 
-    name = Utility.getString (buffer, ptr, 8);
+    name = Utility.getString (buffer, ptr, 8).trim ();
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
 
     numTtr = (buffer[ptr + 11] & 0x60) >>> 5;      // number of TTRs in user data

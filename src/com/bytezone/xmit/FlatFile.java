@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+// ---------------------------------------------------------------------------------//
+// FlatFile
+// ---------------------------------------------------------------------------------//
+
 public class FlatFile extends DataFile implements Iterable<Segment>
 {
   private final List<Segment> segments;                        // PS
@@ -104,7 +108,7 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   @Override
   void rdwLines ()
   {
-
+    System.out.println ("not written: " + getName ());       // haven't seen one yet
   }
 
   // ---------------------------------------------------------------------------------//

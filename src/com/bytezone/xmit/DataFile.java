@@ -74,7 +74,7 @@ public abstract class DataFile implements Comparable<DataFile>
 
   public String getLines (boolean showLines, boolean truncate)
   {
-    if (lines.size () == 0 || codePage != Utility.codePage)
+    if (lines.size () == 0 || codePage != Utility.getCodePage ())
       createDataLines ();
 
     StringBuilder text = new StringBuilder ();
@@ -113,7 +113,7 @@ public abstract class DataFile implements Comparable<DataFile>
 
   private void createDataLines ()
   {
-    codePage = Utility.codePage;
+    codePage = Utility.getCodePage ();
     lines.clear ();
 
     if (isXmit ())
