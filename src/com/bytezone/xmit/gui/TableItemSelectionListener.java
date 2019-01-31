@@ -6,7 +6,7 @@ import com.bytezone.xmit.CatalogEntry;
 // TableItemSelectionListener
 // ---------------------------------------------------------------------------------//
 
-public interface TableItemSelectionListener
+interface TableItemSelectionListener
 {
   public void tableItemSelected (CatalogEntry catalogEntry);
 }

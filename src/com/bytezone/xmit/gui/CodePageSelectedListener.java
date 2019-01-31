@@ -4,7 +4,7 @@ package com.bytezone.xmit.gui;
 // CodePageSelectedListener
 // ---------------------------------------------------------------------------------//
 
-public interface CodePageSelectedListener
+interface CodePageSelectedListener
 {
   public void selectCodePage (String codePageName);
 }

@@ -4,7 +4,7 @@ package com.bytezone.xmit.gui;
 // MemberSelectionListener
 // ---------------------------------------------------------------------------------//
 
-public interface MemberSelectionListener
+interface MemberSelectionListener
 {
   public void memberSelected (String memberName);
 }

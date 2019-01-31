@@ -7,7 +7,7 @@ import com.bytezone.xmit.Reader;
 // TreeItemSelectionListener
 // ---------------------------------------------------------------------------------//
 
-public interface TreeItemSelectionListener
+interface TreeItemSelectionListener
 {
   public void treeItemSelected (Reader reader, Dataset dataset, String name, String path);
 }
