@@ -39,7 +39,7 @@ public abstract class HeaderTabPane extends HeaderPane
   // createTab
   // ---------------------------------------------------------------------------------//
 
-  XmitTab createTab (String title, KeyCode keyCode, TabUpdater tabUpdater)
+  XmitTab createTab (String title, KeyCode keyCode, Runnable tabUpdater)
   {
     TextArea textArea = new TextArea ();
     textArea.setWrapText (false);

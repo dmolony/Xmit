@@ -7,10 +7,8 @@ import com.bytezone.xmit.CatalogEntry;
 import javafx.beans.property.*;
 
 // ---------------------------------------------------------------------------------//
-// CatalogEntryItem
-// ---------------------------------------------------------------------------------//
-
 public class CatalogEntryItem
+//---------------------------------------------------------------------------------//
 {
   CatalogEntry catalogEntry;
   private StringProperty memberName;
@@ -23,6 +21,10 @@ public class CatalogEntryItem
   private IntegerProperty init;
   private ObjectProperty<LocalDate> dateCreated;
   private ObjectProperty<LocalDate> dateModified;
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
 
   public CatalogEntryItem (CatalogEntry catalogEntry)
   {

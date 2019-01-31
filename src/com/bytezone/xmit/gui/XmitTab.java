@@ -16,13 +16,13 @@ class XmitTab
   final TextArea textArea;
   final KeyCode keyCode;
   final ScrollBarState scrollBarState;
-  final TabUpdater tabUpdater;
+  final Runnable tabUpdater;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitTab (String title, TextArea textArea, KeyCode keyCode, TabUpdater tabUpdater)
+  public XmitTab (String title, TextArea textArea, KeyCode keyCode, Runnable tabUpdater)
   {
     this.tab = new Tab (title, textArea);
     this.textArea = textArea;
@@ -38,7 +38,7 @@ class XmitTab
 
   void update ()
   {
-    tabUpdater.update ();
+    tabUpdater.run ();
   }
 
   // ---------------------------------------------------------------------------------//
