@@ -2,6 +2,10 @@ package com.bytezone.xmit;
 
 import java.io.UnsupportedEncodingException;
 
+// ---------------------------------------------------------------------------------//
+// CodePage
+// ---------------------------------------------------------------------------------//
+
 // https://en.wikipedia.org/wiki/EBCDIC_code_pages
 
 public class CodePage
@@ -15,6 +19,10 @@ public class CodePage
     for (int i = 0; i < 256; i++)
       values[i] = (byte) i;
   }
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
 
   public CodePage (String codePage)
   {

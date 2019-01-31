@@ -37,6 +37,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+// ---------------------------------------------------------------------------------//
+// FontManager
+// ---------------------------------------------------------------------------------//
+
 class FontManager
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -44,7 +48,7 @@ class FontManager
   private static final String PREFS_FONT_SIZE = "FontSize";
   private static final String PREFS_FONTS_SELECTED = "FontsSelected";
 
-  private static final String REQUIRED_FONT = "Monospaced";
+  private static final String REQUIRED_FONT_NAME = "Monospaced";
   private static final int DEFAULT_FONT_SIZE = 13;
   private static final int MIN_FONT_SIZE = 9;
   private static final int MAX_FONT_SIZE = 15;
@@ -180,7 +184,7 @@ class FontManager
   {
     fontNameSubList.clear ();
     for (FontName fontName : fontNameListView.getItems ())
-      if (fontName.isOn () || fontName.getName ().equals (REQUIRED_FONT))
+      if (fontName.isOn () || fontName.getName ().equals (REQUIRED_FONT_NAME))
         fontNameSubList.add (fontName.getName ());
 
     //    ObservableList<FontName> selectedFontNames =
@@ -236,7 +240,7 @@ class FontManager
   {
     currentFontIndex = fontNameSubList.indexOf (name);
     if (currentFontIndex < 0)
-      currentFontIndex = fontNameSubList.indexOf (REQUIRED_FONT);
+      currentFontIndex = fontNameSubList.indexOf (REQUIRED_FONT_NAME);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -347,10 +351,10 @@ class FontManager
   public void restore ()
   {
     fontNameSubList.addAll (
-        Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT).split (";")));
+        Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT_NAME).split (";")));
 
     currentFontSize = prefs.getInt (PREFS_FONT_SIZE, DEFAULT_FONT_SIZE);
-    setCurrentFontIndex (prefs.get (PREFS_FONT_NAME, REQUIRED_FONT));
+    setCurrentFontIndex (prefs.get (PREFS_FONT_NAME, REQUIRED_FONT_NAME));
 
     notifyListeners ();
   }
