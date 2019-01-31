@@ -15,7 +15,7 @@ import javafx.scene.text.Font;
 // HeaderTabPane
 // ---------------------------------------------------------------------------------//
 
-public abstract class HeaderTabPane extends HeaderPane
+abstract class HeaderTabPane extends HeaderPane
 {
   final TabPane tabPane = new TabPane ();
   final List<XmitTab> tabs = new ArrayList<> ();

@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 // TablePane
 // ---------------------------------------------------------------------------------//
 
-public class TablePane extends HeaderPane implements TreeItemSelectionListener
+class TablePane extends HeaderPane implements TreeItemSelectionListener
 {
   private final Label lblPdsInfo = new Label ();
   private final Label lblFileName = new Label ();

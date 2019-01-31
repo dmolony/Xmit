@@ -27,7 +27,7 @@ import javafx.util.Callback;
 // XmitTable
 // ---------------------------------------------------------------------------------//
 
-public class XmitTable extends TableView<CatalogEntryItem>
+class XmitTable extends TableView<CatalogEntryItem>
     implements TreeItemSelectionListener, FontChangeListener
 {
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";

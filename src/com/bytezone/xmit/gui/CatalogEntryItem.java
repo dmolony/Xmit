@@ -7,7 +7,7 @@ import com.bytezone.xmit.CatalogEntry;
 import javafx.beans.property.*;
 
 // ---------------------------------------------------------------------------------//
-public class CatalogEntryItem
+class CatalogEntryItem
 //---------------------------------------------------------------------------------//
 {
   CatalogEntry catalogEntry;

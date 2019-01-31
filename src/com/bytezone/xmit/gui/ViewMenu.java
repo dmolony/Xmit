@@ -13,7 +13,7 @@ import javafx.scene.input.KeyCombination;
 // ViewMenu
 // ---------------------------------------------------------------------------------//
 
-public class ViewMenu
+class ViewMenu
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
   private static final String PREFS_TRUNCATE = "Truncate";

@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 // TreePane
 // ---------------------------------------------------------------------------------//
 
-public class TreePane extends HeaderPane
+class TreePane extends HeaderPane
 {
   private final Label lblSaveFolder = new Label ();
   private final String home = System.getProperty ("user.home");

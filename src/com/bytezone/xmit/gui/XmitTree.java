@@ -21,7 +21,7 @@ import javafx.util.Callback;
 // XmitTree
 // ---------------------------------------------------------------------------------//
 
-public class XmitTree extends TreeView<XmitFile> implements FontChangeListener
+class XmitTree extends TreeView<XmitFile> implements FontChangeListener
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";

@@ -24,7 +24,7 @@ import com.bytezone.xmit.textunit.Dsorg.Org;
 // XmitFile
 // ---------------------------------------------------------------------------------//
 
-public class XmitFile
+class XmitFile
 {
   private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit");
   private static final List<String> compressionSuffixes = Arrays.asList ("zip");
