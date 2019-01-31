@@ -20,6 +20,10 @@ import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
+// ---------------------------------------------------------------------------------//
+// XmitFile
+// ---------------------------------------------------------------------------------//
+
 public class XmitFile
 {
   private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit");

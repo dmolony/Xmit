@@ -6,6 +6,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
+// ---------------------------------------------------------------------------------//
+// XmitTab
+// ---------------------------------------------------------------------------------//
+
 class XmitTab
 {
   final Tab tab;

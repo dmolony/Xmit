@@ -23,6 +23,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
+// ---------------------------------------------------------------------------------//
+// XmitTable
+// ---------------------------------------------------------------------------------//
+
 public class XmitTable extends TableView<CatalogEntryItem>
     implements TreeItemSelectionListener, FontChangeListener
 {

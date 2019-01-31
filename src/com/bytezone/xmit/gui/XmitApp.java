@@ -21,6 +21,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+// ---------------------------------------------------------------------------------//
+// XmitApp
+// ---------------------------------------------------------------------------------//
+
 public class XmitApp extends Application implements CodePageSelectedListener
 {
   private static final String PREFS_ROOT_FOLDER = "RootFolder";

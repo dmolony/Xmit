@@ -17,6 +17,10 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
+// ---------------------------------------------------------------------------------//
+// FileMenu
+// ---------------------------------------------------------------------------------//
+
 class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 {
   private static final String PREFS_SAVE_FOLDER = "SaveFolder";

@@ -4,6 +4,10 @@ import java.util.Comparator;
 
 import javafx.scene.control.TreeItem;
 
+// ---------------------------------------------------------------------------------//
+// FileComparator
+// ---------------------------------------------------------------------------------//
+
 class FileComparator implements Comparator<TreeItem<XmitFile>>
 {
   @Override

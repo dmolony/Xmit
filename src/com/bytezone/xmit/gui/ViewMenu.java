@@ -9,6 +9,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
+// ---------------------------------------------------------------------------------//
+// ViewMenu
+// ---------------------------------------------------------------------------------//
+
 public class ViewMenu
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";

@@ -17,6 +17,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
+// ---------------------------------------------------------------------------------//
+// XmitTree
+// ---------------------------------------------------------------------------------//
+
 public class XmitTree extends TreeView<XmitFile> implements FontChangeListener
 {
   private static final String PREFS_LAST_PATH = "LastPath";

@@ -5,6 +5,10 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 
+// ---------------------------------------------------------------------------------//
+// ScrollBarState
+// ---------------------------------------------------------------------------------//
+
 public class ScrollBarState
 {
   private final TextArea textArea;
