@@ -38,7 +38,8 @@ class XmitTab
 
   void update ()
   {
-    tabUpdater.run ();
+    if (isTextEmpty ())
+      tabUpdater.run ();
   }
 
   // ---------------------------------------------------------------------------------//

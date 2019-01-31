@@ -7,11 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.PdsMember;
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.*;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.collections.FXCollections;
@@ -63,14 +59,15 @@ class XmitTable extends TableView<CatalogEntryItem>
     addString ("Alias", "AliasName", 100, "CENTER-LEFT");
 
     getSelectionModel ().selectedItemProperty ()
-        .addListener ( (obs, oldSelection, newSelection) ->
+        .addListener ( (obs, oldSelection, catalogEntryItem) ->
         {
-          if (newSelection == null)
+          if (catalogEntryItem == null)
             return;
 
-          selectedMembers.put (reader, newSelection.catalogEntry.getMemberName ());
+          CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
+          selectedMembers.put (reader, catalogEntry.getMemberName ());
           for (TableItemSelectionListener listener : listeners)
-            listener.tableItemSelected (newSelection.catalogEntry);
+            listener.tableItemSelected (catalogEntry);
         });
   }
 

@@ -59,11 +59,7 @@ abstract class HeaderTabPane extends HeaderPane
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
     if (selectedTab != null)
-    {
-      XmitTab xmitTab = (XmitTab) selectedTab.getUserData ();
-      if (xmitTab.isTextEmpty ())
-        xmitTab.update ();
-    }
+      ((XmitTab) selectedTab.getUserData ()).update ();
   }
 
   // ---------------------------------------------------------------------------------//

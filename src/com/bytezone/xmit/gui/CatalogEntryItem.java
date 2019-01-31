@@ -7,10 +7,10 @@ import com.bytezone.xmit.CatalogEntry;
 import javafx.beans.property.*;
 
 // ---------------------------------------------------------------------------------//
-public class CatalogEntryItem
+public class CatalogEntryItem                   // must be public
 //---------------------------------------------------------------------------------//
 {
-  CatalogEntry catalogEntry;
+  private final CatalogEntry catalogEntry;
   private StringProperty memberName;
   private StringProperty userName;
   private StringProperty aliasName;
@@ -39,6 +39,15 @@ public class CatalogEntryItem
     setDateModified (catalogEntry.getDateModified ());
     setTime (catalogEntry.getTime ());
     setVersion (catalogEntry.getVersion ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getCatalogEntry
+  // ---------------------------------------------------------------------------------//
+
+  CatalogEntry getCatalogEntry ()
+  {
+    return catalogEntry;
   }
 
   // ---------------------------------------------------------------------------------//
