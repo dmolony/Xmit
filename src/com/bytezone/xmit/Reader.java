@@ -11,7 +11,9 @@ import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitNumber;
 import com.bytezone.xmit.textunit.TextUnitString;
 
+// ---------------------------------------------------------------------------------//
 public class Reader
+// ---------------------------------------------------------------------------------//
 {
   static byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
                            (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
@@ -139,6 +141,15 @@ public class Reader
     activeDataset = datasets.get (datasets.size () - 1);     // always last
     //    activeDataset = datasets.get (0);     // always first
     assert files == datasets.size ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // size
+  // ---------------------------------------------------------------------------------//
+
+  public int size ()
+  {
+    return datasets.size ();
   }
 
   // ---------------------------------------------------------------------------------//

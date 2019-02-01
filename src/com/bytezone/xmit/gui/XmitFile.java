@@ -33,7 +33,7 @@ class XmitFile
   private final String suffix;
   private final String name;
 
-  private Reader reader;
+  private Reader reader;                    // this should be Dataset
   private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//

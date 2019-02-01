@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class CatalogEntry
 {
-  final Reader reader;
+  final Reader reader;              // this should be Dataset
   private PdsMember member;                                  // contains DataBlocks
 
   private final String name;

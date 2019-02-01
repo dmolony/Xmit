@@ -98,18 +98,18 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   // createDataLines
   // ---------------------------------------------------------------------------------//
-  // FILE706 - java bytecode
-  // FILE765 - embedded xmit PS file
-  // FILE714 - tar
-  // FILE910 - xmit/xmit/PS
-  // FILE784 - PAXFILE  - PS FB1 / 23778
-  // FILE600 - XMITPDSC - VB
   // FILE185 - FILE234I - incomplete
+  // FILE404 - $$PREZ18 - possibly corrupt
+  // FILE600 - XMITPDSC - VB
+  // FILE706 - java bytecode
+  // FILE714 - tar
+  // FILE765 - embedded xmit PS file
+  // FILE784 - PAXFILE  - PS FB1 / 23778
   // FILE859 - $OBJECT  - Object Deck
   // FILE880 - CPP      - PDSE
   // FILE880 - HPP      - requires different codepages
-
-  // FILE404 - $$PREZ18 - possibly corrupt
+  // FILE910 - xmit/xmit/PS
+  // FILE972 - two datasets in each xmit member
 
   private void createDataLines ()
   {
