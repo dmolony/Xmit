@@ -17,6 +17,7 @@ public abstract class DataFile implements Comparable<DataFile>
 
   private String name = "";
   private final Disposition disposition;
+  private final Reader reader;
 
   int dataLength = 0;
 
@@ -27,9 +28,19 @@ public abstract class DataFile implements Comparable<DataFile>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  DataFile (Disposition disposition)
+  DataFile (Reader reader, Disposition disposition)
   {
     this.disposition = disposition;
+    this.reader = reader;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getLevel
+  // ---------------------------------------------------------------------------------//
+
+  public int getLevel ()
+  {
+    return reader.getLevel () + 1;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -108,6 +119,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // FILE859 - $OBJECT  - Object Deck
   // FILE880 - CPP      - PDSE
   // FILE880 - HPP      - requires different codepages
+  // FILE898 - PDSEDITL - level 4
   // FILE910 - xmit/xmit/PS
   // FILE972 - two datasets in each xmit member
 
@@ -242,10 +254,10 @@ public abstract class DataFile implements Comparable<DataFile>
 
   void xmitLines ()
   {
-    byte[] xmitBuffer = getDataBuffer ();
+    //    byte[] xmitBuffer = getDataBuffer ();
     try
     {
-      Reader reader = new Reader (name, xmitBuffer);
+      Reader reader = new Reader (this);
       Dataset dataset = reader.getActiveDataset ();
 
       for (ControlRecord controlRecord : reader.getControlRecords ())
@@ -262,6 +274,7 @@ public abstract class DataFile implements Comparable<DataFile>
     }
     catch (Exception e)
     {
+      byte[] xmitBuffer = getDataBuffer ();
       lines.add ("Data length: " + xmitBuffer.length);
       lines.add (e.getMessage ());
       lines.add (Utility.getHexDump (xmitBuffer));

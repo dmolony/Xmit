@@ -7,9 +7,9 @@ import com.bytezone.xmit.Utility;
 
 public class ControlRecord
 {
-  final String name;
-  final List<TextUnit> textUnits = new ArrayList<> ();
-  int fileNbr;
+  private final String name;
+  private final List<TextUnit> textUnits = new ArrayList<> ();
+  private final int fileNbr;
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -28,6 +28,8 @@ public class ControlRecord
       fileNbr = (int) Utility.getFourBytes (buffer, ptr);     // need to save this
       ptr += 4;
     }
+    else
+      fileNbr = 0;
 
     while (ptr < max)
     {

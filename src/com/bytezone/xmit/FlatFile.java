@@ -16,9 +16,9 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  FlatFile (Disposition disposition)
+  FlatFile (Reader reader, Disposition disposition)
   {
-    super (disposition);
+    super (reader, disposition);
 
     segments = new ArrayList<> ();
   }

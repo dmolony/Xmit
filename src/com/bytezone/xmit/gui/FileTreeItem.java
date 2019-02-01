@@ -130,7 +130,7 @@ class FileTreeItem extends TreeItem<XmitFile>
       {
         isLeaf = false;
         for (PdsMember member : members)
-          children.add (new FileTreeItem (new XmitFile (member.getCatalogEntry ())));
+          children.add (new FileTreeItem (new XmitFile (member)));
         Collections.sort (children, comparator);
       }
     }

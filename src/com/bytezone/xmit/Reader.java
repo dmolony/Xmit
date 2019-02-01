@@ -1,5 +1,8 @@
 package com.bytezone.xmit;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,58 +18,62 @@ import com.bytezone.xmit.textunit.TextUnitString;
 public class Reader
 // ---------------------------------------------------------------------------------//
 {
-  static byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
-                           (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
+  static final byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
+                                 (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
 
   private final String fileName;
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private final List<Dataset> datasets = new ArrayList<> ();
 
-  private final Dataset activeDataset;
+  private Dataset activeDataset;
   private int files;
   private boolean incomplete;
-  private int level;
+  private final int level;
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Reader (Reader parent, DataFile dataFile)
+  public Reader (DataFile dataFile)
   {
-    this (dataFile.getName (), dataFile.getDataBuffer ());
-    this.level = parent.level + 1;
+    fileName = dataFile.getName ();
+    level = dataFile.getLevel ();
+
+    reader (dataFile.getDataBuffer ());
   }
 
   // ---------------------------------------------------------------------------------//
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Reader (String fileName, byte[] buffer)
+  public Reader (File file)
   {
-    this.fileName = fileName;
+    fileName = file.getName ();
     level = 0;
+
+    reader (getBuffer (file));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // reader
+  // ---------------------------------------------------------------------------------//
+
+  private void reader (byte[] buffer)
+  {
     Segment currentSegment = null;
     Dataset currentDataset = null;
-    int recNo = 0;
-
     int ptr = 0;
 
     while (ptr < buffer.length)
     {
       int length = buffer[ptr] & 0xFF;
-      byte flags = buffer[ptr + 1];
-
       if (ptr + length > buffer.length)
       {
-        if (false)
-        {
-          System.out.println ("Unexpected EOF in record: " + recNo);
-          System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
-        }
-        incomplete = true;
+        incomplete = true;          // see FILE185.XMI / FILE234I
         break;
       }
 
+      byte flags = buffer[ptr + 1];
       boolean firstSegment = (flags & 0x80) != 0;
       boolean lastSegment = (flags & 0x40) != 0;
       boolean controlRecord = (flags & 0x20) != 0;
@@ -75,11 +82,11 @@ public class Reader
       if (recordNumber)
         System.out.println ("******** Found a record number");
 
-      //        String name =
-      //            controlRecord && firstSegment ? Utility.getString (buffer, ptr + 2, 6) : "";
-      //        System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
-      //            firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
-      //            recordNumber ? "RN" : "", name);
+      //  String name =
+      //    controlRecord && firstSegment ? Utility.getString (buffer, ptr + 2, 6) : "";
+      //  System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
+      //    firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
+      //         recordNumber ? "RN" : "", name);
 
       if (firstSegment)
         currentSegment = new Segment (buffer);
@@ -102,24 +109,29 @@ public class Reader
           }
           if (cr.nameMatches ("INMR03"))
           {
-            Org org = getOrg (datasets.size () + 1);
+            Optional<Org> optOrg = getDsorg (datasets.size () + 1);
             ControlRecord inmr02 = getInmr02 (datasets.size () + 1).get ();
-            switch (org)
-            {
-              case PS:
-                currentDataset = new PsDataset (this, inmr02);
-                break;
+            if (optOrg.isPresent ())
+              switch (optOrg.get ())
+              {
+                case PS:
+                  currentDataset = new PsDataset (this, inmr02);
+                  break;
 
-              case PDS:
-                currentDataset = new PdsDataset (this, inmr02);
-                break;
+                case PDS:
+                  currentDataset = new PdsDataset (this, inmr02);
+                  break;
 
-              case VSAM:
-                currentDataset = null;         // will crash
-                System.out.println ("VSAM dataset");
-                break;
-            }
-            datasets.add (currentDataset);
+                case VSAM:
+                  currentDataset = null;         // will crash
+                  System.out.println ("VSAM dataset");
+                  break;
+              }
+            else
+              currentDataset = null;
+
+            if (currentDataset != null)
+              datasets.add (currentDataset);
           }
         }
         else
@@ -127,7 +139,6 @@ public class Reader
       }
 
       ptr += length;
-      ++recNo;
     }
 
     // allocate the data records
@@ -207,31 +218,10 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  // getOrg
+  // getDsorg
   // ---------------------------------------------------------------------------------//
 
-  Dsorg.Org getOrg ()
-  {
-    Optional<ControlRecord> opt =
-        getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
-    if (opt.isEmpty ())
-      opt = getControlRecord ("INMR02", TextUnit.INMUTILN, "INMCOPY");
-    if (opt.isPresent ())
-    {
-      ControlRecord controlRecord = opt.get ();
-      TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSORG);
-      if (textUnit != null)
-        return ((Dsorg) textUnit).type;
-    }
-
-    return null;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getOrg
-  // ---------------------------------------------------------------------------------//
-
-  Dsorg.Org getOrg (int fileNbr)
+  private Optional<Org> getDsorg (int fileNbr)
   {
     Optional<ControlRecord> opt = getInmr02 (fileNbr, "IEBCOPY");
     if (opt.isEmpty ())
@@ -241,16 +231,16 @@ public class Reader
       ControlRecord controlRecord = opt.get ();
       TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSORG);
       if (textUnit != null)
-        return ((Dsorg) textUnit).type;
+        return Optional.of (((Dsorg) textUnit).type);
     }
-    return null;
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//
   // getInmr02
   // ---------------------------------------------------------------------------------//
 
-  Optional<ControlRecord> getInmr02 (int fileNbr)
+  private Optional<ControlRecord> getInmr02 (int fileNbr)
   {
     for (ControlRecord controlRecord : controlRecords)
       if (controlRecord.fileNbrMatches (fileNbr))
@@ -263,7 +253,7 @@ public class Reader
   // getInmr02
   // ---------------------------------------------------------------------------------//
 
-  Optional<ControlRecord> getInmr02 (int fileNbr, String utilityName)
+  private Optional<ControlRecord> getInmr02 (int fileNbr, String utilityName)
   {
     for (ControlRecord controlRecord : controlRecords)
       if (controlRecord.fileNbrMatches (fileNbr))
@@ -278,42 +268,19 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  // getControlRecord
+  // getFileName
   // ---------------------------------------------------------------------------------//
 
-  private Optional<ControlRecord> getControlRecord (String stepName, int key,
-      String value)
+  public String getFileName ()
   {
-    for (ControlRecord controlRecord : controlRecords)
-      if (controlRecord.nameMatches (stepName))
-      {
-        TextUnit textUnit = controlRecord.getTextUnit (key);
-        if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
-          return Optional.of (controlRecord);
-      }
-    return Optional.empty ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getControlRecord
-  // ---------------------------------------------------------------------------------//
-
-  Optional<ControlRecord> getControlRecord (int key, String value)
-  {
-    for (ControlRecord controlRecord : controlRecords)
-    {
-      TextUnit textUnit = controlRecord.getTextUnit (key);
-      if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
-        return Optional.of (controlRecord);
-    }
-    return Optional.empty ();
+    return getControlRecordString (TextUnit.INMDSNAM);
   }
 
   // ---------------------------------------------------------------------------------//
   // getControlRecordString
   // ---------------------------------------------------------------------------------//
 
-  String getControlRecordString (int key)
+  private String getControlRecordString (int key)
   {
     for (ControlRecord controlRecord : controlRecords)
     {
@@ -325,42 +292,104 @@ public class Reader
   }
 
   // ---------------------------------------------------------------------------------//
+  // getBuffer
+  // ---------------------------------------------------------------------------------//
+
+  private byte[] getBuffer (File file)
+  {
+    try
+    {
+      return Files.readAllBytes (file.toPath ());
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+      return null;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   // getControlRecordNumber
   // ---------------------------------------------------------------------------------//
 
-  int getControlRecordNumber (int key)
-  {
-    for (ControlRecord controlRecord : controlRecords)
-    {
-      TextUnit textUnit = controlRecord.getTextUnit (key);
-      if (textUnit != null && textUnit instanceof TextUnitNumber)
-        return (int) ((TextUnitNumber) textUnit).getNumber ();
-    }
-    return -1;
-  }
+  //  int getControlRecordNumber (int key)
+  //  {
+  //    for (ControlRecord controlRecord : controlRecords)
+  //    {
+  //      TextUnit textUnit = controlRecord.getTextUnit (key);
+  //      if (textUnit != null && textUnit instanceof TextUnitNumber)
+  //        return (int) ((TextUnitNumber) textUnit).getNumber ();
+  //    }
+  //    return -1;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // getRecordLength
   // ---------------------------------------------------------------------------------//
 
-  int getRecordLength (String utility)
-  {
-    Optional<ControlRecord> opt = getControlRecord ("INMR02", TextUnit.INMUTILN, utility);
-    if (opt.isPresent ())
-    {
-      TextUnit textUnit = opt.get ().getTextUnit (TextUnit.INMLRECL);
-      if (textUnit != null && textUnit instanceof TextUnitNumber)
-        return (int) ((TextUnitNumber) textUnit).getNumber ();
-    }
-    return 0;
-  }
+  //  int getRecordLength (String utility)
+  //  {
+  //    Optional<ControlRecord> opt = getControlRecord
+  //            ("INMR02", TextUnit.INMUTILN, utility);
+  //    if (opt.isPresent ())
+  //    {
+  //      TextUnit textUnit = opt.get ().getTextUnit (TextUnit.INMLRECL);
+  //      if (textUnit != null && textUnit instanceof TextUnitNumber)
+  //        return (int) ((TextUnitNumber) textUnit).getNumber ();
+  //    }
+  //    return 0;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  // getFileName
+  // getControlRecord
   // ---------------------------------------------------------------------------------//
 
-  public String getFileName ()
-  {
-    return getControlRecordString (TextUnit.INMDSNAM);
-  }
+  //  private Optional<ControlRecord> getControlRecord (String stepName, int key,
+  //      String value)
+  //  {
+  //    for (ControlRecord controlRecord : controlRecords)
+  //      if (controlRecord.nameMatches (stepName))
+  //      {
+  //        TextUnit textUnit = controlRecord.getTextUnit (key);
+  //        if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
+  //          return Optional.of (controlRecord);
+  //      }
+  //    return Optional.empty ();
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  // getOrg
+  // ---------------------------------------------------------------------------------//
+
+  //  Org getDsorg ()
+  //  {
+  //    Optional<ControlRecord> opt =
+  //        getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
+  //    if (opt.isEmpty ())
+  //      opt = getControlRecord ("INMR02", TextUnit.INMUTILN, "INMCOPY");
+  //    if (opt.isPresent ())
+  //    {
+  //      ControlRecord controlRecord = opt.get ();
+  //      TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSORG);
+  //      if (textUnit != null)
+  //        return ((Dsorg) textUnit).type;
+  //    }
+  //
+  //    return null;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  // getControlRecord
+  // ---------------------------------------------------------------------------------//
+
+  //  Optional<ControlRecord> getControlRecord (int key, String value)
+  //  {
+  //    for (ControlRecord controlRecord : controlRecords)
+  //    {
+  //      TextUnit textUnit = controlRecord.getTextUnit (key);
+  //      if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
+  //        return Optional.of (controlRecord);
+  //    }
+  //    return Optional.empty ();
+  //  }
 }

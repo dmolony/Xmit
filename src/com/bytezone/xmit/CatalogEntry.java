@@ -9,8 +9,7 @@ import java.util.Optional;
 
 public class CatalogEntry
 {
-  final Reader reader;              // this should be Dataset
-  private PdsMember member;                                  // contains DataBlocks
+  private PdsMember member;                   // contains DataBlocks
 
   private final String name;
   private String userName = "";
@@ -47,10 +46,8 @@ public class CatalogEntry
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry (Reader reader, byte[] buffer, int ptr)
+  public CatalogEntry (byte[] buffer, int ptr)
   {
-    this.reader = reader;
-
     name = Utility.getString (buffer, ptr, 8).trim ();
     blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
 
@@ -141,24 +138,6 @@ public class CatalogEntry
     //      System.out.println (String.format ("%-8s  %6d  %6d %4d  %13s  %13s  %s  %5s  %s",
     //          name, size, init, mod, date1Text, date2Text, time, vvmmText, userName));
     //    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getReader
-  // ---------------------------------------------------------------------------------//
-
-  public Reader getReader ()
-  {
-    return reader;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getLevel
-  // ---------------------------------------------------------------------------------//
-
-  public int getLevel ()
-  {
-    return reader.getLevel () + 1;
   }
 
   // ---------------------------------------------------------------------------------//
