@@ -240,9 +240,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     int total = 0;
 
     text.append (
-        "\n    #   Offset     Header                    Data      Data      Ptr\n");
+        "\n    #   Offset     Header                    Data      Data     Ptrs\n");
     text.append (
-        "  ----  ------  -----------------------------------  --------    ---\n");
+        "  ----  ------  -----------------------------------  --------   ----\n");
     for (DataBlock dataBlock : dataBlocks)          // PDS
     {
       total += dataBlock.getSize ();

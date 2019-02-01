@@ -133,10 +133,11 @@ public class Reader
       dataset.allocateSegments ();
 
     if (datasets.size () > 1)
-      System.out.printf ("Processed %d datasets%n", datasets.size ());
+      System.out.printf ("%s contains %d datasets%n", fileName, datasets.size ());
 
     // set active dataset
     activeDataset = datasets.get (datasets.size () - 1);     // always last
+    //    activeDataset = datasets.get (0);     // always first
     assert files == datasets.size ();
   }
 

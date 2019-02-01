@@ -30,7 +30,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
-  final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
+  private final ObservableList<CatalogEntryItem> items =
+      FXCollections.observableArrayList ();
 
   private Reader reader;
   private Dataset dataset;
