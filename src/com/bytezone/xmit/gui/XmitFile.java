@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -14,9 +13,10 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
@@ -33,8 +33,10 @@ class XmitFile
   private final String suffix;
   private final String name;
 
-  private Reader reader;                    // this should be Dataset
-  private CatalogEntry catalogEntry;
+  private Reader reader;                    // can contain multiple datasets
+  private Dataset dataset;                  // is PS or PDS
+  //  private CatalogEntry catalogEntry;        // contained in a PDS
+  private DataFile dataFile;                // PDS member or flat file
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -62,13 +64,14 @@ class XmitFile
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public XmitFile (CatalogEntry catalogEntry)      // an xmit member
+  public XmitFile (PdsMember pdsMember)            // an xmit file in a PDS member
   {
+    //    catalogEntry = pdsMember.getCatalogEntry ();
     file = null;
-    name = catalogEntry.getMemberName ();
+    //    name = catalogEntry.getMemberName ();
+    name = pdsMember.getName ();
     suffix = "";
-
-    this.catalogEntry = catalogEntry;
+    dataFile = pdsMember;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -95,7 +98,7 @@ class XmitFile
 
   public boolean isMember ()
   {
-    return catalogEntry != null;
+    return dataFile != null;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -104,7 +107,8 @@ class XmitFile
 
   int getLevel ()
   {
-    return catalogEntry == null ? 0 : catalogEntry.getLevel ();
+    //    return catalogEntry == null ? 0 : catalogEntry.getLevel ();
+    return dataFile == null ? 0 : dataFile.getLevel ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -169,29 +173,12 @@ class XmitFile
   Reader getReader ()
   {
     if (reader == null)
-      if (catalogEntry != null)
-        reader = new Reader (catalogEntry.getReader (), catalogEntry.getMember ());
+      if (dataFile != null)
+        reader = new Reader (dataFile);
       else if (isFile () && !isCompressed ())
-        reader = new Reader (file.getName (), getBuffer (file));
+        reader = new Reader (file);
 
     return reader;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getBuffer
-  // ---------------------------------------------------------------------------------//
-
-  private byte[] getBuffer (File file)
-  {
-    try
-    {
-      return Files.readAllBytes (file.toPath ());
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-      return null;
-    }
   }
 
   // ---------------------------------------------------------------------------------//

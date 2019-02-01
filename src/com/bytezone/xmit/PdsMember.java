@@ -14,9 +14,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  PdsMember (Disposition disposition)
+  PdsMember (Reader reader, Disposition disposition)
   {
-    super (disposition);
+    super (reader, disposition);
 
     dataBlocks = new ArrayList<> ();
     extraDataBlocks = new ArrayList<> ();

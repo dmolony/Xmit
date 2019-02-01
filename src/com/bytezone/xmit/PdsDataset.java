@@ -121,7 +121,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
     {
       if (currentMember == null)
       {
-        currentMember = new PdsMember (disposition);
+        currentMember = new PdsMember (reader, disposition);
         members.add (currentMember);
       }
 
@@ -149,7 +149,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
 
       if (ttl != lastTtl)
       {
-        currentMember = new PdsMember (disposition);
+        currentMember = new PdsMember (reader, disposition);
         members.add (currentMember);
         lastTtl = ttl;
       }
@@ -175,7 +175,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = new CatalogEntry (reader, buffer, ptr2);
+        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
         addToMap (catalogEntry, catalogMap);
 
