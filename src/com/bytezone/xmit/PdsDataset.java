@@ -98,11 +98,10 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
     {
       PdsMember member = members.get (count++);
+      member.setCatalogEntries (catalogEntryList);
       for (CatalogEntry catalogEntry : catalogEntryList)
-      {
         catalogEntry.setMember (member);
-        member.setCatalogEntry (catalogEntry);
-      }
+
       if (member.isXmit ())
         xmitMembers.add (member);
     }

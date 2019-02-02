@@ -272,8 +272,8 @@ class XmitTable extends TableView<CatalogEntryItem>
     {
       //      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
       for (PdsMember member : (PdsDataset) dataset)
-        if (member.getCatalogEntry () != null)
-          items.add (new CatalogEntryItem (member.getCatalogEntry ()));
+        for (CatalogEntry catalogEntry : member.getCatalogEntries ())
+          items.add (new CatalogEntryItem (catalogEntry));
 
       select (selectedMembers.containsKey (reader)
           ? memberIndex (selectedMembers.get (reader)) : 0);

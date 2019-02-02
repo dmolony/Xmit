@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PdsMember extends DataFile implements Iterable<DataBlock>
 {
-  private CatalogEntry catalogEntry;
+  private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
   private final List<DataBlock> dataBlocks;                    // PDS
   private final List<DataBlock> extraDataBlocks;               // PDSE
 
@@ -32,22 +32,22 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // setCatalogEntry
+  // setCatalogEntries
   // ---------------------------------------------------------------------------------//
 
-  void setCatalogEntry (CatalogEntry catalogEntry)
+  void setCatalogEntries (List<CatalogEntry> catalogEntry)
   {
-    this.catalogEntry = catalogEntry;
-    setName (catalogEntry.getMemberName ());
+    this.catalogEntries.addAll (catalogEntry);
+    setName (catalogEntry.get (0).getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
-  // getCatalogEntry
+  // getCatalogEntries
   // ---------------------------------------------------------------------------------//
 
-  public CatalogEntry getCatalogEntry ()
+  public List<CatalogEntry> getCatalogEntries ()
   {
-    return catalogEntry;
+    return catalogEntries;
   }
 
   // ---------------------------------------------------------------------------------//

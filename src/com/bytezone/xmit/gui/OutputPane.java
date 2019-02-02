@@ -83,8 +83,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       for (PdsMember member : (PdsDataset) dataset)
       {
-        if (member.getCatalogEntry () != null)
-          text.append (member.getCatalogEntry ().debugLine ());
+        if (member.getCatalogEntries () != null)
+          text.append (member.getCatalogEntries ().get (0).debugLine ());
         else
           text.append ("not found");
         text.append ("\n");
@@ -228,7 +228,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
     if (dataset.isPds ())
     {
-      CatalogEntry catalogEntry = ((PdsMember) dataFile).getCatalogEntry ();
+      CatalogEntry catalogEntry = ((PdsMember) dataFile).getCatalogEntries ().get (0);
       if (catalogEntry.isAlias ())
         lblMemberName.setText (indicator + catalogEntry.getMemberName ().trim () + " -> "
             + catalogEntry.getAliasName ());
