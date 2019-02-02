@@ -1,6 +1,6 @@
 package com.bytezone.xmit;
 
-public class Header
+class Header
 {
   final byte[] buffer;
 
@@ -8,7 +8,7 @@ public class Header
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Header ()
+  Header ()
   {
     this.buffer = new byte[12];
   }

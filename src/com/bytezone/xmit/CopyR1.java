@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 // https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.1.0/com.ibm.zos.v2r1.idau100/u1322.htm
 
-public class CopyR1
+class CopyR1
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
   private static String[] recfmTypes = { "?", "V", "F", "U" };
@@ -33,7 +33,7 @@ public class CopyR1
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CopyR1 (byte[] buffer)
+  CopyR1 (byte[] buffer)
   {
     this.buffer = buffer;
 

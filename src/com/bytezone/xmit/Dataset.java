@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.xmit.textunit.ControlRecord;
-import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.Dsorg.Org;
-import com.bytezone.xmit.textunit.Recfm;
-import com.bytezone.xmit.textunit.TextUnit;
-import com.bytezone.xmit.textunit.TextUnitNumber;
 
 public abstract class Dataset
 {
@@ -27,15 +23,7 @@ public abstract class Dataset
   {
     this.reader = reader;
     this.inmr02 = inmr02;
-
-    int lrecl =
-        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
-    int blksize =
-        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMBLKSZ)).getNumber ();
-    Org dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
-    int recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
-
-    disposition = new Disposition (dsorg, recfm, lrecl, blksize);
+    disposition = new Disposition (inmr02);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -21,6 +21,10 @@ class BlockPointer
     this.length = length;
   }
 
+  // ---------------------------------------------------------------------------------//
+  // toHex
+  // ---------------------------------------------------------------------------------//
+
   String toHex ()
   {
     return Utility.getHexDump (buffer, offset, length);

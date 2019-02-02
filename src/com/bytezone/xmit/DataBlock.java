@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataBlock
+class DataBlock
 {
   private final int offset;
   private final Header header;
@@ -13,7 +13,7 @@ public class DataBlock
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public DataBlock (int offset, Header header)
+  DataBlock (int offset, Header header)
   {
     this.offset = offset;
     this.header = header;
@@ -41,7 +41,7 @@ public class DataBlock
   // getSize
   // ---------------------------------------------------------------------------------//
 
-  public int getSize ()
+  int getSize ()
   {
     return header.getSize ();
   }

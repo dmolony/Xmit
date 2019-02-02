@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Segment implements Iterable<BlockPointer>
+class Segment implements Iterable<BlockPointer>
 {
   private final byte[] buffer;          // all block pointers refer to this
   private int rawBufferLength;
@@ -14,7 +14,7 @@ public class Segment implements Iterable<BlockPointer>
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public Segment (byte[] buffer)
+  Segment (byte[] buffer)
   {
     this.buffer = buffer;
   }

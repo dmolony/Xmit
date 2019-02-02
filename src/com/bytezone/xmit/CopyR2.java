@@ -1,6 +1,6 @@
 package com.bytezone.xmit;
 
-public class CopyR2
+class CopyR2
 {
   final byte[] buffer;
 
@@ -8,7 +8,7 @@ public class CopyR2
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  public CopyR2 (byte[] buffer)
+  CopyR2 (byte[] buffer)
   {
     this.buffer = buffer;
   }

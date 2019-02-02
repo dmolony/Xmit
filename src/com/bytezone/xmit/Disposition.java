@@ -1,6 +1,11 @@
 package com.bytezone.xmit;
 
+import com.bytezone.xmit.textunit.ControlRecord;
+import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.Dsorg.Org;
+import com.bytezone.xmit.textunit.Recfm;
+import com.bytezone.xmit.textunit.TextUnit;
+import com.bytezone.xmit.textunit.TextUnitNumber;
 
 public class Disposition
 {
@@ -23,6 +28,19 @@ public class Disposition
     this.recfm = recfm;
     this.lrecl = lrecl;
     this.blksize = blksize;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // constructor
+  // ---------------------------------------------------------------------------------//
+
+  public Disposition (ControlRecord inmr02)
+  {
+    lrecl = (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMLRECL)).getNumber ();
+    blksize =
+        (int) ((TextUnitNumber) inmr02.getTextUnit (TextUnit.INMBLKSZ)).getNumber ();
+    dsorg = ((Dsorg) inmr02.getTextUnit (TextUnit.INMDSORG)).type;
+    recfm = (int) ((Recfm) inmr02.getTextUnit (TextUnit.INMRECFM)).getNumber ();
   }
 
   // ---------------------------------------------------------------------------------//

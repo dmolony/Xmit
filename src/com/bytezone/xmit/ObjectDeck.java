@@ -2,7 +2,7 @@ package com.bytezone.xmit;
 
 public class ObjectDeck
 {
-  public ObjectDeck (byte[] buffer, int lrecl)
+  ObjectDeck (byte[] buffer, int lrecl)
   {
     int ptr = 0;
     while (ptr < buffer.length)
