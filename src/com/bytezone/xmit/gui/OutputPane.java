@@ -30,6 +30,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   private Reader reader;
   private Dataset dataset;
   private DataFile dataFile;
+  private CatalogEntry catalogEntry;      // needed for alias members
 
   private boolean showLines;
   private boolean truncateLines;
@@ -209,6 +210,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   @Override
   public void tableItemSelected (CatalogEntry catalogEntry)
   {
+    this.catalogEntry = catalogEntry;
     this.dataFile = catalogEntry.getMember ();
     updateName ();
     clearText ();
@@ -228,7 +230,6 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
     if (dataset.isPds ())
     {
-      CatalogEntry catalogEntry = ((PdsMember) dataFile).getCatalogEntries ().get (0);
       if (catalogEntry.isAlias ())
         lblMemberName.setText (indicator + catalogEntry.getMemberName ().trim () + " -> "
             + catalogEntry.getAliasName ());

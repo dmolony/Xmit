@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.*;
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.collections.FXCollections;
@@ -270,10 +273,10 @@ class XmitTable extends TableView<CatalogEntryItem>
     items.clear ();
     if (dataset != null && dataset.getDisposition ().getOrg () == Org.PDS)
     {
-      //      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
-      for (PdsMember member : (PdsDataset) dataset)
-        for (CatalogEntry catalogEntry : member.getCatalogEntries ())
-          items.add (new CatalogEntryItem (catalogEntry));
+      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
+        //      for (PdsMember member : (PdsDataset) dataset)
+        //        for (CatalogEntry catalogEntry : member.getCatalogEntries ())
+        items.add (new CatalogEntryItem (catalogEntry));
 
       select (selectedMembers.containsKey (reader)
           ? memberIndex (selectedMembers.get (reader)) : 0);
@@ -287,11 +290,11 @@ class XmitTable extends TableView<CatalogEntryItem>
   private int memberIndex (String memberName)
   {
     int index = 0;
-    //    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getMembers ())
-    for (DataFile member : (PdsDataset) dataset)
+    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
+    //    for (DataFile member : (PdsDataset) dataset)
     {
-      //      if (memberName.equals (catalogEntry.getMemberName ()))
-      if (memberName.equals (member.getName ()))
+      if (memberName.equals (catalogEntry.getMemberName ()))
+        //      if (memberName.equals (member.getName ()))
         return index;
       ++index;
     }
