@@ -1,7 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -28,15 +27,15 @@ class TablePane extends HeaderPane implements TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name, String path)
   {
-    if (reader == null)
+    if (dataset == null)
       lblFileName.setText ("");
     else
     {
-      lblFileName.setText (reader.getFileName ());
+      lblFileName.setText (dataset.getReader ().getFileName ());
 
-      if (reader.isIncomplete ())
+      if (dataset.getReader ().isIncomplete ())
         lblFileName.setTextFill (Color.RED);
       else
         lblFileName.setTextFill (Color.BLACK);

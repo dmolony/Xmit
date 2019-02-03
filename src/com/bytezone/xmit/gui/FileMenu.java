@@ -6,7 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.*;
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.DataFile;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PsDataset;
+import com.bytezone.xmit.Utility;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
@@ -137,7 +141,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name, String path)
   {
     //    this.reader = reader;
     this.dataset = dataset;

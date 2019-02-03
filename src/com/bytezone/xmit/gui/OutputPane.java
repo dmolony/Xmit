@@ -25,7 +25,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   private final Label lblMemberName = new Label ();
   private final Label lblDisposition = new Label ();
 
-  private Reader reader;
+  //  private Reader reader;
   private Dataset dataset;
   private DataFile dataFile;
   private CatalogEntry catalogEntry;      // needed for alias members
@@ -54,12 +54,12 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
   private void updateHeadersTab ()
   {
-    if (reader == null)
+    if (dataset == null)
       return;
 
     StringBuilder text = new StringBuilder ();
 
-    for (ControlRecord controlRecord : reader.getControlRecords ())
+    for (ControlRecord controlRecord : dataset.getReader ().getControlRecords ())
     {
       text.append (controlRecord.toString ());
       text.append ("\n");
@@ -75,7 +75,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       text.append (((PdsDataset) dataset).getCopyR2 ());
       text.append ("\n\n");
 
-      text.append (String.format ("%s Catalog Blocks:%n", reader.getName ()));
+      text.append (
+          String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
       text.append (
           "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
       text.append ("Size1 Size2       -------- user ---------\n");
@@ -170,9 +171,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name, String path)
   {
-    this.reader = reader;
     this.dataset = dataset;
 
     dataFile = null;

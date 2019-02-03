@@ -35,7 +35,7 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final ObservableList<CatalogEntryItem> items =
       FXCollections.observableArrayList ();
 
-  private Reader reader;
+  //  private Reader reader;
   private Dataset dataset;
   private final Map<Reader, String> selectedMembers = new HashMap<> ();
   private Font font;
@@ -69,7 +69,7 @@ class XmitTable extends TableView<CatalogEntryItem>
             return;
 
           CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
-          selectedMembers.put (reader, catalogEntry.getMemberName ());
+          selectedMembers.put (dataset.getReader (), catalogEntry.getMemberName ());
           for (TableItemSelectionListener listener : listeners)
             listener.tableItemSelected (catalogEntry);
         });
@@ -315,21 +315,19 @@ class XmitTable extends TableView<CatalogEntryItem>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Reader reader, Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name, String path)
   {
-    this.reader = reader;
+    //    this.reader = reader;
     this.dataset = dataset;
 
     items.clear ();
     if (dataset != null && dataset.getDisposition ().getOrg () == Org.PDS)
     {
       for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
-        //      for (PdsMember member : (PdsDataset) dataset)
-        //        for (CatalogEntry catalogEntry : member.getCatalogEntries ())
         items.add (new CatalogEntryItem (catalogEntry));
 
-      select (selectedMembers.containsKey (reader)
-          ? memberIndex (selectedMembers.get (reader)) : 0);
+      select (selectedMembers.containsKey (dataset.getReader ())
+          ? memberIndex (selectedMembers.get (dataset.getReader ())) : 0);
     }
   }
 
@@ -341,10 +339,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   {
     int index = 0;
     for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
-    //    for (DataFile member : (PdsDataset) dataset)
     {
       if (memberName.equals (catalogEntry.getMemberName ()))
-        //      if (memberName.equals (member.getName ()))
         return index;
       ++index;
     }
