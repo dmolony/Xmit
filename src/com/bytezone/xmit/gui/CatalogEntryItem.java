@@ -3,6 +3,7 @@ package com.bytezone.xmit.gui;
 import java.time.LocalDate;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Utility.FileType;
 
 import javafx.beans.property.*;
 
@@ -16,6 +17,7 @@ public class CatalogEntryItem                   // must be public
   private StringProperty aliasName;
   private StringProperty version;
   private StringProperty time;
+  private ObjectProperty<FileType> type;
   private IntegerProperty size;
   private IntegerProperty bytes;
   private IntegerProperty init;
@@ -38,6 +40,7 @@ public class CatalogEntryItem                   // must be public
     setDateCreated (catalogEntry.getDateCreated ());
     setDateModified (catalogEntry.getDateModified ());
     setTime (catalogEntry.getTime ());
+    setType (catalogEntry.getFileType ());
     setVersion (catalogEntry.getVersion ());
   }
 
@@ -237,6 +240,27 @@ public class CatalogEntryItem                   // must be public
     if (time == null)
       time = new SimpleStringProperty ();
     return time;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // Type
+  // ---------------------------------------------------------------------------------//
+
+  private void setType (FileType value)
+  {
+    typeProperty ().set (value);
+  }
+
+  public final FileType getType ()
+  {
+    return typeProperty ().get ();
+  }
+
+  private ObjectProperty<FileType> typeProperty ()
+  {
+    if (type == null)
+      type = new SimpleObjectProperty<> ();
+    return type;
   }
 
   // ---------------------------------------------------------------------------------//

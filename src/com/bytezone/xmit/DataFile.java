@@ -8,10 +8,8 @@ import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 // ---------------------------------------------------------------------------------//
-// DataFile
-// ---------------------------------------------------------------------------------//
-
 public abstract class DataFile implements Comparable<DataFile>
+//---------------------------------------------------------------------------------//
 {
   private static final int MAX_BUFFER = 200_000;
 
@@ -76,7 +74,7 @@ public abstract class DataFile implements Comparable<DataFile>
 
   public FileType getFileType ()
   {
-    return isXmit () ? FileType.XMIT : Utility.getFileType (getEightBytes ());
+    return isXmit () ? FileType.XMI : Utility.getFileType (getEightBytes ());
   }
 
   // ---------------------------------------------------------------------------------//

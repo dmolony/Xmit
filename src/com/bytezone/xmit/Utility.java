@@ -31,7 +31,7 @@ public class Utility
 
   public enum FileType
   {
-    DOC, PDF, ZIP, RAR, PNG, RTF, BIN, XMIT
+    DOC, PDF, ZIP, RAR, PNG, RTF, BIN, XMI
   }
 
   // ---------------------------------------------------------------------------------//

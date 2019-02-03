@@ -3,6 +3,8 @@ package com.bytezone.xmit;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.bytezone.xmit.Utility.FileType;
+
 // ---------------------------------------------------------------------------------//
 // CatalogEntry
 // ---------------------------------------------------------------------------------//
@@ -156,6 +158,15 @@ public class CatalogEntry
   public PdsMember getMember ()
   {
     return member;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // getFileType
+  // ---------------------------------------------------------------------------------//
+
+  public FileType getFileType ()
+  {
+    return member.getFileType ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -11,6 +11,7 @@ import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.collections.FXCollections;
@@ -59,7 +60,8 @@ class XmitTable extends TableView<CatalogEntryItem>
     addLocalDate ("Created", "DateCreated", 100);
     addLocalDate ("Modified", "DateModified", 100);
     addString ("Time", "Time", 90, "CENTER");
-    addString ("ver.mod", "Version", 80, "CENTER");
+    addFileType ("Type", "Type", 50, "CENTER");
+    addString ("ver.mod", "Version", 70, "CENTER");
     addString ("Alias", "AliasName", 100, "CENTER-LEFT");
 
     getSelectionModel ().selectedItemProperty ()
@@ -114,6 +116,21 @@ class XmitTable extends TableView<CatalogEntryItem>
     TableColumn<CatalogEntryItem, LocalDate> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
     column.setCellFactory (localDateCellFactory ());
+    column.setPrefWidth (width);
+    getColumns ().add (column);
+    return column;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addFileType
+  // ---------------------------------------------------------------------------------//
+
+  TableColumn<CatalogEntryItem, FileType> addFileType (String heading, String name,
+      int width, String alignment)
+  {
+    TableColumn<CatalogEntryItem, FileType> column = new TableColumn<> (heading);
+    column.setCellValueFactory (new PropertyValueFactory<> (name));
+    column.setCellFactory (fileTypeCellFactory (alignment));
     column.setPrefWidth (width);
     getColumns ().add (column);
     return column;
@@ -213,6 +230,41 @@ class XmitTable extends TableView<CatalogEntryItem>
                 else
                 {
                   setText (String.format ("%s", item));
+                  setFont (font);
+                }
+              }
+            };
+        return cell;
+      }
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // fileTypeCellFactory
+  // ---------------------------------------------------------------------------------//
+
+  Callback<TableColumn<CatalogEntryItem, FileType>, TableCell<CatalogEntryItem, FileType>>
+      fileTypeCellFactory (String alignment)
+  {
+    return new Callback<TableColumn<CatalogEntryItem, FileType>, TableCell<CatalogEntryItem, FileType>> ()
+    {
+      @Override
+      public TableCell<CatalogEntryItem, FileType>
+          call (TableColumn<CatalogEntryItem, FileType> param)
+      {
+        TableCell<CatalogEntryItem, FileType> cell =
+            new TableCell<CatalogEntryItem, FileType> ()
+            {
+              @Override
+              public void updateItem (final FileType item, boolean empty)
+              {
+                super.updateItem (item, empty);
+                setStyle ("-fx-alignment: " + alignment + ";");
+                if (item == null || empty)
+                  setText (null);
+                else
+                {
+                  setText (item == FileType.BIN ? "" : String.format ("%s", item));
                   setFont (font);
                 }
               }
