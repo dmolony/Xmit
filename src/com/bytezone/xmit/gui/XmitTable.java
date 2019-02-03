@@ -35,7 +35,6 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final ObservableList<CatalogEntryItem> items =
       FXCollections.observableArrayList ();
 
-  //  private Reader reader;
   private Dataset dataset;
   private final Map<Reader, String> selectedMembers = new HashMap<> ();
   private Font font;
@@ -317,7 +316,6 @@ class XmitTable extends TableView<CatalogEntryItem>
   @Override
   public void treeItemSelected (Dataset dataset, String name, String path)
   {
-    //    this.reader = reader;
     this.dataset = dataset;
 
     items.clear ();

@@ -108,6 +108,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // createDataLines
   // ---------------------------------------------------------------------------------//
   // FILE185 - FILE234I - incomplete
+  // FILE313 - many extractable files
   // FILE404 - $$PREZ18 - possibly corrupt
   // FILE600 - XMITPDSC - VB
   // FILE706 - java bytecode
@@ -231,7 +232,7 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     lines.add ("File type: " + getFileType ());
     lines.add ("");
-    lines.add ("Use File->Extract to save a copy in the correct format,");
+    lines.add ("Use File->Extract to save a local copy in the correct format,");
     lines.add ("      or use the HEX tab to view the raw file.");
   }
 
