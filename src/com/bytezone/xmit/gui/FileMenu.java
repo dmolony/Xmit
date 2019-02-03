@@ -65,7 +65,6 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 
     if (dataset instanceof PsDataset)
     {
-      //      buffer = ((PsDataset) dataset).getRawBuffer ();
       DataFile member = ((PsDataset) dataset).getMember ();
       buffer = member.getDataBuffer ();
       name = this.name + "." + member.getFileType ().name ();
@@ -143,7 +142,6 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   @Override
   public void treeItemSelected (Dataset dataset, String name, String path)
   {
-    //    this.reader = reader;
     this.dataset = dataset;
     this.name = name == null ? null : name.trim ();
     catalogEntry = null;
