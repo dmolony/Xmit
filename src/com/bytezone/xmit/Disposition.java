@@ -7,7 +7,9 @@ import com.bytezone.xmit.textunit.Recfm;
 import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitNumber;
 
+// ---------------------------------------------------------------------------------//
 public class Disposition
+//---------------------------------------------------------------------------------//
 {
   private static String[] recfmTypes = { "?", "V", "F", "U" };
 

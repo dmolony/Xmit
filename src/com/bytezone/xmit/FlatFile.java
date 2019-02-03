@@ -5,10 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-// FlatFile
-// ---------------------------------------------------------------------------------//
-
 public class FlatFile extends DataFile implements Iterable<Segment>
+//---------------------------------------------------------------------------------//
 {
   private final List<Segment> segments;                        // PS
 

@@ -38,10 +38,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
-// FontManager
-// ---------------------------------------------------------------------------------//
-
 class FontManager
+//---------------------------------------------------------------------------------//
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   private static final String PREFS_FONT_NAME = "FontName";

@@ -10,10 +10,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 // ---------------------------------------------------------------------------------//
-// Utility
-// ---------------------------------------------------------------------------------//
-
 public class Utility
+//---------------------------------------------------------------------------------//
 {
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();

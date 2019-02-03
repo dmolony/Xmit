@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+// ---------------------------------------------------------------------------------//
 public class PdsMember extends DataFile implements Iterable<DataBlock>
+//---------------------------------------------------------------------------------//
 {
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
   private final List<DataBlock> dataBlocks;                    // PDS

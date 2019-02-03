@@ -18,10 +18,8 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // ---------------------------------------------------------------------------------//
-// XmitTree
-// ---------------------------------------------------------------------------------//
-
 class XmitTree extends TreeView<XmitFile> implements FontChangeListener
+//---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";

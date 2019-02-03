@@ -2,13 +2,11 @@ package com.bytezone.xmit;
 
 import java.io.UnsupportedEncodingException;
 
-// ---------------------------------------------------------------------------------//
-// CodePage
-// ---------------------------------------------------------------------------------//
-
 // https://en.wikipedia.org/wiki/EBCDIC_code_pages
 
+// ---------------------------------------------------------------------------------//
 public class CodePage
+//---------------------------------------------------------------------------------//
 {
   private static byte[] values;
   public final int[] ebc2asc = new int[256];

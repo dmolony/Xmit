@@ -2,7 +2,9 @@ package com.bytezone.xmit;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 
+// ---------------------------------------------------------------------------------//
 public class PsDataset extends Dataset
+//---------------------------------------------------------------------------------//
 {
   private FlatFile member;
 

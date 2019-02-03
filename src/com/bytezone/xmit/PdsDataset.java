@@ -4,7 +4,9 @@ import java.util.*;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 
+// ---------------------------------------------------------------------------------//
 public class PdsDataset extends Dataset implements Iterable<PdsMember>
+//---------------------------------------------------------------------------------//
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 

@@ -10,10 +10,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-// HeaderPane
-// ---------------------------------------------------------------------------------//
-
 abstract class HeaderPane extends BorderPane
+//---------------------------------------------------------------------------------//
 {
   static Font headingFont = Font.font ("Lucida Sans Typewriter", 14);
 

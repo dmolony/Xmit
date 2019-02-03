@@ -10,10 +10,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
 // ---------------------------------------------------------------------------------//
-// ViewMenu
-// ---------------------------------------------------------------------------------//
-
 class ViewMenu
+//---------------------------------------------------------------------------------//
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
   private static final String PREFS_TRUNCATE = "Truncate";

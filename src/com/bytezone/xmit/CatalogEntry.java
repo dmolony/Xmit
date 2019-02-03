@@ -6,10 +6,8 @@ import java.util.Optional;
 import com.bytezone.xmit.Utility.FileType;
 
 // ---------------------------------------------------------------------------------//
-// CatalogEntry
-// ---------------------------------------------------------------------------------//
-
 public class CatalogEntry
+//---------------------------------------------------------------------------------//
 {
   private PdsMember member;                   // contains DataBlocks
 

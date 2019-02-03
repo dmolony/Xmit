@@ -24,11 +24,9 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // ---------------------------------------------------------------------------------//
-// XmitTable
-// ---------------------------------------------------------------------------------//
-
 class XmitTable extends TableView<CatalogEntryItem>
     implements TreeItemSelectionListener, FontChangeListener
+// ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());

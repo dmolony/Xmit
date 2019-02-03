@@ -150,7 +150,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // createLines
   // ---------------------------------------------------------------------------------//
 
-  void createLines ()
+  private void createLines ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
 
@@ -212,7 +212,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // object
   // ---------------------------------------------------------------------------------//
 
-  void objectDeck ()
+  private void objectDeck ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
     lines.add ("Object Deck Output:");
@@ -227,7 +227,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // extractMessage
   // ---------------------------------------------------------------------------------//
 
-  void showExtractMessage ()
+  private void showExtractMessage ()
   {
     lines.add ("File type: " + getFileType ());
     lines.add ("");
@@ -239,7 +239,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // hexDump
   // ---------------------------------------------------------------------------------//
 
-  void hexDump ()
+  private void hexDump ()
   {
     byte[] buffer = getDataBuffer (MAX_BUFFER);
     for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
@@ -250,7 +250,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // xmitLines
   // ---------------------------------------------------------------------------------//
 
-  void xmitLines ()
+  private void xmitLines ()
   {
     //    byte[] xmitBuffer = getDataBuffer ();
     try

@@ -12,10 +12,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-// HeaderTabPane
-// ---------------------------------------------------------------------------------//
-
 abstract class HeaderTabPane extends HeaderPane
+//---------------------------------------------------------------------------------//
 {
   final TabPane tabPane = new TabPane ();
   final List<XmitTab> tabs = new ArrayList<> ();

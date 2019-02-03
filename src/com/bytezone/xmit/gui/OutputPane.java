@@ -10,11 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 
 // ---------------------------------------------------------------------------------//
-// OutputPane
-// ---------------------------------------------------------------------------------//
-
 class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     TableItemSelectionListener, ShowLinesListener, FontChangeListener
+// ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());

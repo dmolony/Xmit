@@ -6,7 +6,9 @@ import java.util.List;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
+// ---------------------------------------------------------------------------------//
 public abstract class Dataset
+//---------------------------------------------------------------------------------//
 {
   final Reader reader;
   final ControlRecord inmr02;

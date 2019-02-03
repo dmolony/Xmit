@@ -4,7 +4,9 @@ import java.time.LocalDate;
 
 // https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.1.0/com.ibm.zos.v2r1.idau100/u1322.htm
 
+// ---------------------------------------------------------------------------------//
 class CopyR1
+//---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
   private static String[] recfmTypes = { "?", "V", "F", "U" };

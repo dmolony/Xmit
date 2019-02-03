@@ -6,10 +6,8 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 
 // ---------------------------------------------------------------------------------//
-// ScrollBarState
-// ---------------------------------------------------------------------------------//
-
 class ScrollBarState
+//---------------------------------------------------------------------------------//
 {
   private final TextArea textArea;
   private final Orientation orientation;

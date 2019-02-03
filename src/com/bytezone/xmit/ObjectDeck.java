@@ -1,6 +1,8 @@
 package com.bytezone.xmit;
 
-public class ObjectDeck
+// ---------------------------------------------------------------------------------//
+class ObjectDeck
+//---------------------------------------------------------------------------------//
 {
   ObjectDeck (byte[] buffer, int lrecl)
   {
