@@ -37,14 +37,10 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   private Font font;
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   XmitTree (FileTreeItem fileTreeItem)
+  // ---------------------------------------------------------------------------------//
   {
     super (fileTreeItem);
-
-    //    setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
 
     xImage[0] = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
     xImage[1] = new Image (getClass ().getResourceAsStream ("/icons/X-pink-icon.png"));
@@ -92,13 +88,6 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
           }
         };
 
-        //        cell.setOnMouseClicked (event ->
-        //        {
-        //          System.out.println (event.getButton ());
-        //          if (!cell.isEmpty ())
-        //          {
-        //          }
-        //        });
         return cell;
       }
     });
@@ -107,8 +96,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
     {
       if (newSelection == null)
       {
-        for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null);//, null);
+        notify (null, null);
         return;
       }
 
@@ -116,34 +104,30 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
       Reader reader = xmitFile.getReader ((FileTreeItem) newSelection);
 
       if (reader == null)
-        for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null);//, null);
+        notify (null, null);
       else
-      {
-        Dataset dataset = reader.getActiveDataset ();
-        String name = newSelection.getValue ().getName ();
-        String path = getSelectedItemPath ();
-
-        for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (dataset, name);
-      }
+        notify (reader.getActiveDataset (), xmitFile.getName ());
     });
   }
 
   // ---------------------------------------------------------------------------------//
-  // exit
+  private void notify (Dataset dataset, String name)
   // ---------------------------------------------------------------------------------//
+  {
+    for (TreeItemSelectionListener listener : listeners)
+      listener.treeItemSelected (dataset, name);
+  }
 
+  // ---------------------------------------------------------------------------------//
   public void exit ()
+  // ---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_LAST_PATH, getSelectedItemPath ());
   }
 
   // ---------------------------------------------------------------------------------//
-  // restore
-  // ---------------------------------------------------------------------------------//
-
   public void restore ()
+  // ---------------------------------------------------------------------------------//
   {
     String lastPath = prefs.get (PREFS_LAST_PATH, "");
 
@@ -161,20 +145,16 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // setRootFolder
-  // ---------------------------------------------------------------------------------//
-
   public void setRootFolder (FileTreeItem fileTreeItem)
+  // ---------------------------------------------------------------------------------//
   {
     setRoot (fileTreeItem);
     fileTreeItem.setExpanded (true);
   }
 
   // ---------------------------------------------------------------------------------//
-  // getNode
-  // ---------------------------------------------------------------------------------//
-
   Optional<TreeItem<XmitFile>> getNode (String path)
+  // ---------------------------------------------------------------------------------//
   {
     TreeItem<XmitFile> node = getRoot ();
     Optional<TreeItem<XmitFile>> optionalNode = Optional.empty ();
@@ -194,10 +174,8 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // search
-  // ---------------------------------------------------------------------------------//
-
   private Optional<TreeItem<XmitFile>> search (TreeItem<XmitFile> parentNode, String name)
+  // ---------------------------------------------------------------------------------//
   {
     parentNode.setExpanded (true);
     for (TreeItem<XmitFile> childNode : parentNode.getChildren ())
@@ -208,10 +186,8 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // getSelectedItemPath
-  // ---------------------------------------------------------------------------------//
-
   String getSelectedItemPath ()
+  // ---------------------------------------------------------------------------------//
   {
     StringBuilder pathBuilder = new StringBuilder ();
 
@@ -252,30 +228,24 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   //  }
 
   // ---------------------------------------------------------------------------------//
-  // addListener
-  // ---------------------------------------------------------------------------------//
-
   public void addListener (TreeItemSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     if (!listeners.contains (listener))
       listeners.add (listener);
   }
 
   // ---------------------------------------------------------------------------------//
-  // removeListener
-  // ---------------------------------------------------------------------------------//
-
   public void removeListener (TreeItemSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     listeners.remove (listener);
   }
 
   // ---------------------------------------------------------------------------------//
-  // setFont
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public void setFont (Font font)
+  // ---------------------------------------------------------------------------------//
   {
     this.font = font;
     refresh ();
