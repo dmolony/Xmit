@@ -314,7 +314,7 @@ class XmitTable extends TableView<CatalogEntryItem>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name)
   {
     this.dataset = dataset;
 

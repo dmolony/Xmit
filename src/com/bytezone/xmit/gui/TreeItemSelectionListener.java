@@ -6,5 +6,5 @@ import com.bytezone.xmit.Dataset;
 interface TreeItemSelectionListener
 //---------------------------------------------------------------------------------//
 {
-  public void treeItemSelected (Dataset dataset, String name, String path);
+  public void treeItemSelected (Dataset dataset, String name);
 }

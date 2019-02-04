@@ -137,6 +137,11 @@ public abstract class DataFile implements Comparable<DataFile>
         || disposition.recfm == 0x5400)         // VBA
         && isRdw ())
       rdwLines ();
+    else if (disposition.recfm == 0x5002)
+    {
+      rdwLines ();
+      //      createTextLines (getDataBuffer ());
+    }
     else if (disposition.recfm == 0x9200)       // FBA
       createTextLines (getDataBuffer ());
     else if (isObjectDeck ())
@@ -169,13 +174,14 @@ public abstract class DataFile implements Comparable<DataFile>
   private void createTextLines (byte[] buffer)
   {
     int ptr = 0;
-    int length = buffer.length;
-    while (length > 0)
+    int remaining = buffer.length;
+    int lrecl = disposition.lrecl == 0 ? 80 : disposition.lrecl;
+    while (remaining > 0)
     {
-      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
+      int len = Math.min (lrecl, remaining);
       lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
       ptr += len;
-      length -= len;
+      remaining -= len;
     }
   }
 

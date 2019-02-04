@@ -57,7 +57,22 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     if (dataset == null)
       return;
 
+    Reader reader = dataset.getReader ();
+
     StringBuilder text = new StringBuilder ();
+    if (reader.size () > 1)
+    {
+      Dataset firstDataset = reader.getDatasets ().get (0);
+      Disposition disposition = firstDataset.getDisposition ();
+      if (firstDataset.isPs ())
+      {
+        FlatFile file = ((PsDataset) firstDataset).getMember ();
+        text.append (file.getLines (false, false));
+        text.append ("\n\n");
+      }
+      else
+        text.append ("Unexpected disposition for file #1: " + disposition.getOrg ());
+    }
 
     for (ControlRecord controlRecord : dataset.getReader ().getControlRecords ())
     {
@@ -171,7 +186,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name)
   {
     this.dataset = dataset;
 

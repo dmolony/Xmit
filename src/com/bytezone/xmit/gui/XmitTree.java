@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.FocusModel;
@@ -90,6 +91,14 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
             imageView.setImage (image);
           }
         };
+
+        //        cell.setOnMouseClicked (event ->
+        //        {
+        //          System.out.println (event.getButton ());
+        //          if (!cell.isEmpty ())
+        //          {
+        //          }
+        //        });
         return cell;
       }
     });
@@ -99,7 +108,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
       if (newSelection == null)
       {
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null, null);
+          listener.treeItemSelected (null, null);//, null);
         return;
       }
 
@@ -108,11 +117,16 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
 
       if (reader == null)
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (null, null, null);
+          listener.treeItemSelected (null, null);//, null);
       else
+      {
+        Dataset dataset = reader.getActiveDataset ();
+        String name = newSelection.getValue ().getName ();
+        String path = getSelectedItemPath ();
+
         for (TreeItemSelectionListener listener : listeners)
-          listener.treeItemSelected (reader.getActiveDataset (),
-              newSelection.getValue ().getName (), getSelectedItemPath ());
+          listener.treeItemSelected (dataset, name);
+      }
     });
   }
 

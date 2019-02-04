@@ -27,7 +27,7 @@ class TablePane extends HeaderPane implements TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void treeItemSelected (Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name)//, String path)
   {
     if (dataset == null)
       lblFileName.setText ("");

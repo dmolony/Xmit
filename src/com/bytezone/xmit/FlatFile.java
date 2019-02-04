@@ -106,7 +106,8 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   @Override
   void rdwLines ()
   {
-    System.out.println ("not written: " + getName ());       // haven't seen one yet
+    for (Segment segment : segments)
+      lines.add (Utility.getString (segment.getRawBuffer ()));
   }
 
   // ---------------------------------------------------------------------------------//

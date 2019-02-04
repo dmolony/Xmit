@@ -39,10 +39,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   private String saveFolderName;
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   public FileMenu (XmitApp owner, TreeView<XmitFile> tree)
+  // ---------------------------------------------------------------------------------//
   {
     fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem);
     rootMenuItem.setAccelerator (
@@ -55,10 +53,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // extractFile
-  // ---------------------------------------------------------------------------------//
-
   private void extractFile ()
+  // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = null;
     String name = "";
@@ -97,38 +93,30 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // restore
-  // ---------------------------------------------------------------------------------//
-
   void restore ()
+  // ---------------------------------------------------------------------------------//
   {
     saveFolderName = prefs.get (PREFS_SAVE_FOLDER, System.getProperty ("user.home"));
   }
 
   // ---------------------------------------------------------------------------------//
-  // exit
-  // ---------------------------------------------------------------------------------//
-
   void exit ()
+  // ---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_SAVE_FOLDER, saveFolderName);
   }
 
   // ---------------------------------------------------------------------------------//
-  // getMenu
-  // ---------------------------------------------------------------------------------//
-
   Menu getMenu ()
+  // ---------------------------------------------------------------------------------//
   {
     return fileMenu;
   }
 
   // ---------------------------------------------------------------------------------//
-  // tableItemSelected
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public void tableItemSelected (CatalogEntry catalogEntry)
+  // ---------------------------------------------------------------------------------//
   {
     this.catalogEntry = catalogEntry;
     extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
@@ -136,11 +124,9 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // treeItemSelected
-  // ---------------------------------------------------------------------------------//
-
   @Override
-  public void treeItemSelected (Dataset dataset, String name, String path)
+  public void treeItemSelected (Dataset dataset, String name)
+  // ---------------------------------------------------------------------------------//
   {
     this.dataset = dataset;
     this.name = name == null ? null : name.trim ();

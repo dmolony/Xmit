@@ -145,8 +145,8 @@ public class Reader
     for (Dataset dataset : datasets)
       dataset.allocateSegments ();
 
-    if (datasets.size () > 1)
-      System.out.printf ("%s contains %d datasets%n", fileName, datasets.size ());
+    //    if (datasets.size () > 1)
+    //      System.out.printf ("%s contains %d datasets%n", fileName, datasets.size ());
 
     // set active dataset
     activeDataset = datasets.get (datasets.size () - 1);     // always last
