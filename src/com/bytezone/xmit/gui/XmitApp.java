@@ -68,22 +68,31 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
-    xmitTree.addListener (outputPane);
-    xmitTree.addListener (tablePane);
-    xmitTree.addListener (xmitTable);
-
     splitPane.getItems ().addAll (treePane, tablePane, outputPane);
 
     fileMenu = new FileMenu (this, xmitTree);
     viewMenu = new ViewMenu (this, xmitTree, fontManager);
-    xmitTree.addListener (fileMenu);
-    xmitTable.addListener (fileMenu);
-    xmitTable.addListener (outputPane);
-    viewMenu.addShowLinesListener (outputPane);
+
+    // codepage listeners
     viewMenu.addCodePageListener (this);
+
+    // lines listeners
+    viewMenu.addShowLinesListener (outputPane);
+
+    // font change listeners
     fontManager.addFontChangeListener (outputPane);
     fontManager.addFontChangeListener (xmitTable);
     fontManager.addFontChangeListener (xmitTree);
+
+    // treeview listeners
+    xmitTree.addListener (fileMenu);
+    xmitTree.addListener (outputPane);
+    xmitTree.addListener (tablePane);
+    xmitTree.addListener (xmitTable);
+
+    // table listeners
+    xmitTable.addListener (fileMenu);
+    xmitTable.addListener (outputPane);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
@@ -291,7 +300,12 @@ public class XmitApp extends Application implements CodePageSelectedListener
   {
     DirectoryChooser directoryChooser = new DirectoryChooser ();
     directoryChooser.setTitle ("Set XMIT file folder");
-    directoryChooser.setInitialDirectory (new File (System.getProperty ("user.home")));
+
+    String previousRootFolderName = prefs.get (PREFS_ROOT_FOLDER, "");
+    if (previousRootFolderName.isEmpty ())
+      directoryChooser.setInitialDirectory (new File (System.getProperty ("user.home")));
+    else
+      directoryChooser.setInitialDirectory (new File (previousRootFolderName));
 
     File file = directoryChooser.showDialog (null);
     System.out.println (file);

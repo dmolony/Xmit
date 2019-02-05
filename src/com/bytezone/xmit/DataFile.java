@@ -11,7 +11,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 public abstract class DataFile implements Comparable<DataFile>
 //---------------------------------------------------------------------------------//
 {
-  private static final int MAX_BUFFER = 200_000;
+  private static final int MAX_BUFFER = 400_000;
 
   private String name = "";
   private final Disposition disposition;
@@ -126,6 +126,8 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     codePage = Utility.getCodePage ();
     lines.clear ();
+    //    System.out.println ("creating lines");
+    //    System.out.println (disposition);
 
     if (isXmit ())
       xmitLines ();
@@ -259,7 +261,6 @@ public abstract class DataFile implements Comparable<DataFile>
 
   private void xmitLines ()
   {
-    //    byte[] xmitBuffer = getDataBuffer ();
     try
     {
       Reader reader = new Reader (this);

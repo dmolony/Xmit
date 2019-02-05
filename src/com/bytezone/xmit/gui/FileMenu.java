@@ -59,17 +59,22 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     byte[] buffer = null;
     String name = "";
 
-    if (dataset instanceof PsDataset)
+    //    System.out.println (dataset);
+    //    System.out.println (catalogEntry);
+    //    System.out.println (dataset.getReader ().getFileName ());
+
+    if (dataset.isPs ())
     {
       DataFile member = ((PsDataset) dataset).getMember ();
       buffer = member.getDataBuffer ();
-      name = this.name + "." + member.getFileType ().name ();
+      name = dataset.getReader ().getFileName () + "." //+ this.name + "."
+          + member.getFileType ().name ();
     }
     else
     {
       buffer = catalogEntry.getMember ().getDataBuffer ();
-      name = catalogEntry.getMemberName ().trim () + "."
-          + catalogEntry.getMember ().getFileType ().name ();
+      name = dataset.getReader ().getFileName () + "." + catalogEntry.getMemberName ()
+          + "." + catalogEntry.getMember ().getFileType ().name ();
     }
 
     FileChooser fileChooser = new FileChooser ();
@@ -121,6 +126,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     this.catalogEntry = catalogEntry;
     extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
     extractMenuItem.setDisable (false);
+    //    System.out.println ("*** filemenu setting: " + catalogEntry.getMemberName ());
+    //    Utility.printStackTrace ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -129,15 +136,26 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
   {
     this.dataset = dataset;
-    this.name = name == null ? null : name.trim ();
+    //    this.name = name == null ? null : name.trim ();
     catalogEntry = null;
+    //    System.out.println ("setting null");
+
+    //    Utility.printStackTrace ();
 
     if (dataset == null)
     {
       extractMenuItem.setText ("Extract file");
       extractMenuItem.setDisable (true);
     }
-    else if (dataset instanceof PsDataset)
+    else if (dataset.isPs ())
+    {
+      extractMenuItem.setText ("Extract " + dataset.getReader ().getFileName ());
+      extractMenuItem.setDisable (false);
+    }
+    else
+    {
       extractMenuItem.setText ("Extract " + this.name);
+      extractMenuItem.setDisable (true);
+    }
   }
 }

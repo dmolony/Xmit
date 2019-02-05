@@ -76,6 +76,7 @@ public class ControlRecord
       case TextUnit.INMFUID:
       case TextUnit.INMTNODE:
       case TextUnit.INMTUID:
+      case TextUnit.INMUSERP:
         return new TextUnitString (buffer, ptr);
 
       case TextUnit.INMNUMF:

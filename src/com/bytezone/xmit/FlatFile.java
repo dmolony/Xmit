@@ -1,6 +1,7 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -106,8 +107,24 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   @Override
   void rdwLines ()
   {
+    int count = 0;
+    int max = 500;
     for (Segment segment : segments)
-      lines.add (Utility.getString (segment.getRawBuffer ()));
+    {
+      //      System.out.println (segment);
+      byte[] buffer = segment.getRawBuffer ();
+      if (Utility.isBinary (buffer))
+      {
+        for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
+          lines.add (line);
+        if (lines.size () > 10_000)
+          break;
+      }
+      else
+        lines.add (Utility.getString (buffer));
+      if (++count > max)
+        break;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

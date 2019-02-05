@@ -100,7 +100,9 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
         return;
       }
 
+      //      System.out.printf ("%n%s%n%s%n%n", obs, newSelection);
       XmitFile xmitFile = newSelection.getValue ();
+      //      System.out.println (xmitFile.getName () + "\n");
       Reader reader = xmitFile.getReader ((FileTreeItem) newSelection);
 
       if (reader == null)
@@ -115,7 +117,10 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   // ---------------------------------------------------------------------------------//
   {
     for (TreeItemSelectionListener listener : listeners)
+    {
+      //      System.out.printf ("Table Notifying %s: [%s] [%s]%n", listener, dataset, name);
       listener.treeItemSelected (dataset, name);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -137,8 +142,8 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
       if (optionalNode.isPresent ())
       {
         int row = getRow (optionalNode.get ());
-        model.clearAndSelect (row);
-        focusModel.focus (model.getSelectedIndex ());
+        model.select (row);
+        //        focusModel.focus (model.getSelectedIndex ());
         scrollTo (model.getSelectedIndex ());
       }
     }
