@@ -33,7 +33,7 @@ public class PsDataset extends Dataset
   @Override
   void allocateSegments ()
   {
-    member = new FlatFile (reader, disposition);
+    member = new FlatFile (this, disposition);
     member.setName (reader.getFileName ());
 
     for (Segment segment : segments)

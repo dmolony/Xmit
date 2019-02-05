@@ -131,7 +131,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
     {
       if (currentMember == null)
       {
-        currentMember = new PdsMember (reader, disposition);
+        currentMember = new PdsMember (this, disposition);
         members.add (currentMember);
       }
 
@@ -159,7 +159,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
 
       if (ttl != lastTtl)
       {
-        currentMember = new PdsMember (reader, disposition);
+        currentMember = new PdsMember (this, disposition);
         members.add (currentMember);
         lastTtl = ttl;
       }
