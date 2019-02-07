@@ -11,7 +11,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 public abstract class DataFile implements Comparable<DataFile>
 //---------------------------------------------------------------------------------//
 {
-  private static final int MAX_BUFFER = 400_000;
+  private static final int MAX_BUFFER = 500_000;
 
   private String name = "";
   private final Disposition disposition;
@@ -66,7 +66,7 @@ public abstract class DataFile implements Comparable<DataFile>
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getLines (boolean showLines, boolean truncate)
+  public String getLines (boolean showLines, boolean stripLines, boolean truncate)
   // ---------------------------------------------------------------------------------//
   {
     if (lines.size () == 0 || codePage != Utility.getCodePage ())
@@ -77,17 +77,38 @@ public abstract class DataFile implements Comparable<DataFile>
 
     if (showLines)
       for (String line : lines)
+      {
+        if (stripLines)
+          line = strip (line);
         text.append (String.format ("%05d %s%n", ++lineNo, line));
+      }
     else
       for (String line : lines)
+      {
+        if (stripLines)
+          line = strip (line);
         if (truncate && line.length () > 0)
           text.append (String.format ("%s%n", line.substring (1)));
         else
           text.append (String.format ("%s%n", line));
+      }
 
     Utility.removeTrailingNewlines (text);
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String strip (String line)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (line.length () != 80)
+      return line;
+    String numbers = line.substring (72);
+    for (char c : numbers.toCharArray ())
+      if (c < 48 || c > 57)
+        return line;
+    return line.substring (0, 72).stripTrailing ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -114,8 +135,6 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     codePage = Utility.getCodePage ();
     lines.clear ();
-    //    System.out.println ("creating lines");
-    //    System.out.println (disposition);
 
     if (isXmit ())
       xmitLines ();
@@ -127,7 +146,7 @@ public abstract class DataFile implements Comparable<DataFile>
         || disposition.recfm == 0x5400)         // VBA
         && isRdw ())
       rdwLines ();
-    else if (disposition.recfm == 0x5002)
+    else if (disposition.recfm == 0x5002)       // flat file
     {
       rdwLines ();
       //      createTextLines (getDataBuffer ());

@@ -14,6 +14,7 @@ class ViewMenu
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
+  private static final String PREFS_STRIP_LINES = "StripLines";
   private static final String PREFS_TRUNCATE = "Truncate";
   private static final String PREFS_SHOW_HEADERS = "ShowHeaders";
   private static final String PREFS_SHOW_BLOCKS = "ShowBlocks";
@@ -29,8 +30,10 @@ class ViewMenu
   private final XmitApp xmitApp;
 
   private final Menu viewMenu = new Menu ("View");
-  private final CheckMenuItem linesMenuItem = new CheckMenuItem ("Line numbers");
-  private final CheckMenuItem truncateMenuItem = new CheckMenuItem ("Truncate");
+  private final CheckMenuItem showLinesMenuItem = new CheckMenuItem ("Add Line Numbers");
+  private final CheckMenuItem stripLinesMenuItem =
+      new CheckMenuItem ("Strip Line Numbers");
+  private final CheckMenuItem truncateMenuItem = new CheckMenuItem ("Truncate Column 1");
   private final MenuItem fontMenuItem = new CheckMenuItem ("Set Font...");
   private final CheckMenuItem headersMenuItem = new CheckMenuItem ("Headers tab");
   private final CheckMenuItem blocksMenuItem = new CheckMenuItem ("Blocks tab");
@@ -57,15 +60,17 @@ class ViewMenu
     for (int i = 0; i < codePageNames.length; i++)
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
-    viewMenu.getItems ().addAll (linesMenuItem, truncateMenuItem, fontMenuItem,
-        new SeparatorMenuItem (), headersMenuItem, blocksMenuItem, hexMenuItem,
-        new SeparatorMenuItem ());
+    viewMenu.getItems ().addAll (showLinesMenuItem, stripLinesMenuItem, truncateMenuItem,
+        fontMenuItem, new SeparatorMenuItem (), headersMenuItem, blocksMenuItem,
+        hexMenuItem, new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
       viewMenu.getItems ().add (item);
     viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
 
-    linesMenuItem.setAccelerator (
+    showLinesMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+    stripLinesMenuItem.setAccelerator (
+        new KeyCodeCombination (KeyCode.S, KeyCombination.SHORTCUT_DOWN));
     truncateMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.T, KeyCombination.SHORTCUT_DOWN));
     fontMenuItem.setAccelerator (
@@ -73,7 +78,8 @@ class ViewMenu
     euroMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.DIGIT9, KeyCombination.SHORTCUT_DOWN));
 
-    linesMenuItem.setOnAction (e -> notifyLinesListeners ());
+    showLinesMenuItem.setOnAction (e -> notifyLinesListeners ());
+    stripLinesMenuItem.setOnAction (e -> notifyLinesListeners ());
     truncateMenuItem.setOnAction (e -> notifyLinesListeners ());
     fontMenuItem.setOnAction (e -> fontManager.showWindow ());
 
@@ -105,8 +111,8 @@ class ViewMenu
   private void notifyLinesListeners ()
   {
     for (ShowLinesListener listener : showLinesListeners)
-      listener.showLinesSelected (linesMenuItem.isSelected (),
-          truncateMenuItem.isSelected ());
+      listener.showLinesSelected (showLinesMenuItem.isSelected (),
+          stripLinesMenuItem.isSelected (), truncateMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -160,7 +166,8 @@ class ViewMenu
 
   void restore ()
   {
-    linesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
+    showLinesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
+    stripLinesMenuItem.setSelected (prefs.getBoolean (PREFS_STRIP_LINES, false));
     truncateMenuItem.setSelected (prefs.getBoolean (PREFS_TRUNCATE, false));
     notifyLinesListeners ();
 
@@ -190,7 +197,8 @@ class ViewMenu
 
   void exit ()
   {
-    prefs.putBoolean (PREFS_SHOW_LINES, linesMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_SHOW_LINES, showLinesMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_STRIP_LINES, stripLinesMenuItem.isSelected ());
     prefs.putBoolean (PREFS_TRUNCATE, truncateMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_HEADERS, headersMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_BLOCKS, blocksMenuItem.isSelected ());

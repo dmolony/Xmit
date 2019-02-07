@@ -164,17 +164,17 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
       {
         int len = Utility.getTwoBytes (buffer, ptr);
 
-        boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
-        if (isBinary)
-        {
-          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
-          String[] chunks = text.split ("\n");
-          for (String chunk : chunks)
-            lines.add (chunk);
-          lines.add ("");
-        }
-        else
-          lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+        //        boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
+        //        if (isBinary)
+        //        {
+        //          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
+        //          String[] chunks = text.split ("\n");
+        //          for (String chunk : chunks)
+        //            lines.add (chunk);
+        //          lines.add ("");
+        //        }
+        //        else
+        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
 
         ptr += len;
       }

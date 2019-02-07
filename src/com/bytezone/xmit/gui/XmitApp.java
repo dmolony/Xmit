@@ -34,8 +34,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
   private String rootFolderName;
 
-  XmitTree xmitTree;
-  XmitTable xmitTable = new XmitTable ();
+  private XmitTree xmitTree;
+  private final XmitTable xmitTable = new XmitTable ();
 
   private Stage primaryStage;
   private final OutputPane outputPane = new OutputPane ();
@@ -47,7 +47,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private FileMenu fileMenu;
   private ViewMenu viewMenu;
 
-  SplitPane splitPane = new SplitPane ();
+  private final SplitPane splitPane = new SplitPane ();
   private double dividerPosition1;
   private double dividerPosition2;
 
@@ -70,6 +70,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     splitPane.getItems ().addAll (treePane, tablePane, outputPane);
 
+    // menus
     fileMenu = new FileMenu (this, xmitTree);
     viewMenu = new ViewMenu (this, xmitTree, fontManager);
 

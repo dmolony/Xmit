@@ -134,11 +134,47 @@ public class Utility
         text.append ("  ");
       else if (c == 0x0C)            // form feed    
         text.append ("\n");
+      else if (c == 0x22)            // FS field separator
+      {
+
+      }
+      else if (isUnicode (buffer, ptr + i))
+      {
+        text.append (getUnicode (buffer, ptr + i));
+        i += 5;
+      }
       else
         text.append (c < 0x40 || c == 0xFF ? "." : (char) codePage.ebc2asc[c]);
     }
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private static boolean isUnicode (byte[] buffer, int i)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (i + 5 >= buffer.length)
+      return false;
+    if (buffer[i++] != (byte) 0xE0)
+      return false;
+    if (buffer[i++] != (byte) 0xA4)
+      return false;
+    for (int j = 0; j < 3; j++)
+      if (!isDigit (buffer[i++] & 0xFF))
+        return false;
+    if (buffer[i] != (byte) 0x40)
+      return false;
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private static String getUnicode (byte[] buffer, int i)
+  // ---------------------------------------------------------------------------------//
+  {
+    String number = getString (buffer, i + 2, 3);             // could be 4?
+    return Character.toString (Integer.parseInt (number));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -285,7 +321,7 @@ public class Utility
   // isDigit
   // ---------------------------------------------------------------------------------//
 
-  private static boolean isLetter (int c)
+  private static boolean isDigit (int c)
   {
     return c >= 0xF0 && c <= 0xF9;
   }
@@ -294,7 +330,7 @@ public class Utility
   // isDigit
   // ---------------------------------------------------------------------------------//
 
-  private static boolean isDigit (int c)
+  private static boolean isLetter (int c)
   {
     return (c >= 0xC1 && c <= 0xC9) || (c >= 0xD1 && c <= 0xD9)
         || (c >= 0xE2 && c <= 0xE9);

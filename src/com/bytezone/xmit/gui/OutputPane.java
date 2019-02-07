@@ -31,6 +31,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   private CatalogEntry catalogEntry;      // needed for alias members
 
   private boolean showLines;
+  private boolean stripLines;
   private boolean truncateLines;
   private Disposition disposition;
 
@@ -67,7 +68,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       if (firstDataset.isPs ())
       {
         FlatFile file = ((PsDataset) firstDataset).getMember ();
-        text.append (file.getLines (false, false));
+        text.append (file.getLines (false, false, false));
         text.append ("\n\n");
       }
       else
@@ -142,7 +143,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   private void updateOutputTab ()
   {
     if (dataFile != null)
-      outputTab.setText (dataFile.getLines (showLines, truncateLines));
+      outputTab.setText (dataFile.getLines (showLines, stripLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -236,7 +237,11 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     if (dataset == null)
       return;
 
-    String indicator = truncateLines ? "<- " : "";
+    String indicator = "";
+    if (truncateLines && stripLines)
+      indicator = "<--";
+    else if (truncateLines || stripLines)
+      indicator = "<-";
 
     if (dataset.isPds ())
     {
@@ -255,9 +260,11 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public void showLinesSelected (boolean showLines, boolean truncateLines)
+  public void showLinesSelected (boolean showLines, boolean stripLines,
+      boolean truncateLines)
   {
     this.showLines = showLines;
+    this.stripLines = stripLines;
     this.truncateLines = truncateLines;
 
     saveScrollBars ();
