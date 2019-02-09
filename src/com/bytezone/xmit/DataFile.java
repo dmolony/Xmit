@@ -147,15 +147,12 @@ public abstract class DataFile implements Comparable<DataFile>
         && isRdw ())
       rdwLines ();
     else if (disposition.recfm == 0x5002)       // flat file
-    {
       rdwLines ();
-      //      createTextLines (getDataBuffer ());
-    }
     else if (disposition.recfm == 0x9200)       // FBA
       createTextLines (getDataBuffer ());
     else if (isObjectDeck ())
       objectDeck ();
-    else if (getFileType () != FileType.BIN)
+    else if (getFileType () != FileType.BIN)    // ZIP/DOC/PDF etc
       showExtractMessage ();
     else
       createLines ();

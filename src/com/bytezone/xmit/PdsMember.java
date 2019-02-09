@@ -9,14 +9,12 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 //---------------------------------------------------------------------------------//
 {
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  private final List<DataBlock> dataBlocks;                    // PDS
-  private final List<DataBlock> extraDataBlocks;               // PDSE
+  private final List<DataBlock> dataBlocks;                    // PDS & PDSE
+  private final List<DataBlock> extraDataBlocks;               // PDSE only
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   PdsMember (Dataset dataset, Disposition disposition)
+  // ---------------------------------------------------------------------------------//
   {
     super (dataset, disposition);
 
@@ -25,38 +23,30 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // size
-  // ---------------------------------------------------------------------------------//
-
   int size ()
+  // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.size ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // setCatalogEntries
-  // ---------------------------------------------------------------------------------//
-
   void setCatalogEntries (List<CatalogEntry> catalogEntry)
+  // ---------------------------------------------------------------------------------//
   {
     this.catalogEntries.addAll (catalogEntry);
     setName (catalogEntry.get (0).getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
-  // getCatalogEntries
-  // ---------------------------------------------------------------------------------//
-
   public List<CatalogEntry> getCatalogEntries ()
+  // ---------------------------------------------------------------------------------//
   {
     return catalogEntries;
   }
 
   // ---------------------------------------------------------------------------------//
-  // addDataBlock
-  // ---------------------------------------------------------------------------------//
-
   void addDataBlock (DataBlock dataBlock)
+  // ---------------------------------------------------------------------------------//
   {
     byte type = dataBlock.getType ();
     if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
@@ -69,20 +59,16 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getExtraDataBlocks
-  // ---------------------------------------------------------------------------------//
-
   List<DataBlock> getExtraDataBlocks ()
+  // ---------------------------------------------------------------------------------//
   {
     return extraDataBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDataBuffer
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public byte[] getDataBuffer ()
+  // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = new byte[dataLength];
     int ptr = 0;
@@ -95,11 +81,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDataBuffer
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public byte[] getDataBuffer (int limit)
+  // ---------------------------------------------------------------------------------//
   {
     if (dataLength <= limit)
       return getDataBuffer ();
@@ -125,21 +109,17 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // isXmit
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public boolean isXmit ()
+  // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.get (0).isXmit ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // isRdw
-  // ---------------------------------------------------------------------------------//
-
   @Override
   boolean isRdw ()
+  // ---------------------------------------------------------------------------------//
   {
     for (DataBlock dataBlock : dataBlocks)
       if (dataBlock.getTwoBytes () != dataBlock.getSize ())
@@ -149,11 +129,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // rdwLines
-  // ---------------------------------------------------------------------------------//
-
   @Override
   void rdwLines ()         // see SOURCE.XMI
+  // ---------------------------------------------------------------------------------//
   {
     for (DataBlock dataBlock : dataBlocks)
     {
@@ -180,62 +158,30 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
         ptr += len;
       }
     }
+    if (false)
+    {
+      List<String> lines2 = new ArrayList<> ();
+      for (int i = 1; i < lines.size () - 1; i += 2)
+      {
+        lines2.add (lines.get (i) + lines.get (i + 1));
+      }
+      lines.clear ();
+      lines.addAll (lines2);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
-  // getEightBytes
-  // ---------------------------------------------------------------------------------//
-
   @Override
   byte[] getEightBytes ()
+  // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.get (0).getEightBytes ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // createLines
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  void createLines ()
-  //  {
-  //    byte[] buffer = getDataBuffer ();
-  //    int ptr = 0;
-  //    int length = buffer.length;
-  //    while (length > 0)
-  //    {
-  //      int len = Math.min (disposition.lrecl == 0 ? 80 : disposition.lrecl, length);
-  //      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
-  //      ptr += len;
-  //      length -= len;
-  //    }
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // hexDump
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  void hexDump ()
-  //  {
-  //    for (DataBlock dataBlock : dataBlocks)
-  //    {
-  //      byte[] buffer = dataBlock.getBuffer ();
-  //      String[] chunks = Utility.getHexDump (buffer).split ("\n");
-  //      for (String chunk : chunks)
-  //        lines.add (chunk);
-  //      if (lines.size () > 5000)
-  //        break;
-  //      lines.add ("");
-  //    }
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
@@ -270,11 +216,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  // iterator
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public Iterator<DataBlock> iterator ()
+  // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.iterator ();
   }

@@ -375,7 +375,7 @@ public class Utility
       int count = 0;
       boolean inPage = false;
       String id = "[" + name + "]";
-      while ((line = in.readLine ()) != null)
+      while ((line = in.readLine ().trim ()) != null)
       {
         if (!inPage)
         {
@@ -385,6 +385,7 @@ public class Utility
         }
 
         text.append (line);
+        text.append (" ");
         if (++count == 8)
           break;
       }
