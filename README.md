@@ -39,6 +39,6 @@ C:\path\to\jdk-11.0.2\bin\java.exe                \
 ### First execution
 Read the helpful message.  
 <img src="resources/xmit-folder1.png" alt="alert" width="500"/>  
-Specify the location of your xmit files. Note that this must be a FOLDER, not a file.  
+Specify the location of your xmit files. Note that this must be a FOLDER, not a file. The specified folder may contain subfolders, these will all appear in the file tree within the application.  
 <img src="resources/xmit-folder2.png" alt="file dialog" width="800"/>  
 This will remain the xmit file folder until you change it.  
