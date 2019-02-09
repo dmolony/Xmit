@@ -41,9 +41,11 @@ class ViewMenu
 
   private final String[][] codePageNames =
       { { "CP037", "CP1140" }, { "CP273", "CP1141" }, { "CP285", "CP1146" },
-        { "CP297", "CP1147" }, { "CP500", "CP1148" }, { "CP1047", "CP1047" } };
-  private final KeyCode[] keyCodes = { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3,
-                                       KeyCode.DIGIT4, KeyCode.DIGIT5, KeyCode.DIGIT6, };
+        { "CP297", "CP1147" }, { "CP500", "CP1148" }, { "CP1047", "CP924" },
+        { "USER1", "USER1" } };
+  private final KeyCode[] keyCodes =
+      { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5,
+        KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };
 
   private final ToggleGroup toggleGroup = new ToggleGroup ();
   List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();

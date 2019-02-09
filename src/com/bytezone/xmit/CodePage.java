@@ -2,7 +2,10 @@ package com.bytezone.xmit;
 
 import java.io.UnsupportedEncodingException;
 
+import javafx.scene.control.Alert.AlertType;
+
 // https://en.wikipedia.org/wiki/EBCDIC_code_pages
+// https://en.wikipedia.org/wiki/EBCDIC_1047
 
 // ---------------------------------------------------------------------------------//
 public class CodePage
@@ -10,6 +13,7 @@ public class CodePage
 {
   private static byte[] values;
   public final int[] ebc2asc = new int[256];
+  final String name;
 
   static
   {
@@ -19,24 +23,91 @@ public class CodePage
   }
 
   // ---------------------------------------------------------------------------------//
-  // constructor
+  public CodePage (String name)
   // ---------------------------------------------------------------------------------//
-
-  public CodePage (String codePage)
   {
-    try
-    {
-      String s = new String (values, codePage);
-      char[] chars = s.toCharArray ();
-      for (int i = 0; i < 256; i++)
+    this.name = name;
+    int i = 0;
+    if (name.startsWith ("USER"))
+      for (String s : Utility.getLocalCodePage (name).split (" "))
+        ebc2asc[i++] = Integer.parseInt (s, 16);
+    else
+      try
       {
-        int val = chars[i];
-        ebc2asc[i] = val;
+        for (char c : new String (values, name).toCharArray ())
+          ebc2asc[i++] = c;
       }
-    }
-    catch (UnsupportedEncodingException e)
+      catch (UnsupportedEncodingException e)
+      {
+        Utility.showAlert (AlertType.ERROR, "Encoding Exception", e.toString ());
+      }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ("Name: " + name + "\n");
+
+    for (int i = 0; i < 256; i += 32)
     {
-      e.printStackTrace ();
+      for (int j = 0; j < 32; j++)
+        text.append (String.format ("%02X ", ebc2asc[i + j]));
+      text.append ("\n");
     }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void main (String[] args)
+  // ---------------------------------------------------------------------------------//
+  {
+    String[] codePageNames =
+        { "CP037", "CP273", "CP285", "CP297", "CP500", "CP1047", "USER1" };
+    CodePage[] codePages = new CodePage[codePageNames.length];
+    int count = 0;
+
+    System.out.print ("   ");
+    for (String codePageName : codePageNames)
+    {
+      System.out.printf (" %-6.6s", codePageNames[count]);
+      codePages[count++] = new CodePage (codePageName);
+    }
+    System.out.println ();
+
+    for (int i = 0; i < 256; i++)
+    {
+      if (allSame (codePages, i))
+        continue;
+      System.out.printf ("%02X:   ", i);
+      for (CodePage codePage : codePages)
+        System.out.printf ("%02X     ", codePage.ebc2asc[i]);
+      if (codePages[5].ebc2asc[i] != codePages[6].ebc2asc[i])
+        System.out.print (" **");
+      System.out.println ();
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private static boolean allSame (CodePage[] codePages, int i)
+  // ---------------------------------------------------------------------------------//
+  {
+    int base = codePages[0].ebc2asc[i];
+    for (int j = 1; j < codePages.length; j++)
+      if (codePages[j].ebc2asc[i] != base)
+        return false;
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private static boolean noChange (CodePage[] codePages, int i)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (CodePage codePage : codePages)
+      if (codePage.ebc2asc[i] != i)
+        return false;
+    return true;
   }
 }

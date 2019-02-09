@@ -160,7 +160,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
       byte[] buffer = dataBlock.getBuffer ();
 
       int ptr = 4;
-      while (ptr < buffer.length && lines.size () < 2000)
+      while (ptr < buffer.length && lines.size () < 3000)
       {
         int len = Utility.getTwoBytes (buffer, ptr);
 
@@ -174,7 +174,8 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
         //          lines.add ("");
         //        }
         //        else
-        lines.add (Utility.getString (buffer, ptr + 4, len - 4));
+        lines.add (new String (Utility.convert (buffer, ptr + 4, len - 4)));
+        //        lines.add (Utility.getString2 (buffer, ptr + 4, len - 4));
 
         ptr += len;
       }
@@ -240,23 +241,25 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 
     int count = 0;
     int total = 0;
+    int pointers = 0;
 
     text.append (
-        "\n    #   Offset     Header                    Data      Data     Ptrs\n");
+        "\n    #    Offset    Header                    Data         Data      Ptrs\n");
     text.append (
-        "  ----  ------  -----------------------------------  --------   ----\n");
-    for (DataBlock dataBlock : dataBlocks)          // PDS
+        "  ----  --------  -------------------------- --------  ---------  ------\n");
+    for (DataBlock dataBlock : dataBlocks)
     {
       total += dataBlock.getSize ();
+      pointers += dataBlock.totalBlockPointers ();
       text.append (String.format ("   %3d  %s%n", count++, dataBlock));
     }
-    text.append (String.format ("%42.42s %s%n", "", "--------  --------"));
+    text.append (String.format ("%44.44s %s%n", "", "--------  ---------  ------"));
 
     int b1 = (total & 0xFF0000) >>> 16;
     int b2 = (total & 0x00FF00) >>> 8;
     int b3 = (total & 0x0000FF);
-    text.append (
-        String.format ("%42.42s %02X %02X %02X %,9d%n%n", "", b1, b2, b3, total));
+    text.append (String.format ("%44.44s %02X %02X %02X %,10d  %,6d%n", "", b1, b2, b3,
+        total, pointers));
 
     for (DataBlock dataBlock : extraDataBlocks)
       text.append (String.format ("   %3d  %s%n", count++, dataBlock));

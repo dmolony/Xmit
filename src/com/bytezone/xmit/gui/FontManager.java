@@ -420,9 +420,9 @@ class FontManager
     StringBuilder text = new StringBuilder ();
     String line;
 
-    DataInputStream inputEquates = new DataInputStream (XmitApp.class.getClassLoader ()
+    DataInputStream inputStream = new DataInputStream (XmitApp.class.getClassLoader ()
         .getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
-    try (BufferedReader in = new BufferedReader (new InputStreamReader (inputEquates)))
+    try (BufferedReader in = new BufferedReader (new InputStreamReader (inputStream)))
     {
       while ((line = in.readLine ()) != null)
         text.append (line + "\n");

@@ -1,10 +1,17 @@
 package com.bytezone.xmit;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.bytezone.xmit.gui.XmitApp;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -70,10 +77,8 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  // isBinary
-  // ---------------------------------------------------------------------------------//
-
   public static boolean isBinary (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
   {
     return isBinary (buffer, 0, buffer.length);
   }
@@ -131,11 +136,38 @@ public class Utility
         text.append (getUnicode (buffer, ptr + i));
         i += 5;
       }
+      //      else if (c == 0x66 || c == 0x63 || (c == 0x67 && buffer[ptr + i + 1] != 0x22))
+      //        System.out.println (Utility.getHexValues (buffer, i + ptr, 2));
       else
         text.append (c < 0x40 || c == 0xFF ? "." : (char) codePage.ebc2asc[c]);
     }
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static String getString2 (byte[] buffer, int ptr, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      return new String (buffer, ptr, length, codePage.name);
+    }
+    catch (UnsupportedEncodingException e)
+    {
+      e.printStackTrace ();
+      return "bollocks";
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static byte[] convert (byte[] buffer, int ptr, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] line = new byte[length];
+    for (int i = 0, j = ptr; i < length; i++, j++)
+      line[i] = (byte) codePage.ebc2asc[buffer[j] & 0xFF];
+    return line;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -327,6 +359,44 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     return getHexDump (b, offset, length, 0);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static String getLocalCodePage (String name)
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+    String line;
+
+    DataInputStream inputStream = new DataInputStream (XmitApp.class.getClassLoader ()
+        .getResourceAsStream ("com/bytezone/xmit/codepages.txt"));
+    try (BufferedReader in = new BufferedReader (new InputStreamReader (inputStream)))
+    {
+      int count = 0;
+      boolean inPage = false;
+      String id = "[" + name + "]";
+      while ((line = in.readLine ()) != null)
+      {
+        if (!inPage)
+        {
+          if (line.equals (id))
+            inPage = true;
+          continue;
+        }
+
+        text.append (line);
+        if (++count == 8)
+          break;
+      }
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+    }
+    if (text.length () > 0)
+      text.deleteCharAt (text.length () - 1);
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
