@@ -181,7 +181,8 @@ public abstract class DataFile implements Comparable<DataFile>
     while (remaining > 0)
     {
       int len = Math.min (lrecl, remaining);
-      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+      //      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
+      lines.add (Utility.translate (buffer, ptr, len).stripTrailing ());
       ptr += len;
       remaining -= len;
     }

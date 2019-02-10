@@ -147,7 +147,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
       boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
 
       if (isBinary)
-        while (ptr < buffer.length && lines.size () < 3000)
+        while (ptr < buffer.length && lines.size () < 6000)
         {
           len = Utility.getTwoBytes (buffer, ptr);
 
@@ -161,9 +161,8 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
         {
           len = Utility.getTwoBytes (buffer, ptr);
 
-          String s = Utility.translate (buffer, ptr + 4, len - 4);
           //        lines.add (Utility.getString2 (buffer, ptr + 4, len - 4));
-          lines.add (s);
+          lines.add (Utility.translate (buffer, ptr + 4, len - 4).stripTrailing ());
 
           ptr += len;
         }
