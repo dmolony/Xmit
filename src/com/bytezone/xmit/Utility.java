@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import com.bytezone.xmit.gui.XmitApp;
 
@@ -22,6 +23,8 @@ public class Utility
 {
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();
+
+  private static Pattern p = Pattern.compile ("\\\\u(\\d{3,4}) ");
 
   private static final byte[] doc = { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0,
                                       (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 };
@@ -91,7 +94,8 @@ public class Utility
     for (int i = offset; i < max; i++)
     {
       int b = buffer[i] & 0xFF;
-      if ((b < 0x40 && b != 0x05 && b != 0x0C) || b == 0xFF)
+      if (b == 0)
+        //      if ((b < 0x40 && b != 0x05 && b != 0x0C) || b == 0xFF)
         return true;
     }
     return false;
@@ -161,13 +165,46 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static byte[] convert (byte[] buffer, int ptr, int length)
+  static byte[] convert (byte[] buffer, int ptr, int length)
   // ---------------------------------------------------------------------------------//
   {
     byte[] line = new byte[length];
     for (int i = 0, j = ptr; i < length; i++, j++)
       line[i] = (byte) codePage.ebc2asc[buffer[j] & 0xFF];
     return line;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static String translate (byte[] buffer, int ptr, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    return translate (new String (convert (buffer, ptr, length)));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static String translate (String s)
+  // ---------------------------------------------------------------------------------//
+  {
+    String[] chunks = s.split ("\\\\u\\d{3} ");       // this could be improved
+    if (chunks.length == 1)
+      return s;
+
+    StringBuilder text = new StringBuilder ();
+
+    int p1 = 0;
+    for (String chunk : chunks)
+    {
+      text.append (chunk);
+      p1 += chunk.length ();
+      if (p1 < s.length ())     // not the last chunk
+      {
+        String s2 = new String (s.substring (p1 + 2, p1 + 5));
+        text.append (Character.toString (Integer.parseInt (s2)));
+        p1 += 6;
+      }
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

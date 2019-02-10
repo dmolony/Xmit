@@ -135,38 +135,38 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   {
     for (DataBlock dataBlock : dataBlocks)
     {
+      if (dataBlock.getSize () == 0)
+        continue;
+
       byte[] buffer = dataBlock.getBuffer ();
 
       int ptr = 4;
-      while (ptr < buffer.length && lines.size () < 3000)
-      {
-        int len = Utility.getTwoBytes (buffer, ptr);
 
-        //        boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
-        //        if (isBinary)
-        //        {
-        //          String text = Utility.getHexDump (buffer, ptr + 4, len - 4);
-        //          String[] chunks = text.split ("\n");
-        //          for (String chunk : chunks)
-        //            lines.add (chunk);
-        //          lines.add ("");
-        //        }
-        //        else
-        lines.add (new String (Utility.convert (buffer, ptr + 4, len - 4)));
-        //        lines.add (Utility.getString2 (buffer, ptr + 4, len - 4));
+      // check first record for binary zeroes
+      int len = Utility.getTwoBytes (buffer, ptr);
+      boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
 
-        ptr += len;
-      }
-    }
-    if (false)
-    {
-      List<String> lines2 = new ArrayList<> ();
-      for (int i = 1; i < lines.size () - 1; i += 2)
-      {
-        lines2.add (lines.get (i) + lines.get (i + 1));
-      }
-      lines.clear ();
-      lines.addAll (lines2);
+      if (isBinary)
+        while (ptr < buffer.length && lines.size () < 3000)
+        {
+          len = Utility.getTwoBytes (buffer, ptr);
+
+          lines.add (Utility.getHexDump (buffer, ptr + 4, len - 4));
+          lines.add ("");
+
+          ptr += len;
+        }
+      else
+        while (ptr < buffer.length && lines.size () < 3000)
+        {
+          len = Utility.getTwoBytes (buffer, ptr);
+
+          String s = Utility.translate (buffer, ptr + 4, len - 4);
+          //        lines.add (Utility.getString2 (buffer, ptr + 4, len - 4));
+          lines.add (s);
+
+          ptr += len;
+        }
     }
   }
 
