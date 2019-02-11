@@ -173,7 +173,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
         if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
           break;
 
-        ptr2 += catalogEntry.length ();
+        ptr2 += catalogEntry.getDirectoryData ().length;
       }
 
       ptr += DIR_BLOCK_LENGTH;

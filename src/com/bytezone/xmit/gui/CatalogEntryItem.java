@@ -40,7 +40,7 @@ public class CatalogEntryItem                   // must be public
     setDateCreated (catalogEntry.getDateCreated ());
     setDateModified (catalogEntry.getDateModified ());
     setTime (catalogEntry.getTime ());
-    setType (catalogEntry.getFileType ());
+    setType (catalogEntry.getMember ().getFileType ());
     setVersion (catalogEntry.getVersion ());
   }
 

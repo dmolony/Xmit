@@ -3,8 +3,6 @@ package com.bytezone.xmit;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import com.bytezone.xmit.Utility.FileType;
-
 // ---------------------------------------------------------------------------------//
 public class CatalogEntry
 //---------------------------------------------------------------------------------//
@@ -72,31 +70,17 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  public String debugLine ()        // called by OutputPane/HeaderTab
+  public byte[] getDirectoryData ()
   // ---------------------------------------------------------------------------------//
   {
-    String hex = "";
-    String t1 = "";
+    return directoryData;
+  }
 
-    int extra = directoryData[11] & 0xFF;      // indicator byte
-    if (extra == 0x2E)
-      hex =
-          Utility.getHexValues (directoryData, 12, 22) + "                              "
-              + Utility.getHexValues (directoryData, 34, 6);
-    else if (extra == 0x31)
-      hex =
-          Utility.getHexValues (directoryData, 12, 22) + "                              "
-              + Utility.getHexValues (directoryData, 34, 12);
-    else
-      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
-
-    if (extra == 0xB6)
-      t1 = Utility.getString (directoryData, 48, 8);
-
-    return String
-        .format ("%02X %-8s %-8s %06X %-129s %8s %8s", directoryData[11],
-            getMemberName (), getUserName (), blockFrom, hex, getAliasName (), t1)
-        .trim ();
+  // ---------------------------------------------------------------------------------//
+  public int getOffset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockFrom;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -137,13 +121,6 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     return member;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public FileType getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return member.getFileType ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -235,11 +212,11 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  int length ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return directoryData.length;
-  }
+  //  int length ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return directoryData.length;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public String getMemberName ()
@@ -311,13 +288,6 @@ public class CatalogEntry
     if (vv == 0 & mm == 0)
       return "";
     return String.format ("%02d.%02d", vv, mm);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getOffset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return blockFrom;
   }
 
   // ---------------------------------------------------------------------------------//

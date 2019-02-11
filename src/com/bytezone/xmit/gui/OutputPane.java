@@ -99,13 +99,41 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
       {
-        text.append (catalogEntry.debugLine ());
+        text.append (debugLine (catalogEntry));
         text.append ("\n");
       }
     }
 
     Utility.removeTrailingNewlines (text);
     headersTab.setText (text.toString ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String debugLine (CatalogEntry catalogEntry)
+  // ---------------------------------------------------------------------------------//
+  {
+    String hex = "";
+    String t1 = "";
+    byte[] directoryData = catalogEntry.getDirectoryData ();
+
+    int extra = directoryData[11] & 0xFF;      // indicator byte
+    if (extra == 0x2E)
+      hex =
+          Utility.getHexValues (directoryData, 12, 22) + "                              "
+              + Utility.getHexValues (directoryData, 34, 6);
+    else if (extra == 0x31)
+      hex =
+          Utility.getHexValues (directoryData, 12, 22) + "                              "
+              + Utility.getHexValues (directoryData, 34, 12);
+    else
+      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+
+    if (extra == 0xB6)
+      t1 = Utility.getString (directoryData, 48, 8);
+
+    return String.format ("%02X %-8s %-8s %06X %-129s %8s %8s", directoryData[11],
+        catalogEntry.getMemberName (), catalogEntry.getUserName (),
+        catalogEntry.getOffset (), hex, catalogEntry.getAliasName (), t1).trim ();
   }
 
   // ---------------------------------------------------------------------------------//
