@@ -8,7 +8,6 @@ import java.util.prefs.Preferences;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Reader;
 
-import javafx.scene.control.FocusModel;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -27,7 +26,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
-  private final FocusModel<TreeItem<XmitFile>> focusModel = getFocusModel ();
+  //  private final FocusModel<TreeItem<XmitFile>> focusModel = getFocusModel ();
 
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 

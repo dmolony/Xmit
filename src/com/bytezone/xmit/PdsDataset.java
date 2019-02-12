@@ -1,11 +1,14 @@
 package com.bytezone.xmit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.bytezone.xmit.textunit.ControlRecord;
 
 // ---------------------------------------------------------------------------------//
-public class PdsDataset extends Dataset implements Iterable<PdsMember>
+public class PdsDataset extends Dataset
 //---------------------------------------------------------------------------------//
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
@@ -35,7 +38,7 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
   public int size ()
   // ---------------------------------------------------------------------------------//
   {
-    return members.size ();
+    return catalogEntries.size ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -89,20 +92,26 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
       allocatePDS (dataBlocks);
 
     if (catalogMap.values ().size () != members.size ())
+    {
+      System.out.println ("Catalog mismatch");
       System.out.printf ("%d %d%n", catalogMap.values ().size (), members.size ());
+    }
 
     int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
     {
       PdsMember member = members.get (count++);
-      member.setCatalogEntries (catalogEntryList);
       for (CatalogEntry catalogEntry : catalogEntryList)
+      {
+        if (catalogEntry.getAliasName ().isEmpty ())
+          member.setName (catalogEntry.getMemberName ());
         catalogEntry.setMember (member);
+      }
 
       if (member.isXmit ())
         xmitMembers.add (member);
     }
-    Collections.sort (members);
+    //    Collections.sort (members);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -208,43 +217,35 @@ public class PdsDataset extends Dataset implements Iterable<PdsMember>
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getBlockListing ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    int count = 0;
-    for (CatalogEntry catalogEntry : catalogEntries)
-    {
-      int total = 0;
-      text.append ("\n");
-
-      PdsMember member = catalogEntry.getMember ();
-      for (DataBlock dataBlock : member)
-      {
-        int size = dataBlock.getSize ();
-        total += size;
-        if (size > 0)
-          text.append (String.format ("%,5d  %-8s  %s%n", count++,
-              catalogEntry.getMemberName (), dataBlock));
-        else
-          text.append (String.format ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
-              catalogEntry.getMemberName (), dataBlock, total));
-      }
-
-      for (DataBlock dataBlock : member.getExtraDataBlocks ())
-        text.append (String.format ("%,5d  %-8s  %s%n", count++,
-            catalogEntry.getMemberName (), dataBlock));
-    }
-
-    return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public Iterator<PdsMember> iterator ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return members.iterator ();
-  }
+  //  public String getBlockListing ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder ();
+  //
+  //    int count = 0;
+  //    for (CatalogEntry catalogEntry : catalogEntries)
+  //    {
+  //      int total = 0;
+  //      text.append ("\n");
+  //
+  //      PdsMember member = catalogEntry.getMember ();
+  //      for (DataBlock dataBlock : member)
+  //      {
+  //        int size = dataBlock.getSize ();
+  //        total += size;
+  //        if (size > 0)
+  //          text.append (String.format ("%,5d  %-8s  %s%n", count++,
+  //              catalogEntry.getMemberName (), dataBlock));
+  //        else
+  //          text.append (String.format ("%,5d  %-8s  %s   %06X %<,7d%n", count++,
+  //              catalogEntry.getMemberName (), dataBlock, total));
+  //      }
+  //
+  //      for (DataBlock dataBlock : member.getExtraDataBlocks ())
+  //        text.append (String.format ("%,5d  %-8s  %s%n", count++,
+  //            catalogEntry.getMemberName (), dataBlock));
+  //    }
+  //
+  //    return text.toString ();
+  //  }
 }

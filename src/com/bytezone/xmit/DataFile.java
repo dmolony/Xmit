@@ -269,9 +269,8 @@ public abstract class DataFile implements Comparable<DataFile>
         lines.add (String.format ("Members: %s%n", ((PdsDataset) dataset).size ()));
         lines.add (" Member     User      Size     Date        Time     Alias");
         lines.add ("--------  --------  ------  -----------  --------  --------");
-        for (PdsMember member : (PdsDataset) dataset)
-          for (CatalogEntry catalogEntry : member.getCatalogEntries ())
-            lines.add (catalogEntry.toString ());
+        for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
+          lines.add (catalogEntry.toString ());
       }
     }
     catch (Exception e)

@@ -5,20 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.PdsMember;
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.*;
 import com.bytezone.xmit.textunit.Dsorg.Org;
+
+import javafx.scene.control.Alert.AlertType;
 
 // ---------------------------------------------------------------------------------//
 class XmitFile
@@ -250,6 +244,8 @@ class XmitFile
     try (ZipFile zipFile = new ZipFile (path.toString ()))
     {
       Enumeration<? extends ZipEntry> entries = zipFile.entries ();
+      List<String> invalidNames = new ArrayList<> ();
+      boolean containsFolder = false;
       while (entries.hasMoreElements ())
       {
         ZipEntry entry = entries.nextElement ();
@@ -257,6 +253,7 @@ class XmitFile
         if (entryName.endsWith ("/"))
         {
           //          System.out.println ("folder");
+          containsFolder = true;
         }
         else if (XmitFile.isValidFileName (entryName))
         {
@@ -274,9 +271,18 @@ class XmitFile
 
           stream.close ();
           fos.close ();
-          tmp.deleteOnExit ();
+          tmp.deleteOnExit ();          // why not delete it now?
           fileMap.put (entry, new XmitFile (tmp, entryName));
         }
+        else
+          invalidNames.add (entryName);
+      }
+      if (fileMap.isEmpty ())
+      {
+        int size = invalidNames.size ();
+        String message = String.format ("Zip file contains %d file%s, but no .XMI files",
+            size, size == 1 ? "" : "s");
+        Utility.showAlert (AlertType.INFORMATION, "", message);
       }
     }
     catch (IOException e)

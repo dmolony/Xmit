@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -150,19 +149,19 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static String getString2 (byte[] buffer, int ptr, int length)
-  // ---------------------------------------------------------------------------------//
-  {
-    try
-    {
-      return new String (buffer, ptr, length, codePage.name);
-    }
-    catch (UnsupportedEncodingException e)
-    {
-      e.printStackTrace ();
-      return "bollocks";
-    }
-  }
+  //  public static String getString2 (byte[] buffer, int ptr, int length)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    try
+  //    {
+  //      return new String (buffer, ptr, length, codePage.name);
+  //    }
+  //    catch (UnsupportedEncodingException e)
+  //    {
+  //      e.printStackTrace ();
+  //      return "bollocks";
+  //    }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   static byte[] convert (byte[] buffer, int ptr, int length)
@@ -179,6 +178,7 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     return translate (new String (convert (buffer, ptr, length)));
+    //    return translate (new String (buffer, ptr, length, codePage));
   }
 
   // ---------------------------------------------------------------------------------//
