@@ -110,6 +110,19 @@ class FontManager
       controlBox.setPadding (new Insets (6, 10, 6, 10));
       controlBox.setAlignment (Pos.CENTER_LEFT);
 
+      HBox messageBox = new HBox (10);
+      messageBox.setPrefHeight (55);
+      messageBox.setPadding (new Insets (6, 10, 6, 10));
+      messageBox.setAlignment (Pos.CENTER_LEFT);
+
+      Label message = new Label ();
+      message.setText (
+          "These are all of the fixed-width fonts currently on your system. Please"
+              + " choose the ones that you wish to be able to select from."
+              + "\nWhen back on the main screen use the , and . keys to cycle through"
+              + " the selected fonts, and the < and > keys to alter the font size.");
+      messageBox.getChildren ().add (message);
+
       Button btnApply = getButton ("Apply");
       Button btnCancel = getButton ("Cancel");
       Button btnAccept = getButton ("Accept");
@@ -126,6 +139,7 @@ class FontManager
       borderPane.setLeft (fontNameListView);
       borderPane.setCenter (text);
       borderPane.setBottom (controlBox);
+      borderPane.setTop (messageBox);
 
       stage.setScene (new Scene (borderPane, 1000, 700));
     }
