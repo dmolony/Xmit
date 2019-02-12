@@ -39,10 +39,14 @@ class ViewMenu
   private final CheckMenuItem blocksMenuItem = new CheckMenuItem ("Blocks tab");
   private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
 
-  private final String[][] codePageNames =
-      { { "CP037", "CP1140" }, { "CP273", "CP1141" }, { "CP285", "CP1146" },
-        { "CP297", "CP1147" }, { "CP500", "CP1148" }, { "CP870", "CP870" },
-        { "CP1047", "CP924" }, { "USER1", "USER1" } };
+  private final String[][] codePageNames = { { "CP037", "CP1140" }, // USA/Canada
+                                             { "CP273", "CP1141" }, // Germany
+                                             { "CP285", "CP1146" }, // UK
+                                             { "CP297", "CP1147" }, // France
+                                             { "CP500", "CP1148" }, // International #5
+                                             { "CP870", "CP1153" }, // Latin-2
+                                             { "CP1047", "CP924" }, // Latin-1
+                                             { "USER1", "USER1" } }; // CP1047 swap 0x15/25
   private final KeyCode[] keyCodes =
       { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5,
         KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };

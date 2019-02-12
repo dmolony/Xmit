@@ -149,21 +149,6 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  //  public static String getString2 (byte[] buffer, int ptr, int length)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    try
-  //    {
-  //      return new String (buffer, ptr, length, codePage.name);
-  //    }
-  //    catch (UnsupportedEncodingException e)
-  //    {
-  //      e.printStackTrace ();
-  //      return "bollocks";
-  //    }
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   static byte[] convert (byte[] buffer, int ptr, int length)
   // ---------------------------------------------------------------------------------//
   {
@@ -178,7 +163,6 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     return translate (new String (convert (buffer, ptr, length)));
-    //    return translate (new String (buffer, ptr, length, codePage));
   }
 
   // ---------------------------------------------------------------------------------//
