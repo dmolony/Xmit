@@ -102,11 +102,11 @@ public abstract class DataFile implements Comparable<DataFile>
   private String strip (String line)
   // ---------------------------------------------------------------------------------//
   {
-    if (line.length () != 80)
+    if (line.length () < 72 || line.length () > 80)
       return line;
     String numbers = line.substring (72);
     for (char c : numbers.toCharArray ())
-      if (c < 48 || c > 57)
+      if ((c < '0' || c > '9') && c != ' ')
         return line;
     return line.substring (0, 72).stripTrailing ();
   }
