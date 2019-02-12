@@ -118,7 +118,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // FILE313 - many extractable files
   // FILE404 - $$PREZ18 - possibly corrupt
   // FILE600 - XMITPDSC - VB
-  // FILE706 - java bytecode
+  // FILE706 - java bytecode, also very large hex display
   // FILE714 - tar
   // FILE765 - embedded xmit PS file
   // FILE784 - PAXFILE  - PS FB1 / 23778
