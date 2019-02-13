@@ -278,8 +278,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     {
       showAlert (AlertType.INFORMATION, "XMIT folder",
           "The XMIT file folder has not yet been defined. Please choose the "
-              + "FOLDER where you store your XMIT files. This folder can be "
-              + "changed at any time.");
+              + "TOP LEVEL FOLDER where you store your XMIT files. This folder "
+              + "may contain other folders. It can also be changed at any time.");
     }
     else
     {

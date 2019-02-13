@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import com.bytezone.xmit.gui.XmitApp;
 
@@ -23,7 +22,7 @@ public class Utility
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();
 
-  private static Pattern p = Pattern.compile ("\\\\u(\\d{3,4}) ");
+  //  private static Pattern p = Pattern.compile ("\\\\u(\\d{3,4}) ");
 
   private static final byte[] doc = { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0,
                                       (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 };
@@ -149,7 +148,7 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  static byte[] convert (byte[] buffer, int ptr, int length)
+  static byte[] convertCodePage (byte[] buffer, int ptr, int length)
   // ---------------------------------------------------------------------------------//
   {
     byte[] line = new byte[length];
@@ -159,33 +158,29 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  static String translate (byte[] buffer, int ptr, int length)
+  static String translateUnicode (byte[] buffer, int ptr, int length)
   // ---------------------------------------------------------------------------------//
   {
-    return translate (new String (convert (buffer, ptr, length)));
+    return translateUnicode (new String (convertCodePage (buffer, ptr, length)));
   }
 
   // ---------------------------------------------------------------------------------//
-  static String translate (String s)
+  static String translateUnicode (String s)
   // ---------------------------------------------------------------------------------//
   {
     String[] chunks = s.split ("\\\\u\\d{3} ");       // this could be improved
     if (chunks.length == 1)
       return s;
 
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (chunks[0]);
+    int ptr = chunks[0].length ();
 
-    int p1 = 0;
-    for (String chunk : chunks)
+    for (int i = 1; i < chunks.length; i++)
     {
-      text.append (chunk);
-      p1 += chunk.length ();
-      if (p1 < s.length ())     // not the last chunk
-      {
-        String s2 = new String (s.substring (p1 + 2, p1 + 5));
-        text.append (Character.toString (Integer.parseInt (s2)));
-        p1 += 6;
-      }
+      text.append (Character
+          .toString (Integer.parseInt (new String (s.substring (ptr + 2, ptr + 5)))));
+      text.append (chunks[i]);
+      ptr += chunks[i].length () + 6;
     }
 
     return text.toString ();

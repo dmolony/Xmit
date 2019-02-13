@@ -146,7 +146,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
           len = Utility.getTwoBytes (buffer, ptr);
 
           //        lines.add (Utility.getString2 (buffer, ptr + 4, len - 4));
-          lines.add (Utility.translate (buffer, ptr + 4, len - 4).stripTrailing ());
+          lines.add (Utility.translateUnicode (buffer, ptr + 4, len - 4).stripTrailing ());
 
           ptr += len;
         }
