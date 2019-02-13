@@ -103,6 +103,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     ObservableList<Menu> menus = menuBar.getMenus ();
     menus.addAll (fileMenu.getMenu (), viewMenu.getMenu ());
 
+    fileMenu.setOutputWriter (outputPane);
+
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
 

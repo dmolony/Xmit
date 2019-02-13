@@ -1,17 +1,23 @@
 package com.bytezone.xmit.gui;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.*;
 import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 
 // ---------------------------------------------------------------------------------//
 class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
-    TableItemSelectionListener, ShowLinesListener, FontChangeListener
+    TableItemSelectionListener, ShowLinesListener, FontChangeListener, OutputWriter
 // ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -36,10 +42,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   private Disposition disposition;
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   OutputPane ()
+  // ---------------------------------------------------------------------------------//
   {
     headersTab = createTab ("Headers", KeyCode.H, () -> updateHeadersTab ());
     blocksTab = createTab ("Blocks", KeyCode.B, () -> updateBlocksTab ());
@@ -50,10 +54,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   }
 
   // ---------------------------------------------------------------------------------//
-  // updateHeadersTab
-  // ---------------------------------------------------------------------------------//
-
   private void updateHeadersTab ()
+  // ---------------------------------------------------------------------------------//
   {
     if (dataset == null)
       return;
@@ -68,7 +70,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       if (firstDataset.isPs ())
       {
         FlatFile file = ((PsDataset) firstDataset).getMember ();
-        text.append (file.getLines (false, false, false));
+        for (String s : file.getLines ())
+          text.append (s + "\n");
         text.append ("\n\n");
       }
       else
@@ -170,8 +173,54 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
   private void updateOutputTab ()
   {
-    if (dataFile != null)
-      outputTab.setText (dataFile.getLines (showLines, stripLines, truncateLines));
+    if (dataFile == null)
+      return;
+
+    outputTab.setText (getLines (showLines, stripLines, truncateLines));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getLines (boolean showLines, boolean stripLines, boolean truncate)
+  // ---------------------------------------------------------------------------------//
+  {
+    List<String> lines = dataFile.getLines ();
+
+    StringBuilder text = new StringBuilder ();
+    int lineNo = 0;
+
+    if (showLines)
+      for (String line : lines)
+      {
+        if (stripLines)
+          line = strip (line);
+        text.append (String.format ("%05d %s%n", ++lineNo, line));
+      }
+    else
+      for (String line : lines)
+      {
+        if (stripLines)
+          line = strip (line);
+        if (truncate && line.length () > 0)
+          text.append (String.format ("%s%n", line.substring (1)));
+        else
+          text.append (String.format ("%s%n", line));
+      }
+
+    Utility.removeTrailingNewlines (text);
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String strip (String line)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (line.length () < 72 || line.length () > 80)
+      return line;
+    String numbers = line.substring (72);
+    for (char c : numbers.toCharArray ())
+      if ((c < '0' || c > '9') && c != ' ')
+        return line;
+    return line.substring (0, 72).stripTrailing ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -265,11 +314,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     if (dataset == null)
       return;
 
-    String indicator = "";
-    if (truncateLines && stripLines)
-      indicator = "<--";
-    else if (truncateLines || stripLines)
-      indicator = "<-";
+    String indicator = truncateLines ? "<-" : "";
 
     if (dataset.isPds ())
     {
@@ -312,5 +357,26 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     clearText ();
     updateCurrentTab ();
     restoreScrollBars ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void write (File file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (file == null)
+      return;
+
+    try (BufferedWriter output = new BufferedWriter (new FileWriter (file)))
+    {
+      // no size limits!!
+      output.write (getLines (showLines, stripLines, truncateLines));
+      Utility.showAlert (AlertType.INFORMATION, "Success",
+          "File Saved: " + file.getName ());
+    }
+    catch (IOException e)
+    {
+      Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
+    }
   }
 }

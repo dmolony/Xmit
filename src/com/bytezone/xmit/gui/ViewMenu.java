@@ -34,7 +34,7 @@ class ViewMenu
   private final CheckMenuItem stripLinesMenuItem =
       new CheckMenuItem ("Strip Line Numbers");
   private final CheckMenuItem truncateMenuItem = new CheckMenuItem ("Truncate Column 1");
-  private final MenuItem fontMenuItem = new CheckMenuItem ("Set Font...");
+  private final MenuItem fontMenuItem = new MenuItem ("Set Font...");
   private final CheckMenuItem headersMenuItem = new CheckMenuItem ("Headers tab");
   private final CheckMenuItem blocksMenuItem = new CheckMenuItem ("Blocks tab");
   private final CheckMenuItem hexMenuItem = new CheckMenuItem ("Hex tab");
@@ -66,17 +66,17 @@ class ViewMenu
     for (int i = 0; i < codePageNames.length; i++)
       codePageMenuItems.add (setMenuItem (codePageNames[i][0], keyCodes[i]));
 
-    viewMenu.getItems ().addAll (showLinesMenuItem, stripLinesMenuItem, truncateMenuItem,
-        fontMenuItem, new SeparatorMenuItem (), headersMenuItem, blocksMenuItem,
-        hexMenuItem, new SeparatorMenuItem ());
+    viewMenu.getItems ().addAll (fontMenuItem, new SeparatorMenuItem (),
+        showLinesMenuItem, stripLinesMenuItem, truncateMenuItem, new SeparatorMenuItem (),
+        headersMenuItem, blocksMenuItem, hexMenuItem, new SeparatorMenuItem ());
     for (RadioMenuItem item : codePageMenuItems)
       viewMenu.getItems ().add (item);
     viewMenu.getItems ().addAll (new SeparatorMenuItem (), euroMenuItem);
 
-    showLinesMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+    showLinesMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.L,
+        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
     stripLinesMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        new KeyCodeCombination (KeyCode.L, KeyCombination.SHORTCUT_DOWN));
     truncateMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.T, KeyCombination.SHORTCUT_DOWN));
     fontMenuItem.setAccelerator (

@@ -11,7 +11,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 public abstract class DataFile implements Comparable<DataFile>
 //---------------------------------------------------------------------------------//
 {
-  private static final int MAX_BUFFER = 500_000;
+  //  private static final int MAX_BUFFER = 500_000;
 
   private String name = "";
   private final Disposition disposition;
@@ -66,68 +66,13 @@ public abstract class DataFile implements Comparable<DataFile>
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getLines (boolean showLines, boolean stripLines, boolean truncate)
+  public List<String> getLines ()
   // ---------------------------------------------------------------------------------//
   {
     if (lines.size () == 0 || codePage != Utility.getCodePage ())
       createDataLines ();
-
-    StringBuilder text = new StringBuilder ();
-    int lineNo = 0;
-
-    if (showLines)
-      for (String line : lines)
-      {
-        if (stripLines)
-          line = strip (line);
-        text.append (String.format ("%05d %s%n", ++lineNo, line));
-      }
-    else
-      for (String line : lines)
-      {
-        if (stripLines)
-          line = strip (line);
-        if (truncate && line.length () > 0)
-          text.append (String.format ("%s%n", line.substring (1)));
-        else
-          text.append (String.format ("%s%n", line));
-      }
-
-    Utility.removeTrailingNewlines (text);
-
-    return text.toString ();
+    return lines;
   }
-
-  // ---------------------------------------------------------------------------------//
-  private String strip (String line)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (line.length () < 72 || line.length () > 80)
-      return line;
-    String numbers = line.substring (72);
-    for (char c : numbers.toCharArray ())
-      if ((c < '0' || c > '9') && c != ' ')
-        return line;
-    return line.substring (0, 72).stripTrailing ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // test files
-  // ---------------------------------------------------------------------------------//
-  // FILE185 - FILE234I - incomplete
-  // FILE313 - many extractable files
-  // FILE404 - $$PREZ18 - possibly corrupt
-  // FILE600 - XMITPDSC - VB
-  // FILE706 - java bytecode, also very large hex display
-  // FILE714 - tar
-  // FILE765 - embedded xmit PS file
-  // FILE784 - PAXFILE  - PS FB1 / 23778
-  // FILE859 - $OBJECT  - Object Deck
-  // FILE880 - CPP      - PDSE
-  // FILE880 - HPP      - requires different codepages
-  // FILE898 - PDSEDITL - level 4
-  // FILE910 - xmit/xmit/PS
-  // FILE972 - two datasets in each xmit member
 
   // ---------------------------------------------------------------------------------//
   private void createDataLines ()
@@ -162,7 +107,8 @@ public abstract class DataFile implements Comparable<DataFile>
   private void createLines ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    //    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    byte[] buffer = getDataBuffer ();
 
     if (Utility.isBinary (buffer, 0, 128))
       for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
@@ -224,7 +170,8 @@ public abstract class DataFile implements Comparable<DataFile>
   private void objectDeck ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    //    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    byte[] buffer = getDataBuffer ();
     lines.add ("Object Deck Output:");
     lines.add ("");
 
@@ -247,7 +194,8 @@ public abstract class DataFile implements Comparable<DataFile>
   private void hexDump ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    //    byte[] buffer = getDataBuffer (MAX_BUFFER);
+    byte[] buffer = getDataBuffer ();
     for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
       lines.add (line);
   }
@@ -289,4 +237,22 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     return this.name.compareTo (o.name);
   }
+
+  // ---------------------------------------------------------------------------------//
+  // test files
+  // ---------------------------------------------------------------------------------//
+  // FILE185 - FILE234I - incomplete
+  // FILE313 - many extractable files
+  // FILE404 - $$PREZ18 - possibly corrupt
+  // FILE600 - XMITPDSC - VB
+  // FILE706 - java bytecode, also very large hex display
+  // FILE714 - tar
+  // FILE765 - embedded xmit PS file
+  // FILE784 - PAXFILE  - PS FB1 / 23778
+  // FILE859 - $OBJECT  - Object Deck
+  // FILE880 - CPP      - PDSE
+  // FILE880 - HPP      - requires different codepages
+  // FILE898 - PDSEDITL - level 4
+  // FILE910 - xmit/xmit/PS
+  // FILE972 - two datasets in each xmit member
 }
