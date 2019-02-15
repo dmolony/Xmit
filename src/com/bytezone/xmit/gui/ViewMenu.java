@@ -30,7 +30,8 @@ class ViewMenu
   private final XmitApp xmitApp;
 
   private final Menu viewMenu = new Menu ("View");
-  private final CheckMenuItem showLinesMenuItem = new CheckMenuItem ("Add Line Numbers");
+  private final CheckMenuItem showLinesMenuItem =
+      new CheckMenuItem ("Add Sequence Numbers");
   private final CheckMenuItem stripLinesMenuItem =
       new CheckMenuItem ("Strip Line Numbers");
   private final CheckMenuItem truncateMenuItem = new CheckMenuItem ("Truncate Column 1");
@@ -56,10 +57,8 @@ class ViewMenu
   private final CheckMenuItem euroMenuItem = new CheckMenuItem ("Euro update");
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree, FontManager fontManager)
+  // ---------------------------------------------------------------------------------//
   {
     this.xmitApp = xmitApp;
 
@@ -96,10 +95,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // setMenuItem
-  // ---------------------------------------------------------------------------------//
-
   private RadioMenuItem setMenuItem (String name, KeyCode keyCode)
+  // ---------------------------------------------------------------------------------//
   {
     RadioMenuItem menuItem = new RadioMenuItem (name);
     menuItem.setToggleGroup (toggleGroup);
@@ -111,10 +108,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // notifyLinesListeners
-  // ---------------------------------------------------------------------------------//
-
   private void notifyLinesListeners ()
+  // ---------------------------------------------------------------------------------//
   {
     for (ShowLinesListener listener : showLinesListeners)
       listener.showLinesSelected (showLinesMenuItem.isSelected (),
@@ -122,10 +117,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // notifyCodePageListeners
-  // ---------------------------------------------------------------------------------//
-
   private void notifyCodePageListeners ()
+  // ---------------------------------------------------------------------------------//
   {
     Toggle toggle = toggleGroup.getSelectedToggle ();
     if (toggle == null)
@@ -142,10 +135,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // setEuroAndNotifyListeners
-  // ---------------------------------------------------------------------------------//
-
   private void setEuroAndNotifyListeners ()
+  // ---------------------------------------------------------------------------------//
   {
     int j = euroMenuItem.isSelected () ? 1 : 0;
     for (int i = 0; i < codePageNames.length; i++)
@@ -157,20 +148,16 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // setTabs
-  // ---------------------------------------------------------------------------------//
-
   private void setTabs ()
+  // ---------------------------------------------------------------------------------//
   {
     xmitApp.setTabVisible (headersMenuItem.isSelected (), blocksMenuItem.isSelected (),
         hexMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
-  // restore
-  // ---------------------------------------------------------------------------------//
-
   void restore ()
+  // ---------------------------------------------------------------------------------//
   {
     showLinesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
     stripLinesMenuItem.setSelected (prefs.getBoolean (PREFS_STRIP_LINES, false));
@@ -198,10 +185,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // exit
-  // ---------------------------------------------------------------------------------//
-
   void exit ()
+  // ---------------------------------------------------------------------------------//
   {
     prefs.putBoolean (PREFS_SHOW_LINES, showLinesMenuItem.isSelected ());
     prefs.putBoolean (PREFS_STRIP_LINES, stripLinesMenuItem.isSelected ());
@@ -217,30 +202,24 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  // addShowLinesListener
-  // ---------------------------------------------------------------------------------//
-
   public void addShowLinesListener (ShowLinesListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     if (!showLinesListeners.contains (listener))
       showLinesListeners.add (listener);
   }
 
   // ---------------------------------------------------------------------------------//
-  // addCodePageListener
-  // ---------------------------------------------------------------------------------//
-
   public void addCodePageListener (CodePageSelectedListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     if (!codePageListeners.contains (listener))
       codePageListeners.add (listener);
   }
 
   // ---------------------------------------------------------------------------------//
-  // getMenu
-  // ---------------------------------------------------------------------------------//
-
   Menu getMenu ()
+  // ---------------------------------------------------------------------------------//
   {
     return viewMenu;
   }

@@ -75,26 +75,13 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     if (outputWriter == null)
       return;
 
-    String name = "";
-
-    if (dataset.isPs ())
-    {
-      DataFile member = ((PsDataset) dataset).getMember ();
-      //      buffer = member.getDataBuffer ();
-      name = dataset.getReader ().getFileName () + ".txt";
-    }
-    else
-    {
-      //      buffer = catalogEntry.getMember ().getDataBuffer ();
-      name = dataset.getReader ().getFileName () + "." + catalogEntry.getMemberName ()
-          + ".txt";
-    }
+    String extra = dataset.isPds () ? "." + catalogEntry.getMemberName () : "";
+    String name = dataset.getReader ().getFileName () + extra + ".txt";
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Save output text to");
     fileChooser.setInitialDirectory (new File (saveFolderName));
     fileChooser.setInitialFileName (name);
-    String lines = "Not written yet";
 
     File file = fileChooser.showSaveDialog (null);
     if (file != null)
@@ -177,8 +164,6 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     this.catalogEntry = catalogEntry;
     extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
     extractMenuItem.setDisable (false);
-    //    System.out.println ("*** filemenu setting: " + catalogEntry.getMemberName ());
-    //    Utility.printStackTrace ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -187,11 +172,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
   {
     this.dataset = dataset;
-    //    this.name = name == null ? null : name.trim ();
     catalogEntry = null;
-    //    System.out.println ("setting null");
-
-    //    Utility.printStackTrace ();
 
     if (dataset == null)
     {
