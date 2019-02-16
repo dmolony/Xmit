@@ -10,7 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.bytezone.xmit.*;
-import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.scene.control.Alert.AlertType;
 
@@ -26,7 +25,7 @@ class XmitFile
   private final String name;
 
   private Reader reader;                    // can contain multiple datasets
-  private Dataset dataset;                  // is PS or PDS
+  //  private Dataset dataset;                  // is PS or PDS
   //  private CatalogEntry catalogEntry;        // contained in a PDS
   private DataFile dataFile;                // PDS member or flat file
 
@@ -85,7 +84,6 @@ class XmitFile
   int getLevel ()
   // ---------------------------------------------------------------------------------//
   {
-    //    return catalogEntry == null ? 0 : catalogEntry.getLevel ();
     return dataFile == null ? 0 : dataFile.getLevel ();
   }
 
@@ -127,8 +125,7 @@ class XmitFile
     if (reader != null)
     {
       Dataset dataset = reader.getActiveDataset ();
-      Org org = dataset.getDisposition ().getOrg ();
-      if (org == Org.PDS && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
+      if (dataset.isPds () && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
         fileTreeItem.buildChildren ();
     }
     return reader;
@@ -139,7 +136,7 @@ class XmitFile
   // ---------------------------------------------------------------------------------//
   {
     if (reader == null)
-      if (dataFile != null)
+      if (isMember ())                            // xmit file contained in a PdsMember
         reader = new Reader (dataFile);
       else if (isFile () && !isCompressed ())
         reader = new Reader (file);
@@ -212,7 +209,6 @@ class XmitFile
         String entryName = entry.getName ();
         if (entryName.endsWith ("/"))
         {
-          //          System.out.println ("folder");
           containsFolder = true;
         }
         else if (XmitFile.isValidFileName (entryName))
@@ -242,6 +238,8 @@ class XmitFile
         int size = invalidNames.size ();
         String message = String.format ("Zip file contains %d file%s, but no .XMI files",
             size, size == 1 ? "" : "s");
+        if (containsFolder)
+          message += "\nFile contains unexamined subfolders";
         Utility.showAlert (AlertType.INFORMATION, "", message);
       }
     }

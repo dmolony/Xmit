@@ -26,8 +26,6 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
-  //  private final FocusModel<TreeItem<XmitFile>> focusModel = getFocusModel ();
-
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
   private final Image zipImage;
@@ -91,18 +89,16 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
       }
     });
 
-    model.selectedItemProperty ().addListener ( (obs, oldSelection, newSelection) ->
+    model.selectedItemProperty ().addListener ( (obs, oldSel, newSel) ->
     {
-      if (newSelection == null)
+      if (newSel == null)
       {
         notify (null, null);
         return;
       }
 
-      //      System.out.printf ("%n%s%n%s%n%n", obs, newSelection);
-      XmitFile xmitFile = newSelection.getValue ();
-      //      System.out.println (xmitFile.getName () + "\n");
-      Reader reader = xmitFile.getReader ((FileTreeItem) newSelection);
+      XmitFile xmitFile = newSel.getValue ();
+      Reader reader = xmitFile.getReader ((FileTreeItem) newSel);
 
       if (reader == null)
         notify (null, null);
@@ -116,9 +112,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   // ---------------------------------------------------------------------------------//
   {
     for (TreeItemSelectionListener listener : listeners)
-    {
       listener.treeItemSelected (dataset, name);
-    }
   }
 
   // ---------------------------------------------------------------------------------//

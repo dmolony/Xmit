@@ -268,7 +268,6 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
   {
     this.dataset = dataset;
-
     dataFile = null;
 
     if (dataset == null)
