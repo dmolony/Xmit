@@ -40,13 +40,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   private Font font;
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   XmitTable ()
+  // ---------------------------------------------------------------------------------//
   {
-    //    setStyle ("-fx-font-size: 13; -fx-font-family: monospaced");
-    //    setFixedCellSize (12);
     setItems (items);
 
     addString ("Member", "MemberName", 100, "CENTER-LEFT");
@@ -75,10 +71,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addNumber
-  // ---------------------------------------------------------------------------------//
-
   TableColumn<CatalogEntryItem, Number> addNumber (String heading, String name, int width)
+  // ---------------------------------------------------------------------------------//
   {
     TableColumn<CatalogEntryItem, Number> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
@@ -89,11 +83,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addString
-  // ---------------------------------------------------------------------------------//
-
   TableColumn<CatalogEntryItem, String> addString (String heading, String name, int width,
       String alignment)
+  // ---------------------------------------------------------------------------------//
   {
     TableColumn<CatalogEntryItem, String> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
@@ -104,11 +96,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addLocalDate
-  // ---------------------------------------------------------------------------------//
-
   TableColumn<CatalogEntryItem, LocalDate> addLocalDate (String heading, String name,
       int width)
+  // ---------------------------------------------------------------------------------//
   {
     TableColumn<CatalogEntryItem, LocalDate> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
@@ -119,11 +109,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addFileType
-  // ---------------------------------------------------------------------------------//
-
   TableColumn<CatalogEntryItem, FileType> addFileType (String heading, String name,
       int width, String alignment)
+  // ---------------------------------------------------------------------------------//
   {
     TableColumn<CatalogEntryItem, FileType> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
@@ -134,11 +122,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // numberCellFactory
-  // ---------------------------------------------------------------------------------//
-
   Callback<TableColumn<CatalogEntryItem, Number>, TableCell<CatalogEntryItem, Number>>
       numberCellFactory ()
+  // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, Number>, TableCell<CatalogEntryItem, Number>> ()
     {
@@ -168,11 +154,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // stringCellFactory
-  // ---------------------------------------------------------------------------------//
-
   Callback<TableColumn<CatalogEntryItem, String>, TableCell<CatalogEntryItem, String>>
       stringCellFactory (String alignment)
+  // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, String>, TableCell<CatalogEntryItem, String>> ()
     {
@@ -202,11 +186,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // localDateCellFactory
-  // ---------------------------------------------------------------------------------//
-
   Callback<TableColumn<CatalogEntryItem, LocalDate>, TableCell<CatalogEntryItem, LocalDate>>
       localDateCellFactory ()
+  // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, LocalDate>, TableCell<CatalogEntryItem, LocalDate>> ()
     {
@@ -237,11 +219,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // fileTypeCellFactory
-  // ---------------------------------------------------------------------------------//
-
   Callback<TableColumn<CatalogEntryItem, FileType>, TableCell<CatalogEntryItem, FileType>>
       fileTypeCellFactory (String alignment)
+  // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, FileType>, TableCell<CatalogEntryItem, FileType>> ()
     {
@@ -272,49 +252,39 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // exit
-  // ---------------------------------------------------------------------------------//
-
   void exit ()
+  // ---------------------------------------------------------------------------------//
   {
     prefs.putInt (PREFS_LAST_MEMBER_INDEX, getSelectionModel ().getSelectedIndex ());
   }
 
   // ---------------------------------------------------------------------------------//
-  // restore
-  // ---------------------------------------------------------------------------------//
-
   void restore ()
+  // ---------------------------------------------------------------------------------//
   {
     int index = prefs.getInt (PREFS_LAST_MEMBER_INDEX, 0);
     select (index);
   }
 
   // ---------------------------------------------------------------------------------//
-  // addListener
-  // ---------------------------------------------------------------------------------//
-
   void addListener (TableItemSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     if (!listeners.contains (listener))
       listeners.add (listener);
   }
 
   // ---------------------------------------------------------------------------------//
-  // removeListener
-  // ---------------------------------------------------------------------------------//
-
   void removeListener (TableItemSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
   {
     listeners.remove (listener);
   }
 
   // ---------------------------------------------------------------------------------//
-  // treeItemSelected
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public void treeItemSelected (Dataset dataset, String name)
+  // ---------------------------------------------------------------------------------//
   {
     this.dataset = dataset;
 
@@ -330,10 +300,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // memberIndex
-  // ---------------------------------------------------------------------------------//
-
   private int memberIndex (String memberName)
+  // ---------------------------------------------------------------------------------//
   {
     int index = 0;
     for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
@@ -346,10 +314,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // select
-  // ---------------------------------------------------------------------------------//
-
   private void select (int index)
+  // ---------------------------------------------------------------------------------//
   {
     getFocusModel ().focus (index);
     getSelectionModel ().select (index);
@@ -357,11 +323,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  // setFont
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public void setFont (Font font)
+  // ---------------------------------------------------------------------------------//
   {
     this.font = font;
     refresh ();

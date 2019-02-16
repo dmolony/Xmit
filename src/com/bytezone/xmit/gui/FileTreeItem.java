@@ -18,27 +18,23 @@ import javafx.scene.control.TreeItem;
 class FileTreeItem extends TreeItem<XmitFile>
 //---------------------------------------------------------------------------------//
 {
-  static final FileComparator comparator = new FileComparator ();
+  static private final FileComparator comparator = new FileComparator ();
 
   private boolean isFirstTimeChildren = true;
   private boolean isFirstTimeLeaf = true;
   private boolean isLeaf;
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   public FileTreeItem (XmitFile xmitFile)
+  // ---------------------------------------------------------------------------------//
   {
     super (xmitFile);
   }
 
   // ---------------------------------------------------------------------------------//
-  // getChildren
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public ObservableList<TreeItem<XmitFile>> getChildren ()
+  // ---------------------------------------------------------------------------------//
   {
     if (isFirstTimeChildren)
     {
@@ -49,11 +45,9 @@ class FileTreeItem extends TreeItem<XmitFile>
   }
 
   // ---------------------------------------------------------------------------------//
-  // isLeaf
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public boolean isLeaf ()
+  // ---------------------------------------------------------------------------------//
   {
     if (isFirstTimeLeaf)
     {
@@ -66,10 +60,8 @@ class FileTreeItem extends TreeItem<XmitFile>
   }
 
   // ---------------------------------------------------------------------------------//
-  // buildChildren
-  // ---------------------------------------------------------------------------------//
-
   ObservableList<TreeItem<XmitFile>> buildChildren ()
+  // ---------------------------------------------------------------------------------//
   {
     XmitFile xmitFile = getValue ();
 

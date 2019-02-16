@@ -52,10 +52,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private double dividerPosition2;
 
   // ---------------------------------------------------------------------------------//
-  // createContent
-  // ---------------------------------------------------------------------------------//
-
   private Parent createContent ()
+  // ---------------------------------------------------------------------------------//
   {
     // place menubar
     final String os = System.getProperty ("os.name");
@@ -114,10 +112,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // restore
-  // ---------------------------------------------------------------------------------//
-
   private void restore ()
+  // ---------------------------------------------------------------------------------//
   {
     outputPane.restore ();
     fileMenu.restore ();
@@ -130,11 +126,9 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // start
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public void start (Stage primaryStage) throws Exception
+  // ---------------------------------------------------------------------------------//
   {
     this.primaryStage = primaryStage;
     primaryStage.setTitle ("XmitApp");
@@ -150,10 +144,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // keyPressed
-  // ---------------------------------------------------------------------------------//
-
   private void keyPressed (KeyEvent keyEvent)
+  // ---------------------------------------------------------------------------------//
   {
     KeyCode keyCode = keyEvent.getCode ();
 
@@ -165,10 +157,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // restoreWindowLocation
-  // ---------------------------------------------------------------------------------//
-
   private void restoreWindowLocation ()
+  // ---------------------------------------------------------------------------------//
   {
     dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
     dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
@@ -197,10 +187,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // setWindow
-  // ---------------------------------------------------------------------------------//
-
   private void setWindow ()
+  // ---------------------------------------------------------------------------------//
   {
     primaryStage.setWidth (1200);
     primaryStage.setHeight (800);
@@ -208,10 +196,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // exit
-  // ---------------------------------------------------------------------------------//
-
   private void exit ()
+  // ---------------------------------------------------------------------------------//
   {
     double width = primaryStage.getWidth ();
     double height = primaryStage.getHeight ();
@@ -240,10 +226,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // changeRootFolder
-  // ---------------------------------------------------------------------------------//
-
   void changeRootFolder ()
+  // ---------------------------------------------------------------------------------//
   {
     if (setRootFolder ())
       treePane
@@ -251,35 +235,16 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // showAlert
-  // ---------------------------------------------------------------------------------//
-
-  void showAlert (AlertType alertType, String title, String message)
-  {
-    if (alert == null)
-    {
-      alert = new Alert (alertType);
-      alert.setTitle (title);
-      alert.setHeaderText (null);
-    }
-
-    alert.setContentText (message);
-    alert.showAndWait ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // validateRootFolderOrExit
-  // ---------------------------------------------------------------------------------//
-
   private void validateRootFolderOrExit ()
+  // ---------------------------------------------------------------------------------//
   {
     rootFolderName = prefs.get (PREFS_ROOT_FOLDER, "");
     if (rootFolderName.isEmpty ())
     {
-      showAlert (AlertType.INFORMATION, "XMIT folder",
+      Utility.showAlert (AlertType.INFORMATION, "XMIT folder",
           "The XMIT file folder has not yet been defined. Please choose the "
               + "TOP LEVEL FOLDER where you store your XMIT files. This folder "
-              + "may contain other folders. It can also be changed at any time.");
+              + "may contain subfolders. It can also be changed at any time.");
     }
     else
     {
@@ -296,10 +261,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // setRootFolder
-  // ---------------------------------------------------------------------------------//
-
   private boolean setRootFolder ()
+  // ---------------------------------------------------------------------------------//
   {
     DirectoryChooser directoryChooser = new DirectoryChooser ();
     directoryChooser.setTitle ("Set XMIT file folder");
@@ -323,30 +286,24 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  // setTabVisible
-  // ---------------------------------------------------------------------------------//
-
   void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
+  // ---------------------------------------------------------------------------------//
   {
     outputPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
   }
 
   // ---------------------------------------------------------------------------------//
-  // selectCodePage
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public void selectCodePage (String codePageName)
+  // ---------------------------------------------------------------------------------//
   {
     Utility.setCodePage (codePageName);     // ensure correct code page is set first
     outputPane.selectCodePage ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // main
-  // ---------------------------------------------------------------------------------//
-
   public static void main (String[] args)
+  // ---------------------------------------------------------------------------------//
   {
     Application.launch (args);
   }
