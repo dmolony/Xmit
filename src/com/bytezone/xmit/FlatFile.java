@@ -111,14 +111,13 @@ public class FlatFile extends DataFile implements Iterable<Segment>
     int max = 500;
     for (Segment segment : segments)
     {
-      //      System.out.println (segment);
       byte[] buffer = segment.getRawBuffer ();
       if (Utility.isBinary (buffer))
       {
         for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
           lines.add (line);
-        if (lines.size () > 10_000)
-          break;
+        //        if (lines.size () > 10_000)
+        //          break;
       }
       else
         lines.add (Utility.getString (buffer));

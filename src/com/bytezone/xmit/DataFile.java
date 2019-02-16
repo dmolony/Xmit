@@ -127,7 +127,6 @@ public abstract class DataFile implements Comparable<DataFile>
     while (remaining > 0)
     {
       int len = Math.min (lrecl, remaining);
-      //      lines.add (Utility.getString (buffer, ptr, len).stripTrailing ());
       lines.add (Utility.translateUnicode (buffer, ptr, len).stripTrailing ());
       ptr += len;
       remaining -= len;
@@ -170,7 +169,6 @@ public abstract class DataFile implements Comparable<DataFile>
   private void objectDeck ()
   // ---------------------------------------------------------------------------------//
   {
-    //    byte[] buffer = getDataBuffer (MAX_BUFFER);
     byte[] buffer = getDataBuffer ();
     lines.add ("Object Deck Output:");
     lines.add ("");

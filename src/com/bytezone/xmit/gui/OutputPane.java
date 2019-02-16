@@ -187,7 +187,12 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       for (String line : lines)
       {
         if (++lineNo > maxLines)
+        {
+          text.append (String.format (
+              "\n*** Output truncated at %,d lines to improve rendering time ***",
+              maxLines));
           break;
+        }
         if (stripLines)
           line = strip (line);
         text.append (String.format ("%05d %s%n", lineNo, line));
@@ -196,7 +201,12 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       for (String line : lines)
       {
         if (++lineNo > maxLines)
+        {
+          text.append (String.format (
+              "\n*** Output truncated at %,d lines to improve rendering time ***",
+              maxLines));
           break;
+        }
         if (stripLines)
           line = strip (line);
         if (truncate && line.length () > 0)
