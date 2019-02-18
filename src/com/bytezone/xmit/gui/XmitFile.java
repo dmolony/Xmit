@@ -25,8 +25,6 @@ class XmitFile
   private final String name;
 
   private Reader reader;                    // can contain multiple datasets
-  //  private Dataset dataset;                  // is PS or PDS
-  //  private CatalogEntry catalogEntry;        // contained in a PDS
   private DataFile dataFile;                // PDS member or flat file
 
   // ---------------------------------------------------------------------------------//
@@ -51,9 +49,7 @@ class XmitFile
   public XmitFile (PdsMember pdsMember)            // an xmit file in a PDS member
   // ---------------------------------------------------------------------------------//
   {
-    //    catalogEntry = pdsMember.getCatalogEntry ();
     file = null;
-    //    name = catalogEntry.getMemberName ();
     name = pdsMember.getName ();
     suffix = "";
     dataFile = pdsMember;
@@ -142,13 +138,6 @@ class XmitFile
         reader = new Reader (file);
 
     return reader;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  boolean hasReader ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return reader != null;
   }
 
   // ---------------------------------------------------------------------------------//

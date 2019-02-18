@@ -19,6 +19,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     TableItemSelectionListener, ShowLinesListener, FontChangeListener, OutputWriter
 // ---------------------------------------------------------------------------------//
 {
+  private static final String TRUNCATE_MESSAGE =
+      "\n*** Output truncated at %,d lines to improve rendering time ***";
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
@@ -183,37 +185,23 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     if (maxLines == 0)
       maxLines = Integer.MAX_VALUE;
 
-    if (showLines)
-      for (String line : lines)
+    for (String line : lines)
+    {
+      if (++lineNo > maxLines)
       {
-        if (++lineNo > maxLines)
-        {
-          text.append (String.format (
-              "\n*** Output truncated at %,d lines to improve rendering time ***",
-              maxLines));
-          break;
-        }
-        if (stripLines)
-          line = strip (line);
+        text.append (String.format (TRUNCATE_MESSAGE, maxLines));
+        break;
+      }
+      if (stripLines)
+        line = strip (line);
+
+      if (showLines)
         text.append (String.format ("%05d %s%n", lineNo, line));
-      }
-    else
-      for (String line : lines)
-      {
-        if (++lineNo > maxLines)
-        {
-          text.append (String.format (
-              "\n*** Output truncated at %,d lines to improve rendering time ***",
-              maxLines));
-          break;
-        }
-        if (stripLines)
-          line = strip (line);
-        if (truncate && line.length () > 0)
-          text.append (String.format ("%s%n", line.substring (1)));
-        else
-          text.append (String.format ("%s%n", line));
-      }
+      else if (truncate && line.length () > 0)
+        text.append (String.format ("%s%n", line.substring (1)));
+      else
+        text.append (String.format ("%s%n", line));
+    }
 
     Utility.removeTrailingNewlines (text);
     return text.toString ();
@@ -281,7 +269,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       if (dataset.isPs ())
       {
         dataFile = ((PsDataset) dataset).getMember ();
-        updateName ();
+        updateNameLabel ();
       }
     }
 
@@ -296,13 +284,13 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   {
     this.catalogEntry = catalogEntry;
     this.dataFile = catalogEntry.getMember ();
-    updateName ();
+    updateNameLabel ();
     clearText ();
     updateCurrentTab ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void updateName ()
+  private void updateNameLabel ()
   // ---------------------------------------------------------------------------------//
   {
     if (dataset == null)
@@ -335,7 +323,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     saveScrollBars ();
     clearText ();
     updateCurrentTab ();
-    updateName ();              // toggle the '<-' indicator
+    updateNameLabel ();              // toggle the '<-' indicator
     restoreScrollBars ();
   }
 
