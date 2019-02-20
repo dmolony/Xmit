@@ -9,7 +9,7 @@ public class LoadModule
   final boolean overlay;
   final boolean test;
   final boolean loadOnly;
-  final boolean scatterPresent;
+  final boolean scatter;
   final boolean executable;
   final boolean multiBlock;
 
@@ -23,10 +23,10 @@ public class LoadModule
   final boolean refreshable;
 
   final boolean aosLinkEditor;
-  final boolean lpoPresent;
+  final boolean lpo;
   final boolean pageAligned;
-  final boolean ssiPresent;
-  final boolean apfPresent;
+  final boolean ssi;
+  final boolean apf;
   final boolean ptb3Valid;
   final boolean objSigned;
   final boolean free1;
@@ -70,7 +70,7 @@ public class LoadModule
     overlay = (attr1 & 0x20) != 0;
     test = (attr1 & 0x10) != 0;
     loadOnly = (attr1 & 0x08) != 0;
-    scatterPresent = (attr1 & 0x04) != 0;
+    scatter = (attr1 & 0x04) != 0;
     executable = (attr1 & 0x02) != 0;
     multiBlock = (attr1 & 0x01) != 0;
 
@@ -84,10 +84,10 @@ public class LoadModule
     refreshable = (attr2 & 0x01) != 0;
 
     aosLinkEditor = (vsFlag1 & 0x80) != 0;
-    lpoPresent = (vsFlag1 & 0x40) != 0;
+    lpo = (vsFlag1 & 0x40) != 0;
     pageAligned = (vsFlag1 & 0x20) != 0;
-    ssiPresent = (vsFlag1 & 0x10) != 0;
-    apfPresent = (vsFlag1 & 0x08) != 0;
+    ssi = (vsFlag1 & 0x10) != 0;
+    apf = (vsFlag1 & 0x08) != 0;
     ptb3Valid = (vsFlag1 & 0x04) != 0;
     objSigned = (vsFlag1 & 0x02) != 0;
     free1 = (vsFlag1 & 0x01) != 0;
@@ -95,14 +95,13 @@ public class LoadModule
     nameGen = (vsFlag2 & 0x80) != 0;
     free2 = (vsFlag2 & 0x40) != 0;
     free3 = (vsFlag2 & 0x20) != 0;
-    int rrMode = (vsFlag2 & 0x10) >>> 4;
+    rMode = (vsFlag2 & 0x10) == 0 ? 24 : 31;
     aliasAMode = (vsFlag2 & 0x0C) >>> 2;
     int aaMode = (vsFlag2 & 0x03);
 
     aMode = aaMode == 0 ? 24 : aaMode == 1 ? 64 : aaMode == 2 ? 31 : 255;
-    rMode = rrMode == 0 ? 24 : 31;
 
-    if (scatterPresent)
+    if (scatter)
     {
 
     }
@@ -112,17 +111,17 @@ public class LoadModule
 
     }
 
-    if (ssiPresent)
+    if (ssi)
     {
 
     }
 
-    if (apfPresent)
+    if (apf)
     {
 
     }
 
-    if (lpoPresent)
+    if (lpo)
     {
 
     }

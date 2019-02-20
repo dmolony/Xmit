@@ -242,7 +242,7 @@ public class CatalogEntry
   public boolean isApf ()
   // ---------------------------------------------------------------------------------//
   {
-    return loadModule == null ? false : loadModule.apfPresent;
+    return loadModule == null ? false : loadModule.apf;
   }
 
   // ---------------------------------------------------------------------------------//
