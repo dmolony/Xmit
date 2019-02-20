@@ -48,6 +48,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   private TableColumn<CatalogEntryItem, LocalDate> modifiedColumn;
   private TableColumn<CatalogEntryItem, FileType> typeColumn;
 
+  private TableColumn<CatalogEntryItem, Number> epaColumn;
+  private TableColumn<CatalogEntryItem, Number> storageColumn;
   private TableColumn<CatalogEntryItem, Number> aModeColumn;
   private TableColumn<CatalogEntryItem, Number> rModeColumn;
   private TableColumn<CatalogEntryItem, String> apfColumn;
@@ -76,9 +78,11 @@ class XmitTable extends TableView<CatalogEntryItem>
     versionColumn = addString ("ver.mod", "Version", 70, "CENTER");
 
     // load module
+    epaColumn = addNumber ("EPA", "epa", 70);
+    storageColumn = addNumber ("Storage", "storage", 70);
+    apfColumn = addString ("APF", "apf", 50, "CENTER");
     aModeColumn = addNumber ("amode", "aMode", 50);
     rModeColumn = addNumber ("rmode", "rMode", 50);
-    apfColumn = addString ("APF", "apf", 50, "CENTER");
     attrColumn = addString ("Attributes", "attr", 100, "CENTER-LEFT");
 
     // common
@@ -118,6 +122,8 @@ class XmitTable extends TableView<CatalogEntryItem>
         typeColumn.setVisible (true);
         versionColumn.setVisible (true);
 
+        epaColumn.setVisible (false);
+        storageColumn.setVisible (false);
         aModeColumn.setVisible (false);
         rModeColumn.setVisible (false);
         apfColumn.setVisible (false);
@@ -134,6 +140,8 @@ class XmitTable extends TableView<CatalogEntryItem>
         typeColumn.setVisible (false);
         versionColumn.setVisible (false);
 
+        epaColumn.setVisible (true);
+        storageColumn.setVisible (true);
         aModeColumn.setVisible (true);
         rModeColumn.setVisible (true);
         apfColumn.setVisible (true);

@@ -28,6 +28,8 @@ public class CatalogEntryItem                   // must be public
   private ObjectProperty<LocalDate> dateModified;
 
   // load module
+  private IntegerProperty epa;
+  private IntegerProperty storage;
   private IntegerProperty aMode;
   private IntegerProperty rMode;
   private StringProperty apf;
@@ -52,6 +54,8 @@ public class CatalogEntryItem                   // must be public
     setType (catalogEntry.getMember ().getFileType ());
     setVersion (catalogEntry.getVersion ());
 
+    setEpa (catalogEntry.getEpa ());
+    setStorage (catalogEntry.getStorage ());
     setAMode (catalogEntry.getAMode ());
     setRMode (catalogEntry.getRMode ());
     setApf (catalogEntry.isApf () ? "yes" : "");
@@ -317,6 +321,52 @@ public class CatalogEntryItem                   // must be public
     if (version == null)
       version = new SimpleStringProperty ();
     return version;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setStorage (int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    storageProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final int getStorage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return storageProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private IntegerProperty storageProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (storage == null)
+      storage = new SimpleIntegerProperty ();
+    return storage;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setEpa (int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    epaProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final int getEpa ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return epaProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private IntegerProperty epaProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (epa == null)
+      epa = new SimpleIntegerProperty ();
+    return epa;
   }
 
   // ---------------------------------------------------------------------------------//
