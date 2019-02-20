@@ -42,8 +42,6 @@ class XmitTable extends TableView<CatalogEntryItem>
   private TableColumn<CatalogEntryItem, String> idColumn;
   private TableColumn<CatalogEntryItem, String> timeColumn;
   private TableColumn<CatalogEntryItem, String> versionColumn;
-  private TableColumn<CatalogEntryItem, String> aliasColumn;
-  private TableColumn<CatalogEntryItem, Number> bytesColumn;
   private TableColumn<CatalogEntryItem, Number> sizeColumn;
   private TableColumn<CatalogEntryItem, Number> initColumn;
   private TableColumn<CatalogEntryItem, LocalDate> createdColumn;
@@ -52,6 +50,8 @@ class XmitTable extends TableView<CatalogEntryItem>
 
   private TableColumn<CatalogEntryItem, Number> aModeColumn;
   private TableColumn<CatalogEntryItem, Number> rModeColumn;
+  private TableColumn<CatalogEntryItem, String> apfColumn;
+  private TableColumn<CatalogEntryItem, String> attrColumn;
 
   private int currentVisible = 0;
 
@@ -61,9 +61,12 @@ class XmitTable extends TableView<CatalogEntryItem>
   {
     setItems (items);
 
+    // common
     addString ("Member", "MemberName", 100, "CENTER-LEFT");
+    addNumber ("Bytes", "Bytes", 90);
+
+    // basic module
     idColumn = addString ("Id", "UserName", 100, "CENTER-LEFT");
-    bytesColumn = addNumber ("Bytes", "Bytes", 90);
     sizeColumn = addNumber ("Size", "Size", 70);
     initColumn = addNumber ("Init", "Init", 70);
     createdColumn = addLocalDate ("Created", "DateCreated", 100);
@@ -71,10 +74,15 @@ class XmitTable extends TableView<CatalogEntryItem>
     timeColumn = addString ("Time", "Time", 90, "CENTER");
     typeColumn = addFileType ("Type", "Type", 50, "CENTER");
     versionColumn = addString ("ver.mod", "Version", 70, "CENTER");
-    aliasColumn = addString ("Alias", "AliasName", 100, "CENTER-LEFT");
 
-    aModeColumn = addNumber ("A Mode", "aMode", 70);
-    rModeColumn = addNumber ("R Mode", "rMode", 70);
+    // load module
+    aModeColumn = addNumber ("amode", "aMode", 50);
+    rModeColumn = addNumber ("rmode", "rMode", 50);
+    apfColumn = addString ("APF", "apf", 50, "CENTER");
+    attrColumn = addString ("Attributes", "attr", 100, "CENTER-LEFT");
+
+    // common
+    addString ("Alias", "AliasName", 100, "CENTER-LEFT");
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, catalogEntryItem) ->
@@ -95,15 +103,13 @@ class XmitTable extends TableView<CatalogEntryItem>
   {
     if (currentVisible == type)
       return;
-    currentVisible = type;
 
-    idColumn.setVisible (true);
-    bytesColumn.setVisible (true);
-    aliasColumn.setVisible (true);
+    currentVisible = type;
 
     switch (type)
     {
       case 1:
+        idColumn.setVisible (true);
         sizeColumn.setVisible (true);
         initColumn.setVisible (true);
         createdColumn.setVisible (true);
@@ -114,9 +120,12 @@ class XmitTable extends TableView<CatalogEntryItem>
 
         aModeColumn.setVisible (false);
         rModeColumn.setVisible (false);
+        apfColumn.setVisible (false);
+        attrColumn.setVisible (false);
         break;
 
       case 2:
+        idColumn.setVisible (false);
         sizeColumn.setVisible (false);
         initColumn.setVisible (false);
         createdColumn.setVisible (false);
@@ -127,6 +136,8 @@ class XmitTable extends TableView<CatalogEntryItem>
 
         aModeColumn.setVisible (true);
         rModeColumn.setVisible (true);
+        apfColumn.setVisible (true);
+        attrColumn.setVisible (true);
         break;
     }
   }

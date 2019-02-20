@@ -62,7 +62,20 @@ public abstract class DataFile implements Comparable<DataFile>
   public FileType getFileType ()
   // ---------------------------------------------------------------------------------//
   {
+    if (isVB ())
+    {
+      // get 8 bytes after skipping the header
+    }
     return isXmit () ? FileType.XMI : Utility.getFileType (getEightBytes ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isVB ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return (disposition.recfm == 0x5000       // VB
+        || disposition.recfm == 0x5200        // VBA
+        || disposition.recfm == 0x5400);      // VBA
   }
 
   // ---------------------------------------------------------------------------------//
@@ -83,22 +96,19 @@ public abstract class DataFile implements Comparable<DataFile>
 
     if (isXmit ())
       xmitLines ();
+    else if (getFileType () != FileType.BIN)    // ZIP/DOC/PDF etc
+      showExtractMessage ();
     else if (disposition.recfm == 0xC000        // undefined
         || disposition.lrecl <= 1)
       hexDump ();
-    else if ((disposition.recfm == 0x5000       // VB
-        || disposition.recfm == 0x5200          // VBA
-        || disposition.recfm == 0x5400)         // VBA
-        && isRdw ())
+    else if (isVB () && isRdw ())
       rdwLines ();
-    else if (disposition.recfm == 0x5002)       // flat file
+    else if (disposition.recfm == 0x5002)       // VB flat file
       rdwLines ();
     else if (disposition.recfm == 0x9200)       // FBA
       createTextLines (getDataBuffer ());
     else if (isObjectDeck ())
       objectDeck ();
-    else if (getFileType () != FileType.BIN)    // ZIP/DOC/PDF etc
-      showExtractMessage ();
     else
       createLines ();
   }
@@ -107,7 +117,6 @@ public abstract class DataFile implements Comparable<DataFile>
   private void createLines ()
   // ---------------------------------------------------------------------------------//
   {
-    //    byte[] buffer = getDataBuffer (MAX_BUFFER);
     byte[] buffer = getDataBuffer ();
 
     if (Utility.isBinary (buffer, 0, 128))

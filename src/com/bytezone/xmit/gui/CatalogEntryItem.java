@@ -12,9 +12,12 @@ public class CatalogEntryItem                   // must be public
 //---------------------------------------------------------------------------------//
 {
   private final CatalogEntry catalogEntry;
+
   private StringProperty memberName;
   private StringProperty userName;
   private StringProperty aliasName;
+
+  // basic module
   private StringProperty version;
   private StringProperty time;
   private ObjectProperty<FileType> type;
@@ -24,18 +27,22 @@ public class CatalogEntryItem                   // must be public
   private ObjectProperty<LocalDate> dateCreated;
   private ObjectProperty<LocalDate> dateModified;
 
+  // load module
   private IntegerProperty aMode;
   private IntegerProperty rMode;
+  private StringProperty apf;
+  private StringProperty attr;
 
   // ---------------------------------------------------------------------------------//
   public CatalogEntryItem (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    //    System.out.println (catalogEntry.isBasic ());
     this.catalogEntry = catalogEntry;
+
     setMemberName (catalogEntry.getMemberName ());
     setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
+
     setSize (catalogEntry.getSize ());
     setBytes (catalogEntry.getMember ().getDataLength ());
     setInit (catalogEntry.getInit ());
@@ -47,6 +54,9 @@ public class CatalogEntryItem                   // must be public
 
     setAMode (catalogEntry.getAMode ());
     setRMode (catalogEntry.getRMode ());
+    setApf (catalogEntry.isApf () ? "yes" : "");
+    setAttr (String.format ("%s  %s", catalogEntry.isReentrant () ? "RN" : "  ",
+        catalogEntry.isReusable () ? "RU" : "  "));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -353,5 +363,51 @@ public class CatalogEntryItem                   // must be public
     if (rMode == null)
       rMode = new SimpleIntegerProperty ();
     return rMode;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setApf (String value)
+  // ---------------------------------------------------------------------------------//
+  {
+    apfProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final String getApf ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return apfProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private StringProperty apfProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (apf == null)
+      apf = new SimpleStringProperty ();
+    return apf;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setAttr (String value)
+  // ---------------------------------------------------------------------------------//
+  {
+    attrProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final String getAttr ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return attrProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private StringProperty attrProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (attr == null)
+      attr = new SimpleStringProperty ();
+    return attr;
   }
 }

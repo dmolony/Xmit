@@ -157,6 +157,13 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   byte[] getEightBytes ()
   // ---------------------------------------------------------------------------------//
   {
+    if (isVB ())
+    {
+      byte[] buffer = dataBlocks.get (0).getSixteenBytes ();
+      byte[] eightBytes = new byte[8];
+      System.arraycopy (buffer, 8, eightBytes, 0, 8);
+      return eightBytes;
+    }
     return dataBlocks.get (0).getEightBytes ();
   }
 

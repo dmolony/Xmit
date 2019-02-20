@@ -39,15 +39,31 @@ public class LoadModule
   final int aMode;
   final int aliasAMode;
 
+  int ttrText;
+  int ttrNoteList;
+  int notes;
+  int storage;
+  int firstTextBlock;
+  int epa;
+
   // ---------------------------------------------------------------------------------//
   LoadModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    byte attr1 = buffer[9];
-    byte attr2 = buffer[10];
-    byte vsFlag1 = buffer[19];
-    byte vsFlag2 = buffer[20];
-    byte vsFlag3 = buffer[21];
+    //    System.out.println (Utility.getHexValues (buffer));
+    boolean alias = (buffer[11] & 0x80) != 0;
+
+    ttrText = (int) Utility.getValue (buffer, 12, 3);
+    ttrNoteList = (int) Utility.getValue (buffer, 16, 3);
+    notes = buffer[19] & 0xFF;
+    byte attr1 = buffer[20];
+    byte attr2 = buffer[21];
+    storage = (int) Utility.getValue (buffer, 22, 3);
+    firstTextBlock = Utility.getTwoBytes (buffer, 25);
+    epa = (int) Utility.getValue (buffer, 27, 3);
+    byte vsFlag1 = buffer[30];
+    byte vsFlag2 = buffer[31];
+    byte vsFlag3 = buffer[32];
 
     reentrant = (attr1 & 0x80) != 0;
     reusable = (attr1 & 0x40) != 0;
@@ -85,6 +101,31 @@ public class LoadModule
 
     aMode = aaMode == 0 ? 24 : aaMode == 1 ? 64 : aaMode == 2 ? 31 : 255;
     rMode = rrMode == 0 ? 24 : 31;
+
+    if (scatterPresent)
+    {
+
+    }
+
+    if (alias)
+    {
+
+    }
+
+    if (ssiPresent)
+    {
+
+    }
+
+    if (apfPresent)
+    {
+
+    }
+
+    if (lpoPresent)
+    {
+
+    }
   }
 
   // ---------------------------------------------------------------------------------//

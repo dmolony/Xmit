@@ -31,15 +31,17 @@ public class Utility
   private static final byte[] rar = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 };
   private static final byte[] png = { (byte) 0x89, 0x50, 0x4E, 0x47 };
   private static final byte[] rtf = { 0x7B, 0x5C, 0x72, 0x74, 0x66 };
+  private static final byte[] afp =
+      { 0x5A, 0x00, 0x12, (byte) 0xD3, (byte) 0xA8, (byte) 0xA8, 0x00, 0x00 };
 
-  private static final byte[][] signatures = { doc, pdf, zip, rar, png, rtf };
+  private static final byte[][] signatures = { doc, pdf, zip, rar, png, rtf, afp };
   private static Alert alert;
 
   // ---------------------------------------------------------------------------------//
   public enum FileType
   // ---------------------------------------------------------------------------------//
   {
-    DOC, PDF, ZIP, RAR, PNG, RTF, BIN, XMI
+    DOC, PDF, ZIP, RAR, PNG, RTF, AFP, BIN, XMI
   }
 
   // ---------------------------------------------------------------------------------//

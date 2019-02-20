@@ -95,6 +95,21 @@ class DataBlock
   }
 
   // ---------------------------------------------------------------------------------//
+  byte[] getSixteenBytes ()
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] sixteenBytes = new byte[16];
+    if (header.getSize () == 0)
+      return sixteenBytes;
+
+    BlockPointer blockPointer = blockPointers.get (0);
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, sixteenBytes, 0,
+        sixteenBytes.length);
+
+    return sixteenBytes;
+  }
+
+  // ---------------------------------------------------------------------------------//
   byte[] getBuffer ()
   // ---------------------------------------------------------------------------------//
   {
