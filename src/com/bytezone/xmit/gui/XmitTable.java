@@ -39,6 +39,22 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final Map<Reader, String> selectedMembers = new HashMap<> ();
   private Font font;
 
+  private TableColumn<CatalogEntryItem, String> idColumn;
+  private TableColumn<CatalogEntryItem, String> timeColumn;
+  private TableColumn<CatalogEntryItem, String> versionColumn;
+  private TableColumn<CatalogEntryItem, String> aliasColumn;
+  private TableColumn<CatalogEntryItem, Number> bytesColumn;
+  private TableColumn<CatalogEntryItem, Number> sizeColumn;
+  private TableColumn<CatalogEntryItem, Number> initColumn;
+  private TableColumn<CatalogEntryItem, LocalDate> createdColumn;
+  private TableColumn<CatalogEntryItem, LocalDate> modifiedColumn;
+  private TableColumn<CatalogEntryItem, FileType> typeColumn;
+
+  private TableColumn<CatalogEntryItem, Number> aModeColumn;
+  private TableColumn<CatalogEntryItem, Number> rModeColumn;
+
+  private int currentVisible = 0;
+
   // ---------------------------------------------------------------------------------//
   XmitTable ()
   // ---------------------------------------------------------------------------------//
@@ -46,16 +62,19 @@ class XmitTable extends TableView<CatalogEntryItem>
     setItems (items);
 
     addString ("Member", "MemberName", 100, "CENTER-LEFT");
-    addString ("Id", "UserName", 100, "CENTER-LEFT");
-    addNumber ("Bytes", "Bytes", 90);
-    addNumber ("Size", "Size", 70);
-    addNumber ("Init", "Init", 70);
-    addLocalDate ("Created", "DateCreated", 100);
-    addLocalDate ("Modified", "DateModified", 100);
-    addString ("Time", "Time", 90, "CENTER");
-    addFileType ("Type", "Type", 50, "CENTER");
-    addString ("ver.mod", "Version", 70, "CENTER");
-    addString ("Alias", "AliasName", 100, "CENTER-LEFT");
+    idColumn = addString ("Id", "UserName", 100, "CENTER-LEFT");
+    bytesColumn = addNumber ("Bytes", "Bytes", 90);
+    sizeColumn = addNumber ("Size", "Size", 70);
+    initColumn = addNumber ("Init", "Init", 70);
+    createdColumn = addLocalDate ("Created", "DateCreated", 100);
+    modifiedColumn = addLocalDate ("Modified", "DateModified", 100);
+    timeColumn = addString ("Time", "Time", 90, "CENTER");
+    typeColumn = addFileType ("Type", "Type", 50, "CENTER");
+    versionColumn = addString ("ver.mod", "Version", 70, "CENTER");
+    aliasColumn = addString ("Alias", "AliasName", 100, "CENTER-LEFT");
+
+    aModeColumn = addNumber ("A Mode", "aMode", 70);
+    rModeColumn = addNumber ("R Mode", "rMode", 70);
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, catalogEntryItem) ->
@@ -68,6 +87,48 @@ class XmitTable extends TableView<CatalogEntryItem>
           for (TableItemSelectionListener listener : listeners)
             listener.tableItemSelected (catalogEntry);
         });
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setVisibleColumns (int type)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (currentVisible == type)
+      return;
+    currentVisible = type;
+
+    idColumn.setVisible (true);
+    bytesColumn.setVisible (true);
+    aliasColumn.setVisible (true);
+
+    switch (type)
+    {
+      case 1:
+        sizeColumn.setVisible (true);
+        initColumn.setVisible (true);
+        createdColumn.setVisible (true);
+        modifiedColumn.setVisible (true);
+        timeColumn.setVisible (true);
+        typeColumn.setVisible (true);
+        versionColumn.setVisible (true);
+
+        aModeColumn.setVisible (false);
+        rModeColumn.setVisible (false);
+        break;
+
+      case 2:
+        sizeColumn.setVisible (false);
+        initColumn.setVisible (false);
+        createdColumn.setVisible (false);
+        modifiedColumn.setVisible (false);
+        timeColumn.setVisible (false);
+        typeColumn.setVisible (false);
+        versionColumn.setVisible (false);
+
+        aModeColumn.setVisible (true);
+        rModeColumn.setVisible (true);
+        break;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -296,6 +357,9 @@ class XmitTable extends TableView<CatalogEntryItem>
 
       select (selectedMembers.containsKey (dataset.getReader ())
           ? memberIndex (selectedMembers.get (dataset.getReader ())) : 0);
+
+      CatalogEntry ce = ((PdsDataset) dataset).getCatalogEntries ().get (0);
+      setVisibleColumns (ce.isBasic () ? 1 : 2);
     }
   }
 

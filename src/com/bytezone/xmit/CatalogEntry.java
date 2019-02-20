@@ -1,31 +1,23 @@
 package com.bytezone.xmit;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 // ---------------------------------------------------------------------------------//
 public class CatalogEntry
 //---------------------------------------------------------------------------------//
 {
   private PdsMember member;                   // contains DataBlocks
+  private LoadModule loadModule;
+  private BasicModule basicModule;
 
   private final String name;
-  private String userName = "";
+  private final String userName = "";
   private String aliasName = "";
 
   private final boolean usesAlias;
   private final int numTtr;
 
-  private int size;
-  private int init;
-  private int mod;
-
-  private int vv;
-  private int mm;
-
-  private LocalDate dateCreated;
-  private LocalDate dateModified;
-  private String time = "";
+  private int sectionL;
 
   private final byte[] directoryData;
 
@@ -34,6 +26,8 @@ public class CatalogEntry
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
+
+  int hw;
 
   // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
   //           com.ibm.zos.v2r3.ieab200/destow.htm
@@ -50,12 +44,15 @@ public class CatalogEntry
     numTtr = (buffer[ptr + 11] & 0x60) >>> 5;      // number of TTRs in user data
     usesAlias = (buffer[ptr + 11] & 0x80) != 0;    // name in the first field is an alias
 
+    hw = buffer[ptr + 11] & 0xFF;
     int size = buffer[ptr + 11] & 0x1F;
     directoryData = new byte[12 + size * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    if (numTtr == 0 && size > 0)
-      basic (directoryData);
+    if (numTtr == 0)
+      basicModule = size > 0 ? new BasicModule (directoryData) : new BasicModule ();
+    else
+      loadModule = new LoadModule (directoryData);
 
     if (false)
     {
@@ -70,6 +67,13 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  public boolean isBasic ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return basicModule != null;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public byte[] getDirectoryData ()
   // ---------------------------------------------------------------------------------//
   {
@@ -81,32 +85,6 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     return blockFrom;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void basic (byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    vv = buffer[12] & 0xFF;
-    mm = buffer[13] & 0xFF;
-
-    Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
-    if (opt.isPresent ())
-      dateCreated = opt.get ();
-
-    opt = Utility.getLocalDate (buffer, 20);
-    if (opt.isPresent ())
-      dateModified = opt.get ();
-
-    //    int moduleAttrs1 = buffer[ptr] & 0xFF;
-    //    int moduleAttrs2 = buffer[ptr] & 0xFF;
-
-    time = String.format ("%02X:%02X:%02X", buffer[24], buffer[25], buffer[15]);
-
-    size = Utility.getTwoBytes (buffer, 26);
-    init = Utility.getTwoBytes (buffer, 28);
-    mod = Utility.getTwoBytes (buffer, 30);
-    userName = Utility.getString (buffer, 32, 8);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -212,13 +190,6 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  //  int length ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return directoryData.length;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   public String getMemberName ()
   // ---------------------------------------------------------------------------------//
   {
@@ -250,44 +221,58 @@ public class CatalogEntry
   public int getSize ()
   // ---------------------------------------------------------------------------------//
   {
-    return size;
+    return basicModule == null ? 0 : basicModule.size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getAMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return loadModule == null ? 0 : loadModule.aMode;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getRMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return loadModule == null ? 0 : loadModule.rMode;
   }
 
   // ---------------------------------------------------------------------------------//
   public int getInit ()
   // ---------------------------------------------------------------------------------//
   {
-    return init;
+    return basicModule == null ? 0 : basicModule.init;
   }
 
   // ---------------------------------------------------------------------------------//
   public LocalDate getDateCreated ()
   // ---------------------------------------------------------------------------------//
   {
-    return dateCreated;
+    return basicModule == null ? null : basicModule.dateCreated;
   }
 
   // ---------------------------------------------------------------------------------//
   public LocalDate getDateModified ()
   // ---------------------------------------------------------------------------------//
   {
-    return dateModified;
+    return basicModule == null ? null : basicModule.dateModified;
   }
 
   // ---------------------------------------------------------------------------------//
   public String getTime ()
   // ---------------------------------------------------------------------------------//
   {
-    return time;
+    return basicModule == null ? "" : basicModule.time;
   }
 
   // ---------------------------------------------------------------------------------//
   public String getVersion ()
   // ---------------------------------------------------------------------------------//
   {
-    if (vv == 0 & mm == 0)
+    if (basicModule == null || basicModule.vv == 0 & basicModule.mm == 0)
       return "";
-    return String.format ("%02d.%02d", vv, mm);
+    return String.format ("%02d.%02d", basicModule.vv, basicModule.mm);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -295,9 +280,8 @@ public class CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    String date1Text = dateCreated == null ? ""
-        : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %8s  %,6d  %s  %s  %8s", name, userName, size, date1Text,
-        time, aliasName);
+    String detail =
+        basicModule != null ? basicModule.toString () : loadModule.toString ();
+    return String.format ("%8s  %s  %8s", name, detail, aliasName);
   }
 }

@@ -117,8 +117,9 @@ class FontManager
       message.setText (
           "These are all of the fixed-width fonts currently on your system. Please"
               + " choose the ones that you wish to be able to select from."
-              + "\nWhen back on the main screen use the , and . keys to cycle through"
-              + " the selected fonts, and the < and > keys to alter the font size.");
+              + " From the main \nscreen use the COMMA and PERIOD keys to"
+              + " cycle through the selected fonts, and the LESS-THAN and"
+              + " GREATER-THAN keys to alter the font size.");
       messageBox.getChildren ().add (message);
 
       Button btnApply = getButton ("Apply");
@@ -139,6 +140,12 @@ class FontManager
       borderPane.setBottom (controlBox);
       borderPane.setTop (messageBox);
 
+      stage.addEventHandler (KeyEvent.KEY_RELEASED, (KeyEvent event) ->
+      {
+        if (KeyCode.ESCAPE == event.getCode ())
+          stage.hide ();
+      });
+
       stage.setScene (new Scene (borderPane, 1000, 700));
     }
 
@@ -150,7 +157,9 @@ class FontManager
     stage.show ();
   }
 
+  // ---------------------------------------------------------------------------------//
   private Button getButton (String text)
+  // ---------------------------------------------------------------------------------//
   {
     Button button = new Button (text);
     button.setMinWidth (100);

@@ -152,8 +152,12 @@ public class XmitApp extends Application implements CodePageSelectedListener
     if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
         || keyCode == KeyCode.O)
       outputPane.keyPressed (keyCode);
-    else
+    else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.PERIOD)
       fontManager.keyPressed (keyEvent);
+    //    else if (keyCode == KeyCode.DIGIT1)
+    //      xmitTable.setVisibleColumns (1);
+    //    else if (keyCode == KeyCode.DIGIT2)
+    //      xmitTable.setVisibleColumns (2);
   }
 
   // ---------------------------------------------------------------------------------//

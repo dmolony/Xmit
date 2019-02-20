@@ -19,6 +19,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     TableItemSelectionListener, ShowLinesListener, FontChangeListener, OutputWriter
 // ---------------------------------------------------------------------------------//
 {
+  private static final int MAX_HEX_BYTES = 0x20000;
+  private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE =
       "\n*** Output truncated at %,d lines to improve rendering time ***";
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -155,12 +157,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       return;
 
     byte[] buffer = dataFile.getDataBuffer ();
-
-    if (buffer != null)
-    {
-      int max = Math.min (0x20000, buffer.length);
-      hexTab.setText (Utility.getHexDump (buffer, 0, max));
-    }
+    hexTab.setText (
+        Utility.getHexDump (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length)));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -170,7 +168,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     if (dataFile == null)
       return;
 
-    outputTab.setText (getLines (2500, showLines, stripLines, truncateLines));
+    outputTab.setText (getLines (MAX_LINES, showLines, stripLines, truncateLines));
   }
 
   // ---------------------------------------------------------------------------------//

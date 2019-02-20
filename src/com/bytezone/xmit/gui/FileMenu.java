@@ -30,9 +30,9 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final Menu fileMenu = new Menu ("File");
-  private final MenuItem rootMenuItem = new MenuItem ("Set XMIT root folder");
-  private final MenuItem extractMenuItem = new MenuItem ("Extract file");
-  private final MenuItem saveMenuItem = new MenuItem ("Save output");
+  private final MenuItem rootMenuItem = new MenuItem ("Set XMIT root folder...");
+  private final MenuItem extractMenuItem = new MenuItem ("Extract file...");
+  private final MenuItem saveMenuItem = new MenuItem ("Save output...");
 
   private CatalogEntry catalogEntry;
   private Dataset dataset;
@@ -162,7 +162,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
   {
     this.catalogEntry = catalogEntry;
-    extractMenuItem.setText ("Extract " + catalogEntry.getMemberName ());
+    extractMenuItem.setText ("Extract " + catalogEntry.getMemberName () + "...");
     extractMenuItem.setDisable (false);
   }
 
@@ -176,17 +176,17 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
 
     if (dataset == null)
     {
-      extractMenuItem.setText ("Extract file");
+      extractMenuItem.setText ("Extract file...");
       extractMenuItem.setDisable (true);
     }
     else if (dataset.isPs ())
     {
-      extractMenuItem.setText ("Extract " + dataset.getReader ().getFileName ());
+      extractMenuItem.setText ("Extract " + dataset.getReader ().getFileName () + "...");
       extractMenuItem.setDisable (false);
     }
     else
     {
-      extractMenuItem.setText ("Extract " + name);
+      extractMenuItem.setText ("Extract " + name + "...");
       extractMenuItem.setDisable (true);
     }
   }

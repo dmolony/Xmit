@@ -24,10 +24,14 @@ public class CatalogEntryItem                   // must be public
   private ObjectProperty<LocalDate> dateCreated;
   private ObjectProperty<LocalDate> dateModified;
 
+  private IntegerProperty aMode;
+  private IntegerProperty rMode;
+
   // ---------------------------------------------------------------------------------//
   public CatalogEntryItem (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
+    //    System.out.println (catalogEntry.isBasic ());
     this.catalogEntry = catalogEntry;
     setMemberName (catalogEntry.getMemberName ());
     setUserName (catalogEntry.getUserName ());
@@ -40,6 +44,9 @@ public class CatalogEntryItem                   // must be public
     setTime (catalogEntry.getTime ());
     setType (catalogEntry.getMember ().getFileType ());
     setVersion (catalogEntry.getVersion ());
+
+    setAMode (catalogEntry.getAMode ());
+    setRMode (catalogEntry.getRMode ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -300,5 +307,51 @@ public class CatalogEntryItem                   // must be public
     if (version == null)
       version = new SimpleStringProperty ();
     return version;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setAMode (int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    aModeProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final int getAMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return aModeProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private IntegerProperty aModeProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (aMode == null)
+      aMode = new SimpleIntegerProperty ();
+    return aMode;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setRMode (int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    rModeProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final int getRMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return rModeProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private IntegerProperty rModeProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (rMode == null)
+      rMode = new SimpleIntegerProperty ();
+    return rMode;
   }
 }
