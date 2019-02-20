@@ -10,9 +10,7 @@ import java.util.prefs.Preferences;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.Utility.FileType;
-import com.bytezone.xmit.textunit.Dsorg.Org;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +34,7 @@ class XmitTable extends TableView<CatalogEntryItem>
       FXCollections.observableArrayList ();
 
   private Dataset dataset;
-  private final Map<Reader, String> selectedMembers = new HashMap<> ();
+  private final Map<Dataset, String> selectedMembers = new HashMap<> ();
   private Font font;
 
   private TableColumn<CatalogEntryItem, String> idColumn;
@@ -95,7 +93,7 @@ class XmitTable extends TableView<CatalogEntryItem>
             return;
 
           CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
-          selectedMembers.put (dataset.getReader (), catalogEntry.getMemberName ());
+          selectedMembers.put (dataset, catalogEntry.getMemberName ());
           for (TableItemSelectionListener listener : listeners)
             listener.tableItemSelected (catalogEntry);
         });
@@ -369,31 +367,18 @@ class XmitTable extends TableView<CatalogEntryItem>
     this.dataset = dataset;
 
     items.clear ();
-    if (dataset != null && dataset.getDisposition ().getOrg () == Org.PDS)
+    if (dataset != null && dataset.isPds ())
     {
-      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
+      PdsDataset pdsDataset = (PdsDataset) dataset;
+
+      for (CatalogEntry catalogEntry : pdsDataset)
         items.add (new CatalogEntryItem (catalogEntry));
 
-      select (selectedMembers.containsKey (dataset.getReader ())
-          ? memberIndex (selectedMembers.get (dataset.getReader ())) : 0);
+      select (selectedMembers.containsKey (dataset)
+          ? pdsDataset.memberIndex (selectedMembers.get (dataset)) : 0);
 
-      CatalogEntry ce = ((PdsDataset) dataset).getCatalogEntries ().get (0);
-      setVisibleColumns (ce.isBasic () ? 1 : 2);
+      setVisibleColumns (pdsDataset.isBasic () ? 1 : 2);
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private int memberIndex (String memberName)
-  // ---------------------------------------------------------------------------------//
-  {
-    int index = 0;
-    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
-    {
-      if (memberName.equals (catalogEntry.getMemberName ()))
-        return index;
-      ++index;
-    }
-    return 0;
   }
 
   // ---------------------------------------------------------------------------------//

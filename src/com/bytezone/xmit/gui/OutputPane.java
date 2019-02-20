@@ -102,7 +102,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
           "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
       text.append ("Size1 Size2       -------- user ---------\n");
 
-      for (CatalogEntry catalogEntry : pdsDataset.getCatalogEntries ())
+      for (CatalogEntry catalogEntry : pdsDataset)
       {
         text.append (debugLine (catalogEntry));
         text.append ("\n");

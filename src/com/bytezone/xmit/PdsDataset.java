@@ -1,6 +1,7 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -8,7 +9,7 @@ import java.util.TreeMap;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 // ---------------------------------------------------------------------------------//
-public class PdsDataset extends Dataset
+public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 //---------------------------------------------------------------------------------//
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
@@ -27,11 +28,18 @@ public class PdsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<CatalogEntry> getCatalogEntries ()
+  public boolean isBasic ()
   // ---------------------------------------------------------------------------------//
   {
-    return catalogEntries;
+    return catalogEntries.size () > 0 && catalogEntries.get (0).isBasic ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  //  public List<CatalogEntry> getCatalogEntries ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return catalogEntries;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public int size ()
@@ -210,9 +218,31 @@ public class PdsDataset extends Dataset
   }
 
   // ---------------------------------------------------------------------------------//
+  public int memberIndex (String memberName)
+  // ---------------------------------------------------------------------------------//
+  {
+    int index = 0;
+    for (CatalogEntry catalogEntry : catalogEntries)
+    {
+      if (memberName.equals (catalogEntry.getMemberName ()))
+        return index;
+      ++index;
+    }
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return reader.getFileName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Iterator<CatalogEntry> iterator ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntries.iterator ();
   }
 }
