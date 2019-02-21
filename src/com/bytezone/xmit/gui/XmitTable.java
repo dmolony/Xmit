@@ -28,6 +28,7 @@ class XmitTable extends TableView<CatalogEntryItem>
 {
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
+  private static final boolean HEX = true;
 
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
   private final ObservableList<CatalogEntryItem> items =
@@ -76,8 +77,8 @@ class XmitTable extends TableView<CatalogEntryItem>
     versionColumn = addString ("ver.mod", "Version", 70, "CENTER");
 
     // load module
-    epaColumn = addNumber ("Entry", "epa", 70);
-    storageColumn = addNumber ("Storage", "storage", 70);
+    storageColumn = addNumber ("Storage", "storage", 70, HEX);
+    epaColumn = addNumber ("Entry", "epa", 70, HEX);
     apfColumn = addString ("APF", "apf", 50, "CENTER");
     aModeColumn = addNumber ("amode", "aMode", 30);
     rModeColumn = addNumber ("rmode", "rMode", 30);
@@ -152,9 +153,17 @@ class XmitTable extends TableView<CatalogEntryItem>
   TableColumn<CatalogEntryItem, Number> addNumber (String heading, String name, int width)
   // ---------------------------------------------------------------------------------//
   {
+    return addNumber (heading, name, width, !HEX);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  TableColumn<CatalogEntryItem, Number> addNumber (String heading, String name, int width,
+      boolean hex)
+  // ---------------------------------------------------------------------------------//
+  {
     TableColumn<CatalogEntryItem, Number> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setCellFactory (numberCellFactory ());
+    column.setCellFactory (numberCellFactory (hex));
     column.setMinWidth (width);
     getColumns ().add (column);
     return column;
@@ -201,10 +210,11 @@ class XmitTable extends TableView<CatalogEntryItem>
 
   // ---------------------------------------------------------------------------------//
   Callback<TableColumn<CatalogEntryItem, Number>, TableCell<CatalogEntryItem, Number>>
-      numberCellFactory ()
+      numberCellFactory (boolean hex)
   // ---------------------------------------------------------------------------------//
   {
-    return new Callback<TableColumn<CatalogEntryItem, Number>, TableCell<CatalogEntryItem, Number>> ()
+    return new Callback<TableColumn<CatalogEntryItem, Number>, //
+        TableCell<CatalogEntryItem, Number>> ()
     {
       @Override
       public TableCell<CatalogEntryItem, Number>
@@ -216,13 +226,18 @@ class XmitTable extends TableView<CatalogEntryItem>
           public void updateItem (final Number item, boolean empty)
           {
             super.updateItem (item, empty);
-            setStyle ("-fx-alignment: CENTER-RIGHT;");
+            if (hex)
+              setStyle ("-fx-alignment: CENTER;");
+            else
+              setStyle ("-fx-alignment: CENTER-RIGHT;");
             if (item == null || empty)
               setText (null);
             else
             {
               if (item.intValue () == 0)
                 setText ("");
+              else if (hex)
+                setText (String.format ("%06X", item));
               else
                 setText (String.format ("%,d", item));
               setFont (font);
