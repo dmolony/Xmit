@@ -58,9 +58,12 @@ public class CatalogEntryItem                   // must be public
     setStorage (catalogEntry.getStorage ());
     setAMode (catalogEntry.getAMode ());
     setRMode (catalogEntry.getRMode ());
-    setApf (catalogEntry.isApf () ? "yes" : "");
-    setAttr (String.format ("%s  %s", catalogEntry.isReentrant () ? "RN" : "  ",
-        catalogEntry.isReusable () ? "RU" : "  "));
+    setApf (catalogEntry.isApf () ? "apf" : "");
+    setAttr (String.format ("%2s %2s %2s %2s",          //
+        catalogEntry.isReentrant () ? "RN" : "",        //
+        catalogEntry.isReusable () ? "RU" : "",         //
+        catalogEntry.isOverlay () ? "OV" : "",          //
+        catalogEntry.isTest () ? "TS" : ""));
   }
 
   // ---------------------------------------------------------------------------------//

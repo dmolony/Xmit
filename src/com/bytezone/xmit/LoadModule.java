@@ -26,7 +26,7 @@ public class LoadModule
   final boolean lpo;
   final boolean pageAligned;
   final boolean ssi;
-  final boolean apf;
+  final boolean apfBlock;
   final boolean ptb3Valid;
   final boolean objSigned;
   final boolean free1;
@@ -45,6 +45,7 @@ public class LoadModule
   int storage;
   int firstTextBlock;
   int epa;
+  int apf;
 
   // ---------------------------------------------------------------------------------//
   LoadModule (byte[] buffer)
@@ -64,6 +65,8 @@ public class LoadModule
     byte vsFlag1 = buffer[30];
     byte vsFlag2 = buffer[31];
     byte vsFlag3 = buffer[32];
+
+    int ptr = 33;
 
     reentrant = (attr1 & 0x80) != 0;
     reusable = (attr1 & 0x40) != 0;
@@ -87,7 +90,7 @@ public class LoadModule
     lpo = (vsFlag1 & 0x40) != 0;
     pageAligned = (vsFlag1 & 0x20) != 0;
     ssi = (vsFlag1 & 0x10) != 0;
-    apf = (vsFlag1 & 0x08) != 0;
+    apfBlock = (vsFlag1 & 0x08) != 0;
     ptb3Valid = (vsFlag1 & 0x04) != 0;
     objSigned = (vsFlag1 & 0x02) != 0;
     free1 = (vsFlag1 & 0x01) != 0;
@@ -103,28 +106,50 @@ public class LoadModule
 
     if (scatter)
     {
-
+      int slsz = (int) Utility.getValue (buffer, ptr, 2);
+      int ttsz = (int) Utility.getValue (buffer, ptr + 2, 2);
+      int esdt = (int) Utility.getValue (buffer, ptr + 4, 2);
+      int esdc = (int) Utility.getValue (buffer, ptr + 6, 2);
+      //      System.out.printf ("   sctr");
+      ptr += 8;
     }
 
     if (alias)
     {
-
+      int aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
+      String aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
+      //      System.out.printf ("   alias: %06X  %s%n", aliasTtr, aliasName);
+      ptr += 11;
     }
+    //    else
+    //      ++ptr;
 
     if (ssi)
     {
-
+      if (false)           // word boundary?
+        ptr++;
+      long fullWord = Utility.getValue (buffer, ptr, 4);
+      ptr += 4;
+      //      System.out.printf ("   ssi:");
     }
 
-    if (apf)
+    if (apfBlock)
     {
-
+      int len1 = buffer[ptr++] & 0xFF;
+      apf = buffer[ptr++] & 0xFF;
+      //      System.out.printf ("   apf: %02X  %02X%n", len1, apf);
     }
 
     if (lpo)
     {
-
+      int len1 = buffer[ptr++] & 0xFF;
+      long fullWord1 = Utility.getValue (buffer, ptr, 4);
+      long fullWord2 = Utility.getValue (buffer, ptr, 4);
+      long fullWord3 = Utility.getValue (buffer, ptr, 4);
+      //      System.out.printf ("   lpo:");
+      ptr += 13;
     }
+    //    System.out.printf ("[%2d  %2d]%n%n", ptr, buffer.length);
   }
 
   // ---------------------------------------------------------------------------------//

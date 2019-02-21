@@ -49,6 +49,7 @@ public class CatalogEntry
     directoryData = new byte[12 + size * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
+    //    System.out.println (name);
     if (numTtr == 0)
       basicModule = size > 0 ? new BasicModule (directoryData) : new BasicModule ();
     else
@@ -256,7 +257,7 @@ public class CatalogEntry
   public boolean isApf ()
   // ---------------------------------------------------------------------------------//
   {
-    return loadModule == null ? false : loadModule.apf;
+    return loadModule == null ? false : loadModule.apf == 1;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -271,6 +272,20 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     return loadModule == null ? false : loadModule.reusable;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isOverlay ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return loadModule == null ? false : loadModule.overlay;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isTest ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return loadModule == null ? false : loadModule.test;
   }
 
   // ---------------------------------------------------------------------------------//

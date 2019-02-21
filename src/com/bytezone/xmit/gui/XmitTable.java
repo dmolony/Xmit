@@ -62,7 +62,7 @@ class XmitTable extends TableView<CatalogEntryItem>
     setItems (items);
 
     // common
-    addString ("Member", "MemberName", 100, "CENTER-LEFT");
+    addString ("Member", "MemberName", 75, "CENTER-LEFT");
     addNumber ("Bytes", "Bytes", 90);
 
     // basic module
@@ -76,11 +76,11 @@ class XmitTable extends TableView<CatalogEntryItem>
     versionColumn = addString ("ver.mod", "Version", 70, "CENTER");
 
     // load module
-    epaColumn = addNumber ("EPA", "epa", 70);
+    epaColumn = addNumber ("Entry", "epa", 70);
     storageColumn = addNumber ("Storage", "storage", 70);
     apfColumn = addString ("APF", "apf", 50, "CENTER");
-    aModeColumn = addNumber ("amode", "aMode", 50);
-    rModeColumn = addNumber ("rmode", "rMode", 50);
+    aModeColumn = addNumber ("amode", "aMode", 30);
+    rModeColumn = addNumber ("rmode", "rMode", 30);
     attrColumn = addString ("Attributes", "attr", 100, "CENTER-LEFT");
 
     // common
@@ -221,7 +221,10 @@ class XmitTable extends TableView<CatalogEntryItem>
               setText (null);
             else
             {
-              setText (String.format ("%,d", item));
+              if (item.intValue () == 0)
+                setText ("");
+              else
+                setText (String.format ("%,d", item));
               setFont (font);
             }
           }

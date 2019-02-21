@@ -67,7 +67,6 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     if (reader.size () > 1)
     {
       Dataset firstDataset = reader.getDatasets ().get (0);
-      Disposition disposition = firstDataset.getDisposition ();
       if (firstDataset.isPs ())
       {
         FlatFile file = ((PsDataset) firstDataset).getMember ();
@@ -76,7 +75,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
         text.append ("\n\n");
       }
       else
-        text.append ("Unexpected disposition for file #1: " + disposition.getOrg ());
+        text.append (
+            "Unexpected disposition for file #1: " + firstDataset.getDisposition ());
     }
 
     for (ControlRecord controlRecord : dataset.getReader ().getControlRecords ())
@@ -98,9 +98,12 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       text.append (
           String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
-      text.append (
-          "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
-      text.append ("Size1 Size2       -------- user ---------\n");
+      if (pdsDataset.isBasic ())
+      {
+        text.append (
+            "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
+        text.append ("Size1 Size2       -------- user ---------\n");
+      }
 
       for (CatalogEntry catalogEntry : pdsDataset)
       {
