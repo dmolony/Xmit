@@ -148,8 +148,16 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   private void updateBlocksTab ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataFile != null)
-      blocksTab.setText (dataFile.toString ());
+    if (dataFile == null)
+      return;
+
+    StringBuilder text = new StringBuilder ();
+
+    if (dataFile instanceof PdsMember)
+      text.append (((PdsMember) dataFile).listSizeCounts ());
+    text.append (dataFile.toString ());
+
+    blocksTab.setText (text.toString ());
   }
 
   // ---------------------------------------------------------------------------------//
