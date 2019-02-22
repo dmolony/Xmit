@@ -218,6 +218,16 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  public CatalogEntry getCatalogEntry (String name)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (CatalogEntry catalogEntry : catalogEntries)
+      if (name.equals (catalogEntry.getMemberName ()))
+        return catalogEntry;
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int memberIndex (String memberName)
   // ---------------------------------------------------------------------------------//
   {

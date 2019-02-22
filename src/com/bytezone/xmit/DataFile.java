@@ -11,11 +11,9 @@ import com.bytezone.xmit.textunit.ControlRecord;
 public abstract class DataFile implements Comparable<DataFile>
 //---------------------------------------------------------------------------------//
 {
-  //  private static final int MAX_BUFFER = 500_000;
-
   private String name = "";
   private final Disposition disposition;
-  private final Reader reader;
+  protected final Reader reader;
 
   int dataLength = 0;
 
@@ -62,10 +60,6 @@ public abstract class DataFile implements Comparable<DataFile>
   public FileType getFileType ()
   // ---------------------------------------------------------------------------------//
   {
-    if (isVB ())
-    {
-      // get 8 bytes after skipping the header
-    }
     return isXmit () ? FileType.XMI : Utility.getFileType (getEightBytes ());
   }
 
@@ -98,21 +92,9 @@ public abstract class DataFile implements Comparable<DataFile>
       xmitLines ();
     else if (getFileType () != FileType.BIN)    // ZIP/DOC/PDF etc
       showExtractMessage ();
-    else if (disposition.recfm == 0xC000        // undefined
+    else if (disposition.recfm == 0xC000        // undefined - usually a load file
         || disposition.lrecl <= 1)
-    {
-      if (disposition.isPds ())
-      {
-        PdsMember pdsMember = (PdsMember) this;
-        if (pdsMember.getCommonBlockLength () > 1)
-        {
-          for (DataBlock block : pdsMember)
-            lines.add (Utility.getString (block.getBuffer ()));
-          return;
-        }
-      }
-      hexDump ();
-    }
+      undefined ();
     else if (isVB () && isRdw ())
       rdwLines ();
     else if (disposition.recfm == 0x5002)       // VB flat file
@@ -200,6 +182,13 @@ public abstract class DataFile implements Comparable<DataFile>
   }
 
   // ---------------------------------------------------------------------------------//
+  void undefined ()
+  // ---------------------------------------------------------------------------------//
+  {
+    hexDump ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   private void showExtractMessage ()
   // ---------------------------------------------------------------------------------//
   {
@@ -210,10 +199,9 @@ public abstract class DataFile implements Comparable<DataFile>
   }
 
   // ---------------------------------------------------------------------------------//
-  private void hexDump ()
+  void hexDump ()
   // ---------------------------------------------------------------------------------//
   {
-    //    byte[] buffer = getDataBuffer (MAX_BUFFER);
     byte[] buffer = getDataBuffer ();
     for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
       lines.add (line);

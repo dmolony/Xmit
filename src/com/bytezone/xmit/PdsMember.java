@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 // ---------------------------------------------------------------------------------//
@@ -12,7 +13,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 {
   private final List<DataBlock> dataBlocks;                    // PDS & PDS/E
   private final List<DataBlock> extraDataBlocks;               // PDSE only
-  private final Map<Integer, Count> blockCounts = new TreeMap<> ();
+  private final Map<Integer, SizeCount> sizeCounts = new TreeMap<> ();
 
   // ---------------------------------------------------------------------------------//
   PdsMember (Dataset dataset, Disposition disposition)
@@ -33,45 +34,45 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     {
       dataBlocks.add (dataBlock);
       dataLength += dataBlock.getSize ();
-      incrementCount (dataBlock.getSize ());
+      incrementSizeCount (dataBlock.getSize ());
     }
     else                                          // additional PDS/E blocks
       extraDataBlocks.add (dataBlock);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void incrementCount (int size)
+  private void incrementSizeCount (int size)
   // ---------------------------------------------------------------------------------//
   {
     if (size == 0)          // ignore eof
       return;
 
-    Count count = blockCounts.get (size);
-    if (count == null)
+    SizeCount sizeCount = sizeCounts.get (size);
+    if (sizeCount == null)
     {
-      count = new Count (size);
-      blockCounts.put (size, count);
+      sizeCount = new SizeCount (size);
+      sizeCounts.put (size, sizeCount);
     }
 
-    count.increment ();
+    sizeCount.increment ();
   }
 
   // ---------------------------------------------------------------------------------//
-  //  void listCounts ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    for (Count count : blockCounts.values ())
-  //      System.out.println (count);
-  //  }
+  private CatalogEntry getCatalogEntry ()
+  // ---------------------------------------------------------------------------------//
+  {
+    PdsDataset pdsDataset = (PdsDataset) reader.getActiveDataset ();
+    return pdsDataset.getCatalogEntry (getName ());
+  }
 
   // ---------------------------------------------------------------------------------//
   int getCommonBlockLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (blockCounts.size () != 1)
+    if (sizeCounts.size () != 1)
       return 0;
-    Count count = blockCounts.entrySet ().iterator ().next ().getValue ();
-    return count.blockSize;
+    Entry<Integer, SizeCount> entry = sizeCounts.entrySet ().iterator ().next ();
+    return entry == null ? 0 : entry.getValue ().blockSize;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -186,6 +187,23 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 
   // ---------------------------------------------------------------------------------//
   @Override
+  void undefined ()         // recfm = U
+  // ---------------------------------------------------------------------------------//
+  {
+    CatalogEntry catalogEntry = getCatalogEntry ();
+    if (catalogEntry.isLoadModule ())
+    {
+      hexDump ();
+    }
+    else if (getCommonBlockLength () > 1)
+      for (DataBlock block : dataBlocks)
+        lines.add (Utility.getString (block.getBuffer ()));
+    else
+      hexDump ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   byte[] getEightBytes ()
   // ---------------------------------------------------------------------------------//
   {
@@ -245,14 +263,14 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  class Count
+  class SizeCount
   // ---------------------------------------------------------------------------------//
   {
     int blockSize;
     int count;
 
     // ---------------------------------------------------------------------------------//
-    Count (int size)
+    SizeCount (int size)
     // ---------------------------------------------------------------------------------//
     {
       blockSize = size;
