@@ -236,7 +236,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     {
       total += dataBlock.getSize ();
       pointers += dataBlock.totalBlockPointers ();
-      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+      text.append (String.format ("  %4d  %s%n", count++, dataBlock));
     }
     text.append (String.format ("%44.44s %s%n", "", "--------  ---------  ------"));
 
