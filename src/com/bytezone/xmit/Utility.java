@@ -22,26 +22,24 @@ public class Utility
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();
 
-  //  private static Pattern p = Pattern.compile ("\\\\u(\\d{3,4}) ");
+  private static final byte[][] signatures =
+      { { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, 0x1A,
+          (byte) 0xE1 },                                // DOC
+        { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E },   // PDF
+        { 0x50, 0x4B, 0x03, 0x04 },                     // ZIP
+        { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 },         // RAR
+        { (byte) 0x89, 0x50, 0x4E, 0x47 },              // PNG
+        { 0x7B, 0x5C, 0x72, 0x74, 0x66 },               // RTF
+        { 0x5A, 0x00, 0x12, (byte) 0xD3, (byte) 0xA8, (byte) 0xA8, 0x00, 0x00 }, // AFP
+      };
 
-  private static final byte[] doc = { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0,
-                                      (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 };
-  private static final byte[] pdf = { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E };
-  private static final byte[] zip = { 0x50, 0x4B, 0x03, 0x04 };
-  private static final byte[] rar = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 };
-  private static final byte[] png = { (byte) 0x89, 0x50, 0x4E, 0x47 };
-  private static final byte[] rtf = { 0x7B, 0x5C, 0x72, 0x74, 0x66 };
-  private static final byte[] afp =
-      { 0x5A, 0x00, 0x12, (byte) 0xD3, (byte) 0xA8, (byte) 0xA8, 0x00, 0x00 };
-
-  private static final byte[][] signatures = { doc, pdf, zip, rar, png, rtf, afp };
   private static Alert alert;
 
   // ---------------------------------------------------------------------------------//
   public enum FileType
   // ---------------------------------------------------------------------------------//
   {
-    DOC, PDF, ZIP, RAR, PNG, RTF, AFP, BIN, XMI
+    DOC, PDF, ZIP, RAR, PNG, RTF, AFP, BIN, XMI       // must match signatures array
   }
 
   // ---------------------------------------------------------------------------------//

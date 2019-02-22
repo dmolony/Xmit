@@ -100,7 +100,19 @@ public abstract class DataFile implements Comparable<DataFile>
       showExtractMessage ();
     else if (disposition.recfm == 0xC000        // undefined
         || disposition.lrecl <= 1)
+    {
+      if (disposition.isPds ())
+      {
+        PdsMember pdsMember = (PdsMember) this;
+        if (pdsMember.getCommonBlockLength () > 1)
+        {
+          for (DataBlock block : pdsMember)
+            lines.add (Utility.getString (block.getBuffer ()));
+          return;
+        }
+      }
       hexDump ();
+    }
     else if (isVB () && isRdw ())
       rdwLines ();
     else if (disposition.recfm == 0x5002)       // VB flat file
@@ -248,6 +260,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   // test files
   // ---------------------------------------------------------------------------------//
+  // FILE182 - EDITXMIT - load library with doco in U format member
   // FILE185 - FILE234I - incomplete
   // FILE313 - many extractable files
   // FILE404 - $$PREZ18 - possibly corrupt

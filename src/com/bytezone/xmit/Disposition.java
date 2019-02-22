@@ -51,6 +51,7 @@ public class Disposition
 
   void setPdse (boolean value)
   {
+    assert dsorg == Org.PDS;
     this.isPdse = value;
   }
 
@@ -61,6 +62,13 @@ public class Disposition
   public Org getOrg ()
   {
     return dsorg;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isPds ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dsorg == Org.PDS;        // includes PDS/E
   }
 
   // ---------------------------------------------------------------------------------//

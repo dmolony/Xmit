@@ -3,13 +3,16 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 // ---------------------------------------------------------------------------------//
 public class PdsMember extends DataFile implements Iterable<DataBlock>
 //---------------------------------------------------------------------------------//
 {
-  private final List<DataBlock> dataBlocks;                    // PDS & PDSE
+  private final List<DataBlock> dataBlocks;                    // PDS & PDS/E
   private final List<DataBlock> extraDataBlocks;               // PDSE only
+  private final Map<Integer, Count> blockCounts = new TreeMap<> ();
 
   // ---------------------------------------------------------------------------------//
   PdsMember (Dataset dataset, Disposition disposition)
@@ -22,13 +25,6 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  int size ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return dataBlocks.size ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   void addDataBlock (DataBlock dataBlock)
   // ---------------------------------------------------------------------------------//
   {
@@ -37,9 +33,45 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     {
       dataBlocks.add (dataBlock);
       dataLength += dataBlock.getSize ();
+      incrementCount (dataBlock.getSize ());
     }
-    else                                          // additional PDSE blocks
+    else                                          // additional PDS/E blocks
       extraDataBlocks.add (dataBlock);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void incrementCount (int size)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (size == 0)          // ignore eof
+      return;
+
+    Count count = blockCounts.get (size);
+    if (count == null)
+    {
+      count = new Count (size);
+      blockCounts.put (size, count);
+    }
+
+    count.increment ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //  void listCounts ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    for (Count count : blockCounts.values ())
+  //      System.out.println (count);
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  int getCommonBlockLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (blockCounts.size () != 1)
+      return 0;
+    Count count = blockCounts.entrySet ().iterator ().next ().getValue ();
+    return count.blockSize;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -210,5 +242,35 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.iterator ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  class Count
+  // ---------------------------------------------------------------------------------//
+  {
+    int blockSize;
+    int count;
+
+    // ---------------------------------------------------------------------------------//
+    Count (int size)
+    // ---------------------------------------------------------------------------------//
+    {
+      blockSize = size;
+    }
+
+    // ---------------------------------------------------------------------------------//
+    void increment ()
+    // ---------------------------------------------------------------------------------//
+    {
+      count++;
+    }
+
+    // ---------------------------------------------------------------------------------//
+    @Override
+    public String toString ()
+    // ---------------------------------------------------------------------------------//
+    {
+      return String.format ("%,7d  %,5d", blockSize, count);
+    }
   }
 }
