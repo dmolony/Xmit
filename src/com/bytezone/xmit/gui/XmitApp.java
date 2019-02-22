@@ -1,5 +1,7 @@
 package com.bytezone.xmit.gui;
 
+import java.awt.Desktop;
+import java.awt.Desktop.Action;
 import java.io.File;
 import java.util.prefs.Preferences;
 
@@ -10,7 +12,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -30,7 +31,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
   private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-  private Alert alert;
 
   private String rootFolderName;
 
@@ -137,10 +137,25 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     scene.setOnKeyPressed (e -> keyPressed (e));
 
+    if (false)
+    {
+      Desktop desktop = Desktop.getDesktop ();
+      System.out.println (Desktop.isDesktopSupported ());
+      System.out.println (desktop.isSupported (Action.APP_ABOUT));
+      desktop.setAboutHandler (e -> squawk ("About dialog"));
+      desktop.setPreferencesHandler (e -> squawk ("Preferences dialog"));
+      desktop.setQuitHandler ( (e, r) -> squawk ("Quit dialog"));
+    }
+
     primaryStage.show ();
 
     splitPane.setDividerPosition (0, dividerPosition1);      // must happen after show()
     splitPane.setDividerPosition (1, dividerPosition2);
+  }
+
+  private void squawk (String s)
+  {
+    System.out.println (s);
   }
 
   // ---------------------------------------------------------------------------------//

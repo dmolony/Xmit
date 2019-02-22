@@ -1,5 +1,7 @@
 package com.bytezone.xmit;
 
+// https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
+// com.ibm.zos.v2r3.ieab200/destow.htm
 // ---------------------------------------------------------------------------------//
 public class LoadModule
 // ---------------------------------------------------------------------------------//
@@ -29,7 +31,7 @@ public class LoadModule
   final boolean apfBlock;
   final boolean ptb3Valid;
   final boolean objSigned;
-  final boolean free1;
+  final boolean attr;
 
   final boolean nameGen;
   final boolean free2;
@@ -55,13 +57,17 @@ public class LoadModule
     boolean alias = (buffer[11] & 0x80) != 0;
 
     ttrText = (int) Utility.getValue (buffer, 12, 3);
-    ttrNoteList = (int) Utility.getValue (buffer, 16, 3);
+    int zero = buffer[15] & 0xFF;
+    ttrNoteList = (int) Utility.getValue (buffer, 16, 3);   // or ttrScatter
     notes = buffer[19] & 0xFF;
+
     byte attr1 = buffer[20];
     byte attr2 = buffer[21];
+
     storage = (int) Utility.getValue (buffer, 22, 3);
     firstTextBlock = Utility.getTwoBytes (buffer, 25);
     epa = (int) Utility.getValue (buffer, 27, 3);
+
     byte vsFlag1 = buffer[30];
     byte vsFlag2 = buffer[31];
     byte vsFlag3 = buffer[32];
@@ -93,7 +99,7 @@ public class LoadModule
     apfBlock = (vsFlag1 & 0x08) != 0;
     ptb3Valid = (vsFlag1 & 0x04) != 0;
     objSigned = (vsFlag1 & 0x02) != 0;
-    free1 = (vsFlag1 & 0x01) != 0;
+    attr = (vsFlag1 & 0x01) != 0;
 
     nameGen = (vsFlag2 & 0x80) != 0;
     free2 = (vsFlag2 & 0x40) != 0;
@@ -121,14 +127,10 @@ public class LoadModule
       //      System.out.printf ("   alias: %06X  %s%n", aliasTtr, aliasName);
       ptr += 11;
     }
-    //    else
-    //      ++ptr;
 
     if (ssi)
     {
-      if (false)           // word boundary?
-        ptr++;
-      long fullWord = Utility.getValue (buffer, ptr, 4);
+      long ssiWord = Utility.getValue (buffer, ptr, 4);
       ptr += 4;
       //      System.out.printf ("   ssi:");
     }
@@ -143,11 +145,19 @@ public class LoadModule
     if (lpo)
     {
       int len1 = buffer[ptr++] & 0xFF;
-      long fullWord1 = Utility.getValue (buffer, ptr, 4);
-      long fullWord2 = Utility.getValue (buffer, ptr, 4);
-      long fullWord3 = Utility.getValue (buffer, ptr, 4);
+      long fullWord1 = Utility.getValue (buffer, ptr + 1, 4);
+      long fullWord2 = Utility.getValue (buffer, ptr + 5, 4);
+      long fullWord3 = Utility.getValue (buffer, ptr + 9, 4);
       //      System.out.printf ("   lpo:");
       ptr += 13;
+    }
+
+    if (attr)
+    {
+      int byte0 = buffer[ptr++] & 0xFF;
+      int byte1 = buffer[ptr++] & 0xFF;
+      int reserved = buffer[ptr++] & 0xFF;
+      ptr += (byte1 & 0x0F);
     }
     //    System.out.printf ("[%2d  %2d]%n%n", ptr, buffer.length);
   }
