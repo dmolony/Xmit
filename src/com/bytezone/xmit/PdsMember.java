@@ -81,8 +81,8 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("    #      Size    Count      Total\n");
-    String line = "  ----   ------   ------  ---------\n";
+    text.append ("    #       Size    Count      Total\n");
+    String line = "  ----   -------    -----  ---------\n";
     text.append (line);
 
     int seq = 0;
@@ -92,7 +92,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     for (SizeCount sizeCount : sizeCounts.values ())
     {
       int total = sizeCount.blockSize * sizeCount.count;
-      text.append (String.format (" %,5d    %,5d    %,5d  %,9d%n", ++seq,
+      text.append (String.format (" %,5d   %,7d    %,5d  %,9d%n", ++seq,
           sizeCount.blockSize, sizeCount.count, total));
       grandTotalSize += total;
       grandTotalBlocks += sizeCount.count;
@@ -100,7 +100,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 
     text.append (line);
     text.append (
-        String.format ("%18s %,5d  %,9d%n", "", grandTotalBlocks, grandTotalSize));
+        String.format ("%19s %,5d  %,9d%n", "", grandTotalBlocks, grandTotalSize));
 
     return text.toString ();
   }
