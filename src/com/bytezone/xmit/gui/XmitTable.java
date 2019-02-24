@@ -51,6 +51,7 @@ class XmitTable extends TableView<CatalogEntryItem>
   private TableColumn<CatalogEntryItem, Number> storageColumn;
   private TableColumn<CatalogEntryItem, Number> aModeColumn;
   private TableColumn<CatalogEntryItem, Number> rModeColumn;
+  private TableColumn<CatalogEntryItem, Number> ssiColumn;
   private TableColumn<CatalogEntryItem, String> apfColumn;
   private TableColumn<CatalogEntryItem, String> attrColumn;
 
@@ -82,6 +83,7 @@ class XmitTable extends TableView<CatalogEntryItem>
     apfColumn = addString ("APF", "apf", 50, "CENTER");
     aModeColumn = addNumber ("amode", "aMode", 30);
     rModeColumn = addNumber ("rmode", "rMode", 30);
+    ssiColumn = addNumber ("ssi", "ssi", 80, HEX);
     attrColumn = addString ("Attributes", "attr", 100, "CENTER-LEFT");
 
     // common
@@ -127,6 +129,7 @@ class XmitTable extends TableView<CatalogEntryItem>
         rModeColumn.setVisible (false);
         apfColumn.setVisible (false);
         attrColumn.setVisible (false);
+        ssiColumn.setVisible (false);
         break;
 
       case 2:
@@ -145,6 +148,7 @@ class XmitTable extends TableView<CatalogEntryItem>
         rModeColumn.setVisible (true);
         apfColumn.setVisible (true);
         attrColumn.setVisible (true);
+        ssiColumn.setVisible (true);
         break;
     }
   }

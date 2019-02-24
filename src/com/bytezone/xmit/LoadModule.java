@@ -50,6 +50,8 @@ public class LoadModule
   int apf;
 
   String aliasName = "";
+  long ssiWord;
+  int aliasTtr;
 
   // ---------------------------------------------------------------------------------//
   LoadModule (byte[] buffer)
@@ -124,7 +126,7 @@ public class LoadModule
 
     if (usesAlias)
     {
-      int aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
+      aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
       aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
       ptr += 11;
     }
@@ -133,7 +135,7 @@ public class LoadModule
 
     if (ssi)
     {
-      long ssiWord = Utility.getValue (buffer, ptr, 4);
+      ssiWord = Utility.getValue (buffer, ptr, 4);
       ptr += 4;
     }
 

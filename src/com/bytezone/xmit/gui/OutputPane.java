@@ -107,7 +107,9 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       }
       else
       {
-        text.append ("--ttr2-- zr --ttr3-- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3\n");
+        text.append ("--ttr2-- zr --ttr3-- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
+        text.append ("------- scatter -------  ------------- alias ------------  "
+            + "--- ssi ---  -apf-  ----------------- lpo ----------------\n");
       }
 
       for (CatalogEntry catalogEntry : pdsDataset)
@@ -175,7 +177,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
     if (catalogEntry.usesAlias ())
     {
-      aliasText = Utility.getHexValues (directoryData, ptr, 11);
+      aliasText = Utility.getHexValuesWithText (directoryData, ptr, 11);
       ptr += 11;
     }
     else
@@ -199,10 +201,10 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       ptr += 13;
     }
 
-    return String.format ("%02X %-8s %-8s %06X %-63s %-24s %-33s %-12s %-6s %-39s %-8s",
+    return String.format ("%02X %-8s %-8s %06X %-63s %-24s %-33s %-12s %-6s %-39s",
         directoryData[11], catalogEntry.getMemberName (), catalogEntry.getUserName (),
-        catalogEntry.getTtr (), hex, scatterText, aliasText, ssiText, apfText, lpoText,
-        catalogEntry.getAliasName ()).trim ();
+        catalogEntry.getTtr (), hex, scatterText, aliasText, ssiText, apfText, lpoText)
+        .trim ();
   }
 
   // ---------------------------------------------------------------------------------//

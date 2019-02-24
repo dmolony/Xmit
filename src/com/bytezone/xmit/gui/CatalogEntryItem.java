@@ -32,6 +32,7 @@ public class CatalogEntryItem                   // must be public
   private IntegerProperty storage;
   private IntegerProperty aMode;
   private IntegerProperty rMode;
+  private IntegerProperty ssi;
   private StringProperty apf;
   private StringProperty attr;
 
@@ -58,6 +59,7 @@ public class CatalogEntryItem                   // must be public
     setStorage (catalogEntry.getStorage ());
     setAMode (catalogEntry.getAMode ());
     setRMode (catalogEntry.getRMode ());
+    setSsi ((int) catalogEntry.getSsi ());
     setApf (catalogEntry.isApf () ? "apf" : "");
     setAttr (String.format ("%2s %2s %2s %2s",          //
         catalogEntry.isReentrant () ? "RN" : "",        //
@@ -416,6 +418,29 @@ public class CatalogEntryItem                   // must be public
     if (rMode == null)
       rMode = new SimpleIntegerProperty ();
     return rMode;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setSsi (int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    ssiProperty ().set (value);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public final int getSsi ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ssiProperty ().get ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private IntegerProperty ssiProperty ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (ssi == null)
+      ssi = new SimpleIntegerProperty ();
+    return ssi;
   }
 
   // ---------------------------------------------------------------------------------//
