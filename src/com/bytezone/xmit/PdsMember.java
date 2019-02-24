@@ -67,14 +67,6 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  //  private CatalogEntry getCatalogEntry ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    PdsDataset pdsDataset = (PdsDataset) reader.getActiveDataset ();
-  //    return pdsDataset.getCatalogEntry (getName ());
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   int getCommonBlockLength ()
   // ---------------------------------------------------------------------------------//
   {
@@ -229,17 +221,46 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   void undefined ()         // recfm = U
   // ---------------------------------------------------------------------------------//
   {
-    //    System.out.println (getName ());
-    //    CatalogEntry catalogEntry = getCatalogEntry ();
-    if (catalogEntry == null || catalogEntry.isLoadModule ())
+    if (catalogEntry == null || catalogEntry.isLoadModule ()
+        || getCommonBlockLength () <= 1)
     {
-      hexDump ();
+      byte[] header = getEightBytes ();
+      if (header[0] == 0x20)// && header[1] == (byte) 0x80)
+        loadModule ();
+      else
+        hexDump ();
     }
-    else if (getCommonBlockLength () > 1)
+    else
       for (DataBlock block : dataBlocks)
         lines.add (Utility.getString (block.getBuffer ()));
-    else
-      hexDump ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void loadModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    lines.add ("Load Module");
+    lines.add ("");
+    byte[] buffer = getDataBuffer ();
+
+    int ptr = 0;
+    int count = 0;
+    while (buffer[ptr] == 0x20)// && buffer[ptr + 1] == (byte) 0x80)
+    {
+      int items = (buffer[ptr + 7] & 0xF0) >>> 4;
+      int ptr2 = ptr + 8;
+      for (int i = 0; i < items; i++)
+      {
+        if (buffer[ptr2] != 0 && buffer[ptr2] != 0x40)
+        {
+          String name = Utility.getString (buffer, ptr2, 8);
+          String values = Utility.getHexValues (buffer, ptr2 + 8, 8);
+          lines.add (String.format ("%,5d  %s  %s", count++, name, values));
+        }
+        ptr2 += 16;
+      }
+      ptr += 248;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
