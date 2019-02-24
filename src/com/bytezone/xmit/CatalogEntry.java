@@ -63,7 +63,9 @@ public class CatalogEntry
           Utility.getHexValuesWithText (directoryData, 11, directoryData.length - 11));
     }
 
-    if (usesAlias && directoryData.length >= 44)
+    if (loadModule != null)
+      aliasName = loadModule.aliasName;
+    else if (usesAlias && directoryData.length >= 44)
       aliasName = Utility.getString (buffer, ptr + 36, 8);
   }
 
@@ -339,6 +341,8 @@ public class CatalogEntry
   {
     String detail =
         basicModule != null ? basicModule.toString () : loadModule.toString ();
-    return String.format ("%8s  %s  %8s", name, detail, aliasName);
+    String memberName = member == null ? "" : member.getName ();
+    return String.format ("%-8s  %02X  %s  %8s  %s", name, hw, detail, aliasName,
+        memberName);
   }
 }

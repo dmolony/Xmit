@@ -49,6 +49,8 @@ public class LoadModule
   int epa;
   int apf;
 
+  String aliasName = "";
+
   // ---------------------------------------------------------------------------------//
   LoadModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
@@ -123,7 +125,7 @@ public class LoadModule
     if (alias)
     {
       int aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
-      String aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
+      aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
       //      System.out.printf ("   alias: %06X  %s%n", aliasTtr, aliasName);
       ptr += 11;
     }

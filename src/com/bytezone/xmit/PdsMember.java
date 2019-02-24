@@ -14,6 +14,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   private final List<DataBlock> dataBlocks;                    // PDS & PDS/E
   private final List<DataBlock> extraDataBlocks;               // PDSE only
   private final Map<Integer, SizeCount> sizeCounts = new TreeMap<> ();
+  private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//
   PdsMember (Dataset dataset, Disposition disposition)
@@ -23,6 +24,14 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 
     dataBlocks = new ArrayList<> ();
     extraDataBlocks = new ArrayList<> ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setCatalogEntry (CatalogEntry catalogEntry)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.catalogEntry = catalogEntry;
+    setName (catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -58,12 +67,12 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  private CatalogEntry getCatalogEntry ()
-  // ---------------------------------------------------------------------------------//
-  {
-    PdsDataset pdsDataset = (PdsDataset) reader.getActiveDataset ();
-    return pdsDataset.getCatalogEntry (getName ());
-  }
+  //  private CatalogEntry getCatalogEntry ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    PdsDataset pdsDataset = (PdsDataset) reader.getActiveDataset ();
+  //    return pdsDataset.getCatalogEntry (getName ());
+  //  }
 
   // ---------------------------------------------------------------------------------//
   int getCommonBlockLength ()
@@ -220,8 +229,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   void undefined ()         // recfm = U
   // ---------------------------------------------------------------------------------//
   {
-    CatalogEntry catalogEntry = getCatalogEntry ();
-    if (catalogEntry.isLoadModule ())
+    //    System.out.println (getName ());
+    //    CatalogEntry catalogEntry = getCatalogEntry ();
+    if (catalogEntry == null || catalogEntry.isLoadModule ())
     {
       hexDump ();
     }

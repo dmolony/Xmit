@@ -86,8 +86,11 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         dataBlocks.addAll (segment.createDataBlocks ());    // create new BlockPointers
     }
 
+    // catalogMap : list of all CatalogEntries that share a TTL in TTL sequence
+    // members    : list of PdsMember (List<DataBlock>) in ascending TTL sequence
+
     List<PdsMember> members =
-        copyR1.isPdse () ? allocatePDSE (dataBlocks) : allocatePDS (dataBlocks);
+        copyR1.isPdse () ? createPdseMembers (dataBlocks) : createPdsMembers (dataBlocks);
 
     if (catalogMap.values ().size () != members.size ())
     {
@@ -95,24 +98,66 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       System.out.printf ("%d %d%n", catalogMap.values ().size (), members.size ());
     }
 
+    // Match each PdsMember (List<DataBlock>) to every CatalogEntry that refers to it.
+    // Match each CatalogEntry to one PdsMember
+
     int count = 0;
     for (List<CatalogEntry> catalogEntryList : catalogMap.values ())
     {
       PdsMember member = members.get (count++);
+
+      CatalogEntry sourceEntry = catalogEntryList.get (0);
       for (CatalogEntry catalogEntry : catalogEntryList)
       {
-        if (catalogEntry.getAliasName ().isEmpty ())
-          member.setName (catalogEntry.getMemberName ());
         catalogEntry.setMember (member);
+        if (catalogEntry.getAliasName ().isEmpty ())
+          sourceEntry = catalogEntry;
       }
+      // see FILE182.UTILXMIT
+      member.setCatalogEntry (sourceEntry);
 
       if (member.isXmit ())
         xmitMembers.add (member);       // should these be CatalogEntry?
     }
+
+    // FILE182.XMITxx contains REV38 which is flagged as an alias of REVIEW, but its
+    // TTL does not match REVIEW's. So it has its own Member.
+    if (false)
+    {
+      displayMap (catalogMap);
+      listMembers (members);
+      for (CatalogEntry catalogEntry : catalogEntries)
+        System.out.println (catalogEntry);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
-  private List<PdsMember> allocatePDS (List<DataBlock> dataBlocks)
+  private void displayMap (Map<Long, List<CatalogEntry>> catalogMap)
+  // ---------------------------------------------------------------------------------//
+  {
+    int count = 0;
+    for (long ttl : catalogMap.keySet ())
+    {
+      System.out.printf ("%4d  %06X%n", count++, ttl);
+      for (CatalogEntry catalogEntry : catalogMap.get (ttl))
+      {
+        System.out.printf ("             %s%n", catalogEntry);
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void listMembers (List<PdsMember> members)
+  // ---------------------------------------------------------------------------------//
+  {
+    int count = 0;
+    for (PdsMember pdsMember : members)
+      System.out.printf ("%4d  %-8s  %,9d%n", count++, pdsMember.getName (),
+          pdsMember.dataLength);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private List<PdsMember> createPdsMembers (List<DataBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
   {
     List<PdsMember> members = new ArrayList<> ();
@@ -135,7 +180,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  private List<PdsMember> allocatePDSE (List<DataBlock> dataBlocks)
+  private List<PdsMember> createPdseMembers (List<DataBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
   {
     List<PdsMember> members = new ArrayList<> ();
@@ -211,14 +256,15 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntry getCatalogEntry (String name)
-  // ---------------------------------------------------------------------------------//
-  {
-    for (CatalogEntry catalogEntry : catalogEntries)
-      if (name.equals (catalogEntry.getMemberName ()))
-        return catalogEntry;
-    return null;
-  }
+  //  public CatalogEntry getCatalogEntry (String name)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    for (CatalogEntry catalogEntry : catalogEntries)
+  //      if (name.equals (catalogEntry.getMemberName ()))
+  //        return catalogEntry;
+  //    System.out.printf ("No catalog entry found: [%s]%n", name);
+  //    return null;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public int memberIndex (String memberName)
