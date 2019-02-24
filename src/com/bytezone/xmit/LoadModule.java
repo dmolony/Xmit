@@ -11,7 +11,7 @@ public class LoadModule
   final boolean overlay;
   final boolean test;
   final boolean loadOnly;
-  final boolean scatter;
+  public final boolean scatter;
   final boolean executable;
   final boolean multiBlock;
 
@@ -25,10 +25,10 @@ public class LoadModule
   final boolean refreshable;
 
   final boolean aosLinkEditor;
-  final boolean lpo;
+  public final boolean lpo;
   final boolean pageAligned;
-  final boolean ssi;
-  final boolean apfBlock;
+  public final boolean ssi;
+  public final boolean apfBlock;
   final boolean ptb3Valid;
   final boolean objSigned;
   final boolean attr;
@@ -55,8 +55,9 @@ public class LoadModule
   LoadModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    //    System.out.println (Utility.getHexValues (buffer));
-    boolean alias = (buffer[11] & 0x80) != 0;
+    int numTtr = (buffer[11] & 0x60) >>> 5;        // number of TTRs in user data
+    boolean usesAlias = (buffer[11] & 0x80) != 0;  // name in the first field is an alias
+    int hw = buffer[11] & 0x1F;
 
     ttrText = (int) Utility.getValue (buffer, 12, 3);
     int zero = buffer[15] & 0xFF;
@@ -118,30 +119,28 @@ public class LoadModule
       int ttsz = (int) Utility.getValue (buffer, ptr + 2, 2);
       int esdt = (int) Utility.getValue (buffer, ptr + 4, 2);
       int esdc = (int) Utility.getValue (buffer, ptr + 6, 2);
-      //      System.out.printf ("   sctr");
       ptr += 8;
     }
 
-    if (alias)
+    if (usesAlias)
     {
       int aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
       aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
-      //      System.out.printf ("   alias: %06X  %s%n", aliasTtr, aliasName);
       ptr += 11;
     }
+    else
+      ptr++;
 
     if (ssi)
     {
       long ssiWord = Utility.getValue (buffer, ptr, 4);
       ptr += 4;
-      //      System.out.printf ("   ssi:");
     }
 
     if (apfBlock)
     {
       int len1 = buffer[ptr++] & 0xFF;
       apf = buffer[ptr++] & 0xFF;
-      //      System.out.printf ("   apf: %02X  %02X%n", len1, apf);
     }
 
     if (lpo)
@@ -150,7 +149,6 @@ public class LoadModule
       long fullWord1 = Utility.getValue (buffer, ptr + 1, 4);
       long fullWord2 = Utility.getValue (buffer, ptr + 5, 4);
       long fullWord3 = Utility.getValue (buffer, ptr + 9, 4);
-      //      System.out.printf ("   lpo:");
       ptr += 13;
     }
 

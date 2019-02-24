@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 // ---------------------------------------------------------------------------------//
 public class PdsMember extends DataFile implements Iterable<DataBlock>
-//---------------------------------------------------------------------------------//
+// ---------------------------------------------------------------------------------//
 {
   private final List<DataBlock> dataBlocks;                    // PDS & PDS/E
   private final List<DataBlock> extraDataBlocks;               // PDSE only
@@ -194,25 +194,21 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
       int len = Utility.getTwoBytes (buffer, ptr);
       boolean isBinary = Utility.isBinary (buffer, ptr + 4, len - 4);
 
-      if (isBinary)
-        while (ptr < buffer.length)
-        {
-          len = Utility.getTwoBytes (buffer, ptr);
+      while (ptr < buffer.length)
+      {
+        len = Utility.getTwoBytes (buffer, ptr);
 
+        if (isBinary)
+        {
           lines.add (Utility.getHexDump (buffer, ptr + 4, len - 4));
           lines.add ("");
-
-          ptr += len;
         }
-      else
-        while (ptr < buffer.length)
-        {
-          len = Utility.getTwoBytes (buffer, ptr);
+        else
           lines
               .add (Utility.translateUnicode (buffer, ptr + 4, len - 4).stripTrailing ());
 
-          ptr += len;
-        }
+        ptr += len;
+      }
     }
   }
 
@@ -224,8 +220,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     if (catalogEntry == null || catalogEntry.isLoadModule ()
         || getCommonBlockLength () <= 1)
     {
-      byte[] header = getEightBytes ();
-      if (header[0] == 0x20)// && header[1] == (byte) 0x80)
+      if (getEightBytes ()[0] == 0x20)
         loadModule ();
       else
         hexDump ();
@@ -245,7 +240,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 
     int ptr = 0;
     int count = 0;
-    while (buffer[ptr] == 0x20)// && buffer[ptr + 1] == (byte) 0x80)
+    while (buffer[ptr] == 0x20)
     {
       int items = (buffer[ptr + 7] & 0xF0) >>> 4;
       int ptr2 = ptr + 8;

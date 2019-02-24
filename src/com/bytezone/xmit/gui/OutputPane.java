@@ -98,16 +98,24 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       text.append (
           String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
+      text.append ("   --name-- ---id--- -ttr-- ");
+
       if (pdsDataset.isBasic ())
       {
-        text.append (
-            "   --name-- ---id--- -ttr-- versn    ss -created--  -modified-  hh mm ");
+        text.append ("versn    ss -created--  -modified-  hh mm ");
         text.append ("Size1 Size2       -------- user ---------\n");
+      }
+      else
+      {
+        text.append ("--ttr2-- zr --ttr3-- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3\n");
       }
 
       for (CatalogEntry catalogEntry : pdsDataset)
       {
-        text.append (debugLine (catalogEntry));
+        if (catalogEntry.isBasic ())
+          text.append (debugLineBasic (catalogEntry));
+        else
+          text.append (debugLineLoadModule (catalogEntry));
         text.append ("\n");
       }
     }
@@ -117,7 +125,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   }
 
   // ---------------------------------------------------------------------------------//
-  private String debugLine (CatalogEntry catalogEntry)
+  private String debugLineBasic (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
     String hex = "";
@@ -141,7 +149,60 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
     return String.format ("%02X %-8s %-8s %06X %-129s %8s %8s", directoryData[11],
         catalogEntry.getMemberName (), catalogEntry.getUserName (),
-        catalogEntry.getOffset (), hex, catalogEntry.getAliasName (), t1).trim ();
+        catalogEntry.getTtr (), hex, catalogEntry.getAliasName (), t1).trim ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String debugLineLoadModule (CatalogEntry catalogEntry)
+  // ---------------------------------------------------------------------------------//
+  {
+    LoadModule lm = catalogEntry.getLoadModule ();
+    byte[] directoryData = catalogEntry.getDirectoryData ();
+    String hex = Utility.getHexValues (directoryData, 12, 21);
+
+    String scatterText = "";
+    String aliasText = "";
+    String ssiText = "";
+    String apfText = "";
+    String lpoText = "";
+    int ptr = 33;
+
+    if (lm.scatter)
+    {
+      scatterText = Utility.getHexValues (directoryData, ptr, 8);
+      ptr += 8;
+    }
+
+    if (catalogEntry.usesAlias ())
+    {
+      aliasText = Utility.getHexValues (directoryData, ptr, 11);
+      ptr += 11;
+    }
+    else
+      ptr++;
+
+    if (lm.ssi)
+    {
+      ssiText = Utility.getHexValues (directoryData, ptr, 4);
+      ptr += 4;
+    }
+
+    if (lm.apfBlock)
+    {
+      apfText = Utility.getHexValues (directoryData, ptr, 2);
+      ptr += 2;
+    }
+
+    if (lm.lpo)
+    {
+      lpoText = Utility.getHexValues (directoryData, ptr, 13);
+      ptr += 13;
+    }
+
+    return String.format ("%02X %-8s %-8s %06X %-63s %-24s %-33s %-12s %-6s %-39s %-8s",
+        directoryData[11], catalogEntry.getMemberName (), catalogEntry.getUserName (),
+        catalogEntry.getTtr (), hex, scatterText, aliasText, ssiText, apfText, lpoText,
+        catalogEntry.getAliasName ()).trim ();
   }
 
   // ---------------------------------------------------------------------------------//

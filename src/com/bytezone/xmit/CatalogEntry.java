@@ -21,13 +21,12 @@ public class CatalogEntry
 
   private final byte[] directoryData;
 
-  private final int blockFrom;
+  private final int ttr;
+
   private byte[] ttl = new byte[5];
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
-
-  int hw;
 
   // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
   //           com.ibm.zos.v2r3.ieab200/destow.htm
@@ -39,26 +38,25 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     name = Utility.getString (buffer, ptr, 8).trim ();
-    blockFrom = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
+    ttr = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
 
     numTtr = (buffer[ptr + 11] & 0x60) >>> 5;      // number of TTRs in user data
     usesAlias = (buffer[ptr + 11] & 0x80) != 0;    // name in the first field is an alias
 
-    hw = buffer[ptr + 11] & 0xFF;
-    int size = buffer[ptr + 11] & 0x1F;
-    directoryData = new byte[12 + size * 2];
+    int hw = buffer[ptr + 11] & 0x1F;
+    directoryData = new byte[12 + hw * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
     //    System.out.println (name);
     if (numTtr == 0)
-      basicModule = size > 0 ? new BasicModule (directoryData) : new BasicModule ();
+      basicModule = hw > 0 ? new BasicModule (directoryData) : new BasicModule ();
     else
       loadModule = new LoadModule (directoryData);
 
     if (false)
     {
       System.out.print (Utility.getHexValuesWithText (directoryData, 0, 11));
-      System.out.printf (" | %d %d %02X |  ", usesAlias ? 1 : 0, numTtr, size);
+      System.out.printf (" | %d %d %02X |  ", usesAlias ? 1 : 0, numTtr, hw);
       System.out.println (
           Utility.getHexValuesWithText (directoryData, 11, directoryData.length - 11));
     }
@@ -84,6 +82,20 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  public BasicModule getBasicModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return basicModule;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LoadModule getLoadModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return loadModule;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public byte[] getDirectoryData ()
   // ---------------------------------------------------------------------------------//
   {
@@ -91,10 +103,17 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getOffset ()
+  public boolean usesAlias ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockFrom;
+    return usesAlias;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTtr ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ttr;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -153,7 +172,7 @@ public class CatalogEntry
     //      ttl[4] = (byte) (blockFrom & 0x0000FF);
     //    }
 
-    int index = ((blockFrom & 0x00FF00) >>> 8) / mult;
+    int index = ((ttr & 0x00FF00) >>> 8) / mult;
 
     long lo = Utility.getFourBytes (copyR2.buffer, index * 16 + 22);
     long hi = Utility.getFourBytes (copyR2.buffer, index * 16 + 26);
@@ -162,8 +181,7 @@ public class CatalogEntry
     byte[] temp = convert (index, mult);
 
     long val = Utility.getValue (temp, 0, 4);     // ignore last byte
-    System.out.printf ("%02X  %06X -> %s ", index, blockFrom,
-        Utility.getHexValues (temp));
+    System.out.printf ("%02X  %06X -> %s ", index, ttr, Utility.getHexValues (temp));
 
     if (lo <= val && hi >= val)
     {
@@ -184,7 +202,7 @@ public class CatalogEntry
   {
     byte[] tt = new byte[5];
 
-    int xxxx = (blockFrom & 0xFFFF00) >>> 8;
+    int xxxx = (ttr & 0xFFFF00) >>> 8;
     int yyyy = Utility.getTwoBytes (copyR2.buffer, index * 16 + 22);
     int zzzz = Utility.getTwoBytes (copyR2.buffer, index * 16 + 24);
 
@@ -194,7 +212,7 @@ public class CatalogEntry
     tt[1] = (byte) ((dddd & 0x00FF) >>> 0);
     tt[2] = 0;
     tt[3] = (byte) ((xxxx + zzzz) % mult);
-    tt[4] = (byte) (blockFrom & 0x0000FF);
+    tt[4] = (byte) (ttr & 0x0000FF);
 
     return tt;
   }
@@ -342,7 +360,7 @@ public class CatalogEntry
     String detail =
         basicModule != null ? basicModule.toString () : loadModule.toString ();
     String memberName = member == null ? "" : member.getName ();
-    return String.format ("%-8s  %02X  %s  %8s  %s", name, hw, detail, aliasName,
-        memberName);
+    return String.format ("%-8s  %02X  %s  %8s  %s", name, directoryData[11], detail,
+        aliasName, memberName);
   }
 }
