@@ -120,6 +120,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
         if (catalogEntry.isBasic ())
         {
+          // user name goes in here
           BasicModule bm = catalogEntry.getBasicModule ();
           text.append (bm.debugLineBasic ());
         }

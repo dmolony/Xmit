@@ -64,11 +64,13 @@ public class BasicModule
   public String debugLineBasic ()
   // ---------------------------------------------------------------------------------//
   {
+    if (directoryData == null)
+      return "";
+
     String hex = "";
     String t1 = "";
-    //    byte[] directoryData = catalogEntry.getDirectoryData ();
 
-    int extra = directoryData[11] & 0xFF;      // indicator byte
+    int extra = directoryData[11] & 0xFF; // indicator byte
     if (extra == 0x2E)
       hex =
           Utility.getHexValues (directoryData, 12, 22) + "                              "
