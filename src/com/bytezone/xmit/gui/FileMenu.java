@@ -15,6 +15,7 @@ import com.bytezone.xmit.Utility;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -33,6 +34,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   private final MenuItem rootMenuItem = new MenuItem ("Set XMIT root folder...");
   private final MenuItem extractMenuItem = new MenuItem ("Extract file...");
   private final MenuItem saveMenuItem = new MenuItem ("Save output...");
+  private final MenuItem aboutMenuItem = new MenuItem ("Show version...");
 
   private CatalogEntry catalogEntry;
   private Dataset dataset;
@@ -46,7 +48,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   public FileMenu (XmitApp owner, TreeView<XmitFile> tree)
   // ---------------------------------------------------------------------------------//
   {
-    fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem);
+    fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem,
+        new SeparatorMenuItem (), aboutMenuItem);
     rootMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.R, KeyCombination.SHORTCUT_DOWN));
     extractMenuItem.setAccelerator (
@@ -57,6 +60,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
     rootMenuItem.setOnAction (e -> owner.changeRootFolder ());
     extractMenuItem.setOnAction (e -> extractFile ());
     saveMenuItem.setOnAction (e -> saveFile ());
+    aboutMenuItem.setOnAction (e -> about ());
     saveMenuItem.setDisable (true);
   }
 
@@ -66,6 +70,14 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   {
     this.outputWriter = outputWriter;
     saveMenuItem.setDisable (false);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void about ()
+  // ---------------------------------------------------------------------------------//
+  {
+    Utility.showAlert (AlertType.INFORMATION, "About",
+        "Version: 1.0.17\nReleased: 26 Feb 2019\nAuthor: Denis Molony");
   }
 
   // ---------------------------------------------------------------------------------//
