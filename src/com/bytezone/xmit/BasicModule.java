@@ -19,6 +19,7 @@ public class BasicModule
   String time = "";
 
   private String userName = "";
+  byte[] directoryData;
 
   // ---------------------------------------------------------------------------------//
   BasicModule ()
@@ -35,6 +36,8 @@ public class BasicModule
   BasicModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
+    directoryData = buffer;
+
     vv = buffer[12] & 0xFF;
     mm = buffer[13] & 0xFF;
 
@@ -55,6 +58,32 @@ public class BasicModule
     init = Utility.getTwoBytes (buffer, 28);
     mod = Utility.getTwoBytes (buffer, 30);
     userName = Utility.getString (buffer, 32, 8).trim ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String debugLineBasic ()
+  // ---------------------------------------------------------------------------------//
+  {
+    String hex = "";
+    String t1 = "";
+    //    byte[] directoryData = catalogEntry.getDirectoryData ();
+
+    int extra = directoryData[11] & 0xFF;      // indicator byte
+    if (extra == 0x2E)
+      hex =
+          Utility.getHexValues (directoryData, 12, 22) + "                              "
+              + Utility.getHexValues (directoryData, 34, 6);
+    else if (extra == 0x31)
+      hex =
+          Utility.getHexValues (directoryData, 12, 22) + "                              "
+              + Utility.getHexValues (directoryData, 34, 12);
+    else
+      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+
+    if (extra == 0xB6)
+      t1 = Utility.getString (directoryData, 48, 8);
+
+    return String.format (" %-129s %8s", hex, t1).trim ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -114,97 +114,26 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       for (CatalogEntry catalogEntry : pdsDataset)
       {
+        text.append (String.format ("%02X %-8s %-8s %06X ", catalogEntry.getExtra (),
+            catalogEntry.getMemberName (), catalogEntry.getUserName (),
+            catalogEntry.getTtr ()));
+
         if (catalogEntry.isBasic ())
-          text.append (debugLineBasic (catalogEntry));
+        {
+          BasicModule bm = catalogEntry.getBasicModule ();
+          text.append (bm.debugLineBasic ());
+        }
         else
-          text.append (debugLineLoadModule (catalogEntry));
+        {
+          LoadModule lm = catalogEntry.getLoadModule ();
+          text.append (lm.debugLineLoadModule ());
+        }
         text.append ("\n");
       }
     }
 
     Utility.removeTrailingNewlines (text);
     headersTab.setText (text.toString ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private String debugLineBasic (CatalogEntry catalogEntry)
-  // ---------------------------------------------------------------------------------//
-  {
-    String hex = "";
-    String t1 = "";
-    byte[] directoryData = catalogEntry.getDirectoryData ();
-
-    int extra = directoryData[11] & 0xFF;      // indicator byte
-    if (extra == 0x2E)
-      hex =
-          Utility.getHexValues (directoryData, 12, 22) + "                              "
-              + Utility.getHexValues (directoryData, 34, 6);
-    else if (extra == 0x31)
-      hex =
-          Utility.getHexValues (directoryData, 12, 22) + "                              "
-              + Utility.getHexValues (directoryData, 34, 12);
-    else
-      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
-
-    if (extra == 0xB6)
-      t1 = Utility.getString (directoryData, 48, 8);
-
-    return String.format ("%02X %-8s %-8s %06X %-129s %8s %8s", directoryData[11],
-        catalogEntry.getMemberName (), catalogEntry.getUserName (),
-        catalogEntry.getTtr (), hex, catalogEntry.getAliasName (), t1).trim ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private String debugLineLoadModule (CatalogEntry catalogEntry)
-  // ---------------------------------------------------------------------------------//
-  {
-    LoadModule lm = catalogEntry.getLoadModule ();
-    byte[] directoryData = catalogEntry.getDirectoryData ();
-    String hex = Utility.getHexValues (directoryData, 12, 21);
-
-    String scatterText = "";
-    String aliasText = "";
-    String ssiText = "";
-    String apfText = "";
-    String lpoText = "";
-    int ptr = 33;
-
-    if (lm.scatter)
-    {
-      scatterText = Utility.getHexValues (directoryData, ptr, 8);
-      ptr += 8;
-    }
-
-    if (catalogEntry.usesAlias ())
-    {
-      aliasText = Utility.getHexValuesWithText (directoryData, ptr, 11);
-      ptr += 11;
-    }
-    else
-      ptr++;
-
-    if (lm.ssi)
-    {
-      ssiText = Utility.getHexValues (directoryData, ptr, 4);
-      ptr += 4;
-    }
-
-    if (lm.apfBlock)
-    {
-      apfText = Utility.getHexValues (directoryData, ptr, 2);
-      ptr += 2;
-    }
-
-    if (lm.lpo)
-    {
-      lpoText = Utility.getHexValues (directoryData, ptr, 13);
-      ptr += 13;
-    }
-
-    return String.format ("%02X %-8s %-8s %06X %-63s %-24s %-33s %-12s %-6s %-39s",
-        directoryData[11], catalogEntry.getMemberName (), catalogEntry.getUserName (),
-        catalogEntry.getTtr (), hex, scatterText, aliasText, ssiText, apfText, lpoText)
-        .trim ();
   }
 
   // ---------------------------------------------------------------------------------//

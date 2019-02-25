@@ -6,6 +6,8 @@ package com.bytezone.xmit;
 public class LoadModule
 // ---------------------------------------------------------------------------------//
 {
+  byte[] directoryData;
+
   final boolean reentrant;
   final boolean reusable;
   final boolean overlay;
@@ -31,7 +33,7 @@ public class LoadModule
   public final boolean apfBlock;
   final boolean ptb3Valid;
   final boolean objSigned;
-  final boolean attr;
+  public final boolean attr;
 
   final boolean nameGen;
   final boolean free2;
@@ -52,14 +54,17 @@ public class LoadModule
   String aliasName = "";
   long ssiWord;
   int aliasTtr;
+  public boolean usesAlias;
 
   // ---------------------------------------------------------------------------------//
   LoadModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    int numTtr = (buffer[11] & 0x60) >>> 5;        // number of TTRs in user data
-    boolean usesAlias = (buffer[11] & 0x80) != 0;  // name in the first field is an alias
-    int hw = buffer[11] & 0x1F;
+    directoryData = buffer;
+
+    int numTtr = (buffer[11] & 0x60) >>> 5;     // number of TTRs in user data
+    usesAlias = (buffer[11] & 0x80) != 0;       // name in the first field is an alias
+    int hw = buffer[11] & 0x1F;                 // half words of user data
 
     ttrText = (int) Utility.getValue (buffer, 12, 3);
     int zero = buffer[15] & 0xFF;
@@ -130,11 +135,11 @@ public class LoadModule
       aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
       ptr += 11;
     }
-    else
-      ptr++;
 
     if (ssi)
     {
+      if (ptr % 2 == 1)
+        ptr++;
       ssiWord = Utility.getValue (buffer, ptr, 4);
       ptr += 4;
     }
@@ -161,7 +166,74 @@ public class LoadModule
       int reserved = buffer[ptr++] & 0xFF;
       ptr += (byte1 & 0x0F);
     }
-    //    System.out.printf ("[%2d  %2d]%n%n", ptr, buffer.length);
+    //    System.out.printf ("[%2d  %2d]%n", ptr, buffer.length);
+    //    if (ptr < buffer.length)
+    //      System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String debugLineLoadModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    //    LoadModule lm = catalogEntry.getLoadModule ();
+    //    byte[] directoryData = catalogEntry.getDirectoryData ();
+    String hex = Utility.getHexValues (directoryData, 12, 21);
+
+    String scatterText = "";
+    String aliasText = "";
+    String ssiText = "";
+    String apfText = "";
+    String lpoText = "";
+    String extra = "";
+    int ptr = 33;
+
+    if (scatter)
+    {
+      scatterText = Utility.getHexValues (directoryData, ptr, 8);
+      ptr += 8;
+    }
+
+    if (usesAlias)
+    {
+      aliasText = Utility.getHexValuesWithText (directoryData, ptr, 11);
+      ptr += 11;
+    }
+
+    if (ssi)
+    {
+      if (ptr % 2 == 1)
+        ptr++;
+      ssiText = Utility.getHexValues (directoryData, ptr, 4);
+      ptr += 4;
+    }
+
+    if (apfBlock)
+    {
+      apfText = Utility.getHexValues (directoryData, ptr, 2);
+      ptr += 2;
+    }
+
+    if (lpo)
+    {
+      lpoText = Utility.getHexValues (directoryData, ptr, 13);
+      ptr += 13;
+    }
+
+    if (attr)
+    {
+      int byte0 = directoryData[ptr++] & 0xFF;
+      int byte1 = directoryData[ptr++] & 0xFF;
+      int reserved = directoryData[ptr++] & 0xFF;
+      ptr += (byte1 & 0x0F);
+    }
+
+    if (ptr < directoryData.length)
+      extra =
+          Utility.getHexValuesWithText (directoryData, ptr, directoryData.length - ptr);
+    //    String hex2 = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+
+    return String.format ("%-63s %-24s %-33s %-12s %-6s %-39s %s", hex, scatterText,
+        aliasText, ssiText, apfText, lpoText, extra).trim ();
   }
 
   // ---------------------------------------------------------------------------------//
