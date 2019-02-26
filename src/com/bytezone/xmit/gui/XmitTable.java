@@ -2,6 +2,7 @@ package com.bytezone.xmit.gui;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,24 +39,10 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
   private Font font;
 
-  private TableColumn<CatalogEntryItem, String> idColumn;
-  private TableColumn<CatalogEntryItem, String> timeColumn;
-  private TableColumn<CatalogEntryItem, String> versionColumn;
-  private TableColumn<CatalogEntryItem, Number> sizeColumn;
-  private TableColumn<CatalogEntryItem, Number> initColumn;
-  private TableColumn<CatalogEntryItem, LocalDate> createdColumn;
-  private TableColumn<CatalogEntryItem, LocalDate> modifiedColumn;
-  private TableColumn<CatalogEntryItem, FileType> typeColumn;
-
-  private TableColumn<CatalogEntryItem, Number> epaColumn;
-  private TableColumn<CatalogEntryItem, Number> storageColumn;
-  private TableColumn<CatalogEntryItem, Number> aModeColumn;
-  private TableColumn<CatalogEntryItem, Number> rModeColumn;
-  private TableColumn<CatalogEntryItem, Number> ssiColumn;
-  private TableColumn<CatalogEntryItem, String> apfColumn;
-  private TableColumn<CatalogEntryItem, String> attrColumn;
-
   private int currentVisible = 0;
+
+  private List<TableColumn<CatalogEntryItem, ?>> basicColumns;
+  private List<TableColumn<CatalogEntryItem, ?>> loadColumns;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -67,24 +54,24 @@ class XmitTable extends TableView<CatalogEntryItem>
     addString ("Member", "MemberName", 75, "CENTER-LEFT");
     addNumber ("Bytes", "Bytes", 90);
 
-    // basic module
-    idColumn = addString ("Id", "UserName", 75, "CENTER-LEFT");
-    sizeColumn = addNumber ("Size", "Size", 70);
-    initColumn = addNumber ("Init", "Init", 70);
-    createdColumn = addLocalDate ("Created", "DateCreated", 100);
-    modifiedColumn = addLocalDate ("Modified", "DateModified", 100);
-    timeColumn = addString ("Time", "Time", 90, "CENTER");
-    typeColumn = addFileType ("Type", "Type", 50, "CENTER");
-    versionColumn = addString ("ver.mod", "Version", 70, "CENTER");
+    basicColumns = Arrays.asList (                            //
+        addString ("Id", "UserName", 75, "CENTER-LEFT"),      //
+        addNumber ("Size", "Size", 70),                       //
+        addNumber ("Init", "Init", 70),                       //
+        addLocalDate ("Created", "DateCreated", 100),         //
+        addLocalDate ("Modified", "DateModified", 100),       //
+        addString ("Time", "Time", 90, "CENTER"),             //
+        addFileType ("Type", "Type", 50, "CENTER"),           //
+        addString ("ver.mod", "Version", 70, "CENTER"));
 
-    // load module
-    storageColumn = addNumber ("Storage", "storage", 70, HEX);
-    epaColumn = addNumber ("Entry", "epa", 70, HEX);
-    apfColumn = addString ("APF", "apf", 50, "CENTER");
-    aModeColumn = addNumber ("amode", "aMode", 30);
-    rModeColumn = addNumber ("rmode", "rMode", 30);
-    ssiColumn = addNumber ("ssi", "ssi", 80, HEX);
-    attrColumn = addString ("Attributes", "attr", 100, "CENTER-LEFT");
+    loadColumns = Arrays.asList (                             //
+        addNumber ("Storage", "storage", 70, HEX),            //
+        addNumber ("Entry", "epa", 70, HEX),                  //
+        addString ("APF", "apf", 50, "CENTER"),               //
+        addNumber ("amode", "aMode", 30),                     //
+        addNumber ("rmode", "rMode", 30),                     //
+        addNumber ("ssi", "ssi", 80, HEX),                    //
+        addString ("Attributes", "attr", 100, "CENTER-LEFT"));
 
     // common
     addString ("Alias", "AliasName", 100, "CENTER-LEFT");
@@ -114,41 +101,19 @@ class XmitTable extends TableView<CatalogEntryItem>
     switch (type)
     {
       case 1:
-        idColumn.setVisible (true);
-        sizeColumn.setVisible (true);
-        initColumn.setVisible (true);
-        createdColumn.setVisible (true);
-        modifiedColumn.setVisible (true);
-        timeColumn.setVisible (true);
-        typeColumn.setVisible (true);
-        versionColumn.setVisible (true);
+        for (var column : basicColumns)
+          column.setVisible (true);
 
-        epaColumn.setVisible (false);
-        storageColumn.setVisible (false);
-        aModeColumn.setVisible (false);
-        rModeColumn.setVisible (false);
-        apfColumn.setVisible (false);
-        attrColumn.setVisible (false);
-        ssiColumn.setVisible (false);
+        for (var column : loadColumns)
+          column.setVisible (false);
         break;
 
       case 2:
-        idColumn.setVisible (false);
-        sizeColumn.setVisible (false);
-        initColumn.setVisible (false);
-        createdColumn.setVisible (false);
-        modifiedColumn.setVisible (false);
-        timeColumn.setVisible (false);
-        typeColumn.setVisible (false);
-        versionColumn.setVisible (false);
+        for (var column : basicColumns)
+          column.setVisible (false);
 
-        epaColumn.setVisible (true);
-        storageColumn.setVisible (true);
-        aModeColumn.setVisible (true);
-        rModeColumn.setVisible (true);
-        apfColumn.setVisible (true);
-        attrColumn.setVisible (true);
-        ssiColumn.setVisible (true);
+        for (var column : loadColumns)
+          column.setVisible (true);
         break;
     }
   }
