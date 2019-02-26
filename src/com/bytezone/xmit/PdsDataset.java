@@ -31,7 +31,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public boolean isBasic ()
   // ---------------------------------------------------------------------------------//
   {
-    return catalogEntries.size () > 0 && catalogEntries.get (0).isBasic ();
+    return catalogEntries.size () > 0 && catalogEntries.get (0).isBasicModule ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -1,23 +1,11 @@
 package com.bytezone.xmit;
 
-import java.time.LocalDate;
-
 // ---------------------------------------------------------------------------------//
 public class CatalogEntry
 //---------------------------------------------------------------------------------//
 {
-  private PdsMember member;                   // contains DataBlocks
-  private LoadModule loadModule;
-  private BasicModule basicModule;
-  private final byte[] directoryData;
-
-  private final String name;
-  //  private final String userName = "";
-  private final int ttr;
-  private final boolean isAlias;
-  private final int numTtr;
-
-  private int sectionL;
+  private PdsMember member;            // contains DataBlocks
+  private final Module module;
 
   private byte[] ttl = new byte[5];
 
@@ -33,76 +21,86 @@ public class CatalogEntry
   CatalogEntry (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    name = Utility.getString (buffer, ptr, 8).trim ();
-    ttr = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
+    int numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
+    int hw = buffer[ptr + 11] & 0x1F;                 // half words of user data
 
-    isAlias = (buffer[ptr + 11] & 0x80) != 0;     // name in the first field is an alias
-    numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
-    int hw = buffer[ptr + 11] & 0x1F;             // half words of user data
-
-    directoryData = new byte[12 + hw * 2];
+    byte[] directoryData = new byte[12 + hw * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    if (numTtr == 0)
-      basicModule = new BasicModule (directoryData);
-    else
-      loadModule = new LoadModule (directoryData);
+    module =
+        numTtr == 0 ? new BasicModule (directoryData) : new LoadModule (directoryData);
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean isBasic ()
+  public boolean isBasicModule ()
   // ---------------------------------------------------------------------------------//
   {
-    return basicModule != null;
+    return module.numTtr == 0;
   }
 
   // ---------------------------------------------------------------------------------//
   public boolean isLoadModule ()
   // ---------------------------------------------------------------------------------//
   {
-    return loadModule != null;
+    return module.numTtr > 0;
   }
 
   // ---------------------------------------------------------------------------------//
   public BasicModule getBasicModule ()
   // ---------------------------------------------------------------------------------//
   {
-    return basicModule;
+    assert isBasicModule ();
+    return (BasicModule) module;
   }
 
   // ---------------------------------------------------------------------------------//
   public LoadModule getLoadModule ()
   // ---------------------------------------------------------------------------------//
   {
-    return loadModule;
+    assert isLoadModule ();
+    return (LoadModule) module;
   }
 
   // ---------------------------------------------------------------------------------//
   public byte[] getDirectoryData ()
   // ---------------------------------------------------------------------------------//
   {
-    return directoryData;
+    return module.directoryData;
   }
 
   // ---------------------------------------------------------------------------------//
   public boolean isAlias ()
   // ---------------------------------------------------------------------------------//
   {
-    return isAlias;
+    return module.usesAlias;
   }
 
   // ---------------------------------------------------------------------------------//
   public int getTtr ()
   // ---------------------------------------------------------------------------------//
   {
-    return ttr;
+    return module.ttr;
   }
 
   // ---------------------------------------------------------------------------------//
   public byte getExtra ()
   // ---------------------------------------------------------------------------------//
   {
-    return directoryData[11];
+    return module.directoryData[11];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getMemberName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return module.name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getAliasName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return module.aliasName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -161,7 +159,7 @@ public class CatalogEntry
     //      ttl[4] = (byte) (blockFrom & 0x0000FF);
     //    }
 
-    int index = ((ttr & 0x00FF00) >>> 8) / mult;
+    int index = ((module.ttr & 0x00FF00) >>> 8) / mult;
 
     long lo = Utility.getFourBytes (copyR2.buffer, index * 16 + 22);
     long hi = Utility.getFourBytes (copyR2.buffer, index * 16 + 26);
@@ -170,7 +168,8 @@ public class CatalogEntry
     byte[] temp = convert (index, mult);
 
     long val = Utility.getValue (temp, 0, 4);     // ignore last byte
-    System.out.printf ("%02X  %06X -> %s ", index, ttr, Utility.getHexValues (temp));
+    System.out.printf ("%02X  %06X -> %s ", index, module.ttr,
+        Utility.getHexValues (temp));
 
     if (lo <= val && hi >= val)
     {
@@ -191,7 +190,7 @@ public class CatalogEntry
   {
     byte[] tt = new byte[5];
 
-    int xxxx = (ttr & 0xFFFF00) >>> 8;
+    int xxxx = (module.ttr & 0xFFFF00) >>> 8;
     int yyyy = Utility.getTwoBytes (copyR2.buffer, index * 16 + 22);
     int zzzz = Utility.getTwoBytes (copyR2.buffer, index * 16 + 24);
 
@@ -201,144 +200,9 @@ public class CatalogEntry
     tt[1] = (byte) ((dddd & 0x00FF) >>> 0);
     tt[2] = 0;
     tt[3] = (byte) ((xxxx + zzzz) % mult);
-    tt[4] = (byte) (ttr & 0x0000FF);
+    tt[4] = (byte) (module.ttr & 0x0000FF);
 
     return tt;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getMemberName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return name;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getUserName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return basicModule == null ? "" : basicModule.userName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getAliasName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return numTtr == 0 ? basicModule.aliasName : loadModule.aliasName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getSize ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return basicModule == null ? 0 : basicModule.size;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getStorage ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? 0 : loadModule.storage;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getEpa ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? 0 : loadModule.epa;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getAMode ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? 0 : loadModule.aMode;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getRMode ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? 0 : loadModule.rMode;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public long getSsi ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? 0 : loadModule.ssiWord;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isApf ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? false : loadModule.apf == 1;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isReentrant ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? false : loadModule.reentrant;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isReusable ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? false : loadModule.reusable;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isOverlay ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? false : loadModule.overlay;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isTest ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return loadModule == null ? false : loadModule.test;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getInit ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return basicModule == null ? 0 : basicModule.init;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public LocalDate getDateCreated ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return basicModule == null ? null : basicModule.dateCreated;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public LocalDate getDateModified ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return basicModule == null ? null : basicModule.dateModified;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getTime ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return basicModule == null ? "" : basicModule.time;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getVersion ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (basicModule == null || basicModule.vv == 0 & basicModule.mm == 0)
-      return "";
-    return String.format ("%02d.%02d", basicModule.vv, basicModule.mm);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -346,10 +210,9 @@ public class CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    String detail =
-        basicModule != null ? basicModule.toString () : loadModule.toString ();
+    String detail = module.toString ();
     String memberName = member == null ? "" : member.getName ();
-    return String.format ("%-8s  %02X  %s  %8s  %s", name, directoryData[11], detail,
-        getAliasName (), memberName);
+    return String.format ("%-8s  %02X  %s  %8s  %s", module.name,
+        module.directoryData[11], detail, module.getAliasName (), memberName);
   }
 }

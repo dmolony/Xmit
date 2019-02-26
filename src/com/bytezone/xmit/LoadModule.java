@@ -3,11 +3,9 @@ package com.bytezone.xmit;
 // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
 // com.ibm.zos.v2r3.ieab200/destow.htm
 // ---------------------------------------------------------------------------------//
-public class LoadModule
+public class LoadModule extends Module
 // ---------------------------------------------------------------------------------//
 {
-  byte[] directoryData;
-
   final boolean reentrant;
   final boolean reusable;
   final boolean overlay;
@@ -51,20 +49,16 @@ public class LoadModule
   int epa;
   int apf;
 
-  String aliasName = "";
   long ssiWord;
   int aliasTtr;
-  public boolean usesAlias;
 
   // ---------------------------------------------------------------------------------//
   LoadModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    directoryData = buffer;
+    super (buffer);
 
-    int numTtr = (buffer[11] & 0x60) >>> 5;     // number of TTRs in user data
-    usesAlias = (buffer[11] & 0x80) != 0;       // name in the first field is an alias
-    int hw = buffer[11] & 0x1F;                 // half words of user data
+    assert numTtr > 0;
 
     ttrText = (int) Utility.getValue (buffer, 12, 3);
     int zero = buffer[15] & 0xFF;
@@ -172,11 +166,10 @@ public class LoadModule
   }
 
   // ---------------------------------------------------------------------------------//
-  public String debugLineLoadModule ()
+  @Override
+  public String getDebugLine ()
   // ---------------------------------------------------------------------------------//
   {
-    //    LoadModule lm = catalogEntry.getLoadModule ();
-    //    byte[] directoryData = catalogEntry.getDirectoryData ();
     String hex = Utility.getHexValues (directoryData, 12, 21);
 
     String scatterText = "";
@@ -234,6 +227,76 @@ public class LoadModule
 
     return String.format ("%-63s %-24s %-33s %-12s %-6s %-39s %s", hex, scatterText,
         aliasText, ssiText, apfText, lpoText, extra).trim ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getStorage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return storage;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getEpa ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return epa;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getAMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return aMode;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getRMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return rMode;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public long getSsi ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ssiWord;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isApf ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return apf == 1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isReentrant ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return reentrant;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isReusable ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return reusable;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isOverlay ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return overlay;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isTest ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return test;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -2,7 +2,9 @@ package com.bytezone.xmit.gui;
 
 import java.time.LocalDate;
 
+import com.bytezone.xmit.BasicModule;
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.LoadModule;
 import com.bytezone.xmit.Utility.FileType;
 
 import javafx.beans.property.*;
@@ -43,29 +45,36 @@ public class CatalogEntryItem                   // must be public
     this.catalogEntry = catalogEntry;
 
     setMemberName (catalogEntry.getMemberName ());
-    setUserName (catalogEntry.getUserName ());
     setAliasName (catalogEntry.getAliasName ());
-
-    setSize (catalogEntry.getSize ());
     setBytes (catalogEntry.getMember ().getDataLength ());
-    setInit (catalogEntry.getInit ());
-    setDateCreated (catalogEntry.getDateCreated ());
-    setDateModified (catalogEntry.getDateModified ());
-    setTime (catalogEntry.getTime ());
     setType (catalogEntry.getMember ().getFileType ());
-    setVersion (catalogEntry.getVersion ());
 
-    setEpa (catalogEntry.getEpa ());
-    setStorage (catalogEntry.getStorage ());
-    setAMode (catalogEntry.getAMode ());
-    setRMode (catalogEntry.getRMode ());
-    setSsi ((int) catalogEntry.getSsi ());
-    setApf (catalogEntry.isApf () ? "apf" : "");
-    setAttr (String.format ("%2s %2s %2s %2s",          //
-        catalogEntry.isReentrant () ? "RN" : "",        //
-        catalogEntry.isReusable () ? "RU" : "",         //
-        catalogEntry.isOverlay () ? "OV" : "",          //
-        catalogEntry.isTest () ? "TS" : ""));
+    if (catalogEntry.isBasicModule ())
+    {
+      BasicModule module = catalogEntry.getBasicModule ();
+      setUserName (module.getUserName ());
+      setSize (module.getSize ());
+      setInit (module.getInit ());
+      setDateCreated (module.getDateCreated ());
+      setDateModified (module.getDateModified ());
+      setTime (module.getTime ());
+      setVersion (module.getVersion ());
+    }
+    else
+    {
+      LoadModule module = catalogEntry.getLoadModule ();
+      setEpa (module.getEpa ());
+      setStorage (module.getStorage ());
+      setAMode (module.getAMode ());
+      setRMode (module.getRMode ());
+      setSsi ((int) module.getSsi ());
+      setApf (module.isApf () ? "apf" : "");
+      setAttr (String.format ("%2s %2s %2s %2s",    //
+          module.isReentrant () ? "RN" : "",        //
+          module.isReusable () ? "RU" : "",         //
+          module.isOverlay () ? "OV" : "",          //
+          module.isTest () ? "TS" : ""));
+    }
   }
 
   // ---------------------------------------------------------------------------------//

@@ -116,20 +116,19 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       for (CatalogEntry catalogEntry : pdsDataset)
       {
-        text.append (String.format ("%02X %-8s %-8s %06X ", catalogEntry.getExtra (),
-            catalogEntry.getMemberName (), catalogEntry.getUserName (),
-            catalogEntry.getTtr ()));
+        text.append (String.format ("%02X %-8s %06X ", catalogEntry.getExtra (),
+            catalogEntry.getMemberName (), catalogEntry.getTtr ()));
 
-        if (catalogEntry.isBasic ())
+        if (catalogEntry.isBasicModule ())
         {
           // user name goes in here
           BasicModule bm = catalogEntry.getBasicModule ();
-          text.append (bm.debugLineBasic ());
+          text.append (bm.getDebugLine ());
         }
         else
         {
           LoadModule lm = catalogEntry.getLoadModule ();
-          text.append (lm.debugLineLoadModule ());
+          text.append (lm.getDebugLine ());
         }
         text.append ("\n");
       }
