@@ -13,7 +13,7 @@ public abstract class DataFile implements Comparable<DataFile>
 {
   private String name = "";
   private final Disposition disposition;
-  protected final Reader reader;
+  final Reader reader;
 
   int dataLength = 0;
 

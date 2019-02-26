@@ -46,8 +46,8 @@ public class CatalogEntryItem                   // must be public
 
     setMemberName (catalogEntry.getMemberName ());
     setAliasName (catalogEntry.getAliasName ());
-    setBytes (catalogEntry.getMember ().getDataLength ());
-    setType (catalogEntry.getMember ().getFileType ());
+    setBytes (catalogEntry.getDataLength ());
+    setType (catalogEntry.getFileType ());
 
     if (catalogEntry.isBasicModule ())
     {
