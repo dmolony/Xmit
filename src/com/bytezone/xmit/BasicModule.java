@@ -62,8 +62,6 @@ public class BasicModule
 
       if (usesAlias && directoryData.length > 42)
         aliasName = Utility.getString (buffer, buffer.length - 8, 8);
-      //      System.out.println (Utility.getHexDump (directoryData));
-      //      System.out.println ();
     }
   }
 
@@ -75,24 +73,6 @@ public class BasicModule
       return "";
 
     String hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
-    //    String t1 = "";
-
-    //    int extra = directoryData[11] & 0xFF;       // indicator byte
-    //    if (extra == 0x2E)
-    //      hex =
-    //          Utility.getHexValues (directoryData, 12, 22) + "                              "
-    //              + Utility.getHexValues (directoryData, 34, 6);
-    //    else if (extra == 0x31)
-    //      hex =
-    //          Utility.getHexValues (directoryData, 12, 22) + "                              "
-    //              + Utility.getHexValues (directoryData, 34, 12);
-    //    else
-    //      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
-    //
-    //    if (extra == 0xB6)
-    //      t1 = Utility.getString (directoryData, 48, 8);
-
-    //    return String.format (" %-129s", hex).trim ();
     return hex;
   }
 

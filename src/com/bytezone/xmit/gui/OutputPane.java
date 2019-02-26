@@ -21,8 +21,10 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 {
   private static final int MAX_HEX_BYTES = 0x20000;
   private static final int MAX_LINES = 2500;
-  private static final String TRUNCATE_MESSAGE =
+  private static final String TRUNCATE_MESSAGE1 =
       "\n*** Output truncated at %,d lines to improve rendering time ***";
+  private static final String TRUNCATE_MESSAGE2 =
+      "\n***      To see the entire file, use File -> Save Output      ***";
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
@@ -191,7 +193,8 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     {
       if (++lineNo > maxLines)
       {
-        text.append (String.format (TRUNCATE_MESSAGE, maxLines));
+        text.append (String.format (TRUNCATE_MESSAGE1, maxLines));
+        text.append (TRUNCATE_MESSAGE2);
         break;
       }
       if (stripLines)
