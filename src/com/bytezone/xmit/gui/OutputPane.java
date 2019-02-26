@@ -103,7 +103,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       if (pdsDataset.isBasic ())
       {
         text.append ("versn    ss -created--  -modified-  hh mm ");
-        text.append ("Size1 Size2       -------- user ---------\n");
+        text.append ("size1 size2 size3 -------- user ---------\n");
       }
       else
       {

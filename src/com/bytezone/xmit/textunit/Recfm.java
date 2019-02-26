@@ -20,6 +20,8 @@ public class Recfm extends TextUnitNumber
   private static final char[] types2 = { '?', 'B', '.', '?' };
   private static final char[] types3 = { '?', 'A', 'A', '?', 'S', '?', '?', '?' };
 
+  // recfm=F/V/D/U (fixed, variable, ascii variable, undefined)
+
   public String type;
 
   // ---------------------------------------------------------------------------------//

@@ -68,7 +68,7 @@ class XmitTable extends TableView<CatalogEntryItem>
     addNumber ("Bytes", "Bytes", 90);
 
     // basic module
-    idColumn = addString ("Id", "UserName", 100, "CENTER-LEFT");
+    idColumn = addString ("Id", "UserName", 75, "CENTER-LEFT");
     sizeColumn = addNumber ("Size", "Size", 70);
     initColumn = addNumber ("Init", "Init", 70);
     createdColumn = addLocalDate ("Created", "DateCreated", 100);

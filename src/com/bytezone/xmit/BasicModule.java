@@ -18,19 +18,10 @@ public class BasicModule
   LocalDate dateModified;
   String time = "";
 
-  private String userName = "";
+  String userName = "";
+  String aliasName = "";
+  private final boolean usesAlias;
   byte[] directoryData;
-
-  // ---------------------------------------------------------------------------------//
-  BasicModule ()
-  // ---------------------------------------------------------------------------------//
-  {
-    vv = 0;
-    mm = 0;
-    size = 0;
-    mod = 0;
-    init = 0;
-  }
 
   // ---------------------------------------------------------------------------------//
   BasicModule (byte[] buffer)
@@ -38,26 +29,42 @@ public class BasicModule
   {
     directoryData = buffer;
 
-    vv = buffer[12] & 0xFF;
-    mm = buffer[13] & 0xFF;
+    usesAlias = (buffer[11] & 0x80) != 0;     // name in the first field is an alias
+    int hw = buffer[11] & 0x1F;               // half words of user data
 
-    Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
-    if (opt.isPresent ())
-      dateCreated = opt.get ();
+    if (hw == 0)
+    {
+      vv = 0;
+      mm = 0;
+      size = 0;
+      mod = 0;
+      init = 0;
+    }
+    else
+    {
+      vv = buffer[12] & 0xFF;
+      mm = buffer[13] & 0xFF;
 
-    opt = Utility.getLocalDate (buffer, 20);
-    if (opt.isPresent ())
-      dateModified = opt.get ();
+      Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
+      if (opt.isPresent ())
+        dateCreated = opt.get ();
 
-    //    int moduleAttrs1 = buffer[ptr] & 0xFF;
-    //    int moduleAttrs2 = buffer[ptr] & 0xFF;
+      opt = Utility.getLocalDate (buffer, 20);
+      if (opt.isPresent ())
+        dateModified = opt.get ();
 
-    time = String.format ("%02X:%02X:%02X", buffer[24], buffer[25], buffer[15]);
+      time = String.format ("%02X:%02X:%02X", buffer[24], buffer[25], buffer[15]);
 
-    size = Utility.getTwoBytes (buffer, 26);
-    init = Utility.getTwoBytes (buffer, 28);
-    mod = Utility.getTwoBytes (buffer, 30);
-    userName = Utility.getString (buffer, 32, 8).trim ();
+      size = Utility.getTwoBytes (buffer, 26);
+      init = Utility.getTwoBytes (buffer, 28);
+      mod = Utility.getTwoBytes (buffer, 30);
+      userName = Utility.getString (buffer, 32, 8).trim ();
+
+      if (usesAlias && directoryData.length > 42)
+        aliasName = Utility.getString (buffer, buffer.length - 8, 8);
+      //      System.out.println (Utility.getHexDump (directoryData));
+      //      System.out.println ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -67,25 +74,26 @@ public class BasicModule
     if (directoryData == null)
       return "";
 
-    String hex = "";
-    String t1 = "";
+    String hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+    //    String t1 = "";
 
-    int extra = directoryData[11] & 0xFF; // indicator byte
-    if (extra == 0x2E)
-      hex =
-          Utility.getHexValues (directoryData, 12, 22) + "                              "
-              + Utility.getHexValues (directoryData, 34, 6);
-    else if (extra == 0x31)
-      hex =
-          Utility.getHexValues (directoryData, 12, 22) + "                              "
-              + Utility.getHexValues (directoryData, 34, 12);
-    else
-      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+    //    int extra = directoryData[11] & 0xFF;       // indicator byte
+    //    if (extra == 0x2E)
+    //      hex =
+    //          Utility.getHexValues (directoryData, 12, 22) + "                              "
+    //              + Utility.getHexValues (directoryData, 34, 6);
+    //    else if (extra == 0x31)
+    //      hex =
+    //          Utility.getHexValues (directoryData, 12, 22) + "                              "
+    //              + Utility.getHexValues (directoryData, 34, 12);
+    //    else
+    //      hex = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+    //
+    //    if (extra == 0xB6)
+    //      t1 = Utility.getString (directoryData, 48, 8);
 
-    if (extra == 0xB6)
-      t1 = Utility.getString (directoryData, 48, 8);
-
-    return String.format (" %-129s %8s", hex, t1).trim ();
+    //    return String.format (" %-129s", hex).trim ();
+    return hex;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -9,19 +9,15 @@ public class CatalogEntry
   private PdsMember member;                   // contains DataBlocks
   private LoadModule loadModule;
   private BasicModule basicModule;
+  private final byte[] directoryData;
 
   private final String name;
-  private final String userName = "";
-  private String aliasName = "";
-
-  private final boolean usesAlias;
+  //  private final String userName = "";
+  private final int ttr;
+  private final boolean isAlias;
   private final int numTtr;
 
   private int sectionL;
-
-  private final byte[] directoryData;
-
-  private final int ttr;
 
   private byte[] ttl = new byte[5];
 
@@ -40,31 +36,17 @@ public class CatalogEntry
     name = Utility.getString (buffer, ptr, 8).trim ();
     ttr = (int) Utility.getValue (buffer, ptr + 8, 3);    // TTR of first block
 
-    numTtr = (buffer[ptr + 11] & 0x60) >>> 5;      // number of TTRs in user data
-    usesAlias = (buffer[ptr + 11] & 0x80) != 0;    // name in the first field is an alias
+    isAlias = (buffer[ptr + 11] & 0x80) != 0;     // name in the first field is an alias
+    numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
+    int hw = buffer[ptr + 11] & 0x1F;             // half words of user data
 
-    int hw = buffer[ptr + 11] & 0x1F;
     directoryData = new byte[12 + hw * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    //    System.out.println (name);
     if (numTtr == 0)
-      basicModule = hw > 0 ? new BasicModule (directoryData) : new BasicModule ();
+      basicModule = new BasicModule (directoryData);
     else
       loadModule = new LoadModule (directoryData);
-
-    if (false)
-    {
-      System.out.print (Utility.getHexValuesWithText (directoryData, 0, 11));
-      System.out.printf (" | %d %d %02X |  ", usesAlias ? 1 : 0, numTtr, hw);
-      System.out.println (
-          Utility.getHexValuesWithText (directoryData, 11, directoryData.length - 11));
-    }
-
-    if (loadModule != null)
-      aliasName = loadModule.aliasName;
-    else if (usesAlias && directoryData.length >= 44)
-      aliasName = Utility.getString (buffer, ptr + 36, 8);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,10 +85,10 @@ public class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean usesAlias ()
+  public boolean isAlias ()
   // ---------------------------------------------------------------------------------//
   {
-    return usesAlias;
+    return isAlias;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -235,21 +217,14 @@ public class CatalogEntry
   public String getUserName ()
   // ---------------------------------------------------------------------------------//
   {
-    return userName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isAlias ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return !aliasName.isEmpty ();
+    return basicModule == null ? "" : basicModule.userName;
   }
 
   // ---------------------------------------------------------------------------------//
   public String getAliasName ()
   // ---------------------------------------------------------------------------------//
   {
-    return aliasName;
+    return numTtr == 0 ? basicModule.aliasName : loadModule.aliasName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -375,6 +350,6 @@ public class CatalogEntry
         basicModule != null ? basicModule.toString () : loadModule.toString ();
     String memberName = member == null ? "" : member.getName ();
     return String.format ("%-8s  %02X  %s  %8s  %s", name, directoryData[11], detail,
-        aliasName, memberName);
+        getAliasName (), memberName);
   }
 }
