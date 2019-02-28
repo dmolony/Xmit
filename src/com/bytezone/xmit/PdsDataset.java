@@ -222,7 +222,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = CatalogEntry.newCatalogEntry (buffer, ptr2);
+        CatalogEntry catalogEntry = CatalogEntry.instanceOf (buffer, ptr2);
         catalogEntries.add (catalogEntry);
         addToMap (catalogEntry, catalogMap);
 
@@ -230,7 +230,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
           break;
 
-        ptr2 += catalogEntry.getDirectoryData ().length;
+        ptr2 += catalogEntry.getEntryLength ();
       }
 
       ptr += DIR_BLOCK_LENGTH;

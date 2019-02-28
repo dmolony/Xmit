@@ -33,7 +33,7 @@ public abstract class CatalogEntry
   //           com.ibm.zos.v2r3.idad400/pdsd.htm#pdsd__fg43
 
   // ---------------------------------------------------------------------------------//
-  static CatalogEntry newCatalogEntry (byte[] buffer, int ptr)
+  static CatalogEntry instanceOf (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     int numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
@@ -42,9 +42,9 @@ public abstract class CatalogEntry
     byte[] directoryData = new byte[12 + hw * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    return numTtr == 0 ?                                //
-        new BasicModule (directoryData)                 // BasicCatalogEntry
-        : new LoadModule (directoryData);               // LoadModuleCatalogEntry
+    return numTtr == 0 ?                              //
+        new BasicModule (directoryData)               // 
+        : new LoadModule (directoryData);             // 
   }
 
   // ---------------------------------------------------------------------------------//
@@ -74,10 +74,17 @@ public abstract class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  public byte[] getDirectoryData ()
+  int getEntryLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return directoryData;
+    return directoryData.length;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getDataLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return member.dataLength;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -88,17 +95,10 @@ public abstract class CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getTtr ()
+  int getTtr ()
   // ---------------------------------------------------------------------------------//
   {
     return ttr;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getDataLength ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return member.dataLength;
   }
 
   // ---------------------------------------------------------------------------------//
