@@ -135,7 +135,7 @@ public class ControlRecord
     StringBuilder text = new StringBuilder ();
 
     String fileNbrText = fileNbr > 0 ? String.format (" (file %d)", fileNbr) : "";
-    text.append (String.format ("Control Record: %s %s%n%n", name, fileNbrText));
+    text.append (String.format ("%s %s%n%n", name, fileNbrText));
     for (TextUnit textUnit : textUnits)
       text.append (textUnit + "\n");
 

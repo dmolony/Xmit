@@ -1,10 +1,6 @@
 package com.bytezone.xmit;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
@@ -108,13 +104,20 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     {
       PdsMember member = members.get (count++);
 
+      Collections.sort (catalogEntryList);      // sort non-alias to the front
       CatalogEntry sourceEntry = catalogEntryList.get (0);
+
       for (CatalogEntry catalogEntry : catalogEntryList)
       {
         catalogEntry.setMember (member);
-        if (catalogEntry.getAliasName ().isEmpty ())
-          sourceEntry = catalogEntry;
+
+        if (catalogEntry.usesAlias && catalogEntry.getAliasName ().isEmpty ())
+          catalogEntry.aliasName = sourceEntry.name;
+
+        //        if (catalogEntry.getAliasName ().isEmpty ())
+        //          sourceEntry = catalogEntry;
       }
+
       // see FILE182.UTILXMIT
       member.setCatalogEntry (sourceEntry);
 
@@ -122,8 +125,8 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         xmitMembers.add (member);       // should these be CatalogEntry?
     }
 
-    // FILE182.XMITxx contains REV38 which is flagged as an alias of REVIEW, but its
-    // TTL does not match REVIEW's. So it has its own Member.
+    // FILE182.UTILXMIT contains REV38 which is flagged as an alias of REVIEW, but
+    // its TTL does not match REVIEW's. So it has its own Member.
     if (false)
     {
       displayMap (catalogMap);

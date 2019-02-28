@@ -100,7 +100,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       text.append (
           String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
-      text.append ("   --name-- -ttr--  ");
+      text.append ("- - -- --name-- -ttr--  ");
 
       if (pdsDataset.isBasic ())
       {

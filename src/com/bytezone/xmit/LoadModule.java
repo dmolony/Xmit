@@ -225,9 +225,8 @@ public class LoadModule extends CatalogEntry
           Utility.getHexValuesWithText (directoryData, ptr, directoryData.length - ptr);
     //    String hex2 = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
 
-    return String.format ("%-18s %-63s %-24s %-33s %-12s %-6s %-39s %s",
-        super.toString (), hex, scatterText, aliasText, ssiText, apfText, lpoText, extra)
-        .trim ();
+    return String.format ("%23s %-63s %-24s %-33s %-12s %-6s %-39s %s", super.toString (),
+        hex, scatterText, aliasText, ssiText, apfText, lpoText, extra).trim ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -305,6 +304,6 @@ public class LoadModule extends CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return "load module";
+    return String.format ("%s  %-8s  ", usesAlias ? "A" : ".", name);
   }
 }

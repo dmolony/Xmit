@@ -69,7 +69,7 @@ public class BasicModule extends CatalogEntry
     if (directoryData == null)
       return "";
 
-    return String.format ("%-18s %-8s %s", super.toString (), userName,
+    return String.format ("%23s %-8s %s", super.toString (), userName,
         Utility.getHexValues (directoryData, 12, directoryData.length - 12));
   }
 
@@ -131,6 +131,7 @@ public class BasicModule extends CatalogEntry
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%8s  %,6d  %s  %s", userName, size, date1Text, time);
+    return String.format ("%s  %-8s  %-8s  %,6d  %s  %s", usesAlias ? "A" : ".", name,
+        userName, size, date1Text, time);
   }
 }
