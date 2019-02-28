@@ -220,7 +220,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         if (buffer[ptr2] == (byte) 0xFF)
           return false;                                     // member list finished
 
-        CatalogEntry catalogEntry = new CatalogEntry (buffer, ptr2);
+        CatalogEntry catalogEntry = CatalogEntry.newCatalogEntry (buffer, ptr2);
         catalogEntries.add (catalogEntry);
         addToMap (catalogEntry, catalogMap);
 
@@ -254,17 +254,6 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     }
     catalogEntriesTtl.add (catalogEntry);
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  public CatalogEntry getCatalogEntry (String name)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    for (CatalogEntry catalogEntry : catalogEntries)
-  //      if (name.equals (catalogEntry.getMemberName ()))
-  //        return catalogEntry;
-  //    System.out.printf ("No catalog entry found: [%s]%n", name);
-  //    return null;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public int memberIndex (String memberName)

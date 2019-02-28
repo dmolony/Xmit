@@ -14,10 +14,25 @@ public class CatalogEntry
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
+  public enum ModuleType
+  {
+    BASIC, LOAD
+  }
+
   // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
   //           com.ibm.zos.v2r3.ieab200/destow.htm
   // https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/
   //           com.ibm.zos.v2r3.idad400/pdsd.htm#pdsd__fg43
+
+  // ---------------------------------------------------------------------------------//
+  static CatalogEntry newCatalogEntry (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    int numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
+    return numTtr == 0 ?                              //
+        new CatalogEntry (buffer, ptr)                // BasicCatalogEntry
+        : new CatalogEntry (buffer, ptr);             // LoadModuleCatalogEntry
+  }
 
   // ---------------------------------------------------------------------------------//
   CatalogEntry (byte[] buffer, int ptr)
