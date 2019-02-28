@@ -55,28 +55,16 @@ public abstract class CatalogEntry
     directoryData = buffer;
 
     name = Utility.getString (buffer, 0, 8).trim ();
-    ttr = (int) Utility.getValue (buffer, 8, 3);    // TTR of first block
+    ttr = (int) Utility.getValue (buffer, 8, 3);            // TTR of first block
 
     usesAlias = (buffer[11] & 0x80) != 0;     // name in the first field is an alias
     numTtr = (buffer[11] & 0x60) >>> 5;       // number of TTRs in user data
     hw = buffer[11] & 0x1F;                   // half words of user data
   }
 
-  public abstract String getDebugLine ();
-
   // ---------------------------------------------------------------------------------//
-  //  public boolean isBasicModule ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return moduleType == ModuleType.BASIC;
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  public boolean isLoadModule ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return moduleType == ModuleType.LOAD;
-  //  }
+  public abstract String getDebugLine ();
+  // ---------------------------------------------------------------------------------//
 
   // ---------------------------------------------------------------------------------//
   public ModuleType getModuleType ()
@@ -118,13 +106,6 @@ public abstract class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     return member.getFileType ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public byte getExtra ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return directoryData[11];
   }
 
   // ---------------------------------------------------------------------------------//
@@ -247,9 +228,6 @@ public abstract class CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    //    String detail = module.toString ();
-    //    String memberName = member == null ? "" : member.getName ();
-    return String.format ("%02X %-8s %06X ", getExtra (), getMemberName (), getTtr ());
-    //    return String.format ("%-8s  %02X  %-8s", name, directoryData[11], getAliasName ());
+    return String.format ("%02X %-8s %06X ", directoryData[11], name, ttr);
   }
 }

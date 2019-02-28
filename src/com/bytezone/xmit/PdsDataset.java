@@ -247,14 +247,14 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       Map<Long, List<CatalogEntry>> catalogMap)
   {
     catalogEntry.setCopyRecords (copyR1, copyR2);
-    long ttl = catalogEntry.getTtr ();
-    List<CatalogEntry> catalogEntriesTtl = catalogMap.get (ttl);
-    if (catalogEntriesTtl == null)
+    long ttr = catalogEntry.getTtr ();
+    List<CatalogEntry> catalogEntriesTtr = catalogMap.get (ttr);
+    if (catalogEntriesTtr == null)
     {
-      catalogEntriesTtl = new ArrayList<> ();
-      catalogMap.put (ttl, catalogEntriesTtl);
+      catalogEntriesTtr = new ArrayList<> ();
+      catalogMap.put (ttr, catalogEntriesTtr);
     }
-    catalogEntriesTtl.add (catalogEntry);
+    catalogEntriesTtr.add (catalogEntry);
   }
 
   // ---------------------------------------------------------------------------------//
