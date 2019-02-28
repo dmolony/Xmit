@@ -100,11 +100,11 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       text.append (
           String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
-      text.append ("   --name-- ---id--- -ttr-- ");
+      text.append ("   --name-- -ttr--  ");
 
       if (pdsDataset.isBasic ())
       {
-        text.append ("versn    ss -created--  -modified-  hh mm ");
+        text.append ("-- id -- versn    ss -created--  -modified-  hh mm ");
         text.append ("size1 size2 size3 -------- user ---------\n");
       }
       else
@@ -116,20 +116,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
 
       for (CatalogEntry catalogEntry : pdsDataset)
       {
-        text.append (String.format ("%02X %-8s %06X ", catalogEntry.getExtra (),
-            catalogEntry.getMemberName (), catalogEntry.getTtr ()));
-
-        if (catalogEntry.isBasicModule ())
-        {
-          // user name goes in here
-          BasicModule bm = catalogEntry.getBasicModule ();
-          text.append (bm.getDebugLine ());
-        }
-        else
-        {
-          LoadModule lm = catalogEntry.getLoadModule ();
-          text.append (lm.getDebugLine ());
-        }
+        text.append (catalogEntry.getDebugLine ());
         text.append ("\n");
       }
     }

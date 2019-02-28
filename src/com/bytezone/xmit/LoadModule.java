@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.3.0/
 // com.ibm.zos.v2r3.ieab200/destow.htm
 // ---------------------------------------------------------------------------------//
-public class LoadModule extends Module
+public class LoadModule extends CatalogEntry
 // ---------------------------------------------------------------------------------//
 {
   final boolean reentrant;
@@ -56,7 +56,7 @@ public class LoadModule extends Module
   LoadModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    super (buffer);
+    super (ModuleType.LOAD, buffer);
 
     assert numTtr > 0;
 
@@ -225,8 +225,9 @@ public class LoadModule extends Module
           Utility.getHexValuesWithText (directoryData, ptr, directoryData.length - ptr);
     //    String hex2 = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
 
-    return String.format ("%-63s %-24s %-33s %-12s %-6s %-39s %s", hex, scatterText,
-        aliasText, ssiText, apfText, lpoText, extra).trim ();
+    return String.format ("%-18s %-63s %-24s %-33s %-12s %-6s %-39s %s",
+        super.toString (), hex, scatterText, aliasText, ssiText, apfText, lpoText, extra)
+        .trim ();
   }
 
   // ---------------------------------------------------------------------------------//

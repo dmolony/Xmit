@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 // ---------------------------------------------------------------------------------//
-public class BasicModule extends Module
+public class BasicModule extends CatalogEntry
 // ---------------------------------------------------------------------------------//
 {
   final int size;
@@ -24,7 +24,7 @@ public class BasicModule extends Module
   BasicModule (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    super (buffer);
+    super (ModuleType.BASIC, buffer);
 
     assert numTtr == 0;
 
@@ -69,7 +69,8 @@ public class BasicModule extends Module
     if (directoryData == null)
       return "";
 
-    return Utility.getHexValues (directoryData, 12, directoryData.length - 12);
+    return String.format ("%-18s %-8s %s", super.toString (), userName,
+        Utility.getHexValues (directoryData, 12, directoryData.length - 12));
   }
 
   // ---------------------------------------------------------------------------------//

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 // ---------------------------------------------------------------------------------//
@@ -31,7 +32,8 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public boolean isBasic ()
   // ---------------------------------------------------------------------------------//
   {
-    return catalogEntries.size () > 0 && catalogEntries.get (0).isBasicModule ();
+    return catalogEntries.size () > 0
+        && catalogEntries.get (0).getModuleType () == ModuleType.BASIC;
   }
 
   // ---------------------------------------------------------------------------------//

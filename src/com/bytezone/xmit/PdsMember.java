@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.bytezone.xmit.CatalogEntry.ModuleType;
+
 // ---------------------------------------------------------------------------------//
 public class PdsMember extends DataFile implements Iterable<DataBlock>
 // ---------------------------------------------------------------------------------//
@@ -217,7 +219,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   void undefined ()         // recfm = U
   // ---------------------------------------------------------------------------------//
   {
-    if (catalogEntry == null || catalogEntry.isLoadModule ()
+    if (catalogEntry == null || catalogEntry.getModuleType () == ModuleType.LOAD
         || getCommonBlockLength () <= 1)
     {
       if (getEightBytes ()[0] == 0x20)

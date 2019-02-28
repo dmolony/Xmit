@@ -3,14 +3,22 @@ package com.bytezone.xmit;
 import com.bytezone.xmit.Utility.FileType;
 
 // ---------------------------------------------------------------------------------//
-public class CatalogEntry
+public abstract class CatalogEntry
 //---------------------------------------------------------------------------------//
 {
   private PdsMember member;            // contains DataBlocks
-  private final Module module;
+  String aliasName = "";
+  final boolean usesAlias;
+  final int numTtr;
+  final int hw;
+  final String name;
+  final int ttr;
 
+  final byte[] directoryData;
+  final ModuleType moduleType;
+
+  // not used
   private byte[] ttl = new byte[5];
-
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
@@ -29,74 +37,73 @@ public class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     int numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
-    return numTtr == 0 ?                              //
-        new CatalogEntry (buffer, ptr)                // BasicCatalogEntry
-        : new CatalogEntry (buffer, ptr);             // LoadModuleCatalogEntry
-  }
-
-  // ---------------------------------------------------------------------------------//
-  CatalogEntry (byte[] buffer, int ptr)
-  // ---------------------------------------------------------------------------------//
-  {
-    int numTtr = (buffer[ptr + 11] & 0x60) >>> 5;     // number of TTRs in user data
     int hw = buffer[ptr + 11] & 0x1F;                 // half words of user data
 
     byte[] directoryData = new byte[12 + hw * 2];
     System.arraycopy (buffer, ptr, directoryData, 0, directoryData.length);
 
-    module =
-        numTtr == 0 ? new BasicModule (directoryData) : new LoadModule (directoryData);
+    return numTtr == 0 ?                                //
+        new BasicModule (directoryData)                 // BasicCatalogEntry
+        : new LoadModule (directoryData);               // LoadModuleCatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean isBasicModule ()
+  CatalogEntry (ModuleType moduleType, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    return module.numTtr == 0;
+    this.moduleType = moduleType;
+    directoryData = buffer;
+
+    name = Utility.getString (buffer, 0, 8).trim ();
+    ttr = (int) Utility.getValue (buffer, 8, 3);    // TTR of first block
+
+    usesAlias = (buffer[11] & 0x80) != 0;     // name in the first field is an alias
+    numTtr = (buffer[11] & 0x60) >>> 5;       // number of TTRs in user data
+    hw = buffer[11] & 0x1F;                   // half words of user data
   }
 
-  // ---------------------------------------------------------------------------------//
-  public boolean isLoadModule ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return module.numTtr > 0;
-  }
+  public abstract String getDebugLine ();
 
   // ---------------------------------------------------------------------------------//
-  public BasicModule getBasicModule ()
-  // ---------------------------------------------------------------------------------//
-  {
-    assert isBasicModule ();
-    return (BasicModule) module;
-  }
+  //  public boolean isBasicModule ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return moduleType == ModuleType.BASIC;
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  public boolean isLoadModule ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return moduleType == ModuleType.LOAD;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  public LoadModule getLoadModule ()
+  public ModuleType getModuleType ()
   // ---------------------------------------------------------------------------------//
   {
-    assert isLoadModule ();
-    return (LoadModule) module;
+    return moduleType;
   }
 
   // ---------------------------------------------------------------------------------//
   public byte[] getDirectoryData ()
   // ---------------------------------------------------------------------------------//
   {
-    return module.directoryData;
+    return directoryData;
   }
 
   // ---------------------------------------------------------------------------------//
   public boolean isAlias ()
   // ---------------------------------------------------------------------------------//
   {
-    return module.usesAlias;
+    return usesAlias;
   }
 
   // ---------------------------------------------------------------------------------//
   public int getTtr ()
   // ---------------------------------------------------------------------------------//
   {
-    return module.ttr;
+    return ttr;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -117,21 +124,21 @@ public class CatalogEntry
   public byte getExtra ()
   // ---------------------------------------------------------------------------------//
   {
-    return module.directoryData[11];
+    return directoryData[11];
   }
 
   // ---------------------------------------------------------------------------------//
   public String getMemberName ()
   // ---------------------------------------------------------------------------------//
   {
-    return module.name;
+    return name;
   }
 
   // ---------------------------------------------------------------------------------//
   public String getAliasName ()
   // ---------------------------------------------------------------------------------//
   {
-    return module.aliasName;
+    return aliasName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -190,7 +197,7 @@ public class CatalogEntry
     //      ttl[4] = (byte) (blockFrom & 0x0000FF);
     //    }
 
-    int index = ((module.ttr & 0x00FF00) >>> 8) / mult;
+    int index = ((ttr & 0x00FF00) >>> 8) / mult;
 
     long lo = Utility.getFourBytes (copyR2.buffer, index * 16 + 22);
     long hi = Utility.getFourBytes (copyR2.buffer, index * 16 + 26);
@@ -199,8 +206,7 @@ public class CatalogEntry
     byte[] temp = convert (index, mult);
 
     long val = Utility.getValue (temp, 0, 4);     // ignore last byte
-    System.out.printf ("%02X  %06X -> %s ", index, module.ttr,
-        Utility.getHexValues (temp));
+    System.out.printf ("%02X  %06X -> %s ", index, ttr, Utility.getHexValues (temp));
 
     if (lo <= val && hi >= val)
     {
@@ -221,7 +227,7 @@ public class CatalogEntry
   {
     byte[] tt = new byte[5];
 
-    int xxxx = (module.ttr & 0xFFFF00) >>> 8;
+    int xxxx = (ttr & 0xFFFF00) >>> 8;
     int yyyy = Utility.getTwoBytes (copyR2.buffer, index * 16 + 22);
     int zzzz = Utility.getTwoBytes (copyR2.buffer, index * 16 + 24);
 
@@ -231,7 +237,7 @@ public class CatalogEntry
     tt[1] = (byte) ((dddd & 0x00FF) >>> 0);
     tt[2] = 0;
     tt[3] = (byte) ((xxxx + zzzz) % mult);
-    tt[4] = (byte) (module.ttr & 0x0000FF);
+    tt[4] = (byte) (ttr & 0x0000FF);
 
     return tt;
   }
@@ -241,9 +247,9 @@ public class CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    String detail = module.toString ();
-    String memberName = member == null ? "" : member.getName ();
-    return String.format ("%-8s  %02X  %s  %8s  %s", module.name,
-        module.directoryData[11], detail, module.getAliasName (), memberName);
+    //    String detail = module.toString ();
+    //    String memberName = member == null ? "" : member.getName ();
+    return String.format ("%02X %-8s %06X ", getExtra (), getMemberName (), getTtr ());
+    //    return String.format ("%-8s  %02X  %-8s", name, directoryData[11], getAliasName ());
   }
 }

@@ -49,31 +49,33 @@ public class CatalogEntryItem                   // must be public
     setBytes (catalogEntry.getDataLength ());
     setType (catalogEntry.getFileType ());
 
-    if (catalogEntry.isBasicModule ())
+    switch (catalogEntry.getModuleType ())
     {
-      BasicModule module = catalogEntry.getBasicModule ();
-      setUserName (module.getUserName ());
-      setSize (module.getSize ());
-      setInit (module.getInit ());
-      setDateCreated (module.getDateCreated ());
-      setDateModified (module.getDateModified ());
-      setTime (module.getTime ());
-      setVersion (module.getVersion ());
-    }
-    else
-    {
-      LoadModule module = catalogEntry.getLoadModule ();
-      setEpa (module.getEpa ());
-      setStorage (module.getStorage ());
-      setAMode (module.getAMode ());
-      setRMode (module.getRMode ());
-      setSsi ((int) module.getSsi ());
-      setApf (module.isApf () ? "apf" : "");
-      setAttr (String.format ("%2s %2s %2s %2s",    //
-          module.isReentrant () ? "RN" : "",        //
-          module.isReusable () ? "RU" : "",         //
-          module.isOverlay () ? "OV" : "",          //
-          module.isTest () ? "TS" : ""));
+      case BASIC:
+        BasicModule module = (BasicModule) catalogEntry;
+        setUserName (module.getUserName ());
+        setSize (module.getSize ());
+        setInit (module.getInit ());
+        setDateCreated (module.getDateCreated ());
+        setDateModified (module.getDateModified ());
+        setTime (module.getTime ());
+        setVersion (module.getVersion ());
+        break;
+
+      case LOAD:
+        LoadModule loadModule = (LoadModule) catalogEntry;
+        setEpa (loadModule.getEpa ());
+        setStorage (loadModule.getStorage ());
+        setAMode (loadModule.getAMode ());
+        setRMode (loadModule.getRMode ());
+        setSsi ((int) loadModule.getSsi ());
+        setApf (loadModule.isApf () ? "apf" : "");
+        setAttr (String.format ("%2s %2s %2s %2s",    //
+            loadModule.isReentrant () ? "RN" : "",        //
+            loadModule.isReusable () ? "RU" : "",         //
+            loadModule.isOverlay () ? "OV" : "",          //
+            loadModule.isTest () ? "TS" : ""));
+        break;
     }
   }
 
