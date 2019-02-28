@@ -3,7 +3,7 @@ package com.bytezone.xmit;
 import com.bytezone.xmit.Utility.FileType;
 
 // ---------------------------------------------------------------------------------//
-public abstract class CatalogEntry implements Comparable<CatalogEntry>
+public abstract class CatalogEntry
 //---------------------------------------------------------------------------------//
 {
   private PdsMember member;            // contains DataBlocks
@@ -221,16 +221,6 @@ public abstract class CatalogEntry implements Comparable<CatalogEntry>
     tt[4] = (byte) (ttr & 0x0000FF);
 
     return tt;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int compareTo (CatalogEntry o)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (usesAlias == o.usesAlias)
-      return name.compareTo (o.name);
-    return usesAlias ? 1 : -1;
   }
 
   // ---------------------------------------------------------------------------------//

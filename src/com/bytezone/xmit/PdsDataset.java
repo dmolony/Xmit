@@ -1,6 +1,10 @@
 package com.bytezone.xmit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
@@ -104,8 +108,8 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     {
       PdsMember member = members.get (count++);
 
-      Collections.sort (catalogEntryList);      // sort non-alias to the front
-      CatalogEntry sourceEntry = catalogEntryList.get (0);
+      CatalogEntry sourceEntry = catalogEntryList.get (0);      // non-alias
+      member.setCatalogEntry (sourceEntry);
 
       for (CatalogEntry catalogEntry : catalogEntryList)
       {
@@ -113,13 +117,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 
         if (catalogEntry.usesAlias && catalogEntry.getAliasName ().isEmpty ())
           catalogEntry.aliasName = sourceEntry.name;
-
-        //        if (catalogEntry.getAliasName ().isEmpty ())
-        //          sourceEntry = catalogEntry;
       }
-
-      // see FILE182.UTILXMIT
-      member.setCatalogEntry (sourceEntry);
 
       if (member.isXmit ())
         xmitMembers.add (member);       // should these be CatalogEntry?
@@ -257,7 +255,11 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       catalogEntriesTtr = new ArrayList<> ();
       catalogMap.put (ttr, catalogEntriesTtr);
     }
-    catalogEntriesTtr.add (catalogEntry);
+
+    if (catalogEntry.usesAlias)
+      catalogEntriesTtr.add (catalogEntry);
+    else
+      catalogEntriesTtr.add (0, catalogEntry);    // insert at the head of the list
   }
 
   // ---------------------------------------------------------------------------------//
