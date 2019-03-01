@@ -170,8 +170,6 @@ public class LoadModule extends CatalogEntry
   public String getDebugLine ()
   // ---------------------------------------------------------------------------------//
   {
-    String hex = Utility.getHexValues (directoryData, 12, 21);
-
     String scatterText = "";
     String aliasText = "";
     String ssiText = "";
@@ -223,10 +221,15 @@ public class LoadModule extends CatalogEntry
     if (ptr < directoryData.length)
       extra =
           Utility.getHexValuesWithText (directoryData, ptr, directoryData.length - ptr);
-    //    String hex2 = Utility.getHexValues (directoryData, 12, directoryData.length - 12);
 
-    return String.format ("%23s %-63s %-24s %-33s %-12s %-6s %-39s %s", super.toString (),
-        hex, scatterText, aliasText, ssiText, apfText, lpoText, extra).trim ();
+    long ttr2 = Utility.getValue (directoryData, 12, 3);
+    int zero = directoryData[15] & 0xFF;
+    long ttr3 = Utility.getValue (directoryData, 16, 3);
+    String hex = Utility.getHexValues (directoryData, 19, 14);
+
+    return String.format ("%23s %06X %02X %06X %-42s %-24s %-33s %-12s %-6s %-39s %s",
+        super.toString (), ttr2, zero, ttr3, hex, scatterText, aliasText, ssiText,
+        apfText, lpoText, extra).trim ();
   }
 
   // ---------------------------------------------------------------------------------//

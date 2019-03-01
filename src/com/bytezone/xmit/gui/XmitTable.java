@@ -64,13 +64,13 @@ class XmitTable extends TableView<CatalogEntryItem>
         addFileType ("Type", "Type", 50, "CENTER"),           //
         addString ("ver.mod", "Version", 70, "CENTER"));
 
-    loadColumns = Arrays.asList (                             //
-        addNumber ("Storage", "storage", 70, HEX),            //
-        addNumber ("Entry", "epa", 70, HEX),                  //
-        addString ("APF", "apf", 50, "CENTER"),               //
-        addNumber ("amode", "aMode", 30),                     //
-        addNumber ("rmode", "rMode", 30),                     //
-        addNumber ("ssi", "ssi", 80, HEX),                    //
+    loadColumns = Arrays.asList (                                 //
+        addNumber ("Storage", "storage", 70, "%06X", "CENTER"),   //
+        addNumber ("Entry", "epa", 70, "%06X", "CENTER"),         //
+        addString ("APF", "apf", 50, "CENTER"),                   //
+        addNumber ("amode", "aMode", 30),                         //
+        addNumber ("rmode", "rMode", 30),                         //
+        addNumber ("ssi", "ssi", 80, "%08X", "CENTER"),           //
         addString ("Attributes", "attr", 100, "CENTER-LEFT"));
 
     // common
@@ -122,17 +122,17 @@ class XmitTable extends TableView<CatalogEntryItem>
   TableColumn<CatalogEntryItem, Number> addNumber (String heading, String name, int width)
   // ---------------------------------------------------------------------------------//
   {
-    return addNumber (heading, name, width, !HEX);
+    return addNumber (heading, name, width, "%,d", "CENTER-RIGHT");
   }
 
   // ---------------------------------------------------------------------------------//
   TableColumn<CatalogEntryItem, Number> addNumber (String heading, String name, int width,
-      boolean hex)
+      String mask, String alignment)
   // ---------------------------------------------------------------------------------//
   {
     TableColumn<CatalogEntryItem, Number> column = new TableColumn<> (heading);
     column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setCellFactory (numberCellFactory (hex));
+    column.setCellFactory (numberCellFactory (mask, alignment));
     column.setMinWidth (width);
     getColumns ().add (column);
     return column;
@@ -179,7 +179,7 @@ class XmitTable extends TableView<CatalogEntryItem>
 
   // ---------------------------------------------------------------------------------//
   Callback<TableColumn<CatalogEntryItem, Number>, TableCell<CatalogEntryItem, Number>>
-      numberCellFactory (boolean hex)
+      numberCellFactory (String mask, String alignment)
   // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, Number>, //
@@ -195,20 +195,21 @@ class XmitTable extends TableView<CatalogEntryItem>
           public void updateItem (final Number item, boolean empty)
           {
             super.updateItem (item, empty);
-            if (hex)
-              setStyle ("-fx-alignment: CENTER;");
-            else
-              setStyle ("-fx-alignment: CENTER-RIGHT;");
+            setStyle ("-fx-alignment: " + alignment + ";");
+            //            if (mask.isEmpty ())
+            //              setStyle ("-fx-alignment: CENTER-RIGHT;");
+            //            else
+            //              setStyle ("-fx-alignment: CENTER;");
             if (item == null || empty)
               setText (null);
             else
             {
               if (item.intValue () == 0)
                 setText ("");
-              else if (hex)
-                setText (String.format ("%06X", item));
+              //              else if (hex)
+              //                setText (String.format ("%06X", item));
               else
-                setText (String.format ("%,d", item));
+                setText (String.format (mask, item));
               setFont (font);
             }
           }

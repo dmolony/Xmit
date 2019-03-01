@@ -109,7 +109,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       }
       else
       {
-        text.append ("--ttr2-- zr --ttr3-- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
+        text.append ("-ttr2- zr -ttr3- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
         text.append ("------- scatter -------  ------------- alias ------------  "
             + "--- ssi ---  -apf-  ----------------- lpo ----------------\n");
       }
