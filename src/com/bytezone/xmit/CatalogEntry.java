@@ -228,7 +228,7 @@ public abstract class CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%1.1s %d %2d %-8s %06X ", usesAlias ? "A" : ".", numTtr, hw,
+    return String.format ("%1.1s %d %02X %-8s %06X ", usesAlias ? "A" : ".", numTtr, hw,
         name, ttr);
   }
 }

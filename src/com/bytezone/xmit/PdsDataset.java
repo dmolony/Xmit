@@ -69,7 +69,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   void allocateSegments ()
   // ---------------------------------------------------------------------------------//
   {
-    // convert first two BlockPointerList entries
+    // convert first two DataBlock entries
     copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
     copyR2 = new CopyR2 (segments.get (1).getRawBuffer ());
 
@@ -85,7 +85,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       if (inCatalog)
         inCatalog = addCatalogEntries (segment.getRawBuffer (), catalogMap);
       else
-        dataBlocks.addAll (segment.createDataBlocks ());    // create new BlockPointers
+        dataBlocks.addAll (segment.createDataBlocks ());
     }
 
     // catalogMap : list of all CatalogEntries that share a TTL in TTL sequence
@@ -213,10 +213,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       Map<Long, List<CatalogEntry>> catalogMap)
   // ---------------------------------------------------------------------------------//
   {
-    int ptr = 0;
-    while (ptr + 22 < buffer.length)
+    int ptr1 = 0;
+    while (ptr1 + 22 < buffer.length)
     {
-      int ptr2 = ptr + 22;
+      int ptr2 = ptr1 + 22;
 
       while (true)
       {
@@ -228,13 +228,13 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         addToMap (catalogEntry, catalogMap);
 
         // check for last member
-        if (Utility.matches (buffer, ptr2, buffer, ptr + 12, 8))
+        if (Utility.matches (buffer, ptr2, buffer, ptr1 + 12, 8))
           break;
 
         ptr2 += catalogEntry.getEntryLength ();
       }
 
-      ptr += DIR_BLOCK_LENGTH;
+      ptr1 += DIR_BLOCK_LENGTH;
     }
 
     return true;                                            // member list not finished
@@ -257,7 +257,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     }
 
     if (catalogEntry.usesAlias)
-      catalogEntriesTtr.add (catalogEntry);
+      catalogEntriesTtr.add (catalogEntry);       // retain original sequence
     else
       catalogEntriesTtr.add (0, catalogEntry);    // insert at the head of the list
   }

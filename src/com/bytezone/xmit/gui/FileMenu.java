@@ -77,7 +77,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   // ---------------------------------------------------------------------------------//
   {
     Utility.showAlert (AlertType.INFORMATION, "About",
-        "Version: 1.0.17\nReleased: 26 Feb 2019\nAuthor: Denis Molony");
+        "Version: 1.0.18\nReleased: 01 Mar 2019\nAuthor: Denis Molony");
   }
 
   // ---------------------------------------------------------------------------------//
