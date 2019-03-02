@@ -1,5 +1,7 @@
 package com.bytezone.xmit.gui;
 
+import java.util.function.Supplier;
+
 import javafx.geometry.Orientation;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -14,10 +16,11 @@ class XmitTab
   final TextArea textArea;
   final KeyCode keyCode;
   final ScrollBarState scrollBarState;
-  final Runnable tabUpdater;
+  final Supplier<String> tabUpdater;
 
   // ---------------------------------------------------------------------------------//
-  public XmitTab (String title, TextArea textArea, KeyCode keyCode, Runnable tabUpdater)
+  public XmitTab (String title, TextArea textArea, KeyCode keyCode,
+      Supplier<String> tabUpdater)
   // ---------------------------------------------------------------------------------//
   {
     this.tab = new Tab (title, textArea);
@@ -33,7 +36,7 @@ class XmitTab
   // ---------------------------------------------------------------------------------//
   {
     if (isTextEmpty ())
-      tabUpdater.run ();
+      textArea.setText (tabUpdater.get ());
   }
 
   // ---------------------------------------------------------------------------------//

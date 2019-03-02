@@ -2,6 +2,7 @@ package com.bytezone.xmit.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javafx.geometry.Side;
 import javafx.scene.control.Tab;
@@ -33,7 +34,7 @@ abstract class HeaderTabPane extends HeaderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  XmitTab createTab (String title, KeyCode keyCode, Runnable tabUpdater)
+  XmitTab createTab (String title, KeyCode keyCode, Supplier<String> tabUpdater)
   // ---------------------------------------------------------------------------------//
   {
     TextArea textArea = new TextArea ();

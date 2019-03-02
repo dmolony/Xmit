@@ -57,11 +57,11 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   }
 
   // ---------------------------------------------------------------------------------//
-  private void updateHeadersTab ()
+  private String updateHeadersTab ()
   // ---------------------------------------------------------------------------------//
   {
     if (dataset == null)
-      return;
+      return "";
 
     Reader reader = dataset.getReader ();
 
@@ -122,15 +122,15 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
     }
 
     Utility.removeTrailingNewlines (text);
-    headersTab.setText (text.toString ());
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void updateBlocksTab ()
+  private String updateBlocksTab ()
   // ---------------------------------------------------------------------------------//
   {
     if (dataFile == null)
-      return;
+      return "";
 
     StringBuilder text = new StringBuilder ();
 
@@ -138,29 +138,28 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
       text.append (((PdsMember) dataFile).listSizeCounts ());
     text.append (dataFile.toString ());
 
-    blocksTab.setText (text.toString ());
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void updateHexTab ()
+  private String updateHexTab ()
   // ---------------------------------------------------------------------------------//
   {
     if (dataFile == null)
-      return;
+      return "";
 
     byte[] buffer = dataFile.getDataBuffer ();
-    hexTab.setText (
-        Utility.getHexDump (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length)));
+    return Utility.getHexDump (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length));
   }
 
   // ---------------------------------------------------------------------------------//
-  private void updateOutputTab ()
+  private String updateOutputTab ()
   // ---------------------------------------------------------------------------------//
   {
     if (dataFile == null)
-      return;
+      return "";
 
-    outputTab.setText (getLines (MAX_LINES, showLines, stripLines, truncateLines));
+    return getLines (MAX_LINES, showLines, stripLines, truncateLines);
   }
 
   // ---------------------------------------------------------------------------------//
