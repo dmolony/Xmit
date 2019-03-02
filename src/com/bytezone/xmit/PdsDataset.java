@@ -29,11 +29,12 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean isBasic ()
+  public ModuleType getModuleType ()
   // ---------------------------------------------------------------------------------//
   {
-    return catalogEntries.size () > 0
-        && catalogEntries.get (0).getModuleType () == ModuleType.BASIC;
+    if (catalogEntries.size () == 0)
+      return null;
+    return catalogEntries.get (0).getModuleType ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -16,17 +16,17 @@ class XmitTab
   final TextArea textArea;
   final KeyCode keyCode;
   final ScrollBarState scrollBarState;
-  final Supplier<String> tabUpdater;
+  final Supplier<String> textSupplier;
 
   // ---------------------------------------------------------------------------------//
   public XmitTab (String title, TextArea textArea, KeyCode keyCode,
-      Supplier<String> tabUpdater)
+      Supplier<String> textSupplier)
   // ---------------------------------------------------------------------------------//
   {
     this.tab = new Tab (title, textArea);
     this.textArea = textArea;
     this.keyCode = keyCode;
-    this.tabUpdater = tabUpdater;
+    this.textSupplier = textSupplier;
     scrollBarState = new ScrollBarState (textArea, Orientation.VERTICAL);
     tab.setUserData (this);
   }
@@ -35,29 +35,8 @@ class XmitTab
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    if (isTextEmpty ())
-      textArea.setText (tabUpdater.get ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  boolean isTextEmpty ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return textArea.getText ().isEmpty ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void setText (String text)
-  // ---------------------------------------------------------------------------------//
-  {
-    textArea.setText (text);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void appendText (String text)
-  // ---------------------------------------------------------------------------------//
-  {
-    textArea.appendText (text);
+    if (textArea.getText ().isEmpty ())
+      textArea.setText (textSupplier.get ());
   }
 
   // ---------------------------------------------------------------------------------//

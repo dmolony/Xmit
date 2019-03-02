@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.*;
+import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.control.Alert.AlertType;
@@ -102,7 +103,7 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
           String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
       text.append ("- - -- --name-- -ttr--  ");
 
-      if (pdsDataset.isBasic ())
+      if (pdsDataset.getModuleType () == ModuleType.BASIC)
       {
         text.append ("-- id -- versn    ss -created--  -modified-  hh mm ");
         text.append ("size1 size2 size3 -------- user ---------\n");

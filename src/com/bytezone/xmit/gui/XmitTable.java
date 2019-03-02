@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Utility.FileType;
@@ -27,9 +28,10 @@ class XmitTable extends TableView<CatalogEntryItem>
     implements TreeItemSelectionListener, FontChangeListener
 // ---------------------------------------------------------------------------------//
 {
+  private static final int CHAR_8 = 75;
+  private static final int CHAR_10 = 100;
   private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-  private static final boolean HEX = true;
 
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
   private final ObservableList<CatalogEntryItem> items =
@@ -39,10 +41,10 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
   private Font font;
 
-  private int currentVisible = 0;
+  private ModuleType currentVisibleType = null;
 
-  private List<TableColumn<CatalogEntryItem, ?>> basicColumns;
-  private List<TableColumn<CatalogEntryItem, ?>> loadColumns;
+  private final List<TableColumn<CatalogEntryItem, ?>> basicColumns;
+  private final List<TableColumn<CatalogEntryItem, ?>> loadColumns;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -51,30 +53,30 @@ class XmitTable extends TableView<CatalogEntryItem>
     setItems (items);
 
     // common
-    addString ("Member", "MemberName", 75, "CENTER-LEFT");
+    addString ("Member", "MemberName", CHAR_8, "CENTER-LEFT");
     addNumber ("Bytes", "Bytes", 90);
 
-    basicColumns = Arrays.asList (                            //
-        addString ("Id", "UserName", 75, "CENTER-LEFT"),      //
-        addNumber ("Size", "Size", 70),                       //
-        addNumber ("Init", "Init", 70),                       //
-        addLocalDate ("Created", "DateCreated", 100),         //
-        addLocalDate ("Modified", "DateModified", 100),       //
-        addString ("Time", "Time", 90, "CENTER"),             //
-        addFileType ("Type", "Type", 50, "CENTER"),           //
+    basicColumns = Arrays.asList (                                //
+        addString ("Id", "UserName", CHAR_8, "CENTER-LEFT"),      //
+        addNumber ("Size", "Size", 70),                           //
+        addNumber ("Init", "Init", 70),                           //
+        addLocalDate ("Created", "DateCreated", CHAR_10),         //
+        addLocalDate ("Modified", "DateModified", CHAR_10),       //
+        addString ("Time", "Time", CHAR_8, "CENTER"),             //
+        addFileType ("Type", "Type", 50, "CENTER"),               //
         addString ("ver.mod", "Version", 70, "CENTER"));
 
     loadColumns = Arrays.asList (                                 //
         addNumber ("Storage", "storage", 70, "%06X", "CENTER"),   //
         addNumber ("Entry", "epa", 70, "%06X", "CENTER"),         //
-        addString ("APF", "apf", 50, "CENTER"),                   //
+        addString ("APF", "apf", 40, "CENTER"),                   //
         addNumber ("amode", "aMode", 30),                         //
         addNumber ("rmode", "rMode", 30),                         //
-        addNumber ("ssi", "ssi", 80, "%08X", "CENTER"),           //
+        addNumber ("ssi", "ssi", CHAR_8, "%08X", "CENTER"),       //
         addString ("Attributes", "attr", 100, "CENTER-LEFT"));
 
     // common
-    addString ("Alias", "AliasName", 100, "CENTER-LEFT");
+    addString ("Alias", "AliasName", CHAR_8, "CENTER-LEFT");
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, oldSelection, catalogEntryItem) ->
@@ -90,32 +92,19 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  void setVisibleColumns (int type)
+  void setVisibleColumns (ModuleType type)
   // ---------------------------------------------------------------------------------//
   {
-    if (currentVisible == type)
+    if (currentVisibleType == type)
       return;
 
-    currentVisible = type;
+    currentVisibleType = type;
 
-    switch (type)
-    {
-      case 1:
-        for (var column : basicColumns)
-          column.setVisible (true);
+    for (var column : basicColumns)
+      column.setVisible (type == ModuleType.BASIC);
 
-        for (var column : loadColumns)
-          column.setVisible (false);
-        break;
-
-      case 2:
-        for (var column : basicColumns)
-          column.setVisible (false);
-
-        for (var column : loadColumns)
-          column.setVisible (true);
-        break;
-    }
+    for (var column : loadColumns)
+      column.setVisible (type == ModuleType.LOAD);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -196,18 +185,12 @@ class XmitTable extends TableView<CatalogEntryItem>
           {
             super.updateItem (item, empty);
             setStyle ("-fx-alignment: " + alignment + ";");
-            //            if (mask.isEmpty ())
-            //              setStyle ("-fx-alignment: CENTER-RIGHT;");
-            //            else
-            //              setStyle ("-fx-alignment: CENTER;");
             if (item == null || empty)
               setText (null);
             else
             {
               if (item.intValue () == 0)
                 setText ("");
-              //              else if (hex)
-              //                setText (String.format ("%06X", item));
               else
                 setText (String.format (mask, item));
               setFont (font);
@@ -289,7 +272,8 @@ class XmitTable extends TableView<CatalogEntryItem>
       fileTypeCellFactory (String alignment)
   // ---------------------------------------------------------------------------------//
   {
-    return new Callback<TableColumn<CatalogEntryItem, FileType>, TableCell<CatalogEntryItem, FileType>> ()
+    return new Callback<TableColumn<CatalogEntryItem, FileType>,          //
+        TableCell<CatalogEntryItem, FileType>> ()
     {
       @Override
       public TableCell<CatalogEntryItem, FileType>
@@ -365,7 +349,7 @@ class XmitTable extends TableView<CatalogEntryItem>
       select (selectedMembers.containsKey (dataset)
           ? pdsDataset.memberIndex (selectedMembers.get (dataset)) : 0);
 
-      setVisibleColumns (pdsDataset.isBasic () ? 1 : 2);
+      setVisibleColumns (pdsDataset.getModuleType ());
     }
   }
 
