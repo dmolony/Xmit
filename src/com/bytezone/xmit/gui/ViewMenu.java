@@ -10,7 +10,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
 // ---------------------------------------------------------------------------------//
-class ViewMenu
+class ViewMenu implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
@@ -156,7 +156,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  void restore ()
+  @Override
+  public void restore ()
   // ---------------------------------------------------------------------------------//
   {
     showLinesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
@@ -185,7 +186,8 @@ class ViewMenu
   }
 
   // ---------------------------------------------------------------------------------//
-  void exit ()
+  @Override
+  public void save ()
   // ---------------------------------------------------------------------------------//
   {
     prefs.putBoolean (PREFS_SHOW_LINES, showLinesMenuItem.isSelected ());

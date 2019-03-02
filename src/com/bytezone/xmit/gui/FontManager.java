@@ -38,7 +38,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
-class FontManager
+class FontManager implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -334,6 +334,7 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public void restore ()
   // ---------------------------------------------------------------------------------//
   {
@@ -347,7 +348,8 @@ class FontManager
   }
 
   // ---------------------------------------------------------------------------------//
-  public void exit ()
+  @Override
+  public void save ()
   // ---------------------------------------------------------------------------------//
   {
     if (stage != null && stage.isShowing ())

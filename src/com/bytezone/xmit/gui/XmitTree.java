@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // ---------------------------------------------------------------------------------//
-class XmitTree extends TreeView<XmitFile> implements FontChangeListener
+class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
@@ -116,13 +116,15 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener
   }
 
   // ---------------------------------------------------------------------------------//
-  public void exit ()
+  @Override
+  public void save ()
   // ---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_LAST_PATH, getSelectedItemPath ());
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public void restore ()
   // ---------------------------------------------------------------------------------//
   {

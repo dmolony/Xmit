@@ -32,9 +32,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public ModuleType getModuleType ()
   // ---------------------------------------------------------------------------------//
   {
-    if (catalogEntries.size () == 0)
-      return null;
-    return catalogEntries.get (0).getModuleType ();
+    return catalogEntries.size () == 0 ? null : catalogEntries.get (0).getModuleType ();
   }
 
   // ---------------------------------------------------------------------------------//

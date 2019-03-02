@@ -16,8 +16,9 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 
 // ---------------------------------------------------------------------------------//
-class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
-    TableItemSelectionListener, ShowLinesListener, FontChangeListener, OutputWriter
+class OutputPane extends HeaderTabPane
+    implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener,
+    FontChangeListener, OutputWriter, SaveState
 // ---------------------------------------------------------------------------------//
 {
   private static final int MAX_HEX_BYTES = 0x20000;
@@ -212,14 +213,16 @@ class OutputPane extends HeaderTabPane implements TreeItemSelectionListener,
   }
 
   // ---------------------------------------------------------------------------------//
-  void restore ()
+  @Override
+  public void restore ()
   // ---------------------------------------------------------------------------------//
   {
     tabPane.getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
   }
 
   // ---------------------------------------------------------------------------------//
-  void exit ()
+  @Override
+  public void save ()
   // ---------------------------------------------------------------------------------//
   {
     prefs.putInt (PREFS_LAST_TAB, tabPane.getSelectionModel ().getSelectedIndex ());

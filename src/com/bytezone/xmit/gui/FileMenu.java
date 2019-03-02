@@ -23,7 +23,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
 // ---------------------------------------------------------------------------------//
-class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
+class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener, SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_EXTRACT_FOLDER = "ExtractFolder";
@@ -145,7 +145,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   }
 
   // ---------------------------------------------------------------------------------//
-  void restore ()
+  @Override
+  public void restore ()
   // ---------------------------------------------------------------------------------//
   {
     saveFolderName = prefs.get (PREFS_SAVE_FOLDER, System.getProperty ("user.home"));
@@ -154,7 +155,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener
   }
 
   // ---------------------------------------------------------------------------------//
-  void exit ()
+  @Override
+  public void save ()
   // ---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_SAVE_FOLDER, saveFolderName);

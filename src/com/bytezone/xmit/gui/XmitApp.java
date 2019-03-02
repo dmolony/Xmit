@@ -233,13 +233,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
 
-    xmitTree.exit ();
-    xmitTable.exit ();
+    xmitTree.save ();
+    xmitTable.save ();
 
-    fileMenu.exit ();
-    viewMenu.exit ();
-    outputPane.exit ();
-    fontManager.exit ();
+    fileMenu.save ();
+    viewMenu.save ();
+    outputPane.save ();
+    fontManager.save ();
 
     Platform.exit ();
   }

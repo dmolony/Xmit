@@ -25,7 +25,7 @@ import javafx.util.Callback;
 
 // ---------------------------------------------------------------------------------//
 class XmitTable extends TableView<CatalogEntryItem>
-    implements TreeItemSelectionListener, FontChangeListener
+    implements TreeItemSelectionListener, FontChangeListener, SaveState
 // ---------------------------------------------------------------------------------//
 {
   private static final int CHAR_8 = 75;
@@ -302,14 +302,16 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  void exit ()
+  @Override
+  public void save ()
   // ---------------------------------------------------------------------------------//
   {
     prefs.putInt (PREFS_LAST_MEMBER_INDEX, getSelectionModel ().getSelectedIndex ());
   }
 
   // ---------------------------------------------------------------------------------//
-  void restore ()
+  @Override
+  public void restore ()
   // ---------------------------------------------------------------------------------//
   {
     int index = prefs.getInt (PREFS_LAST_MEMBER_INDEX, 0);
