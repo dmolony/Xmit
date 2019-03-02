@@ -3,6 +3,9 @@ package com.bytezone.xmit.gui;
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility;
@@ -50,6 +53,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final SplitPane splitPane = new SplitPane ();
   private double dividerPosition1;
   private double dividerPosition2;
+
+  private final List<SaveState> saveStateList = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   private Parent createContent ()
@@ -106,23 +111,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
 
+    // ensure viewMenu (codepage) is set before xmitTree
+    saveStateList.addAll (
+        Arrays.asList (outputPane, fileMenu, viewMenu, xmitTree, xmitTable, fontManager));
+
     restore ();
 
     return mainPane;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void restore ()
-  // ---------------------------------------------------------------------------------//
-  {
-    outputPane.restore ();
-    fileMenu.restore ();
-    viewMenu.restore ();        // ensure codepage is set before tree
-    xmitTree.restore ();
-    xmitTable.restore ();
-    fontManager.restore ();
-
-    restoreWindowLocation ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -169,16 +164,24 @@ public class XmitApp extends Application implements CodePageSelectedListener
       outputPane.keyPressed (keyCode);
     else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.PERIOD)
       fontManager.keyPressed (keyEvent);
-    //    else if (keyCode == KeyCode.DIGIT1)
-    //      xmitTable.setVisibleColumns (1);
-    //    else if (keyCode == KeyCode.DIGIT2)
-    //      xmitTable.setVisibleColumns (2);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void restoreWindowLocation ()
+  private void setWindow ()
   // ---------------------------------------------------------------------------------//
   {
+    primaryStage.setWidth (1200);
+    primaryStage.setHeight (800);
+    primaryStage.centerOnScreen ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void restore ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (SaveState saveState : saveStateList)
+      saveState.restore ();
+
     dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
     dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
     String windowLocation = prefs.get (PREFS_WINDOW_LOCATION, "");
@@ -206,15 +209,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  private void setWindow ()
-  // ---------------------------------------------------------------------------------//
-  {
-    primaryStage.setWidth (1200);
-    primaryStage.setHeight (800);
-    primaryStage.centerOnScreen ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   private void exit ()
   // ---------------------------------------------------------------------------------//
   {
@@ -233,13 +227,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
 
-    xmitTree.save ();
-    xmitTable.save ();
-
-    fileMenu.save ();
-    viewMenu.save ();
-    outputPane.save ();
-    fontManager.save ();
+    for (SaveState saveState : saveStateList)
+      saveState.save ();
 
     Platform.exit ();
   }
