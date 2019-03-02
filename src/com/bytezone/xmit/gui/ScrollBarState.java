@@ -9,8 +9,6 @@ import javafx.scene.control.TextArea;
 class ScrollBarState
 //---------------------------------------------------------------------------------//
 {
-  private final TextArea textArea;
-  private final Orientation orientation;
   private ScrollBar scrollBar;
 
   private double min;
@@ -23,22 +21,20 @@ class ScrollBarState
   public ScrollBarState (TextArea textArea, Orientation orientation)
   // ---------------------------------------------------------------------------------//
   {
-    this.textArea = textArea;
-    this.orientation = orientation;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public void reset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    scrollBar = null;
+    for (Node node : textArea.lookupAll (".scroll-bar"))
+      if (node instanceof ScrollBar
+          && ((ScrollBar) node).getOrientation ().equals (orientation))
+      {
+        scrollBar = (ScrollBar) node;
+        break;
+      }
   }
 
   // ---------------------------------------------------------------------------------//
   public void save ()
   // ---------------------------------------------------------------------------------//
   {
-    if (scrollBar == null && !setScrollBar ())
+    if (scrollBar == null)
       return;
 
     this.min = scrollBar.getMin ();
@@ -60,19 +56,5 @@ class ScrollBarState
     scrollBar.setValue (value);
     scrollBar.setUnitIncrement (unitIncrement);
     scrollBar.setBlockIncrement (blockIncrement);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private boolean setScrollBar ()
-  // ---------------------------------------------------------------------------------//
-  {
-    for (Node node : textArea.lookupAll (".scroll-bar"))
-      if (node instanceof ScrollBar
-          && ((ScrollBar) node).getOrientation ().equals (orientation))
-      {
-        scrollBar = (ScrollBar) node;
-        return true;
-      }
-    return false;
   }
 }

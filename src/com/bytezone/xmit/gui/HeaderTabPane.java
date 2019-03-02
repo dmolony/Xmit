@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 abstract class HeaderTabPane extends HeaderPane
 //---------------------------------------------------------------------------------//
 {
+  private static final int TAB_WIDTH = 100;
   final TabPane tabPane = new TabPane ();
   final List<XmitTab> tabs = new ArrayList<> ();
 
@@ -24,7 +25,7 @@ abstract class HeaderTabPane extends HeaderPane
   {
     tabPane.setSide (Side.BOTTOM);
     tabPane.setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
-    tabPane.setTabMinWidth (100);
+    tabPane.setTabMinWidth (TAB_WIDTH);
 
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> updateCurrentTab ());
