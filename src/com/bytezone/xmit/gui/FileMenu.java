@@ -108,26 +108,26 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = null;
-    String name = "";
+    String fileName = "";
 
     if (dataset.isPs ())
     {
       DataFile member = ((PsDataset) dataset).getMember ();
       buffer = member.getDataBuffer ();
-      name = dataset.getReader ().getFileName () + "." //+ this.name + "."
-          + member.getFileType ().name ();
+      fileName =
+          dataset.getReader ().getFileName () + "." + member.getFileType ().name ();
     }
     else
     {
       buffer = catalogEntry.getMember ().getDataBuffer ();
-      name = dataset.getReader ().getFileName () + "." + catalogEntry.getMemberName ()
+      fileName = dataset.getReader ().getFileName () + "." + catalogEntry.getMemberName ()
           + "." + catalogEntry.getMember ().getFileType ().name ();
     }
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Extract file to");
     fileChooser.setInitialDirectory (new File (extractFolderName));
-    fileChooser.setInitialFileName (name);
+    fileChooser.setInitialFileName (fileName);
 
     File file = fileChooser.showSaveDialog (null);
     if (file != null)
