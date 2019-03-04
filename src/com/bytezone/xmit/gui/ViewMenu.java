@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -25,6 +26,9 @@ class ViewMenu implements SaveState
   private static final String PREFS_CODE_PAGE = "CodePage";
   private static final String PREFS_EURO_PAGE = "EuroPage";
 
+  private static final boolean SHIFT = true;
+  private static final boolean NO_SHIFT = !SHIFT;
+
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final List<ShowLinesListener> showLinesListeners = new ArrayList<> ();
@@ -42,14 +46,16 @@ class ViewMenu implements SaveState
   private final CheckMenuItem hexMenuItem;
   private final CheckMenuItem euroMenuItem;
 
-  private final String[][] codePageNames = { { "CP037", "CP1140" }, // USA/Canada
-                                             { "CP273", "CP1141" }, // Germany
-                                             { "CP285", "CP1146" }, // UK
-                                             { "CP297", "CP1147" }, // France
-                                             { "CP500", "CP1148" }, // International #5
-                                             { "CP870", "CP1153" }, // Latin-2
-                                             { "CP1047", "CP924" }, // Latin-1
-                                             { "USER1", "USER1" } }; // CP1047 swap 0x15/25
+  private final String[][]                //
+  codePageNames = {                       //
+                   { "CP037", "CP1140" }, // USA/Canada
+                   { "CP273", "CP1141" }, // Germany
+                   { "CP285", "CP1146" }, // UK
+                   { "CP297", "CP1147" }, // France
+                   { "CP500", "CP1148" }, // International #5
+                   { "CP870", "CP1153" }, // Latin-2
+                   { "CP1047", "CP924" }, // Latin-1
+                   { "USER1", "USER1" } }; // CP1047 swap 0x15/25
   private final KeyCode[] keyCodes =
       { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5,
         KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };
@@ -62,37 +68,56 @@ class ViewMenu implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     this.xmitApp = xmitApp;
-
-    for (int i = 0; i < codePageNames.length; i++)
-      codePageMenuItems.add (setRadioMenuItem (codePageNames[i][0], keyCodes[i]));
+    ObservableList<MenuItem> menuItems = viewMenu.getItems ();
 
     fontMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
     fontMenuItem.setOnAction (e -> fontManager.showWindow ());
+    menuItems.add (fontMenuItem);
 
-    viewMenu.getItems ().add (fontMenuItem);
-    viewMenu.getItems ().add (new SeparatorMenuItem ());
+    menuItems.add (new SeparatorMenuItem ());
 
-    showLinesMenuItem = setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, true,
-        e -> notifyLinesListeners ());
-    stripLinesMenuItem = setCheckMenuItem ("Strip Line Numbers", KeyCode.L, false,
-        e -> notifyLinesListeners ());
-    truncateMenuItem = setCheckMenuItem ("Truncate Column 1", KeyCode.T, false,
-        e -> notifyLinesListeners ());
+    EventHandler<ActionEvent> action = e -> notifyLinesListeners ();
+    showLinesMenuItem =
+        setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, SHIFT, action);
+    stripLinesMenuItem = setCheckMenuItem ("Strip Line Numbers", KeyCode.L, action);
+    truncateMenuItem = setCheckMenuItem ("Truncate Column 1", KeyCode.T, action);
 
-    viewMenu.getItems ().add (new SeparatorMenuItem ());
+    menuItems.add (new SeparatorMenuItem ());
 
-    headersMenuItem = setCheckMenuItem ("Headers tab", null, false, e -> setTabs ());
-    blocksMenuItem = setCheckMenuItem ("Blocks tab", null, false, e -> setTabs ());
-    hexMenuItem = setCheckMenuItem ("Hex tab", null, false, e -> setTabs ());
+    action = e -> setTabs ();
+    headersMenuItem = setCheckMenuItem ("Headers tab", action);
+    blocksMenuItem = setCheckMenuItem ("Blocks tab", action);
+    hexMenuItem = setCheckMenuItem ("Hex tab", action);
 
-    viewMenu.getItems ().add (new SeparatorMenuItem ());
-    for (RadioMenuItem item : codePageMenuItems)
-      viewMenu.getItems ().add (item);
-    viewMenu.getItems ().add (new SeparatorMenuItem ());
+    menuItems.add (new SeparatorMenuItem ());
 
-    euroMenuItem = setCheckMenuItem ("Euro update", KeyCode.DIGIT9, false,
+    for (int i = 0; i < codePageNames.length; i++)
+    {
+      RadioMenuItem item = setRadioMenuItem (codePageNames[i][0], keyCodes[i]);
+      codePageMenuItems.add (item);
+      menuItems.add (item);
+    }
+
+    menuItems.add (new SeparatorMenuItem ());
+
+    euroMenuItem = setCheckMenuItem ("Euro update", KeyCode.DIGIT9,
         e -> setEuroAndNotifyListeners ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private CheckMenuItem setCheckMenuItem (String name, EventHandler<ActionEvent> action)
+  // ---------------------------------------------------------------------------------//
+  {
+    return setCheckMenuItem (name, null, NO_SHIFT, action);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private CheckMenuItem setCheckMenuItem (String name, KeyCode keyCode,
+      EventHandler<ActionEvent> action)
+  // ---------------------------------------------------------------------------------//
+  {
+    return setCheckMenuItem (name, keyCode, NO_SHIFT, action);
   }
 
   // ---------------------------------------------------------------------------------//

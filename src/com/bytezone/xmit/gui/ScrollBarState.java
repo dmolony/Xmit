@@ -34,27 +34,27 @@ class ScrollBarState
   public void save ()
   // ---------------------------------------------------------------------------------//
   {
-    if (scrollBar == null)
-      return;
-
-    this.min = scrollBar.getMin ();
-    this.max = scrollBar.getMax ();
-    this.value = scrollBar.getValue ();
-    this.blockIncrement = scrollBar.getBlockIncrement ();
-    this.unitIncrement = scrollBar.getUnitIncrement ();
+    if (scrollBar != null)
+    {
+      this.min = scrollBar.getMin ();
+      this.max = scrollBar.getMax ();
+      this.value = scrollBar.getValue ();
+      this.blockIncrement = scrollBar.getBlockIncrement ();
+      this.unitIncrement = scrollBar.getUnitIncrement ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
   public void restore ()
   // ---------------------------------------------------------------------------------//
   {
-    if (scrollBar == null)
-      return;
-
-    scrollBar.setMin (min);
-    scrollBar.setMax (max);
-    scrollBar.setValue (value);
-    scrollBar.setUnitIncrement (unitIncrement);
-    scrollBar.setBlockIncrement (blockIncrement);
+    if (scrollBar != null)
+    {
+      scrollBar.setMin (min);
+      scrollBar.setMax (max);
+      scrollBar.setValue (value);
+      scrollBar.setUnitIncrement (unitIncrement);
+      scrollBar.setBlockIncrement (blockIncrement);
+    }
   }
 }
