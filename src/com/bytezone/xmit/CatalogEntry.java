@@ -67,6 +67,25 @@ public abstract class CatalogEntry
   // ---------------------------------------------------------------------------------//
 
   // ---------------------------------------------------------------------------------//
+  public static String getDebugHeader (ModuleType moduleType)
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ("- - -- --name-- -ttr--  ");
+    if (moduleType == ModuleType.BASIC)
+    {
+      text.append ("-- id -- vv mm 00 ss -created--  -modified-");
+      text.append ("  hh mm size1 size2 size3 -------- user ---------");
+    }
+    else
+    {
+      text.append ("-ttr2- 00 -ttr3- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
+      text.append ("------- scatter -------  ------------- alias ------------  ");
+      text.append ("--- ssi ---  -apf-  ----------------- lpo ----------------");
+    }
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   public ModuleType getModuleType ()
   // ---------------------------------------------------------------------------------//
   {

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.*;
-import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.control.Alert.AlertType;
@@ -102,25 +101,10 @@ class OutputPane extends HeaderTabPane
 
       text.append (
           String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
-      text.append ("- - -- --name-- -ttr--  ");
-
-      if (pdsDataset.getModuleType () == ModuleType.BASIC)
-      {
-        text.append ("-- id -- vv mm 00 ss -created--  -modified-  hh mm ");
-        text.append ("size1 size2 size3 -------- user ---------\n");
-      }
-      else
-      {
-        text.append ("-ttr2- 00 -ttr3- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
-        text.append ("------- scatter -------  ------------- alias ------------  "
-            + "--- ssi ---  -apf-  ----------------- lpo ----------------\n");
-      }
+      text.append (CatalogEntry.getDebugHeader (pdsDataset.getModuleType ()) + "\n");
 
       for (CatalogEntry catalogEntry : pdsDataset)
-      {
-        text.append (catalogEntry.getDebugLine ());
-        text.append ("\n");
-      }
+        text.append (catalogEntry.getDebugLine () + "\n");
     }
 
     Utility.removeTrailingNewlines (text);
