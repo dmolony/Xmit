@@ -41,6 +41,8 @@ public class BasicModule extends CatalogEntry
       vv = buffer[12] & 0xFF;
       mm = buffer[13] & 0xFF;
 
+      int zero = buffer[14] & 0xFF;
+
       Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
       if (opt.isPresent ())
         dateCreated = opt.get ();

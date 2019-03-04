@@ -106,12 +106,12 @@ class OutputPane extends HeaderTabPane
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
       {
-        text.append ("-- id -- versn    ss -created--  -modified-  hh mm ");
+        text.append ("-- id -- vv mm 00 ss -created--  -modified-  hh mm ");
         text.append ("size1 size2 size3 -------- user ---------\n");
       }
       else
       {
-        text.append ("-ttr2- zr -ttr3- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
+        text.append ("-ttr2- 00 -ttr3- nt a1 a2 --stor-- -txt- --epa--- v1 v2 v3  ");
         text.append ("------- scatter -------  ------------- alias ------------  "
             + "--- ssi ---  -apf-  ----------------- lpo ----------------\n");
       }

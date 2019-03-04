@@ -72,8 +72,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   int getCommonBlockLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (sizeCounts.size () != 1)
+    if (sizeCounts.size () != 1)      // contains multiple sizes (or none)
       return 0;
+
     Entry<Integer, SizeCount> entry = sizeCounts.entrySet ().iterator ().next ();
     return entry == null ? 0 : entry.getValue ().blockSize;
   }
