@@ -64,6 +64,14 @@ public class BasicModule extends CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  public static String getDebugHeader ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return CatalogEntry.getDebugHeader () + "-- id -- vv mm 00 ss -created--  -modified-"
+        + "  hh mm size1 size2 size3 -------- user ---------";
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getDebugLine ()
   // ---------------------------------------------------------------------------------//
