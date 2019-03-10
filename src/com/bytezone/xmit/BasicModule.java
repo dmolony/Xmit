@@ -38,28 +38,49 @@ public class BasicModule extends CatalogEntry
     }
     else
     {
-      vv = buffer[12] & 0xFF;
-      mm = buffer[13] & 0xFF;
+      if (buffer.length >= 14)
+      {
+        vv = buffer[12] & 0xFF;
+        mm = buffer[13] & 0xFF;
+      }
+      else
+      {
+        vv = 0;
+        mm = 0;
+      }
 
-      int zero = buffer[14] & 0xFF;
+      if (buffer.length >= 20)
+      {
+        Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
+        if (opt.isPresent ())
+          dateCreated = opt.get ();
+      }
 
-      Optional<LocalDate> opt = Utility.getLocalDate (buffer, 16);
-      if (opt.isPresent ())
-        dateCreated = opt.get ();
+      if (buffer.length >= 24)
+      {
+        Optional<LocalDate> opt = Utility.getLocalDate (buffer, 20);
+        if (opt.isPresent ())
+          dateModified = opt.get ();
+      }
 
-      opt = Utility.getLocalDate (buffer, 20);
-      if (opt.isPresent ())
-        dateModified = opt.get ();
+      if (buffer.length >= 26)
+        time = String.format ("%02X:%02X:%02X", buffer[24], buffer[25], buffer[15]);
 
-      time = String.format ("%02X:%02X:%02X", buffer[24], buffer[25], buffer[15]);
+      if (buffer.length >= 32)
+      {
+        size = Utility.getTwoBytes (buffer, 26);
+        init = Utility.getTwoBytes (buffer, 28);
+        mod = Utility.getTwoBytes (buffer, 30);
+      }
+      else
+      {
+        size = 0;
+        mod = 0;
+        init = 0;
+      }
 
-      size = Utility.getTwoBytes (buffer, 26);
-      init = Utility.getTwoBytes (buffer, 28);
-      mod = Utility.getTwoBytes (buffer, 30);
-      userName = Utility.getString (buffer, 32, 8).trim ();
-
-      if (usesAlias && directoryData.length > 42)
-        aliasName = Utility.getString (buffer, buffer.length - 8, 8);
+      if (buffer.length >= 40)
+        userName = Utility.getString (buffer, 32, 8).trim ();
     }
   }
 

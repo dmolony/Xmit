@@ -126,7 +126,7 @@ public class LoadModule extends CatalogEntry
     if (usesAlias)
     {
       aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
-      aliasName = Utility.getString (buffer, ptr + 3, 8).trim ();
+      setAliasName (Utility.getString (buffer, ptr + 3, 8).trim ());
       ptr += 11;
     }
 

@@ -91,7 +91,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     // members    : list of PdsMember (List<DataBlock>) in ascending TTL sequence
 
     List<PdsMember> members =
-        copyR1.isPdse () ? createPdseMembers (dataBlocks) : createPdsMembers (dataBlocks);
+        copyR1.isPdse () ? createPdsEMembers (dataBlocks) : createPdsMembers (dataBlocks);
 
     if (catalogMap.values ().size () != members.size ())
     {
@@ -115,7 +115,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
         catalogEntry.setMember (member);
 
         if (catalogEntry.usesAlias && catalogEntry.getAliasName ().isEmpty ())
-          catalogEntry.aliasName = sourceEntry.name;
+          catalogEntry.setAliasName (sourceEntry.name);
       }
 
       if (member.isXmit ())
@@ -142,9 +142,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     {
       System.out.printf ("%4d  %06X%n", count++, ttl);
       for (CatalogEntry catalogEntry : catalogMap.get (ttl))
-      {
         System.out.printf ("             %s%n", catalogEntry);
-      }
     }
   }
 
@@ -182,7 +180,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  private List<PdsMember> createPdseMembers (List<DataBlock> dataBlocks)
+  private List<PdsMember> createPdsEMembers (List<DataBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
   {
     List<PdsMember> members = new ArrayList<> ();
@@ -249,6 +247,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     catalogEntry.setCopyRecords (copyR1, copyR2);
     long ttr = catalogEntry.getTtr ();
     List<CatalogEntry> catalogEntriesTtr = catalogMap.get (ttr);
+
     if (catalogEntriesTtr == null)
     {
       catalogEntriesTtr = new ArrayList<> ();
