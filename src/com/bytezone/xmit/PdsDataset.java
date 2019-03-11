@@ -64,6 +64,18 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  public List<CatalogEntry> getCatalogEntries (String key)
+  // ---------------------------------------------------------------------------------//
+  {
+    List<CatalogEntry> entries = new ArrayList<> ();
+    for (CatalogEntry catalogEntry : catalogEntries)
+      if (catalogEntry.contains (key))
+        entries.add (catalogEntry);
+
+    return entries;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   void allocateSegments ()
   // ---------------------------------------------------------------------------------//

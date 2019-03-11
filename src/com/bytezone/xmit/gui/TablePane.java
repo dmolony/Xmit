@@ -1,23 +1,24 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
 // ---------------------------------------------------------------------------------//
-class TablePane extends HeaderPane implements TreeItemSelectionListener
+class TablePane extends HeaderPane implements TreeItemSelectionListener, FilterListener
 //---------------------------------------------------------------------------------//
 {
-  private final Label lblPdsInfo = new Label ();
   private final Label lblFileName = new Label ();
+  private final Label lblFilter = new Label ();
 
   // ---------------------------------------------------------------------------------//
   public TablePane (XmitTable table)
   // ---------------------------------------------------------------------------------//
   {
     setCenter (table);
-    setTop (getHBox (lblFileName, lblPdsInfo));
+    setTop (getHBox (lblFileName, lblFilter));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -29,12 +30,17 @@ class TablePane extends HeaderPane implements TreeItemSelectionListener
       lblFileName.setText ("");
     else
     {
-      lblFileName.setText (dataset.getReader ().getFileName ());
-
-      if (dataset.getReader ().isIncomplete ())
-        lblFileName.setTextFill (Color.RED);
-      else
-        lblFileName.setTextFill (Color.BLACK);
+      Reader reader = dataset.getReader ();
+      lblFileName.setText (reader.getFileName ());
+      lblFileName.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setFilter (String filter)
+  // ---------------------------------------------------------------------------------//
+  {
+    lblFilter.setText (filter.isEmpty () ? "" : "filter: " + filter);
   }
 }

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
@@ -16,6 +17,7 @@ import com.bytezone.xmit.Utility.FileType;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -25,7 +27,7 @@ import javafx.util.Callback;
 
 // ---------------------------------------------------------------------------------//
 class XmitTable extends TableView<CatalogEntryItem>
-    implements TreeItemSelectionListener, FontChangeListener, SaveState
+    implements TreeItemSelectionListener, FontChangeListener, SaveState, FilterListener
 // ---------------------------------------------------------------------------------//
 {
   private static final int CHAR_8 = 75;
@@ -36,6 +38,7 @@ class XmitTable extends TableView<CatalogEntryItem>
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
   private final ObservableList<CatalogEntryItem> items =
       FXCollections.observableArrayList ();
+  private final FilteredList<CatalogEntryItem> filteredList = new FilteredList<> (items);
 
   private Dataset dataset;
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
@@ -50,7 +53,7 @@ class XmitTable extends TableView<CatalogEntryItem>
   XmitTable ()
   // ---------------------------------------------------------------------------------//
   {
-    setItems (items);
+    setItems (filteredList);
 
     // common
     addString ("Member", "MemberName", CHAR_8, "CENTER-LEFT");
@@ -207,7 +210,8 @@ class XmitTable extends TableView<CatalogEntryItem>
       stringCellFactory (String alignment)
   // ---------------------------------------------------------------------------------//
   {
-    return new Callback<TableColumn<CatalogEntryItem, String>, TableCell<CatalogEntryItem, String>> ()
+    return new Callback<TableColumn<CatalogEntryItem, String>, //
+        TableCell<CatalogEntryItem, String>> ()
     {
       @Override
       public TableCell<CatalogEntryItem, String>
@@ -239,7 +243,8 @@ class XmitTable extends TableView<CatalogEntryItem>
       localDateCellFactory ()
   // ---------------------------------------------------------------------------------//
   {
-    return new Callback<TableColumn<CatalogEntryItem, LocalDate>, TableCell<CatalogEntryItem, LocalDate>> ()
+    return new Callback<TableColumn<CatalogEntryItem, LocalDate>,         //
+        TableCell<CatalogEntryItem, LocalDate>> ()
     {
       @Override
       public TableCell<CatalogEntryItem, LocalDate>
@@ -371,5 +376,20 @@ class XmitTable extends TableView<CatalogEntryItem>
   {
     this.font = font;
     refresh ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setFilter (String filter)
+  // ---------------------------------------------------------------------------------//
+  {
+    filteredList.setPredicate (new Predicate<CatalogEntryItem> ()
+    {
+      @Override
+      public boolean test (CatalogEntryItem t)
+      {
+        return filter.isEmpty () ? true : t.getCatalogEntry ().contains (filter);
+      }
+    });
   }
 }

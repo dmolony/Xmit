@@ -37,6 +37,7 @@ class ViewMenu implements SaveState
 
   private final Menu viewMenu = new Menu ("View");
   private final MenuItem fontMenuItem = new MenuItem ("Set Font...");
+  private final MenuItem filterMenuItem = new MenuItem ("Set PDS Filter...");
 
   private final CheckMenuItem showLinesMenuItem;
   private final CheckMenuItem stripLinesMenuItem;
@@ -64,16 +65,21 @@ class ViewMenu implements SaveState
   private final List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree, FontManager fontManager)
+  public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree, FontManager fontManager,
+      FilterManager filterManager)
   // ---------------------------------------------------------------------------------//
   {
     this.xmitApp = xmitApp;
     ObservableList<MenuItem> menuItems = viewMenu.getItems ();
 
-    fontMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
+    fontMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
+        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
     fontMenuItem.setOnAction (e -> fontManager.showWindow ());
+    filterMenuItem.setAccelerator (
+        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
+    filterMenuItem.setOnAction (e -> filterManager.showWindow ());
     menuItems.add (fontMenuItem);
+    menuItems.add (filterMenuItem);
 
     menuItems.add (new SeparatorMenuItem ());
 

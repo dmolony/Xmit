@@ -109,17 +109,16 @@ class FontManager implements SaveState
       controlBox.setAlignment (Pos.CENTER_LEFT);
 
       HBox messageBox = new HBox (10);
-      messageBox.setPrefHeight (55);
+      messageBox.setPrefHeight (70);
       messageBox.setPadding (new Insets (6, 10, 6, 10));
       messageBox.setAlignment (Pos.CENTER_LEFT);
 
       Label message = new Label ();
-      message.setText (
-          "These are all of the fixed-width fonts currently on your system. Please"
-              + " choose the ones that you wish to be able to select from."
-              + " From the main \nscreen use the COMMA and PERIOD keys to"
-              + " cycle through the selected fonts, and the LESS-THAN and"
-              + " GREATER-THAN keys to alter the font size.");
+      message.setText ("These are the fixed-width fonts currently on your system. Please"
+          + " choose the ones that you wish to be able to select from."
+          + "\nWhen on the main screen use the COMMA and PERIOD keys to"
+          + " cycle through the selected fonts, and the LESS-THAN and"
+          + " GREATER-THAN \nkeys to alter the font size.");
       messageBox.getChildren ().add (message);
 
       Button btnApply = getButton ("Apply");

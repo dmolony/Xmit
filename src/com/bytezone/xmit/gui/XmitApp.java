@@ -45,6 +45,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final TablePane tablePane = new TablePane (xmitTable);
   private TreePane treePane;
   private final FontManager fontManager = new FontManager ();
+  private final FilterManager filterManager = new FilterManager ();
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
@@ -75,7 +76,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // menus
     fileMenu = new FileMenu (this, xmitTree);
-    viewMenu = new ViewMenu (this, xmitTree, fontManager);
+    viewMenu = new ViewMenu (this, xmitTree, fontManager, filterManager);
 
     // codepage listeners
     viewMenu.addCodePageListener (this);
@@ -87,6 +88,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
     fontManager.addFontChangeListener (outputPane);
     fontManager.addFontChangeListener (xmitTable);
     fontManager.addFontChangeListener (xmitTree);
+
+    // filter change listeners
+    filterManager.addFilterListener (tablePane);
+    filterManager.addFilterListener (xmitTable);
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
@@ -112,8 +117,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     primaryStage.setOnCloseRequest (e -> exit ());
 
     // ensure viewMenu (codepage) is set before xmitTree
-    saveStateList.addAll (
-        Arrays.asList (outputPane, fileMenu, viewMenu, xmitTree, xmitTable, fontManager));
+    saveStateList.addAll (Arrays.asList (outputPane, fileMenu, viewMenu, xmitTree,
+        xmitTable, fontManager, filterManager));
 
     restore ();
 
