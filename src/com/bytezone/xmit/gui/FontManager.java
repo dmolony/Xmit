@@ -129,6 +129,9 @@ class FontManager implements SaveState
       btnCancel.setOnAction (e -> cancel ());
       btnAccept.setOnAction (e -> accept ());
 
+      btnAccept.setDefaultButton (true);
+      btnCancel.setCancelButton (true);
+
       Region filler = new Region ();
       HBox.setHgrow (filler, Priority.ALWAYS);
       controlBox.getChildren ().addAll (new Label ("Font size"), new Spinner<> (factory),
@@ -142,7 +145,7 @@ class FontManager implements SaveState
       stage.addEventHandler (KeyEvent.KEY_RELEASED, (KeyEvent event) ->
       {
         if (KeyCode.ESCAPE == event.getCode ())
-          stage.hide ();
+          cancel ();
       });
 
       stage.setScene (new Scene (borderPane, 1000, 700));
@@ -210,7 +213,6 @@ class FontManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     apply ();
-
     stage.hide ();
   }
 

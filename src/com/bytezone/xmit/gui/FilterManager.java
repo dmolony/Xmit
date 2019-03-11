@@ -10,8 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -67,16 +65,13 @@ public class FilterManager implements SaveState
       borderPane.setBottom (controlBox);
       borderPane.setCenter (textBox);
 
-      stage.addEventHandler (KeyEvent.KEY_RELEASED, (KeyEvent event) ->
-      {
-        if (KeyCode.ESCAPE == event.getCode ())
-          stage.hide ();
-      });
-
       btnApply.setOnAction (e -> apply ());
       btnCancel.setOnAction (e -> cancel ());
       btnAccept.setOnAction (e -> accept ());
       btnRemove.setOnAction (e -> remove ());
+
+      btnAccept.setDefaultButton (true);
+      btnCancel.setCancelButton (true);
 
       stage.setScene (new Scene (borderPane, 500, 100));
     }
@@ -84,6 +79,7 @@ public class FilterManager implements SaveState
     savedFilter = filter;
     textField.setText (filter);
     textField.requestFocus ();
+    textField.selectAll ();
     stage.show ();
   }
 
@@ -91,16 +87,22 @@ public class FilterManager implements SaveState
   private void apply ()
   // ---------------------------------------------------------------------------------//
   {
-    filter = textField.getText ();
-    notifyListeners ();
+    if (!filter.equals (textField.getText ()))
+    {
+      filter = textField.getText ();
+      notifyListeners ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
   private void cancel ()
   // ---------------------------------------------------------------------------------//
   {
-    filter = savedFilter;
-    notifyListeners ();
+    if (!filter.equals (savedFilter))
+    {
+      filter = savedFilter;
+      notifyListeners ();
+    }
     stage.hide ();
   }
 
@@ -108,8 +110,7 @@ public class FilterManager implements SaveState
   private void accept ()
   // ---------------------------------------------------------------------------------//
   {
-    filter = textField.getText ();
-    notifyListeners ();
+    apply ();
     stage.hide ();
   }
 
@@ -117,9 +118,8 @@ public class FilterManager implements SaveState
   private void remove ()
   // ---------------------------------------------------------------------------------//
   {
-    filter = "";
-    notifyListeners ();
-    stage.hide ();
+    savedFilter = "";
+    cancel ();
   }
 
   // ---------------------------------------------------------------------------------//
