@@ -266,9 +266,9 @@ class OutputPane extends HeaderTabPane
   // ---------------------------------------------------------------------------------//
   {
     this.catalogEntry = catalogEntry;
-    this.dataFile = catalogEntry.getMember ();
-    updateNameLabel ();
     clearText ();
+    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
+    updateNameLabel ();
     updateCurrentTab ();
   }
 
@@ -276,15 +276,18 @@ class OutputPane extends HeaderTabPane
   private void updateNameLabel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataset == null)
+    if (dataset == null || catalogEntry == null)
+    {
+      lblMemberName.setText ("");
       return;
+    }
 
     String indicator = truncateLines ? "<-" : "";
 
     if (dataset.isPds ())
     {
       if (catalogEntry.isAlias ())
-        lblMemberName.setText (indicator + catalogEntry.getMemberName ().trim () + " -> "
+        lblMemberName.setText (indicator + catalogEntry.getMemberName () + " -> "
             + catalogEntry.getAliasName ());
       else
         lblMemberName.setText (indicator + catalogEntry.getMemberName ());

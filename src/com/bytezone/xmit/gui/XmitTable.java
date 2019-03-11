@@ -85,7 +85,11 @@ class XmitTable extends TableView<CatalogEntryItem>
         .addListener ( (obs, oldSelection, catalogEntryItem) ->
         {
           if (catalogEntryItem == null)
+          {
+            for (TableItemSelectionListener listener : listeners)
+              listener.tableItemSelected (null);
             return;
+          }
 
           CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
           selectedMembers.put (dataset, catalogEntry.getMemberName ());
@@ -391,5 +395,18 @@ class XmitTable extends TableView<CatalogEntryItem>
         return filter.isEmpty () ? true : t.getCatalogEntry ().contains (filter);
       }
     });
+
+    if (dataset != null && dataset.isPds ())
+    {
+      if (getSelectedItem () == null && filteredList.size () > 0)
+        getSelectionModel ().select (0);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private CatalogEntryItem getSelectedItem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return getSelectionModel ().getSelectedItem ();
   }
 }

@@ -176,8 +176,16 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
   {
     this.catalogEntry = catalogEntry;
-    extractMenuItem.setText ("Extract " + catalogEntry.getMemberName () + "...");
-    extractMenuItem.setDisable (false);
+    if (catalogEntry == null)
+    {
+      extractMenuItem.setText ("Extract... ");
+      extractMenuItem.setDisable (true);
+    }
+    else
+    {
+      extractMenuItem.setText ("Extract " + catalogEntry.getMemberName () + "...");
+      extractMenuItem.setDisable (false);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
