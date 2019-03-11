@@ -18,6 +18,7 @@ import com.bytezone.xmit.Utility.FileType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -30,9 +31,9 @@ class XmitTable extends TableView<CatalogEntryItem>
     implements TreeItemSelectionListener, FontChangeListener, SaveState, FilterListener
 // ---------------------------------------------------------------------------------//
 {
-  private static final int CHAR_8 = 75;
+  private static final int CHAR_8 = 80;
   private static final int CHAR_10 = 100;
-  private static final String PREFS_LAST_MEMBER_INDEX = "LastMemberIndex";
+  private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
@@ -53,7 +54,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   XmitTable ()
   // ---------------------------------------------------------------------------------//
   {
-    setItems (filteredList);
+    SortedList<CatalogEntryItem> sortedList = new SortedList<> (filteredList);
+    sortedList.comparatorProperty ().bind (this.comparatorProperty ());
+    setItems (sortedList);
 
     // common
     addString ("Member", "MemberName", CHAR_8, "CENTER-LEFT");
@@ -315,7 +318,9 @@ class XmitTable extends TableView<CatalogEntryItem>
   public void save ()
   // ---------------------------------------------------------------------------------//
   {
-    prefs.putInt (PREFS_LAST_MEMBER_INDEX, getSelectionModel ().getSelectedIndex ());
+    CatalogEntryItem catalogEntryItem = getSelectionModel ().getSelectedItem ();
+    String name = catalogEntryItem == null ? "" : catalogEntryItem.getMemberName ();
+    prefs.put (PREFS_LAST_MEMBER_NAME, name);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -323,8 +328,19 @@ class XmitTable extends TableView<CatalogEntryItem>
   public void restore ()
   // ---------------------------------------------------------------------------------//
   {
-    int index = prefs.getInt (PREFS_LAST_MEMBER_INDEX, 0);
-    select (index);
+    String name = prefs.get (PREFS_LAST_MEMBER_NAME, "");
+    CatalogEntryItem catalogEntryItem = find (name);
+    select (catalogEntryItem);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private CatalogEntryItem find (String name)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (CatalogEntryItem catalogEntryItem : filteredList)
+      if (name.equals (catalogEntryItem.getMemberName ()))
+        return catalogEntryItem;
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -357,20 +373,23 @@ class XmitTable extends TableView<CatalogEntryItem>
       for (CatalogEntry catalogEntry : pdsDataset)
         items.add (new CatalogEntryItem (catalogEntry));
 
-      select (selectedMembers.containsKey (dataset)
-          ? pdsDataset.memberIndex (selectedMembers.get (dataset)) : 0);
+      select (selectedMembers.containsKey (dataset) ? find (selectedMembers.get (dataset))
+          : null);
 
       setVisibleColumns (pdsDataset.getModuleType ());
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  private void select (int index)
+  private void select (CatalogEntryItem catalogEntryItem)
   // ---------------------------------------------------------------------------------//
   {
-    getFocusModel ().focus (index);
-    getSelectionModel ().select (index);
-    scrollTo (index);
+    if (catalogEntryItem == null)
+      getSelectionModel ().select (0);
+    else
+      getSelectionModel ().select (catalogEntryItem);
+
+    scrollTo (getSelectionModel ().getSelectedIndex ());
   }
 
   // ---------------------------------------------------------------------------------//

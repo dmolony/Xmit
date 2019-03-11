@@ -76,8 +76,7 @@ public abstract class DataFile implements Comparable<DataFile>
   public boolean contains (String key)
   // ---------------------------------------------------------------------------------//
   {
-    List<String> lines = getLines ();
-    for (String line : lines)
+    for (String line : getLines ())
       if (line.indexOf (key) >= 0)
         return true;
 
