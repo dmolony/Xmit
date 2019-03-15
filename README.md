@@ -5,6 +5,7 @@
 - extract [individual PDS members](resources/extract.md)
 - selectable [codepages](resources/view.md)
 - selectable [fonts](resources/fonts.md)
+- filter PDS members
 
 ## Sample screens
 ### MacOS
