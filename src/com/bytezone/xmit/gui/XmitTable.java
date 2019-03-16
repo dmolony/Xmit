@@ -1,10 +1,6 @@
 package com.bytezone.xmit.gui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 
@@ -18,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Font;
 
@@ -37,8 +34,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   private Dataset dataset;
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
 
-  private DisplayType currentVisibleType = null;
-  private final List<DataColumn> dataColumns = new ArrayList<> ();
+  private DisplayType currentDisplayType = null;
+  private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -49,57 +46,61 @@ class XmitTable extends TableView<CatalogEntryItem>
     setItems (sortedList);
 
     dataColumns.addAll (Arrays.asList (
-        new StringColumn ("Member", "MemberName", 8, "CENTER-LEFT", DisplayType.All),
-        new NumberColumn ("Bytes", "Bytes", 9, DisplayType.All),
-        new StringColumn ("Id", "UserName", 8, "CENTER-LEFT", DisplayType.Basic),
-        new NumberColumn ("Size", "Size", 7, DisplayType.Basic),
-        new NumberColumn ("Init", "Init", 7, DisplayType.Basic),
-        new LocalDateColumn ("Created", "DateCreated", 10, DisplayType.Basic),
-        new LocalDateColumn ("Modified", "DateModified", 10, DisplayType.Basic),
-        new StringColumn ("Time", "Time", 8, "CENTER", DisplayType.Basic),
-        new FileTypeColumn ("Type", "Type", 5, "CENTER", DisplayType.Basic),
-        new StringColumn ("ver.mod", "Version", 7, "CENTER", DisplayType.Basic),
-        new NumberColumn ("Storage", "storage", 7, "%06X", "CENTER", DisplayType.Load),
-        new NumberColumn ("Entry", "epa", 7, "%06X", "CENTER", DisplayType.Load),
-        new StringColumn ("APF", "apf", 4, "CENTER", DisplayType.Load),
-        new NumberColumn ("amode", "aMode", 5, DisplayType.Load),
-        new NumberColumn ("rmode", "rMode", 5, DisplayType.Load),
-        new NumberColumn ("ssi", "ssi", 8, "%08X", "CENTER", DisplayType.Load),
-        new StringColumn ("Attributes", "attr", 10, "CENTER", DisplayType.Load),
-        new StringColumn ("Alias", "AliasName", 8, "CENTER-LEFT", DisplayType.All)));
+        new StringColumn ("Member", "MemberName", 8, "CENTER-LEFT", DisplayType.ALL),
+        new NumberColumn ("Bytes", "Bytes", 9, DisplayType.ALL),
+        new StringColumn ("Id", "UserName", 8, "CENTER-LEFT", DisplayType.BASIC),
+        new NumberColumn ("Size", "Size", 7, DisplayType.BASIC),
+        new NumberColumn ("Init", "Init", 7, DisplayType.BASIC),
+        new LocalDateColumn ("Created", "DateCreated", 10, DisplayType.BASIC),
+        new LocalDateColumn ("Modified", "DateModified", 10, DisplayType.BASIC),
+        new StringColumn ("Time", "Time", 8, "CENTER", DisplayType.BASIC),
+        new FileTypeColumn ("Type", "Type", 5, "CENTER", DisplayType.BASIC),
+        new StringColumn ("ver.mod", "Version", 7, "CENTER", DisplayType.BASIC),
+        new NumberColumn ("Storage", "storage", 7, "%06X", "CENTER", DisplayType.LOAD),
+        new NumberColumn ("Entry", "epa", 7, "%06X", "CENTER", DisplayType.LOAD),
+        new StringColumn ("APF", "apf", 4, "CENTER", DisplayType.LOAD),
+        new NumberColumn ("amode", "aMode", 5, DisplayType.LOAD),
+        new NumberColumn ("rmode", "rMode", 5, DisplayType.LOAD),
+        new NumberColumn ("ssi", "ssi", 8, "%08X", "CENTER", DisplayType.LOAD),
+        new StringColumn ("Attributes", "attr", 10, "CENTER", DisplayType.LOAD),
+        new StringColumn ("Alias", "AliasName", 8, "CENTER-LEFT", DisplayType.ALL)));
 
-    for (DataColumn dataColumn : dataColumns)
-      getColumns ().add (dataColumn.column);
+    Collections.sort (dataColumns);                   // sort into saved sequence
+
+    for (DataColumn<?> dataColumn : dataColumns)
+      getColumns ().add (dataColumn.createColumn ());
 
     getSelectionModel ().selectedItemProperty ()
-        .addListener ( (obs, oldSelection, catalogEntryItem) ->
-        {
-          if (catalogEntryItem == null)
-            for (TableItemSelectionListener listener : listeners)
-              listener.tableItemSelected (null);
-          else
-          {
-            CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
-            selectedMembers.put (dataset, catalogEntry.getMemberName ());
-
-            for (TableItemSelectionListener listener : listeners)
-              listener.tableItemSelected (catalogEntry);
-          }
-        });
+        .addListener ( (obs, oldSel, newSel) -> selected (newSel));
   }
 
   // ---------------------------------------------------------------------------------//
-  void setVisibleColumns (DisplayType displayType)
+  private void selected (CatalogEntryItem catalogEntryItem)
   // ---------------------------------------------------------------------------------//
   {
-    if (currentVisibleType == displayType)
-      return;
+    if (catalogEntryItem == null)
+      for (TableItemSelectionListener listener : listeners)
+        listener.tableItemSelected (null);
+    else
+    {
+      CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
+      selectedMembers.put (dataset, catalogEntry.getMemberName ());
 
-    currentVisibleType = displayType;
+      for (TableItemSelectionListener listener : listeners)
+        listener.tableItemSelected (catalogEntry);
+    }
+  }
 
-    for (DataColumn dataColumn : dataColumns)
-      dataColumn.column.setVisible (dataColumn.displayType == DisplayType.All
-          || dataColumn.displayType == displayType);
+  // ---------------------------------------------------------------------------------//
+  private void setVisibleColumns (DisplayType displayType)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (currentDisplayType != displayType)
+    {
+      currentDisplayType = displayType;
+      for (DataColumn<?> dataColumn : dataColumns)
+        dataColumn.column.setVisible (dataColumn.matches (displayType));
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -111,11 +112,9 @@ class XmitTable extends TableView<CatalogEntryItem>
     String name = catalogEntryItem == null ? "" : catalogEntryItem.getMemberName ();
     prefs.put (PREFS_LAST_MEMBER_NAME, name);
 
-    //    for (TableColumn<CatalogEntryItem, ?> column : getColumns ())
-    //    {
-    //      System.out.printf ("%-12s %5.1f  %5.1f  %5.1f%n", column.getText (),
-    //          column.getMinWidth (), column.getPrefWidth (), column.getWidth ());
-    //    }
+    int seq = 0;
+    for (TableColumn<CatalogEntryItem, ?> column : getColumns ())
+      ((DataColumn<?>) column.getUserData ()).save (seq++);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -172,7 +171,7 @@ class XmitTable extends TableView<CatalogEntryItem>
           : null);
 
       setVisibleColumns (pdsDataset.getModuleType () == ModuleType.BASIC
-          ? DisplayType.Basic : DisplayType.Load);
+          ? DisplayType.BASIC : DisplayType.LOAD);
     }
   }
 

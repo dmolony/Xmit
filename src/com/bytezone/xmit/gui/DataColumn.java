@@ -1,6 +1,7 @@
 package com.bytezone.xmit.gui;
 
 import java.time.LocalDate;
+import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility.FileType;
 
@@ -11,46 +12,104 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // ---------------------------------------------------------------------------------//
-class DataColumn
+abstract class DataColumn<T> implements Comparable<DataColumn<?>>
 // ---------------------------------------------------------------------------------//
 {
+  private static final String PREFS_SEQUENCE = "Sequence-";
+  private static final String PREFS_WIDTH = "Width-";
+  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
+
   private static final int PIXELS_PER_CHAR = 11;
+  private static int seq = 0;
   static Font font;
 
-  String heading;
-  String name;
-  int width;
-  DisplayType displayType;
+  private final int sequence;
+  private final String columnHeading;
+  private final String propertyName;
+  private final int widthInCharacters;
+  private final DisplayType displayType;
+  String alignment;
 
-  TableColumn<CatalogEntryItem, ?> column;
+  private final double savedWidth;
+  private final int savedSequence;
+
+  TableColumn<CatalogEntryItem, T> column;
 
   enum DisplayType
   {
-    All, Basic, Load
+    ALL, BASIC, LOAD
   }
 
   // ---------------------------------------------------------------------------------//
   public DataColumn (String heading, String name, int width, DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
-    this.heading = heading;
-    this.name = name;
-    this.width = width;
+    this.sequence = seq++;
+    this.columnHeading = heading;
+    this.propertyName = name;
+    this.widthInCharacters = width;
     this.displayType = displayType;
+
+    savedWidth = prefs.getDouble (PREFS_WIDTH + columnHeading,
+        widthInCharacters * PIXELS_PER_CHAR);
+    savedSequence = prefs.getInt (PREFS_SEQUENCE + columnHeading, sequence);
   }
 
   // ---------------------------------------------------------------------------------//
-  void setWidth (TableColumn<CatalogEntryItem, ?> column, int width)
+  void save (int sequence)
   // ---------------------------------------------------------------------------------//
   {
-    int columnWidth = width * PIXELS_PER_CHAR;
-    column.setPrefWidth (columnWidth);
-    column.setMinWidth (columnWidth);
+    //    System.out.printf ("%-12s %5.1f  %5.1f  %5.1f  %2d  %s%n", column.getText (),
+    //        column.getMinWidth (), column.getPrefWidth (), column.getWidth (), seq++, this);
+    prefs.putInt (PREFS_SEQUENCE + columnHeading, sequence);
+    prefs.putDouble (PREFS_WIDTH + columnHeading, column.getWidth ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  TableColumn<CatalogEntryItem, T> createColumn ()
+  // ---------------------------------------------------------------------------------//
+  {
+    column = new TableColumn<> (columnHeading);
+    column.setCellFactory (createCallback ());
+    column.setCellValueFactory (new PropertyValueFactory<> (propertyName));
+    column.setPrefWidth (savedWidth);
+    column.setMinWidth (widthInCharacters * PIXELS_PER_CHAR);
+    column.setUserData (this);
+    return column;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean matches (DisplayType displayType)
+  // ---------------------------------------------------------------------------------//
+  {
+    return this.displayType == DisplayType.ALL || this.displayType == displayType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  abstract Callback<TableColumn<CatalogEntryItem, T>, TableCell<CatalogEntryItem, T>>
+      createCallback ();
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%2d  %-15s %-15s %4d  %s", sequence, columnHeading,
+        propertyName, widthInCharacters, displayType);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int compareTo (DataColumn<?> o)
+  // ---------------------------------------------------------------------------------//
+  {
+    return this.savedSequence - o.savedSequence;
   }
 }
 
 // ---------------------------------------------------------------------------------//
-class StringColumn extends DataColumn
+class StringColumn extends DataColumn<String>
 // ---------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
@@ -59,24 +118,13 @@ class StringColumn extends DataColumn
   // ---------------------------------------------------------------------------------//
   {
     super (heading, name, width, displayType);
-    column = addString (heading, name, width, alignment);
+    this.alignment = "-fx-alignment: " + alignment + ";";
   }
 
   // ---------------------------------------------------------------------------------//
-  TableColumn<CatalogEntryItem, String> addString (String heading, String name, int width,
-      String alignment)
-  // ---------------------------------------------------------------------------------//
-  {
-    TableColumn<CatalogEntryItem, String> column = new TableColumn<> (heading);
-    column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setCellFactory (stringCellFactory (alignment));
-    setWidth (column, width);
-    return column;
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   Callback<TableColumn<CatalogEntryItem, String>, TableCell<CatalogEntryItem, String>>
-      stringCellFactory (String alignment)
+      createCallback ()
   // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, String>, //
@@ -92,7 +140,7 @@ class StringColumn extends DataColumn
           public void updateItem (final String item, boolean empty)
           {
             super.updateItem (item, empty);
-            setStyle ("-fx-alignment: " + alignment + ";");
+            setStyle (alignment);
             if (item == null || empty)
               setText (null);
             else
@@ -109,41 +157,32 @@ class StringColumn extends DataColumn
 }
 
 //---------------------------------------------------------------------------------//
-class NumberColumn extends DataColumn
+class NumberColumn extends DataColumn<Number>
 //---------------------------------------------------------------------------------//
 {
+  final String mask;
+
   // ---------------------------------------------------------------------------------//
   public NumberColumn (String heading, String name, int width, String mask,
       String alignment, DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
     super (heading, name, width, displayType);
-    column = addNumber (heading, name, width, mask, alignment);
+    this.alignment = "-fx-alignment: " + alignment + ";";
+    this.mask = mask;
   }
 
   // ---------------------------------------------------------------------------------//
   public NumberColumn (String heading, String name, int width, DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
-    super (heading, name, width, displayType);
-    column = addNumber (heading, name, width, "%,d", "CENTER-RIGHT");
+    this (heading, name, width, "%,d", "CENTER-RIGHT", displayType);
   }
 
   // ---------------------------------------------------------------------------------//
-  TableColumn<CatalogEntryItem, Number> addNumber (String heading, String name, int width,
-      String mask, String alignment)
-  // ---------------------------------------------------------------------------------//
-  {
-    TableColumn<CatalogEntryItem, Number> column = new TableColumn<> (heading);
-    column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setCellFactory (numberCellFactory (mask, alignment));
-    setWidth (column, width);
-    return column;
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   Callback<TableColumn<CatalogEntryItem, Number>, TableCell<CatalogEntryItem, Number>>
-      numberCellFactory (String mask, String alignment)
+      createCallback ()
   // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, Number>, //
@@ -159,7 +198,7 @@ class NumberColumn extends DataColumn
           public void updateItem (final Number item, boolean empty)
           {
             super.updateItem (item, empty);
-            setStyle ("-fx-alignment: " + alignment + ";");
+            setStyle (alignment);
             if (item == null || empty)
               setText (null);
             else
@@ -178,31 +217,22 @@ class NumberColumn extends DataColumn
   }
 }
 
-class LocalDateColumn extends DataColumn
+// ---------------------------------------------------------------------------------//
+class LocalDateColumn extends DataColumn<LocalDate>
+// ---------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
   public LocalDateColumn (String heading, String name, int width, DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
     super (heading, name, width, displayType);
-    column = addLocalDate (heading, name, width);
+    this.alignment = "-fx-alignment: CENTER;";
   }
 
   // ---------------------------------------------------------------------------------//
-  TableColumn<CatalogEntryItem, LocalDate> addLocalDate (String heading, String name,
-      int width)
-  // ---------------------------------------------------------------------------------//
-  {
-    TableColumn<CatalogEntryItem, LocalDate> column = new TableColumn<> (heading);
-    column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setCellFactory (localDateCellFactory ());
-    setWidth (column, width);
-    return column;
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   Callback<TableColumn<CatalogEntryItem, LocalDate>, TableCell<CatalogEntryItem, LocalDate>>
-      localDateCellFactory ()
+      createCallback ()
   // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, LocalDate>,         //
@@ -219,7 +249,7 @@ class LocalDateColumn extends DataColumn
               public void updateItem (final LocalDate item, boolean empty)
               {
                 super.updateItem (item, empty);
-                setStyle ("-fx-alignment: CENTER;");
+                setStyle (alignment);
                 if (item == null || empty)
                   setText (null);
                 else
@@ -235,7 +265,9 @@ class LocalDateColumn extends DataColumn
   }
 }
 
-class FileTypeColumn extends DataColumn
+// ---------------------------------------------------------------------------------//
+class FileTypeColumn extends DataColumn<FileType>
+// ---------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
   public FileTypeColumn (String heading, String name, int width, String alignment,
@@ -243,24 +275,13 @@ class FileTypeColumn extends DataColumn
   // ---------------------------------------------------------------------------------//
   {
     super (heading, name, width, displayType);
-    column = addFileType (heading, name, width, alignment);
+    this.alignment = "-fx-alignment: " + alignment + ";";
   }
 
   // ---------------------------------------------------------------------------------//
-  TableColumn<CatalogEntryItem, FileType> addFileType (String heading, String name,
-      int width, String alignment)
-  // ---------------------------------------------------------------------------------//
-  {
-    TableColumn<CatalogEntryItem, FileType> column = new TableColumn<> (heading);
-    column.setCellValueFactory (new PropertyValueFactory<> (name));
-    column.setCellFactory (fileTypeCellFactory (alignment));
-    setWidth (column, width);
-    return column;
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   Callback<TableColumn<CatalogEntryItem, FileType>, TableCell<CatalogEntryItem, FileType>>
-      fileTypeCellFactory (String alignment)
+      createCallback ()
   // ---------------------------------------------------------------------------------//
   {
     return new Callback<TableColumn<CatalogEntryItem, FileType>,          //
@@ -277,7 +298,7 @@ class FileTypeColumn extends DataColumn
               public void updateItem (final FileType item, boolean empty)
               {
                 super.updateItem (item, empty);
-                setStyle ("-fx-alignment: " + alignment + ";");
+                setStyle (alignment);
                 if (item == null || empty)
                   setText (null);
                 else
