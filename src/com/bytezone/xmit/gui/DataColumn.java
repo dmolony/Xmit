@@ -41,7 +41,8 @@ abstract class DataColumn<T> implements Comparable<DataColumn<?>>
   }
 
   // ---------------------------------------------------------------------------------//
-  public DataColumn (String heading, String name, int width, DisplayType displayType)
+  public DataColumn (String heading, String name, int width, String alignment,
+      DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
     this.sequence = seq++;
@@ -49,6 +50,7 @@ abstract class DataColumn<T> implements Comparable<DataColumn<?>>
     this.propertyName = name;
     this.widthInCharacters = width;
     this.displayType = displayType;
+    this.alignment = "-fx-alignment: " + alignment + ";";
 
     savedWidth = prefs.getDouble (PREFS_WIDTH + columnHeading,
         widthInCharacters * PIXELS_PER_CHAR);
@@ -117,8 +119,7 @@ class StringColumn extends DataColumn<String>
       DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
-    super (heading, name, width, displayType);
-    this.alignment = "-fx-alignment: " + alignment + ";";
+    super (heading, name, width, alignment, displayType);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -167,8 +168,7 @@ class NumberColumn extends DataColumn<Number>
       String alignment, DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
-    super (heading, name, width, displayType);
-    this.alignment = "-fx-alignment: " + alignment + ";";
+    super (heading, name, width, alignment, displayType);
     this.mask = mask;
   }
 
@@ -225,8 +225,7 @@ class LocalDateColumn extends DataColumn<LocalDate>
   public LocalDateColumn (String heading, String name, int width, DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
-    super (heading, name, width, displayType);
-    this.alignment = "-fx-alignment: CENTER;";
+    super (heading, name, width, "CENTER", displayType);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -274,8 +273,7 @@ class FileTypeColumn extends DataColumn<FileType>
       DisplayType displayType)
   // ---------------------------------------------------------------------------------//
   {
-    super (heading, name, width, displayType);
-    this.alignment = "-fx-alignment: " + alignment + ";";
+    super (heading, name, width, alignment, displayType);
   }
 
   // ---------------------------------------------------------------------------------//
