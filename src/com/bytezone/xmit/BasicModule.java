@@ -26,9 +26,7 @@ public class BasicModule extends CatalogEntry
   {
     super (ModuleType.BASIC, buffer);
 
-    assert numTtr == 0;
-
-    if (hw == 0)
+    if (buffer.length == 12)          // hw == 0
     {
       vv = 0;
       mm = 0;
@@ -162,7 +160,7 @@ public class BasicModule extends CatalogEntry
   {
     String date1Text = dateCreated == null ? ""
         : String.format ("%td %<tb %<tY", dateCreated).replace (".", "");
-    return String.format ("%s  %-8s  %-8s  %,6d  %s  %s", usesAlias ? "A" : ".", name,
-        userName, size, date1Text, time);
+    return String.format ("%s  %-8s  %-8s  %,6d  %s  %s", isAlias () ? "A" : ".",
+        getMemberName (), userName, size, date1Text, time);
   }
 }

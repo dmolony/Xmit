@@ -58,8 +58,6 @@ public class LoadModule extends CatalogEntry
   {
     super (ModuleType.LOAD, buffer);
 
-    assert numTtr > 0;
-
     ttrText = (int) Utility.getValue (buffer, 12, 3);
     int zero = buffer[15] & 0xFF;
     ttrNoteList = (int) Utility.getValue (buffer, 16, 3);   // or ttrScatter
@@ -123,7 +121,7 @@ public class LoadModule extends CatalogEntry
       ptr += 8;
     }
 
-    if (usesAlias)
+    if (isAlias ())
     {
       aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
       setAliasName (Utility.getString (buffer, ptr + 3, 8).trim ());
@@ -194,7 +192,7 @@ public class LoadModule extends CatalogEntry
       ptr += 8;
     }
 
-    if (usesAlias)
+    if (isAlias ())
     {
       aliasText = Utility.getHexValuesWithText (directoryData, ptr, 11);
       ptr += 11;
@@ -317,6 +315,6 @@ public class LoadModule extends CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s  %-8s  ", usesAlias ? "A" : ".", name);
+    return String.format ("%s  %-8s  ", isAlias () ? "A" : ".", getMemberName ());
   }
 }

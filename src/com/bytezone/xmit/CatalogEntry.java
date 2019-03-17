@@ -6,14 +6,14 @@ import com.bytezone.xmit.Utility.FileType;
 public abstract class CatalogEntry
 //---------------------------------------------------------------------------------//
 {
-  private PdsMember member;            // contains DataBlocks
-  private String aliasName = "";
+  private PdsMember member;             // contains DataBlocks
+  private String aliasName = "";        // member we are an alias of
 
-  final boolean usesAlias;
-  final int numTtr;
-  final int hw;
-  final String name;
-  final int ttr;
+  private final boolean usesAlias;
+  private final int numTtr;
+  private final int hw;
+  private final String name;
+  private final int ttr;
 
   final byte[] directoryData;
   final ModuleType moduleType;
@@ -134,7 +134,8 @@ public abstract class CatalogEntry
   {
     assert isAlias ();
     if (!this.aliasName.isEmpty ())
-      System.out.printf ("%s - Alias not empty: %s%n", name, aliasName);
+      System.out.printf ("%s - Alias not empty: %s -> %s%n", name, this.aliasName,
+          aliasName);
     this.aliasName = aliasName;
   }
 

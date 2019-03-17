@@ -126,8 +126,8 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       {
         catalogEntry.setMember (member);
 
-        if (catalogEntry.usesAlias && catalogEntry.getAliasName ().isEmpty ())
-          catalogEntry.setAliasName (sourceEntry.name);
+        if (catalogEntry.isAlias () && catalogEntry.getAliasName ().isEmpty ())
+          catalogEntry.setAliasName (sourceEntry.getMemberName ());
       }
 
       if (member.isXmit ())
@@ -266,7 +266,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       catalogMap.put (ttr, catalogEntriesTtr);
     }
 
-    if (catalogEntry.usesAlias)
+    if (catalogEntry.isAlias ())
       catalogEntriesTtr.add (catalogEntry);       // retain original sequence
     else
       catalogEntriesTtr.add (0, catalogEntry);    // insert at the head of the list
