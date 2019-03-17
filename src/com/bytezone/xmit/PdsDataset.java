@@ -256,7 +256,6 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private void addToMap (CatalogEntry catalogEntry,
       Map<Long, List<CatalogEntry>> catalogMap)
   {
-    catalogEntry.setCopyRecords (copyR1, copyR2);
     long ttr = catalogEntry.getTtr ();
     List<CatalogEntry> catalogEntriesTtr = catalogMap.get (ttr);
 
