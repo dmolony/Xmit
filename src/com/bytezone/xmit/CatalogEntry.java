@@ -133,8 +133,8 @@ public abstract class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     assert isAlias ();
-    if (!aliasName.isEmpty ())
-      System.out.println ("Alias not empty");
+    if (!this.aliasName.isEmpty ())
+      System.out.printf ("%s - Alias not empty: %s%n", name, aliasName);
     this.aliasName = aliasName;
   }
 
