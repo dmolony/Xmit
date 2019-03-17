@@ -9,9 +9,9 @@ public abstract class CatalogEntry
   private PdsMember member;             // contains DataBlocks
   private String aliasName = "";        // member we are an alias of
 
-  private final boolean usesAlias;
+  private final boolean isAlias;
   private final int numTtr;
-  private final int hw;
+  private final int halfWords;
   private final String name;
   private final int ttr;
 
@@ -58,9 +58,9 @@ public abstract class CatalogEntry
     name = Utility.getString (buffer, 0, 8).trim ();
     ttr = (int) Utility.getValue (buffer, 8, 3);            // TTR of first block
 
-    usesAlias = (buffer[11] & 0x80) != 0;     // name in the first field is an alias
+    isAlias = (buffer[11] & 0x80) != 0;       // name in the first field is an alias
     numTtr = (buffer[11] & 0x60) >>> 5;       // number of TTRs in user data
-    hw = buffer[11] & 0x1F;                   // half words of user data
+    halfWords = buffer[11] & 0x1F;            // half words of user data
   }
 
   // ---------------------------------------------------------------------------------//
@@ -118,7 +118,7 @@ public abstract class CatalogEntry
   public boolean isAlias ()
   // ---------------------------------------------------------------------------------//
   {
-    return usesAlias;
+    return isAlias;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -252,7 +252,7 @@ public abstract class CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%1.1s %d %02X %-8s %06X ", usesAlias ? "A" : ".", numTtr, hw,
-        name, ttr);
+    return String.format ("%1.1s %d %02X %-8s %06X ", isAlias ? "A" : ".", numTtr,
+        halfWords, name, ttr);
   }
 }
