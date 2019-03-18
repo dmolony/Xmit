@@ -14,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Font;
@@ -36,6 +37,7 @@ class XmitTable extends TableView<CatalogEntryItem>
 
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
+  private String filter = "";
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -173,6 +175,7 @@ class XmitTable extends TableView<CatalogEntryItem>
       setVisibleColumns (pdsDataset.getModuleType () == ModuleType.BASIC
           ? DisplayType.BASIC : DisplayType.LOAD);
     }
+    setEmptyTableMessage ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -201,6 +204,20 @@ class XmitTable extends TableView<CatalogEntryItem>
     // the change may have filtered out the previously selected member
     if (dataset != null && dataset.isPds () && getSelectedItem () == null)
       select (null);
+
+    this.filter = filter;
+    setEmptyTableMessage ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setEmptyTableMessage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (dataset != null && dataset.isPds ())
+      setPlaceholder (new Label (filter.isEmpty () ? "No members to display"
+          : String.format ("No members contain '%s'", filter)));
+    else
+      setPlaceholder (new Label ("Not a Partitioned Dataset"));
   }
 
   // ---------------------------------------------------------------------------------//
