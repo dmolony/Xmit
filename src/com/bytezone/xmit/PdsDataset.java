@@ -1,10 +1,6 @@
 package com.bytezone.xmit;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
@@ -33,6 +29,16 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   // ---------------------------------------------------------------------------------//
   {
     return catalogEntries.size () == 0 ? null : catalogEntries.get (0).getModuleType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public Optional<PdsMember> findMember (String name)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (CatalogEntry catalogEntry : catalogEntries)
+      if (catalogEntry.getMemberName ().equals (name))
+        return Optional.of (catalogEntry.getMember ());
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//

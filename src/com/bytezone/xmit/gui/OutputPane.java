@@ -4,8 +4,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.bytezone.xmit.*;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
@@ -21,6 +27,13 @@ class OutputPane extends HeaderTabPane
     FontChangeListener, OutputWriter, SaveState
 // ---------------------------------------------------------------------------------//
 {
+  private static Pattern includePattern =
+      Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
+  private static Pattern memberPattern =
+      Pattern.compile ("INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
+
+  private static final String divider =
+      "//* --------------------------------------------------------------------\n";
   private static final int MAX_HEX_BYTES = 0x20000;
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE1 =
@@ -41,10 +54,14 @@ class OutputPane extends HeaderTabPane
   private Dataset dataset;                // usually file #1 in the Reader
   private DataFile dataFile;              // FlatFile or PdsMember
   private CatalogEntry catalogEntry;      // needed for alias members
+  private final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
   private boolean showLines;
   private boolean stripLines;
   private boolean truncateLines;
+  private boolean expandInclude;
+
+  private String includeDatasetName;
 
   // ---------------------------------------------------------------------------------//
   OutputPane ()
@@ -162,6 +179,8 @@ class OutputPane extends HeaderTabPane
 
     StringBuilder text = new StringBuilder ();
     int lineNo = 0;
+    includeDatasetName = "";
+
     if (maxLines == 0)
       maxLines = Integer.MAX_VALUE;
 
@@ -182,10 +201,43 @@ class OutputPane extends HeaderTabPane
         text.append (String.format ("%s%n", line.substring (1)));
       else
         text.append (String.format ("%s%n", line));
+
+      if (expandInclude)
+        checkInclude (line, text);
     }
 
     Utility.removeTrailingNewlines (text);
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void checkInclude (String line, StringBuilder text)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!includeDatasetName.isEmpty ())
+    {
+      Matcher m2 = memberPattern.matcher (line);
+      if (m2.find ())
+      {
+        String memberName = m2.group (1);
+        List<String> lines = findMember (includeDatasetName, memberName);
+        if (lines.size () == 0)
+          text.append ("==> " + includeDatasetName + "(" + memberName + ")"
+              + ": dataset not seen yet\n");
+        else
+        {
+          //          text.append (divider);
+          for (String line2 : lines)
+            text.append (line2 + "\n");
+          //          text.append (divider);
+        }
+      }
+    }
+    Matcher m = includePattern.matcher (line);
+    if (m.find ())
+    {
+      includeDatasetName = m.group (1);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -254,6 +306,12 @@ class OutputPane extends HeaderTabPane
         dataFile = ((PsDataset) dataset).getMember ();
         updateNameLabel ();
       }
+      else if (dataset.isPds ())
+      {
+        String datasetName = dataset.getReader ().getFileName ();
+        if (!datasets.containsKey (datasetName))
+          datasets.put (datasetName, (PdsDataset) dataset);
+      }
     }
 
     clearText ();
@@ -300,14 +358,29 @@ class OutputPane extends HeaderTabPane
   }
 
   // ---------------------------------------------------------------------------------//
+  private List<String> findMember (String datasetName, String memberName)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (datasets.containsKey (datasetName))
+    {
+      PdsDataset dataset = datasets.get (datasetName);
+      Optional<PdsMember> optMember = dataset.findMember (memberName);
+      if (optMember.isPresent ())
+        return optMember.get ().getLines ();
+    }
+    return new ArrayList<String> ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public void showLinesSelected (boolean showLines, boolean stripLines,
-      boolean truncateLines)
+      boolean truncateLines, boolean expandInclude)
   // ---------------------------------------------------------------------------------//
   {
     this.showLines = showLines;
     this.stripLines = stripLines;
     this.truncateLines = truncateLines;
+    this.expandInclude = expandInclude;
 
     saveScrollBars ();
     clearText ();

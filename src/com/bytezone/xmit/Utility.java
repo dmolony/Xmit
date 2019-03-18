@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import com.bytezone.xmit.gui.XmitApp;
 
@@ -19,6 +20,14 @@ import javafx.scene.control.Alert.AlertType;
 public class Utility
 //---------------------------------------------------------------------------------//
 {
+  static final String nameStart = "[A-Z@$#]";
+  static final String validChar = "[A-Z0-9@$#]";
+  public static final String validPart = nameStart + validChar + "{0,7}";
+  public static final String validName = validPart + "(?:\\." + validPart + "){0,4}";
+  static final Pattern validPDSName =
+      Pattern.compile ("^(" + validName + ")\\((" + validPart + ")\\)$");
+  static final Pattern validDatasetName = Pattern.compile (validName);
+
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();
 

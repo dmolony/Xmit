@@ -19,6 +19,7 @@ class ViewMenu implements SaveState
   private static final String PREFS_SHOW_LINES = "ShowLines";
   private static final String PREFS_STRIP_LINES = "StripLines";
   private static final String PREFS_TRUNCATE = "Truncate";
+  private static final String PREFS_CHECK_INCLUDE = "CheckInclude";
   private static final String PREFS_SHOW_HEADERS = "ShowHeaders";
   private static final String PREFS_SHOW_BLOCKS = "ShowBlocks";
   private static final String PREFS_SHOW_HEX = "ShowHex";
@@ -42,6 +43,7 @@ class ViewMenu implements SaveState
   private final CheckMenuItem showLinesMenuItem;
   private final CheckMenuItem stripLinesMenuItem;
   private final CheckMenuItem truncateMenuItem;
+  private final CheckMenuItem expandIncludeMenuItem;
   private final CheckMenuItem headersMenuItem;
   private final CheckMenuItem blocksMenuItem;
   private final CheckMenuItem hexMenuItem;
@@ -88,6 +90,8 @@ class ViewMenu implements SaveState
         setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, SHIFT, action);
     stripLinesMenuItem = setCheckMenuItem ("Strip Line Numbers", KeyCode.L, action);
     truncateMenuItem = setCheckMenuItem ("Truncate Column 1", KeyCode.T, action);
+    expandIncludeMenuItem =
+        setCheckMenuItem ("Expand Include Members", KeyCode.I, action);
 
     menuItems.add (new SeparatorMenuItem ());
 
@@ -166,7 +170,8 @@ class ViewMenu implements SaveState
   {
     for (ShowLinesListener listener : showLinesListeners)
       listener.showLinesSelected (showLinesMenuItem.isSelected (),
-          stripLinesMenuItem.isSelected (), truncateMenuItem.isSelected ());
+          stripLinesMenuItem.isSelected (), truncateMenuItem.isSelected (),
+          expandIncludeMenuItem.isSelected ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -216,6 +221,7 @@ class ViewMenu implements SaveState
     showLinesMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_LINES, false));
     stripLinesMenuItem.setSelected (prefs.getBoolean (PREFS_STRIP_LINES, false));
     truncateMenuItem.setSelected (prefs.getBoolean (PREFS_TRUNCATE, false));
+    expandIncludeMenuItem.setSelected (prefs.getBoolean (PREFS_CHECK_INCLUDE, false));
     notifyLinesListeners ();
 
     headersMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEADERS, false));
@@ -246,6 +252,7 @@ class ViewMenu implements SaveState
     prefs.putBoolean (PREFS_SHOW_LINES, showLinesMenuItem.isSelected ());
     prefs.putBoolean (PREFS_STRIP_LINES, stripLinesMenuItem.isSelected ());
     prefs.putBoolean (PREFS_TRUNCATE, truncateMenuItem.isSelected ());
+    prefs.putBoolean (PREFS_CHECK_INCLUDE, expandIncludeMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_HEADERS, headersMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_BLOCKS, blocksMenuItem.isSelected ());
     prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());

@@ -5,5 +5,5 @@ public interface ShowLinesListener
 //---------------------------------------------------------------------------------//
 {
   public void showLinesSelected (boolean showLines, boolean stripLines,
-      boolean truncateLines);
+      boolean truncateLines, boolean expandInclude);
 }
