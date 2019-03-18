@@ -10,6 +10,8 @@ class ScrollBarState
 //---------------------------------------------------------------------------------//
 {
   private ScrollBar scrollBar;
+  private final TextArea textArea;
+  private final Orientation orientation;
 
   private double min;
   private double max;
@@ -21,19 +23,32 @@ class ScrollBarState
   public ScrollBarState (TextArea textArea, Orientation orientation)
   // ---------------------------------------------------------------------------------//
   {
+    this.textArea = textArea;
+    this.orientation = orientation;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void check ()
+  // ---------------------------------------------------------------------------------//
+  {
     for (Node node : textArea.lookupAll (".scroll-bar"))
+    {
       if (node instanceof ScrollBar
           && ((ScrollBar) node).getOrientation ().equals (orientation))
       {
         scrollBar = (ScrollBar) node;
         break;
       }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
   public void save ()
   // ---------------------------------------------------------------------------------//
   {
+    if (scrollBar == null)
+      check ();
+
     if (scrollBar != null)
     {
       this.min = scrollBar.getMin ();

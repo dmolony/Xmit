@@ -32,8 +32,8 @@ class OutputPane extends HeaderTabPane
   private static Pattern memberPattern =
       Pattern.compile ("INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
 
-  private static final String divider =
-      "//* --------------------------------------------------------------------\n";
+  //  private static final String divider =
+  //      "//* --------------------------------------------------------------------\n";
   private static final int MAX_HEX_BYTES = 0x20000;
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE1 =
@@ -216,21 +216,19 @@ class OutputPane extends HeaderTabPane
   {
     if (!includeDatasetName.isEmpty ())
     {
+      String leader = "==> ";
+      String leader2 = showLines ? "      " : "";
       Matcher m2 = memberPattern.matcher (line);
       if (m2.find ())
       {
         String memberName = m2.group (1);
         List<String> lines = findMember (includeDatasetName, memberName);
         if (lines.size () == 0)
-          text.append ("==> " + includeDatasetName + "(" + memberName + ")"
+          text.append (leader + includeDatasetName + "(" + memberName + ")"
               + ": dataset not seen yet\n");
         else
-        {
-          //          text.append (divider);
           for (String line2 : lines)
-            text.append (line2 + "\n");
-          //          text.append (divider);
-        }
+            text.append (leader2 + line2 + "\n");
       }
     }
     Matcher m = includePattern.matcher (line);
