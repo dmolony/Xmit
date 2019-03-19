@@ -31,6 +31,8 @@ class OutputPane extends HeaderTabPane
       Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
   private static Pattern memberPattern =
       Pattern.compile ("INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
+  private static Pattern dsnPattern = Pattern
+      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
   //  private static final String divider =
   //      "//* --------------------------------------------------------------------\n";
@@ -216,7 +218,7 @@ class OutputPane extends HeaderTabPane
   {
     if (!includeDatasetName.isEmpty ())
     {
-      String leader = "==> ";
+      String leader = "  ==> ";
       String leader2 = showLines ? "      " : "";
       Matcher m2 = memberPattern.matcher (line);
       if (m2.find ())
@@ -228,13 +230,28 @@ class OutputPane extends HeaderTabPane
               + ": dataset not seen yet\n");
         else
           for (String line2 : lines)
-            text.append (leader2 + line2 + "\n");
+            if (!line2.startsWith ("//*"))
+              text.append (leader2 + line2 + "\n");
       }
     }
     Matcher m = includePattern.matcher (line);
     if (m.find ())
-    {
       includeDatasetName = m.group (1);
+
+    Matcher m2 = dsnPattern.matcher (line);
+    if (m2.find ())
+    {
+      String datasetName = m2.group (1);
+      String memberName = m2.group (2);
+      List<String> lines = findMember (datasetName, memberName);
+      String leader1 = showLines ? "        ==> " : "  ==> ";
+      String leader2 = showLines ? "        " : "  ";
+      if (lines.size () == 0)
+        text.append (
+            leader1 + datasetName + "(" + memberName + ")" + ": dataset not seen yet\n");
+      for (String line2 : lines)
+        if (!line2.startsWith ("*"))
+          text.append (leader2 + line2 + "\n");
     }
   }
 
