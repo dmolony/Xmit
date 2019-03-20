@@ -63,8 +63,6 @@ class OutputPane extends HeaderTabPane
   private boolean truncateLines;
   private boolean expandInclude;
 
-  private String includeDatasetName;
-
   //----------------------------------------------------------------------------------- //
   OutputPane ()
   //----------------------------------------------------------------------------------- //
@@ -180,7 +178,7 @@ class OutputPane extends HeaderTabPane
 
     List<String> lines = dataFile.getLines ();
     int lineNo = 0;
-    includeDatasetName = "";
+    String includeDatasetName = "";
 
     boolean isJCL = expandInclude && isJCL (lines);
 
@@ -206,7 +204,7 @@ class OutputPane extends HeaderTabPane
         text.append (String.format ("%s%n", line));
 
       if (isJCL)
-        checkInclude (line, text);
+        includeDatasetName = checkInclude (includeDatasetName, line, text);
     }
 
     Utility.removeTrailingNewlines (text);
@@ -231,32 +229,36 @@ class OutputPane extends HeaderTabPane
   }
 
   //----------------------------------------------------------------------------------- //
-  private void checkInclude (String line, StringBuilder text)
+  private String checkInclude (String includeDatasetName, String line, StringBuilder text)
   //----------------------------------------------------------------------------------- //
   {
-    String lineGap = showLines ? "      " : "";
-
     if (!includeDatasetName.isEmpty ())
     {
-      Matcher m2 = memberPattern.matcher (line);
-      if (m2.find ())
-        append (text, includeDatasetName, m2.group (1), lineGap, "//*");
+      Matcher m = memberPattern.matcher (line);
+      if (m.find ())
+        append (text, includeDatasetName, m.group (1), "//*");
     }
 
     Matcher m = includePattern.matcher (line);
     if (m.find ())
       includeDatasetName = m.group (1);
 
-    Matcher m2 = dsnPattern.matcher (line);
-    if (m2.find ())
-      append (text, m2.group (1), m2.group (2), lineGap, "*");
+    if (false)        // will expand output datasets too
+    {
+      m = dsnPattern.matcher (line);
+      if (m.find ())
+        append (text, m.group (1), m.group (2), "*");
+    }
+
+    return includeDatasetName;
   }
 
   //----------------------------------------------------------------------------------- //
   private void append (StringBuilder text, String datasetName, String memberName,
-      String lineGap, String commentIndicator)
+      String commentIndicator)
   //----------------------------------------------------------------------------------- //
   {
+    String lineGap = showLines ? "      " : "";
     List<String> lines = findMember (datasetName, memberName);
     if (lines.size () == 0)
       text.append (String.format ("%s==> %s(%s): dataset not seen yet%n", lineGap,
