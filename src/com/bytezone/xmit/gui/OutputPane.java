@@ -183,6 +183,8 @@ class OutputPane extends HeaderTabPane
     int lineNo = 0;
     includeDatasetName = "";
 
+    boolean isJCL = expandInclude && isJCL (lines);
+
     if (maxLines == 0)
       maxLines = Integer.MAX_VALUE;
 
@@ -204,7 +206,7 @@ class OutputPane extends HeaderTabPane
       else
         text.append (String.format ("%s%n", line));
 
-      if (expandInclude)
+      if (isJCL)
         checkInclude (line, text);
     }
 
@@ -213,12 +215,29 @@ class OutputPane extends HeaderTabPane
   }
 
   //----------------------------------------------------------------------------------- //
+  private boolean isJCL (List<String> lines)
+  //----------------------------------------------------------------------------------- //
+  {
+    return Utility.jobCardPattern.matcher (getFirstNonComment (lines)).find ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  private String getFirstNonComment (List<String> lines)
+  //----------------------------------------------------------------------------------- //
+  {
+    for (String line : lines)
+      if (!line.startsWith ("//*"))
+        return line;
+    return "";
+  }
+
+  //----------------------------------------------------------------------------------- //
   private void checkInclude (String line, StringBuilder text)
   //----------------------------------------------------------------------------------- //
   {
     if (!includeDatasetName.isEmpty ())
     {
-      String leader = "  ==> ";
+      String leader = showLines ? "      ==> " : "==> ";
       String leader2 = showLines ? "      " : "";
       Matcher m2 = memberPattern.matcher (line);
       if (m2.find ())
@@ -244,8 +263,8 @@ class OutputPane extends HeaderTabPane
       String datasetName = m2.group (1);
       String memberName = m2.group (2);
       List<String> lines = findMember (datasetName, memberName);
-      String leader1 = showLines ? "        ==> " : "  ==> ";
-      String leader2 = showLines ? "        " : "  ";
+      String leader1 = showLines ? "      ==> " : "==> ";
+      String leader2 = showLines ? "      " : "";
       if (lines.size () == 0)
         text.append (
             leader1 + datasetName + "(" + memberName + ")" + ": dataset not seen yet\n");

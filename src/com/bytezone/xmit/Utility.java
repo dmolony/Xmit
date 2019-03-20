@@ -27,6 +27,8 @@ public class Utility
   static final Pattern validPDSName =
       Pattern.compile ("^(" + validName + ")\\((" + validPart + ")\\)$");
   static final Pattern validDatasetName = Pattern.compile (validName);
+  public static final Pattern jobCardPattern =
+      Pattern.compile ("//([A-Z]" + validChar + "{0,7})\\s+JOB");
 
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();
