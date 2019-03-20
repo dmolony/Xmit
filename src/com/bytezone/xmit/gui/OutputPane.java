@@ -169,17 +169,16 @@ class OutputPane extends HeaderTabPane
     if (dataFile == null)
       return "";
 
-    return getLines (MAX_LINES, showLines, stripLines, truncateLines);
+    return getLines (MAX_LINES);
   }
 
   //----------------------------------------------------------------------------------- //
-  private String getLines (int maxLines, boolean showLines, boolean stripLines,
-      boolean truncate)
+  private String getLines (int maxLines)
   //----------------------------------------------------------------------------------- //
   {
-    List<String> lines = dataFile.getLines ();
-
     StringBuilder text = new StringBuilder ();
+
+    List<String> lines = dataFile.getLines ();
     int lineNo = 0;
     includeDatasetName = "";
 
@@ -201,7 +200,7 @@ class OutputPane extends HeaderTabPane
 
       if (showLines)
         text.append (String.format ("%05d %s%n", lineNo, line));
-      else if (truncate && line.length () > 0)
+      else if (truncateLines && line.length () > 0)
         text.append (String.format ("%s%n", line.substring (1)));
       else
         text.append (String.format ("%s%n", line));
@@ -235,43 +234,37 @@ class OutputPane extends HeaderTabPane
   private void checkInclude (String line, StringBuilder text)
   //----------------------------------------------------------------------------------- //
   {
+    String lineGap = showLines ? "      " : "";
+
     if (!includeDatasetName.isEmpty ())
     {
-      String leader = showLines ? "      ==> " : "==> ";
-      String leader2 = showLines ? "      " : "";
       Matcher m2 = memberPattern.matcher (line);
       if (m2.find ())
-      {
-        String memberName = m2.group (1);
-        List<String> lines = findMember (includeDatasetName, memberName);
-        if (lines.size () == 0)
-          text.append (leader + includeDatasetName + "(" + memberName + ")"
-              + ": dataset not seen yet\n");
-        else
-          for (String line2 : lines)
-            if (!line2.startsWith ("//*"))
-              text.append (leader2 + line2 + "\n");
-      }
+        append (text, includeDatasetName, m2.group (1), lineGap, "//*");
     }
+
     Matcher m = includePattern.matcher (line);
     if (m.find ())
       includeDatasetName = m.group (1);
 
     Matcher m2 = dsnPattern.matcher (line);
     if (m2.find ())
-    {
-      String datasetName = m2.group (1);
-      String memberName = m2.group (2);
-      List<String> lines = findMember (datasetName, memberName);
-      String leader1 = showLines ? "      ==> " : "==> ";
-      String leader2 = showLines ? "      " : "";
-      if (lines.size () == 0)
-        text.append (
-            leader1 + datasetName + "(" + memberName + ")" + ": dataset not seen yet\n");
-      for (String line2 : lines)
-        if (!line2.startsWith ("*"))
-          text.append (leader2 + line2 + "\n");
-    }
+      append (text, m2.group (1), m2.group (2), lineGap, "*");
+  }
+
+  //----------------------------------------------------------------------------------- //
+  private void append (StringBuilder text, String datasetName, String memberName,
+      String lineGap, String commentIndicator)
+  //----------------------------------------------------------------------------------- //
+  {
+    List<String> lines = findMember (datasetName, memberName);
+    if (lines.size () == 0)
+      text.append (String.format ("%s==> %s(%s): dataset not seen yet%n", lineGap,
+          datasetName, memberName));
+    else
+      for (String line : lines)
+        if (!line.startsWith (commentIndicator))
+          text.append (String.format ("%s%s%n", lineGap, line));
   }
 
   //----------------------------------------------------------------------------------- //
@@ -444,7 +437,7 @@ class OutputPane extends HeaderTabPane
 
     try (BufferedWriter output = new BufferedWriter (new FileWriter (file)))
     {
-      output.write (getLines (0, showLines, stripLines, truncateLines));
+      output.write (getLines (0));
       Utility.showAlert (AlertType.INFORMATION, "Success",
           "File Saved: " + file.getName ());
     }
