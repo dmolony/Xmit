@@ -36,7 +36,7 @@ class OutputPane extends HeaderTabPane
 
   //  private static final String divider =
   //      "//* --------------------------------------------------------------------\n";
-  private static final int MAX_HEX_BYTES = 0x20000;
+  private static final int MAX_HEX_BYTES = 0x20_000;
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE1 =
       "\n*** Output truncated at %,d lines to improve rendering time ***";
