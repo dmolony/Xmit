@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -475,6 +476,23 @@ public class Utility
 
     alert.setContentText (message);
     alert.showAndWait ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  public static boolean isJCL (List<String> lines)
+  //----------------------------------------------------------------------------------- //
+  {
+    return jobCardPattern.matcher (getFirstNonComment (lines)).find ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  private static String getFirstNonComment (List<String> lines)
+  //----------------------------------------------------------------------------------- //
+  {
+    for (String line : lines)
+      if (!line.startsWith ("//*"))
+        return line;
+    return "";
   }
 
   // ---------------------------------------------------------------------------------//

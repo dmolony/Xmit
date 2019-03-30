@@ -105,6 +105,11 @@ public class Disposition
     return recfmText;
   }
 
+  public boolean matches (String recfm, int reclen)
+  {
+    return getRecfm ().equals (recfm) && lrecl == reclen;
+  }
+
   // ---------------------------------------------------------------------------------//
   // toString
   // ---------------------------------------------------------------------------------//

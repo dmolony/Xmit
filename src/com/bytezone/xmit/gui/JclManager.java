@@ -1,10 +1,8 @@
 package com.bytezone.xmit.gui;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.Disposition;
 import com.bytezone.xmit.Utility;
 
 import javafx.geometry.Insets;
@@ -27,18 +25,8 @@ import javafx.stage.Stage;
 public class JclManager implements TableItemSelectionListener
 //---------------------------------------------------------------------------------//
 {
-  private static Pattern includePattern =
-      Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
-  private static Pattern memberPattern =
-      Pattern.compile ("INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
-  private static Pattern dsnPattern = Pattern
-      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
-
   private Stage stage;
   private final TextFlow textFlow = new TextFlow ();
-  //  Text text1 = new Text ("Hello ");
-  //  Text text2 = new Text ("Bold");
-  //  Text text3 = new Text (" World");
   private CatalogEntry catalogEntry;
   private final Font font = Font.font ("Monaco", FontWeight.NORMAL, 12);
   private final Color baseColor = Color.GREEN;
@@ -95,12 +83,11 @@ public class JclManager implements TableItemSelectionListener
     if (catalogEntry == null)
       return;
 
-    Disposition disposition = catalogEntry.getMember ().getDisposition ();
-    if (disposition.getLrecl () != 80 || !disposition.getRecfm ().equals ("FB"))
+    if (!catalogEntry.getDisposition ().matches ("FB", 80))
       return;
 
     List<String> lines = catalogEntry.getMember ().getLines ();
-    if (!isJCL (lines))
+    if (!Utility.isJCL (lines))
       return;
 
     for (String line : lines)
@@ -109,31 +96,44 @@ public class JclManager implements TableItemSelectionListener
         line = line.substring (0, 72);            // remove line numbers
 
       if (line.startsWith ("//*"))                // line comment
-        addTextNewLine (line, Color.BLUE);
-      else
       {
-        int pos = line.indexOf ("DSN=");          // found a dataset
-        if (pos > 0)
-        {
-          pos += 4;
-          addText (line.substring (0, pos), baseColor);
-
-          int pos2 = line.indexOf (',', pos);
-          if (pos2 < 0)
-            pos2 = line.indexOf (' ', pos);
-
-          if (pos2 > 0)
-          {
-            addText (line.substring (pos, pos2), Color.RED);
-            addTextNewLine (line.substring (pos2), baseColor);
-          }
-          else
-            addTextNewLine (line.substring (pos), Color.RED);
-        }
-        else                                      // no dataset
-          addTextNewLine (line, baseColor);
+        addTextNewLine (line, Color.BLUE);
+        continue;
       }
+
+      if (highlight (line, "DSN=", Color.RED))
+        continue;
+      if (highlight (line, "PGM=", Color.DARKMAGENTA))
+        continue;
+
+      addTextNewLine (line, baseColor);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean highlight (String line, String text, Color color)
+  // ---------------------------------------------------------------------------------//
+  {
+    int pos = line.indexOf (text);
+    if (pos < 0)
+      return false;
+
+    pos += text.length ();
+    addText (line.substring (0, pos), baseColor);
+
+    int pos2 = line.indexOf (',', pos);
+    if (pos2 < 0)
+      pos2 = line.indexOf (' ', pos);
+
+    if (pos2 > 0)
+    {
+      addText (line.substring (pos, pos2), color);
+      addTextNewLine (line.substring (pos2), baseColor);
+    }
+    else
+      addTextNewLine (line.substring (pos), color);
+
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -184,22 +184,5 @@ public class JclManager implements TableItemSelectionListener
     this.catalogEntry = catalogEntry;
     if (stage != null && stage.isShowing ())
       setText ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  private boolean isJCL (List<String> lines)
-  //----------------------------------------------------------------------------------- //
-  {
-    return Utility.jobCardPattern.matcher (getFirstNonComment (lines)).find ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  private String getFirstNonComment (List<String> lines)
-  //----------------------------------------------------------------------------------- //
-  {
-    for (String line : lines)
-      if (!line.startsWith ("//*"))
-        return line;
-    return "";
   }
 }
