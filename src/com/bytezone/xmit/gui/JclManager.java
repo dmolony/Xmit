@@ -97,13 +97,20 @@ public class JclManager implements TableItemSelectionListener
 
       if (line.startsWith ("//*"))                // line comment
       {
-        addTextNewLine (line, Color.BLUE);
+        addTextNewLine (line, Color.GRAY);
+        continue;
+      }
+
+      if (line.matches ("^[^/].*?"))
+      {
+        addTextNewLine (line, Color.CHOCOLATE);
         continue;
       }
 
       if (highlight (line, "DSN=", Color.RED))
         continue;
-      if (highlight (line, "PGM=", Color.DARKMAGENTA))
+
+      if (highlight (line, "PGM=", Color.BLUE))
         continue;
 
       addTextNewLine (line, baseColor);
