@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.CatalogEntry;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,7 +15,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
 // ---------------------------------------------------------------------------------//
-class ViewMenu implements SaveState
+class ViewMenu implements SaveState, TableItemSelectionListener
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
@@ -39,6 +41,7 @@ class ViewMenu implements SaveState
   private final Menu viewMenu = new Menu ("View");
   private final MenuItem fontMenuItem = new MenuItem ("Set Font...");
   private final MenuItem filterMenuItem = new MenuItem ("Set PDS Filter...");
+  private final MenuItem jclMenuItem = new MenuItem ("JCL viewer...");
 
   private final CheckMenuItem showLinesMenuItem;
   private final CheckMenuItem stripLinesMenuItem;
@@ -68,7 +71,7 @@ class ViewMenu implements SaveState
 
   // ---------------------------------------------------------------------------------//
   public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree, FontManager fontManager,
-      FilterManager filterManager)
+      FilterManager filterManager, JclManager jclManager)
   // ---------------------------------------------------------------------------------//
   {
     this.xmitApp = xmitApp;
@@ -79,9 +82,14 @@ class ViewMenu implements SaveState
     fontMenuItem.setOnAction (e -> fontManager.showWindow ());
     filterMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
+    jclMenuItem.setAccelerator (
+        new KeyCodeCombination (KeyCode.J, KeyCombination.SHORTCUT_DOWN));
     filterMenuItem.setOnAction (e -> filterManager.showWindow ());
+    jclMenuItem.setOnAction (e -> jclManager.showWindow ());
+
     menuItems.add (fontMenuItem);
     menuItems.add (filterMenuItem);
+    menuItems.add (jclMenuItem);
 
     menuItems.add (new SeparatorMenuItem ());
 
@@ -284,5 +292,13 @@ class ViewMenu implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     return viewMenu;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void tableItemSelected (CatalogEntry catalogEntry)
+  // ---------------------------------------------------------------------------------//
+  {
+    //    System.out.println (catalogEntry);
   }
 }

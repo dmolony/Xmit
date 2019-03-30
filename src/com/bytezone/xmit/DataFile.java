@@ -12,7 +12,7 @@ public abstract class DataFile implements Comparable<DataFile>
 //---------------------------------------------------------------------------------//
 {
   private String name = "";
-  private final Disposition disposition;
+  final Disposition disposition;
   final Reader reader;
 
   int dataLength = 0;
@@ -33,6 +33,13 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   {
     return reader.getLevel () + 1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public Disposition getDisposition ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return disposition;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -178,6 +185,13 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   {
     return Utility.matches (object, getEightBytes (), 0);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isJcl ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

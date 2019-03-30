@@ -169,6 +169,22 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public boolean isJcl ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (disposition.lrecl != 80 || !disposition.getRecfm ().equals ("FB"))
+      return false;
+
+    //    System.out.println (catalogEntry.getMemberName ());
+    byte[] buffer = getDataBuffer (80);
+    //    System.out.println (Utility.getHexDump (buffer));
+    //    System.out.println ();
+
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   boolean isRdw ()
   // ---------------------------------------------------------------------------------//
   {

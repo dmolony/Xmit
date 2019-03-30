@@ -50,7 +50,7 @@ public class Utility
   public enum FileType
   // ---------------------------------------------------------------------------------//
   {
-    DOC, PDF, ZIP, RAR, PNG, RTF, AFP, BIN, XMI       // must match signatures array
+    DOC, PDF, ZIP, RAR, PNG, RTF, AFP, BIN, XMI     // must match signatures array
   }
 
   // ---------------------------------------------------------------------------------//

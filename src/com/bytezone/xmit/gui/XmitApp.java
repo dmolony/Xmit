@@ -46,6 +46,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private TreePane treePane;
   private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
+  private final JclManager jclManager = new JclManager ();
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
@@ -76,7 +77,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // menus
     fileMenu = new FileMenu (this, xmitTree);
-    viewMenu = new ViewMenu (this, xmitTree, fontManager, filterManager);
+    viewMenu = new ViewMenu (this, xmitTree, fontManager, filterManager, jclManager);
 
     // codepage listeners
     viewMenu.addCodePageListener (this);
@@ -101,7 +102,9 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // table listeners
     xmitTable.addListener (fileMenu);
+    xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
+    xmitTable.addListener (jclManager);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
