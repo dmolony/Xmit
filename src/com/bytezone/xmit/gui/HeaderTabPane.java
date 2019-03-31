@@ -8,7 +8,6 @@ import javafx.geometry.Side;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
@@ -37,11 +36,11 @@ abstract class HeaderTabPane extends HeaderPane
   XmitTab createTab (String title, KeyCode keyCode, Supplier<String> tabUpdater)
   // ---------------------------------------------------------------------------------//
   {
-    TextArea textArea = new TextArea ();
-    textArea.setWrapText (false);
-    textArea.setEditable (false);
+    //    TextArea textArea = new TextArea ();
+    //    textArea.setWrapText (false);
+    //    textArea.setEditable (false);
 
-    XmitTab xmitTab = new XmitTab (title, textArea, keyCode, tabUpdater);
+    XmitTab xmitTab = new XmitTab (title, keyCode, tabUpdater);
     tabs.add (xmitTab);
 
     return xmitTab;
@@ -61,24 +60,25 @@ abstract class HeaderTabPane extends HeaderPane
   // ---------------------------------------------------------------------------------//
   {
     for (XmitTab tab : tabs)
-      tab.textArea.clear ();
+      //      tab.textArea.clear ();
+      tab.textFlow.getChildren ().clear ();
   }
 
   // ---------------------------------------------------------------------------------//
-  void saveScrollBars ()
+  //  void saveScrollBars ()
   // ---------------------------------------------------------------------------------//
-  {
-    for (XmitTab tab : tabs)
-      tab.saveScrollBar ();
-  }
+  //  {
+  //    for (XmitTab tab : tabs)
+  //      tab.saveScrollBar ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  void restoreScrollBars ()
+  //  void restoreScrollBars ()
   // ---------------------------------------------------------------------------------//
-  {
-    for (XmitTab tab : tabs)
-      tab.restoreScrollBar ();
-  }
+  //  {
+  //    for (XmitTab tab : tabs)
+  //      tab.restoreScrollBar ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public void keyPressed (KeyCode keyCode)

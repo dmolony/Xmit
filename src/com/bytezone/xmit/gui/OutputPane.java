@@ -413,20 +413,20 @@ class OutputPane extends HeaderTabPane
 
     updateNameLabel ();              // toggle the '<-' indicator
 
-    saveScrollBars ();
+    //    saveScrollBars ();
     clearText ();
     updateCurrentTab ();
-    restoreScrollBars ();
+    //    restoreScrollBars ();
   }
 
   //----------------------------------------------------------------------------------- //
   public void selectCodePage ()
   //----------------------------------------------------------------------------------- //
   {
-    saveScrollBars ();
+    //    saveScrollBars ();
     clearText ();
     updateCurrentTab ();
-    restoreScrollBars ();
+    //    restoreScrollBars ();
   }
 
   //----------------------------------------------------------------------------------- //

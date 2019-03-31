@@ -43,9 +43,8 @@ public class JclManager implements TableItemSelectionListener
       BorderPane borderPane = new BorderPane ();
 
       Button btnOk = getButton ("OK");
-      Button btnCancel = getButton ("Cancel");
       btnOk.setOnAction (e -> apply ());
-      btnCancel.setOnAction (e -> cancel ());
+      btnOk.setDefaultButton (true);
 
       HBox controlBox = new HBox (10);
       controlBox.setPrefHeight (20);
@@ -53,7 +52,7 @@ public class JclManager implements TableItemSelectionListener
       controlBox.setAlignment (Pos.CENTER_LEFT);
       Region filler = new Region ();
       HBox.setHgrow (filler, Priority.ALWAYS);
-      controlBox.getChildren ().addAll (filler, btnCancel, btnOk);
+      controlBox.getChildren ().addAll (filler, btnOk);
 
       textFlow.setLineSpacing (1);
       textFlow.setBorder (null);
@@ -64,14 +63,11 @@ public class JclManager implements TableItemSelectionListener
       borderPane.setCenter (sp);
 
       stage.setScene (new Scene (borderPane, 600, 800));
-
-      btnOk.setDefaultButton (true);
-      btnCancel.setCancelButton (true);
     }
 
     setText ();
     stage.show ();
-    stage.setAlwaysOnTop (true);
+    stage.toFront ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -162,13 +158,6 @@ public class JclManager implements TableItemSelectionListener
 
   // ---------------------------------------------------------------------------------//
   private void apply ()
-  // ---------------------------------------------------------------------------------//
-  {
-    stage.hide ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void cancel ()
   // ---------------------------------------------------------------------------------//
   {
     stage.hide ();
