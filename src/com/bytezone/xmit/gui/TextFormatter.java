@@ -32,6 +32,7 @@ public class TextFormatter
 
     for (String line : lines)
       addTextNewLine (line, baseColor);
+    removeLastNewLine ();
 
     return textList;
   }
@@ -67,6 +68,19 @@ public class TextFormatter
   // ---------------------------------------------------------------------------------//
   {
     addText (line + "\n", color);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void removeLastNewLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (textList.size () == 0)
+      return;
+
+    Text text = textList.get (textList.size () - 1);
+    String line = text.getText ();
+    if (line.length () > 0)
+      text.setText (line.substring (0, line.length () - 1));
   }
 
   // ---------------------------------------------------------------------------------//
