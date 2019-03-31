@@ -29,17 +29,15 @@ abstract class HeaderTabPane extends HeaderPane
 
     tabPane.getSelectionModel ().selectedItemProperty ()
         .addListener ( (ov, oldTab, newTab) -> updateCurrentTab ());
+
     setCenter (tabPane);
   }
 
   // ---------------------------------------------------------------------------------//
-  XmitTab createTab (String title, KeyCode keyCode, Supplier<String> tabUpdater)
+  XmitTab createStringTab (String title, KeyCode keyCode,
+      Supplier<List<String>> tabUpdater)
   // ---------------------------------------------------------------------------------//
   {
-    //    TextArea textArea = new TextArea ();
-    //    textArea.setWrapText (false);
-    //    textArea.setEditable (false);
-
     XmitTab xmitTab = new XmitTab (title, keyCode, tabUpdater);
     tabs.add (xmitTab);
 
@@ -60,25 +58,8 @@ abstract class HeaderTabPane extends HeaderPane
   // ---------------------------------------------------------------------------------//
   {
     for (XmitTab tab : tabs)
-      //      tab.textArea.clear ();
       tab.textFlow.getChildren ().clear ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  void saveScrollBars ()
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    for (XmitTab tab : tabs)
-  //      tab.saveScrollBar ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  void restoreScrollBars ()
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    for (XmitTab tab : tabs)
-  //      tab.restoreScrollBar ();
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public void keyPressed (KeyCode keyCode)
@@ -88,7 +69,7 @@ abstract class HeaderTabPane extends HeaderPane
       if (tab.keyCode == keyCode)
       {
         tabPane.getSelectionModel ().select (tab.tab);
-        return;
+        break;
       }
   }
 

@@ -67,24 +67,25 @@ class OutputPane extends HeaderTabPane
   OutputPane ()
   //----------------------------------------------------------------------------------- //
   {
-    headersTab = createTab ("Headers", KeyCode.H, () -> updateHeadersTab ());
-    blocksTab = createTab ("Blocks", KeyCode.B, () -> updateBlocksTab ());
-    hexTab = createTab ("Hex", KeyCode.X, () -> updateHexTab ());
-    outputTab = createTab ("Output", KeyCode.O, () -> updateOutputTab ());
+    headersTab = createStringTab ("Headers", KeyCode.H, () -> updateHeadersTab ());
+    blocksTab = createStringTab ("Blocks", KeyCode.B, () -> updateBlocksTab ());
+    hexTab = createStringTab ("Hex", KeyCode.X, () -> updateHexTab ());
+    outputTab = createStringTab ("Output", KeyCode.O, () -> updateOutputTab ());
 
     setTop (getHBox (lblMemberName, lblDisposition));
   }
 
   //----------------------------------------------------------------------------------- //
-  private String updateHeadersTab ()
+  private List<String> updateHeadersTab ()
   //----------------------------------------------------------------------------------- //
   {
+    List<String> lines = new ArrayList<> ();
     if (dataset == null)
-      return "";
+      return lines;
 
     Reader reader = dataset.getReader ();
 
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
     if (reader.size () > 1)
     {
       Dataset firstDataset = reader.getDatasets ().get (0);
@@ -92,89 +93,92 @@ class OutputPane extends HeaderTabPane
       {
         FlatFile file = ((PsDataset) firstDataset).getMember ();
         for (String s : file.getLines ())
-          text.append (s + "\n");
-        text.append ("\n\n");
+          lines.add (s);
+        lines.add ("");
+        lines.add ("");
       }
       else
-        text.append (
+        lines.add (
             "Unexpected disposition for file #1: " + firstDataset.getDisposition ());
     }
 
     for (ControlRecord controlRecord : dataset.getReader ().getControlRecords ())
     {
-      text.append (controlRecord.toString ());
-      text.append ("\n");
+      lines.add (controlRecord.toString ());
+      //      text.append ("\n");
     }
-    text.deleteCharAt (text.length () - 1);
+    //    text.deleteCharAt (text.length () - 1);
 
     if (dataset.isPds ())
     {
       PdsDataset pdsDataset = (PdsDataset) dataset;
-      text.append ("COPYR1\n");
-      text.append (pdsDataset.getCopyR1 ());
-      text.append ("\n\n");
-      text.append ("COPYR2\n");
-      text.append (pdsDataset.getCopyR2 ());
-      text.append ("\n\n");
+      lines.add ("COPYR1");
+      //      lines.add (pdsDataset.getCopyR1 ());
+      lines.add ("");
+      lines.add ("COPYR2");
+      //      lines.add (pdsDataset.getCopyR2 ());
+      lines.add ("");
 
-      text.append (
-          String.format ("%s Catalog Blocks:%n", dataset.getReader ().getName ()));
+      lines.add (String.format ("%s Catalog Blocks:", dataset.getReader ().getName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
-        text.append (BasicModule.getDebugHeader () + "\n");
+        lines.add (BasicModule.getDebugHeader ());
       else
-        text.append (LoadModule.getDebugHeader () + "\n");
+        lines.add (LoadModule.getDebugHeader ());
 
       for (CatalogEntry catalogEntry : pdsDataset)
-        text.append (catalogEntry.getDebugLine () + "\n");
+        lines.add (catalogEntry.getDebugLine ());
     }
 
-    Utility.removeTrailingNewlines (text);
-    return text.toString ();
+    //    Utility.removeTrailingNewlines (text);
+    return lines;
   }
 
   //----------------------------------------------------------------------------------- //
-  private String updateBlocksTab ()
+  private List<String> updateBlocksTab ()
   //----------------------------------------------------------------------------------- //
   {
+    List<String> lines = new ArrayList<> ();
     if (dataFile == null)
-      return "";
+      return lines;
 
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
 
     if (dataFile instanceof PdsMember)
-      text.append (((PdsMember) dataFile).listSizeCounts ());
-    text.append (dataFile.toString ());
+      ((PdsMember) dataFile).listSizeCounts (lines);
+    lines.add (dataFile.toString ());
 
-    return text.toString ();
+    return lines;
   }
 
   //----------------------------------------------------------------------------------- //
-  private String updateHexTab ()
+  private List<String> updateHexTab ()
   //----------------------------------------------------------------------------------- //
   {
+    List<String> lines = new ArrayList<> ();
     if (dataFile == null)
-      return "";
+      return lines;
 
     byte[] buffer = dataFile.getDataBuffer ();
-    return Utility.getHexDump (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length));
+    return Utility.getHexDumpLines (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length));
   }
 
   //----------------------------------------------------------------------------------- //
-  private String updateOutputTab ()
+  private List<String> updateOutputTab ()
   //----------------------------------------------------------------------------------- //
   {
     if (dataFile == null)
-      return "";
+      return new ArrayList<> ();
 
     return getLines (MAX_LINES);
   }
 
   //----------------------------------------------------------------------------------- //
-  private String getLines (int maxLines)
+  private List<String> getLines (int maxLines)
   //----------------------------------------------------------------------------------- //
   {
-    StringBuilder text = new StringBuilder ();
+    //    StringBuilder text = new StringBuilder ();
+    List<String> newLines = new ArrayList<> ();
 
     List<String> lines = dataFile.getLines ();
     int lineNo = 0;
@@ -189,26 +193,28 @@ class OutputPane extends HeaderTabPane
     {
       if (++lineNo > maxLines)
       {
-        text.append (String.format (TRUNCATE_MESSAGE1, maxLines));
-        text.append (TRUNCATE_MESSAGE2);
+        newLines.add (String.format (TRUNCATE_MESSAGE1, maxLines));
+        newLines.add (TRUNCATE_MESSAGE2);
         break;
       }
+
       if (stripLines)
         line = strip (line);
 
       if (showLines)
-        text.append (String.format ("%05d %s%n", lineNo, line));
+        newLines.add (String.format ("%05d %s", lineNo, line));
       else if (truncateLines && line.length () > 0)
-        text.append (String.format ("%s%n", line.substring (1)));
+        newLines.add (line.substring (1));
       else
-        text.append (String.format ("%s%n", line));
+        newLines.add (line);
 
       if (isJCL)
-        includeDatasetName = checkInclude (includeDatasetName, line, text);
+        includeDatasetName = checkInclude (includeDatasetName, line, newLines);
     }
 
-    Utility.removeTrailingNewlines (text);
-    return text.toString ();
+    //    Utility.removeTrailingNewlines (text);
+    //    return text.toString ();
+    return newLines;
   }
 
   //----------------------------------------------------------------------------------- //
@@ -229,14 +235,15 @@ class OutputPane extends HeaderTabPane
   }
 
   //----------------------------------------------------------------------------------- //
-  private String checkInclude (String includeDatasetName, String line, StringBuilder text)
+  private String checkInclude (String includeDatasetName, String line,
+      List<String> newLines)
   //----------------------------------------------------------------------------------- //
   {
     if (!includeDatasetName.isEmpty ())
     {
       Matcher m = memberPattern.matcher (line);
       if (m.find ())
-        append (text, includeDatasetName, m.group (1), "//*");
+        append (newLines, includeDatasetName, m.group (1), "//*");
     }
 
     Matcher m = includePattern.matcher (line);
@@ -247,26 +254,29 @@ class OutputPane extends HeaderTabPane
     {
       m = dsnPattern.matcher (line);
       if (m.find ())
-        append (text, m.group (1), m.group (2), "*");
+        append (newLines, m.group (1), m.group (2), "*");
     }
 
     return includeDatasetName;
   }
 
   //----------------------------------------------------------------------------------- //
-  private void append (StringBuilder text, String datasetName, String memberName,
+  private void append (List<String> newLines, String datasetName, String memberName,
       String commentIndicator)
   //----------------------------------------------------------------------------------- //
   {
     String lineGap = showLines ? "      " : "";
     List<String> lines = findMember (datasetName, memberName);
     if (lines.size () == 0)
-      text.append (String.format ("%s==> %s(%s): dataset not seen yet%n", lineGap,
+    {
+      newLines.add (String.format ("%s==> %s(%s): dataset not seen yet", lineGap,
           datasetName, memberName));
-    else
-      for (String line : lines)
-        if (!line.startsWith (commentIndicator))
-          text.append (String.format ("%s%s%n", lineGap, line));
+      return;
+    }
+
+    for (String line : lines)
+      if (!line.startsWith (commentIndicator))
+        newLines.add (String.format ("%s%s", lineGap, line));
   }
 
   //----------------------------------------------------------------------------------- //
@@ -439,7 +449,8 @@ class OutputPane extends HeaderTabPane
 
     try (BufferedWriter output = new BufferedWriter (new FileWriter (file)))
     {
-      output.write (getLines (0));
+      for (String line : getLines (0))
+        output.write (line + "\n");
       Utility.showAlert (AlertType.INFORMATION, "Success",
           "File Saved: " + file.getName ());
     }

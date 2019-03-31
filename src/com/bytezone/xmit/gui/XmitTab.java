@@ -1,5 +1,6 @@
 package com.bytezone.xmit.gui;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import javafx.geometry.Insets;
@@ -7,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -17,27 +17,26 @@ class XmitTab
 //---------------------------------------------------------------------------------//
 {
   final Tab tab;
-  //  final TextArea textArea;
   final TextFlow textFlow;
   final KeyCode keyCode;
-  //  final ScrollBarState scrollBarState;
-  final Supplier<String> textSupplier;
+  final Supplier<List<String>> textSupplier;
   final ScrollPane scrollPane;
   private Font font;
+  private final TextFormatter textFormatter = new TextFormatter ();
 
   // ---------------------------------------------------------------------------------//
-  public XmitTab (String title, KeyCode keyCode, Supplier<String> textSupplier)
+  public XmitTab (String title, KeyCode keyCode, Supplier<List<String>> textSupplier)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.textArea = textArea;
-    this.textFlow = new TextFlow ();
-    textFlow.setLineSpacing (1);
-    scrollPane = new ScrollPane (textFlow);
-    scrollPane.setPadding (new Insets (5, 5, 5, 10));
-    scrollPane.setStyle ("-fx-background: white;-fx-border-color: lightgray;");
     this.keyCode = keyCode;
     this.textSupplier = textSupplier;
-    //    scrollBarState = new ScrollBarState (textArea, Orientation.VERTICAL);
+
+    textFlow = new TextFlow ();
+    textFlow.setLineSpacing (1);
+
+    scrollPane = new ScrollPane (textFlow);
+    scrollPane.setPadding (new Insets (5, 5, 5, 5));
+    scrollPane.setStyle ("-fx-background: white;-fx-border-color: lightgray;");
 
     tab = new Tab (title, scrollPane);
     tab.setUserData (this);
@@ -47,45 +46,19 @@ class XmitTab
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    //    if (textArea.getText ().isEmpty ())
-    //    {
-    //      textArea.setText (textSupplier.get ());
+    List<Text> textList = textFormatter.format (textSupplier.get ());
+    for (Text text : textList)
+      text.setFont (font);
     textFlow.getChildren ().clear ();
-    addText (textSupplier.get (), Color.GREEN);
-    //    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void addText (String line, Color color)
-  // ---------------------------------------------------------------------------------//
-  {
-    Text text = new Text (line);
-    text.setFill (color);
-    text.setFont (font);
-    textFlow.getChildren ().add (text);
+    textFlow.getChildren ().addAll (textList);
   }
 
   // ---------------------------------------------------------------------------------//
   void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
-    //    textArea.setFont (font);
     this.font = font;
     for (Node node : textFlow.getChildren ())
       ((Text) node).setFont (font);
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  void saveScrollBar ()
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    scrollBarState.save ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  void restoreScrollBar ()
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    scrollBarState.restore ();
-  //  }
 }
