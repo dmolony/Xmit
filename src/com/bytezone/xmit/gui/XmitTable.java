@@ -126,7 +126,7 @@ class XmitTable extends TableView<CatalogEntryItem>
   {
     String name = prefs.get (PREFS_LAST_MEMBER_NAME, "");
     CatalogEntryItem catalogEntryItem = find (name);
-    select (catalogEntryItem);
+    //    select (catalogEntryItem);
   }
 
   // ---------------------------------------------------------------------------------//

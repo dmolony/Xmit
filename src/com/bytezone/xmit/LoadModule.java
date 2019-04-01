@@ -123,8 +123,11 @@ public class LoadModule extends CatalogEntry
 
     if (isAlias ())
     {
-      aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
-      setAliasName (Utility.getString (buffer, ptr + 3, 8).trim ());
+      if (ptr + 11 <= buffer.length)
+      {
+        aliasTtr = (int) Utility.getValue (buffer, ptr, 3);
+        setAliasName (Utility.getString (buffer, ptr + 3, 8).trim ());
+      }
       ptr += 11;
     }
 
@@ -151,13 +154,14 @@ public class LoadModule extends CatalogEntry
       ptr += 13;
     }
 
-    if (attr)
+    if (false && attr)
     {
       int byte0 = buffer[ptr++] & 0xFF;
       int byte1 = buffer[ptr++] & 0xFF;
       int reserved = buffer[ptr++] & 0xFF;
       ptr += (byte1 & 0x0F);
     }
+
     //    System.out.printf ("[%2d  %2d]%n", ptr, buffer.length);
     //    if (ptr < buffer.length)
     //      System.out.println (Utility.getHexDump (buffer, ptr, buffer.length - ptr));
@@ -194,7 +198,8 @@ public class LoadModule extends CatalogEntry
 
     if (isAlias ())
     {
-      aliasText = Utility.getHexValuesWithText (directoryData, ptr, 11);
+      if (ptr + 11 <= directoryData.length)
+        aliasText = Utility.getHexValuesWithText (directoryData, ptr, 11);
       ptr += 11;
     }
 
@@ -218,7 +223,7 @@ public class LoadModule extends CatalogEntry
       ptr += 13;
     }
 
-    if (attr)
+    if (false && attr)
     {
       int byte0 = directoryData[ptr++] & 0xFF;
       int byte1 = directoryData[ptr++] & 0xFF;

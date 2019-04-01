@@ -3,6 +3,8 @@ package com.bytezone.xmit.gui;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.bytezone.xmit.Utility;
+
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -23,6 +25,7 @@ class XmitTab
   final ScrollPane scrollPane;
   private Font font;
   private final TextFormatter textFormatter = new TextFormatter ();
+  private final TextFormatter textFormatterJcl = new TextFormatterJcl ();
 
   // ---------------------------------------------------------------------------------//
   public XmitTab (String title, KeyCode keyCode, Supplier<List<String>> textSupplier)
@@ -46,7 +49,12 @@ class XmitTab
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    List<Text> textList = textFormatter.format (textSupplier.get ());
+    List<String> lines = textSupplier.get ();
+    List<Text> textList = null;
+    if (Utility.isJCL (lines))
+      textList = textFormatterJcl.format (lines);
+    else
+      textList = textFormatter.format (lines);
     for (Text text : textList)
       text.setFont (font);
     textFlow.getChildren ().clear ();
