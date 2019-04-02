@@ -42,6 +42,8 @@ public class TextFormatterJcl extends TextFormatter
       addTextNewLine (line, baseColor);
     }
 
+    removeLastNewLine ();
+
     return textList;
   }
 }

@@ -1,7 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import com.bytezone.xmit.Utility;
 
@@ -15,24 +14,30 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 // ---------------------------------------------------------------------------------//
-class XmitTab
+abstract class XmitTab
 //---------------------------------------------------------------------------------//
 {
   final Tab tab;
-  final TextFlow textFlow;
+  private final TextFlow textFlow;
   final KeyCode keyCode;
-  final Supplier<List<String>> textSupplier;
+  //  final Supplier<List<String>> textSupplier;
   final ScrollPane scrollPane;
+  OutputPane parent;
+
   private Font font;
   private final TextFormatter textFormatter = new TextFormatter ();
   private final TextFormatter textFormatterJcl = new TextFormatterJcl ();
 
+  //  Dataset dataset;                // usually file #1 in the Reader
+  //  DataFile dataFile;              // FlatFile or PdsMember
+
   // ---------------------------------------------------------------------------------//
-  public XmitTab (String title, KeyCode keyCode, Supplier<List<String>> textSupplier)
+  public XmitTab (OutputPane parent, String title, KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
     this.keyCode = keyCode;
-    this.textSupplier = textSupplier;
+    this.parent = parent;
+    //    this.textSupplier = textSupplier;
 
     textFlow = new TextFlow ();
     textFlow.setLineSpacing (1);
@@ -46,19 +51,35 @@ class XmitTab
   }
 
   // ---------------------------------------------------------------------------------//
+  abstract List<String> getLines ();
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  void clear ()
+  // ---------------------------------------------------------------------------------//
+  {
+    textFlow.getChildren ().clear ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    List<String> lines = textSupplier.get ();
+    List<String> lines = getLines ();
+
     List<Text> textList = null;
     if (Utility.isJCL (lines))
       textList = textFormatterJcl.format (lines);
     else
       textList = textFormatter.format (lines);
+
     for (Text text : textList)
       text.setFont (font);
-    textFlow.getChildren ().clear ();
-    textFlow.getChildren ().addAll (textList);
+
+    textFlow.getChildren ().setAll (textList);
+
+    scrollPane.setVvalue (0);
+    scrollPane.setHvalue (0);
   }
 
   // ---------------------------------------------------------------------------------//

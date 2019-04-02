@@ -2,7 +2,6 @@ package com.bytezone.xmit.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javafx.geometry.Side;
 import javafx.scene.control.Tab;
@@ -17,7 +16,7 @@ abstract class HeaderTabPane extends HeaderPane
 {
   private static final int TAB_WIDTH = 100;
   final TabPane tabPane = new TabPane ();
-  final List<XmitTab> tabs = new ArrayList<> ();
+  final List<XmitTab> xmitTabs = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public HeaderTabPane ()
@@ -34,15 +33,14 @@ abstract class HeaderTabPane extends HeaderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  XmitTab createStringTab (String title, KeyCode keyCode,
-      Supplier<List<String>> tabUpdater)
+  //  XmitTab createXmitTab (String title, KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
-  {
-    XmitTab xmitTab = new XmitTab (title, keyCode, tabUpdater);
-    tabs.add (xmitTab);
-
-    return xmitTab;
-  }
+  //  {
+  //    XmitTab xmitTab = new XmitTab (title, keyCode);
+  //    xmitTabs.add (xmitTab);
+  //
+  //    return xmitTab;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   void updateCurrentTab ()
@@ -57,18 +55,18 @@ abstract class HeaderTabPane extends HeaderPane
   void clearText ()
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTab tab : tabs)
-      tab.textFlow.getChildren ().clear ();
+    for (XmitTab xmitTab : xmitTabs)
+      xmitTab.clear ();
   }
 
   // ---------------------------------------------------------------------------------//
   public void keyPressed (KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTab tab : tabs)
-      if (tab.keyCode == keyCode)
+    for (XmitTab xmitTab : xmitTabs)
+      if (xmitTab.keyCode == keyCode)
       {
-        tabPane.getSelectionModel ().select (tab.tab);
+        tabPane.getSelectionModel ().select (xmitTab.tab);
         break;
       }
   }
@@ -77,7 +75,7 @@ abstract class HeaderTabPane extends HeaderPane
   public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTab tab : tabs)
-      tab.setFont (font);
+    for (XmitTab xmitTab : xmitTabs)
+      xmitTab.setFont (font);
   }
 }
