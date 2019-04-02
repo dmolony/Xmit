@@ -22,10 +22,11 @@ public class HexTab extends XmitTab
   //----------------------------------------------------------------------------------- //
   {
     List<String> lines = new ArrayList<> ();
-    if (parent.dataFile == null)
+
+    if (dataFile == null)
       return lines;
 
-    byte[] buffer = parent.dataFile.getDataBuffer ();
+    byte[] buffer = dataFile.getDataBuffer ();
     return Utility.getHexDumpLines (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length));
   }
 }

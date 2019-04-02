@@ -23,12 +23,14 @@ public class BlocksTab extends XmitTab
   //----------------------------------------------------------------------------------- //
   {
     List<String> lines = new ArrayList<> ();
-    if (parent.dataFile == null)
+
+    if (dataFile == null)
       return lines;
 
-    if (parent.dataFile instanceof PdsMember)
-      ((PdsMember) parent.dataFile).listSizeCounts (lines);
-    lines.add (parent.dataFile.toString ());
+    if (dataFile instanceof PdsMember)
+      ((PdsMember) dataFile).listSizeCounts (lines);
+
+    lines.add (dataFile.toString ());
 
     return lines;
   }

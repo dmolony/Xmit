@@ -11,7 +11,6 @@ import javafx.scene.input.KeyCode;
 
 public class HeadersTab extends XmitTab
 {
-
   public HeadersTab (OutputPane parent, String title, KeyCode keyCode)
   {
     super (parent, title, keyCode);
@@ -23,10 +22,11 @@ public class HeadersTab extends XmitTab
   //----------------------------------------------------------------------------------- //
   {
     List<String> lines = new ArrayList<> ();
-    if (parent.dataset == null)
+
+    if (dataset == null)
       return lines;
 
-    Reader reader = parent.dataset.getReader ();
+    Reader reader = dataset.getReader ();
 
     if (reader.size () > 1)
     {
@@ -43,12 +43,12 @@ public class HeadersTab extends XmitTab
             "Unexpected disposition for file #1: " + firstDataset.getDisposition ());
     }
 
-    for (ControlRecord controlRecord : parent.dataset.getReader ().getControlRecords ())
+    for (ControlRecord controlRecord : dataset.getReader ().getControlRecords ())
       lines.add (controlRecord.toString ());
 
-    if (parent.dataset.isPds ())
+    if (dataset.isPds ())
     {
-      PdsDataset pdsDataset = (PdsDataset) parent.dataset;
+      PdsDataset pdsDataset = (PdsDataset) dataset;
       lines.add ("COPYR1");
       //      lines.add (pdsDataset.getCopyR1 ());
       lines.add ("");
@@ -56,8 +56,7 @@ public class HeadersTab extends XmitTab
       //      lines.add (pdsDataset.getCopyR2 ());
       lines.add ("");
 
-      lines.add (
-          String.format ("%s Catalog Blocks:", parent.dataset.getReader ().getName ()));
+      lines.add (String.format ("%s Catalog Blocks:", dataset.getReader ().getName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
@@ -70,5 +69,4 @@ public class HeadersTab extends XmitTab
 
     return lines;
   }
-
 }

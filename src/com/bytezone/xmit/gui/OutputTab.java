@@ -15,27 +15,32 @@ import javafx.scene.input.KeyCode;
 public class OutputTab extends XmitTab implements ShowLinesListener
 {
   private static final int MAX_LINES = 2500;
-  private static final String TRUNCATE_MESSAGE1 =
-      "\n*** Output truncated at %,d lines to improve rendering time ***";
-  private static final String TRUNCATE_MESSAGE2 =
-      "\n***      To see the entire file, use File -> Save Output      ***";
+  private static final String TRUNCATE_MESSAGE_1 =
+      "*** Output truncated at %,d lines to improve rendering time ***";
+  private static final String TRUNCATE_MESSAGE_2 =
+      "***      To see the entire file, use File -> Save Output      ***";
+
   private static Pattern includePattern =
       Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
   private static Pattern memberPattern =
-      Pattern.compile ("INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
-  private static Pattern dsnPattern = Pattern
-      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
+      Pattern.compile ("^//\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
+  //  private static Pattern dsnPattern = Pattern
+  //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
   private boolean showLines;
   private boolean stripLines;
   private boolean truncateLines;
   private boolean expandInclude;
 
+  private final OutputPane parent;
+
   //----------------------------------------------------------------------------------- //
   public OutputTab (OutputPane parent, String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
   {
     super (parent, title, keyCode);
+
+    this.parent = parent;       // needed to access parent.datasets
   }
 
   //----------------------------------------------------------------------------------- //
@@ -43,7 +48,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
   List<String> getLines ()
   //----------------------------------------------------------------------------------- //
   {
-    if (parent.dataFile == null)
+    if (dataFile == null)
       return new ArrayList<> ();
 
     return getLines (MAX_LINES);
@@ -55,7 +60,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
   {
     List<String> newLines = new ArrayList<> ();
 
-    List<String> lines = parent.dataFile.getLines ();
+    List<String> lines = dataFile.getLines ();
     int lineNo = 0;
     String includeDatasetName = "";
 
@@ -68,8 +73,9 @@ public class OutputTab extends XmitTab implements ShowLinesListener
     {
       if (++lineNo > maxLines)
       {
-        newLines.add (String.format (TRUNCATE_MESSAGE1, maxLines));
-        newLines.add (TRUNCATE_MESSAGE2);
+        newLines.add ("");
+        newLines.add (String.format (TRUNCATE_MESSAGE_1, maxLines));
+        newLines.add (TRUNCATE_MESSAGE_2);
         break;
       }
 
@@ -106,12 +112,12 @@ public class OutputTab extends XmitTab implements ShowLinesListener
     if (m.find ())
       includeDatasetName = m.group (1);
 
-    if (false)        // will expand output datasets too
-    {
-      m = dsnPattern.matcher (line);
-      if (m.find ())
-        append (newLines, m.group (1), m.group (2), "*");
-    }
+    //    if (false)        // will expand output datasets too
+    //    {
+    //      m = dsnPattern.matcher (line);
+    //      if (m.find ())
+    //        append (newLines, m.group (1), m.group (2), "*");
+    //    }
 
     return includeDatasetName;
   }

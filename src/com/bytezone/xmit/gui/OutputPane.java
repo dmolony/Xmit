@@ -119,9 +119,11 @@ class OutputPane extends HeaderTabPane
       return;
 
     this.catalogEntry = catalogEntry;
-    clearText ();
     dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
+
     updateNameLabel ();
+
+    clearText ();
     updateCurrentTab ();
   }
 

@@ -27,7 +27,7 @@ public class TextFormatterJcl extends TextFormatter
         continue;
       }
 
-      if (line.matches ("^[^/].*?"))
+      if (line.matches ("^[^/].*?"))              // non-JCL (instream data)
       {
         addTextNewLine (line, Color.CHOCOLATE);
         continue;
