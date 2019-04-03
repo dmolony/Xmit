@@ -33,16 +33,6 @@ abstract class HeaderTabPane extends HeaderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  //  XmitTab createXmitTab (String title, KeyCode keyCode)
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    XmitTab xmitTab = new XmitTab (title, keyCode);
-  //    xmitTabs.add (xmitTab);
-  //
-  //    return xmitTab;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   void updateCurrentTab ()
   // ---------------------------------------------------------------------------------//
   {
