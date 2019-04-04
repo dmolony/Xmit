@@ -50,10 +50,10 @@ public class HeadersTab extends XmitTab
     {
       PdsDataset pdsDataset = (PdsDataset) dataset;
       lines.add ("COPYR1");
-      //      lines.add (pdsDataset.getCopyR1 ());
+      lines.addAll (pdsDataset.getCopyR1 ().toLines ());
       lines.add ("");
       lines.add ("COPYR2");
-      //      lines.add (pdsDataset.getCopyR2 ());
+      lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
       lines.add (String.format ("%s Catalog Blocks:", dataset.getReader ().getName ()));

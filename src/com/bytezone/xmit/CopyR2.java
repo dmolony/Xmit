@@ -1,7 +1,10 @@
 package com.bytezone.xmit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // ---------------------------------------------------------------------------------//
-class CopyR2
+public class CopyR2
 //---------------------------------------------------------------------------------//
 {
   final byte[] buffer;
@@ -14,15 +17,30 @@ class CopyR2
   }
 
   // ---------------------------------------------------------------------------------//
+  public List<String> toLines ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<String> lines = new ArrayList<> ();
+
+    int max = (buffer[0] & 0xFF) + 1;
+    for (int i = 0; i < max; i++)
+      lines.add (Utility.getHexValues (buffer, i * 16, 16));
+
+    return lines;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
-    int max = (buffer[0] & 0xFF) + 1;
-    for (int i = 0; i < max; i++)
-      text.append (String.format ("%s%n", Utility.getHexValues (buffer, i * 16, 16)));
+    for (String line : toLines ())
+    {
+      text.append (line);
+      text.append ("\n");
+    }
 
     text.deleteCharAt (text.length () - 1);
 

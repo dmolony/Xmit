@@ -1,11 +1,13 @@
 package com.bytezone.xmit;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 // https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.1.0/com.ibm.zos.v2r1.idau100/u1322.htm
 
 // ---------------------------------------------------------------------------------//
-class CopyR1
+public class CopyR1
 //---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
@@ -88,33 +90,46 @@ class CopyR1
   }
 
   // ---------------------------------------------------------------------------------//
+  public List<String> toLines ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<String> lines = new ArrayList<> ();
+    String flagsText = isPdse () ? "PDSE" : "PDS";
+
+    lines.add (String.format ("Unld flags ...... %02X    %s", unloadFlags, flagsText));
+    lines.add (String.format ("Block size ...... %04X  %<,7d", blksize));
+    lines.add (String.format ("Record length.... %04X  %<,7d", reclen));
+    lines.add (String.format ("Record format ... %02X    %s", recfm, getRecfm ()));
+    lines.add (String.format ("Key length ...... %02X", keylen));
+    lines.add (String.format ("OPTCD ........... %02X", optcd));
+    lines.add (String.format ("SMSFG ........... %02X", smsfg));
+    lines.add (String.format ("C Block size .... %04X  %<,7d", containerBlksize));
+    lines.add (
+        String.format ("Dev type ........ %s", Utility.getHexValues (buffer, 16, 20)));
+    lines.add (String.format ("Header records .. %04X  %<,7d", headerRecords));
+    lines.add (String.format ("Zero ............ %02X", zero));
+    lines.add (String.format ("Date ............ %s", date == null ? "" : date));
+    lines.add (String.format ("Scnd space ...... %06X", scext));
+    lines.add (String.format ("Scnd alloc ...... %08X", scalo));
+    lines.add (String.format ("Last trk used ... %06X", lstar));
+    lines.add (String.format ("Last trk bal .... %04X  %<,7d", trbal));
+    lines.add (String.format ("Zero ............ %02X", zero2));
+
+    return lines;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
-    String flagsText = isPdse () ? "PDSE" : "PDS";
-
-    text.append (
-        String.format ("Unld flags ...... %02X    %s%n", unloadFlags, flagsText));
-    text.append (String.format ("Block size ...... %04X  %<,7d%n", blksize));
-    text.append (String.format ("Record length.... %04X  %<,7d%n", reclen));
-    text.append (String.format ("Record format ... %02X    %s%n", recfm, getRecfm ()));
-    text.append (String.format ("Key length ...... %02X%n", keylen));
-    text.append (String.format ("OPTCD ........... %02X%n", optcd));
-    text.append (String.format ("SMSFG ........... %02X%n", smsfg));
-    text.append (String.format ("C Block size .... %04X  %<,7d%n", containerBlksize));
-    text.append (
-        String.format ("Dev type ........ %s%n", Utility.getHexValues (buffer, 16, 20)));
-    text.append (String.format ("Header records .. %04X  %<,7d%n", headerRecords));
-    text.append (String.format ("Zero ............ %02X%n", zero));
-    text.append (String.format ("Date ............ %s%n", date == null ? "" : date));
-    text.append (String.format ("Scnd space ...... %06X  %n", scext));
-    text.append (String.format ("Scnd alloc ...... %08X  %n", scalo));
-    text.append (String.format ("Last trk used ... %06X  %n", lstar));
-    text.append (String.format ("Last trk bal .... %04X  %<,7d%n", trbal));
-    text.append (String.format ("Zero ............ %02X", zero2));
+    for (String line : toLines ())
+    {
+      text.append (line);
+      text.append ("\n");
+    }
 
     return text.toString ();
   }
