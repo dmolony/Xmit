@@ -2,6 +2,8 @@ package com.bytezone.xmit.gui;
 
 import java.util.List;
 
+import com.bytezone.xmit.Utility;
+
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -15,6 +17,9 @@ public class TextFormatterJcl extends TextFormatter
   // ---------------------------------------------------------------------------------//
   {
     textList.clear ();
+
+    if (!Utility.isJCL (lines))
+      return super.format (lines);
 
     for (String line : lines)
     {

@@ -67,7 +67,20 @@ public class TextFormatter
   void addTextNewLine (String line, Color color)
   // ---------------------------------------------------------------------------------//
   {
-    addText (line + "\n", color);
+    addText (line, color);
+    addText ("\n", color);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void addText (String line, Color color)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (line.isEmpty ())
+      return;
+
+    Text text = new Text (line);
+    text.setFill (color);
+    textList.add (text);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -79,16 +92,9 @@ public class TextFormatter
 
     Text text = textList.get (textList.size () - 1);
     String line = text.getText ();
-    if (line.length () > 0)
+    if (line.length () == 1)
+      textList.remove (textList.size () - 1);
+    else
       text.setText (line.substring (0, line.length () - 1));
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void addText (String line, Color color)
-  // ---------------------------------------------------------------------------------//
-  {
-    Text text = new Text (line);
-    text.setFill (color);
-    textList.add (text);
   }
 }

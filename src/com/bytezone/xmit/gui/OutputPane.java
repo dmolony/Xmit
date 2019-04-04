@@ -29,6 +29,8 @@ class OutputPane extends HeaderTabPane
   Dataset dataset;                // usually file #1 in the Reader
   DataFile dataFile;              // FlatFile or PdsMember
   CatalogEntry catalogEntry;      // needed for alias members
+
+  // keep track of all PDS datasets so that we can INCLUDE members
   final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
   private boolean truncateLines;

@@ -2,8 +2,6 @@ package com.bytezone.xmit.gui;
 
 import java.util.List;
 
-import com.bytezone.xmit.Utility;
-
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -23,8 +21,7 @@ abstract class XmitTab extends Tab
   final OutputPane parent;
 
   private Font font;
-  private final TextFormatter textFormatter = new TextFormatter ();
-  private final TextFormatter textFormatterJcl = new TextFormatterJcl ();
+  TextFormatter textFormatter = new TextFormatter ();
 
   // ---------------------------------------------------------------------------------//
   public XmitTab (String title, OutputPane parent, KeyCode keyCode)
@@ -63,13 +60,7 @@ abstract class XmitTab extends Tab
     if (textFlow.getChildren ().size () > 0)
       return;
 
-    List<String> lines = getLines ();
-
-    List<Text> textList = null;
-    if (Utility.isJCL (lines))
-      textList = textFormatterJcl.format (lines);
-    else
-      textList = textFormatter.format (lines);
+    List<Text> textList = textFormatter.format (getLines ());
 
     for (Text text : textList)
       text.setFont (font);

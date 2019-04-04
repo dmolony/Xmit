@@ -41,6 +41,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
     super (title, parent, keyCode);
 
     this.parent = parent;       // needed to access parent.datasets
+    textFormatter = new TextFormatterJcl ();
   }
 
   //----------------------------------------------------------------------------------- //
