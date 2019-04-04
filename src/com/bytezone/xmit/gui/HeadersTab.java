@@ -13,7 +13,7 @@ public class HeadersTab extends XmitTab
 {
   public HeadersTab (OutputPane parent, String title, KeyCode keyCode)
   {
-    super (parent, title, keyCode);
+    super (title, parent, keyCode);
   }
 
   //----------------------------------------------------------------------------------- //

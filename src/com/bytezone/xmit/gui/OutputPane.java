@@ -115,7 +115,7 @@ class OutputPane extends HeaderTabPane
   public void tableItemSelected (CatalogEntry catalogEntry)
   //----------------------------------------------------------------------------------- //
   {
-    if (dataset != null && dataset.isPs ())
+    if (dataset == null || dataset.isPs ())
       return;
 
     this.catalogEntry = catalogEntry;

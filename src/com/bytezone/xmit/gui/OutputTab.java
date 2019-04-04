@@ -38,7 +38,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
   public OutputTab (OutputPane parent, String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
   {
-    super (parent, title, keyCode);
+    super (title, parent, keyCode);
 
     this.parent = parent;       // needed to access parent.datasets
   }

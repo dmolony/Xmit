@@ -26,11 +26,8 @@ abstract class XmitTab extends Tab
   private final TextFormatter textFormatter = new TextFormatter ();
   private final TextFormatter textFormatterJcl = new TextFormatterJcl ();
 
-  //  Dataset dataset;                // usually file #1 in the Reader
-  //  DataFile dataFile;              // FlatFile or PdsMember
-
   // ---------------------------------------------------------------------------------//
-  public XmitTab (OutputPane parent, String title, KeyCode keyCode)
+  public XmitTab (String title, OutputPane parent, KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
     super (title);
@@ -63,13 +60,8 @@ abstract class XmitTab extends Tab
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    //    if (parent.dataFile == dataFile && parent.dataset == dataset
-    //        && textFlow.getChildren ().size () > 0)
     if (textFlow.getChildren ().size () > 0)
       return;
-
-    //    dataFile = parent.dataFile;
-    //    dataset = parent.dataset;
 
     List<String> lines = getLines ();
 

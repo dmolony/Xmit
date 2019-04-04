@@ -14,7 +14,7 @@ public class HexTab extends XmitTab
 
   public HexTab (OutputPane parent, String title, KeyCode keyCode)
   {
-    super (parent, title, keyCode);
+    super (title, parent, keyCode);
   }
 
   //----------------------------------------------------------------------------------- //

@@ -10,12 +10,11 @@ import javafx.scene.input.KeyCode;
 
 public class BlocksTab extends XmitTab
 {
-
   //----------------------------------------------------------------------------------- //
   public BlocksTab (OutputPane parent, String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
   {
-    super (parent, title, keyCode);
+    super (title, parent, keyCode);
   }
 
   //----------------------------------------------------------------------------------- //
