@@ -16,10 +16,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 // ---------------------------------------------------------------------------------//
-abstract class XmitTab
+abstract class XmitTab extends Tab
 //---------------------------------------------------------------------------------//
 {
-  final Tab tab;
   private final TextFlow textFlow;
   final KeyCode keyCode;
   final ScrollPane scrollPane;
@@ -36,6 +35,8 @@ abstract class XmitTab
   public XmitTab (OutputPane parent, String title, KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
+    super (title);
+
     this.keyCode = keyCode;
     this.parent = parent;
 
@@ -46,8 +47,7 @@ abstract class XmitTab
     scrollPane.setPadding (new Insets (5, 5, 5, 5));
     scrollPane.setStyle ("-fx-background: white;-fx-border-color: lightgray;");
 
-    tab = new Tab (title, scrollPane);
-    tab.setUserData (this);
+    this.setContent (scrollPane);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -65,7 +65,9 @@ abstract class XmitTab
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    if (parent.dataFile == dataFile && parent.dataset == dataset)
+    //    if (parent.dataFile == dataFile && parent.dataset == dataset
+    //        && textFlow.getChildren ().size () > 0)
+    if (textFlow.getChildren ().size () > 0)
       return;
 
     dataFile = parent.dataFile;

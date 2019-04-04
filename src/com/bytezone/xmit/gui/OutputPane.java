@@ -68,13 +68,13 @@ class OutputPane extends HeaderTabPane
     tabPane.getTabs ().clear ();
 
     if (headersVisible)
-      tabPane.getTabs ().add (xmitTabs.get (0).tab);
+      tabPane.getTabs ().add (xmitTabs.get (0));
     if (blocksVisible)
-      tabPane.getTabs ().add (xmitTabs.get (1).tab);
+      tabPane.getTabs ().add (xmitTabs.get (1));
     if (hexVisible)
-      tabPane.getTabs ().add (xmitTabs.get (2).tab);
+      tabPane.getTabs ().add (xmitTabs.get (2));
 
-    tabPane.getTabs ().add (xmitTabs.get (3).tab);         // always visible
+    tabPane.getTabs ().add (xmitTabs.get (3));         // always visible
   }
 
   //----------------------------------------------------------------------------------- //

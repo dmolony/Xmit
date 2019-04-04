@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Side;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
@@ -36,17 +35,15 @@ abstract class HeaderTabPane extends HeaderPane
   void updateCurrentTab ()
   // ---------------------------------------------------------------------------------//
   {
-    Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
-    System.out.println ("update: " + selectedTab);
+    XmitTab selectedTab = (XmitTab) tabPane.getSelectionModel ().getSelectedItem ();
     if (selectedTab != null)
-      ((XmitTab) selectedTab.getUserData ()).update ();
+      selectedTab.update ();
   }
 
   // ---------------------------------------------------------------------------------//
   void clearText ()
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println ("clear x 4");
     for (XmitTab xmitTab : xmitTabs)
       xmitTab.clear ();
   }
@@ -58,7 +55,7 @@ abstract class HeaderTabPane extends HeaderPane
     for (XmitTab xmitTab : xmitTabs)
       if (xmitTab.keyCode == keyCode)
       {
-        tabPane.getSelectionModel ().select (xmitTab.tab);
+        tabPane.getSelectionModel ().select (xmitTab);
         break;
       }
   }
