@@ -77,7 +77,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
   {
     Utility.showAlert (AlertType.INFORMATION, "About",
-        "Version: 1.0.18\nReleased: 01 Mar 2019\nAuthor: Denis Molony");
+        "Version: 1.0.21\nReleased: 05 April 2019\nAuthor: Denis Molony");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -112,7 +112,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
 
     if (dataset.isPs ())
     {
-      DataFile member = ((PsDataset) dataset).getMember ();
+      DataFile member = ((PsDataset) dataset).getFlatFile ();
       buffer = member.getDataBuffer ();
       fileName =
           dataset.getReader ().getFileName () + "." + member.getFileType ().name ();

@@ -95,7 +95,7 @@ class OutputPane extends HeaderTabPane
       lblDisposition.setText (dataset.getDisposition ().toString ());
       if (dataset.isPs ())
       {
-        dataFile = ((PsDataset) dataset).getMember ();
+        dataFile = ((PsDataset) dataset).getFlatFile ();
         updateNameLabel ();
       }
       else if (dataset.isPds ())
@@ -120,7 +120,6 @@ class OutputPane extends HeaderTabPane
 
     this.catalogEntry = catalogEntry;
     dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
-
     updateNameLabel ();
 
     clearText ();

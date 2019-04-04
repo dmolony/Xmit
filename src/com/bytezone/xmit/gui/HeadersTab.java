@@ -34,7 +34,7 @@ public class HeadersTab extends XmitTab
       Dataset firstDataset = reader.getDatasets ().get (0);
       if (firstDataset.isPs ())
       {
-        FlatFile file = ((PsDataset) firstDataset).getMember ();
+        FlatFile file = ((PsDataset) firstDataset).getFlatFile ();
         for (String s : file.getLines ())
           lines.add (s);
         lines.add ("");
