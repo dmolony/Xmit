@@ -37,6 +37,7 @@ abstract class HeaderTabPane extends HeaderPane
   // ---------------------------------------------------------------------------------//
   {
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
+    System.out.println ("update: " + selectedTab);
     if (selectedTab != null)
       ((XmitTab) selectedTab.getUserData ()).update ();
   }
@@ -45,6 +46,7 @@ abstract class HeaderTabPane extends HeaderPane
   void clearText ()
   // ---------------------------------------------------------------------------------//
   {
+    System.out.println ("clear x 4");
     for (XmitTab xmitTab : xmitTabs)
       xmitTab.clear ();
   }
