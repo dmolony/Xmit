@@ -3,6 +3,7 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Utility;
 
 import javafx.scene.input.KeyCode;
@@ -23,6 +24,7 @@ public class HexTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
+    DataFile dataFile = parent.dataFile;
     if (dataFile == null)
       return lines;
 

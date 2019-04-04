@@ -48,7 +48,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
   List<String> getLines ()
   //----------------------------------------------------------------------------------- //
   {
-    if (dataFile == null)
+    if (parent.dataFile == null)
       return new ArrayList<> ();
 
     return getLines (MAX_LINES);
@@ -60,7 +60,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
   {
     List<String> newLines = new ArrayList<> ();
 
-    List<String> lines = dataFile.getLines ();
+    List<String> lines = parent.dataFile.getLines ();
     int lineNo = 0;
     String includeDatasetName = "";
 

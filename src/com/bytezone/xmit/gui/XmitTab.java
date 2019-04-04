@@ -2,8 +2,6 @@ package com.bytezone.xmit.gui;
 
 import java.util.List;
 
-import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Utility;
 
 import javafx.geometry.Insets;
@@ -22,14 +20,14 @@ abstract class XmitTab extends Tab
   private final TextFlow textFlow;
   final KeyCode keyCode;
   final ScrollPane scrollPane;
-  private final OutputPane parent;
+  final OutputPane parent;
 
   private Font font;
   private final TextFormatter textFormatter = new TextFormatter ();
   private final TextFormatter textFormatterJcl = new TextFormatterJcl ();
 
-  Dataset dataset;                // usually file #1 in the Reader
-  DataFile dataFile;              // FlatFile or PdsMember
+  //  Dataset dataset;                // usually file #1 in the Reader
+  //  DataFile dataFile;              // FlatFile or PdsMember
 
   // ---------------------------------------------------------------------------------//
   public XmitTab (OutputPane parent, String title, KeyCode keyCode)
@@ -70,8 +68,8 @@ abstract class XmitTab extends Tab
     if (textFlow.getChildren ().size () > 0)
       return;
 
-    dataFile = parent.dataFile;
-    dataset = parent.dataset;
+    //    dataFile = parent.dataFile;
+    //    dataset = parent.dataset;
 
     List<String> lines = getLines ();
 
