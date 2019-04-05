@@ -16,13 +16,17 @@ public class TextFormatterJcl extends TextFormatter
   public List<Text> format (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    textList.clear ();
-
     if (!Utility.isJCL (lines))
       return super.format (lines);
 
+    textList.clear ();
+    int lineNo = 0;
+
     for (String line : lines)
     {
+      if (showLines)
+        addText (String.format ("%06d ", lineNo++), numberColor);
+
       if (line.length () > 72)
         line = line.substring (0, 72);            // remove line numbers
 

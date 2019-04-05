@@ -10,8 +10,24 @@ import javafx.scene.text.Text;
 public class TextFormatter
 // ---------------------------------------------------------------------------------//
 {
-  List<Text> textList = new ArrayList<> ();
-  Color baseColor = Color.GREEN;
+  final List<Text> textList = new ArrayList<> ();
+  final Color baseColor = Color.GREEN;
+  final Color numberColor = Color.LIGHTSEAGREEN;
+  boolean showLines;
+
+  // ---------------------------------------------------------------------------------//
+  public void setShowLines (boolean showLines)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.showLines = showLines;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean getShowLines ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return showLines;
+  }
 
   // ---------------------------------------------------------------------------------//
   public List<Text> format (String line)
@@ -30,8 +46,13 @@ public class TextFormatter
   {
     textList.clear ();
 
+    int lineNo = 0;
     for (String line : lines)
+    {
+      if (showLines)
+        addText (String.format ("%06d ", lineNo++), numberColor);
       addTextNewLine (line, baseColor);
+    }
     removeLastNewLine ();
 
     return textList;
@@ -52,13 +73,13 @@ public class TextFormatter
     if (pos2 < 0)
       pos2 = line.indexOf (' ', pos);
 
-    if (pos2 > 0)
+    if (pos2 < 0)
+      addTextNewLine (line.substring (pos), color);
+    else
     {
       addText (line.substring (pos, pos2), color);
       addTextNewLine (line.substring (pos2), baseColor);
     }
-    else
-      addTextNewLine (line.substring (pos), color);
 
     return true;
   }

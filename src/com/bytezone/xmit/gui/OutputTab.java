@@ -27,7 +27,6 @@ public class OutputTab extends XmitTab implements ShowLinesListener
   //  private static Pattern dsnPattern = Pattern
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
-  private boolean showLines;
   private boolean stripLines;
   private boolean truncateLines;
   private boolean expandInclude;
@@ -83,9 +82,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
       if (stripLines)
         line = strip (line);
 
-      if (showLines)
-        newLines.add (String.format ("%05d %s", lineNo, line));
-      else if (truncateLines && line.length () > 0)
+      if (truncateLines && line.length () > 0)
         newLines.add (line.substring (1));
       else
         newLines.add (line);
@@ -128,18 +125,17 @@ public class OutputTab extends XmitTab implements ShowLinesListener
       String commentIndicator)
   //----------------------------------------------------------------------------------- //
   {
-    String lineGap = showLines ? "      " : "";
     List<String> lines = findMember (datasetName, memberName);
     if (lines.size () == 0)
     {
-      newLines.add (String.format ("%s==> %s(%s): dataset not seen yet", lineGap,
-          datasetName, memberName));
+      newLines.add (
+          String.format ("==> %s(%s): dataset not seen yet", datasetName, memberName));
       return;
     }
 
     for (String line : lines)
       if (!line.startsWith (commentIndicator))
-        newLines.add (String.format ("%s%s", lineGap, line));
+        newLines.add (line);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -175,9 +171,9 @@ public class OutputTab extends XmitTab implements ShowLinesListener
       boolean truncateLines, boolean expandInclude)
   //----------------------------------------------------------------------------------- //
   {
-    this.showLines = showLines;
     this.stripLines = stripLines;
     this.truncateLines = truncateLines;
     this.expandInclude = expandInclude;
+    textFormatter.setShowLines (showLines);
   }
 }
