@@ -20,8 +20,18 @@ public class TextFormatterJcl extends TextFormatter
       return super.format (lines);
 
     textList.clear ();
-    int lineNo = 0;
 
+    if (filter.isEmpty ())
+      return jclFormat (lines);
+
+    return filterFormat (lines);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  List<Text> jclFormat (List<String> lines)
+  // ---------------------------------------------------------------------------------//
+  {
+    int lineNo = 0;
     for (String line : lines)
     {
       if (showLines)
@@ -42,10 +52,10 @@ public class TextFormatterJcl extends TextFormatter
         continue;
       }
 
-      if (highlight (line, "DSN=", Color.RED))
+      if (highlightAfter (line, "DSN=", Color.RED))
         continue;
 
-      if (highlight (line, "PGM=", Color.BLUE))
+      if (highlightAfter (line, "PGM=", Color.BLUE))
         continue;
 
       addTextNewLine (line, baseColor);

@@ -157,6 +157,7 @@ class FontManager implements SaveState
     setSelections ();
 
     stage.show ();
+    stage.toFront ();
   }
 
   // ---------------------------------------------------------------------------------//

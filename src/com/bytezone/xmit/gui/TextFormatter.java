@@ -14,6 +14,7 @@ public class TextFormatter
   final Color baseColor = Color.GREEN;
   final Color numberColor = Color.LIGHTSEAGREEN;
   boolean showLines;
+  String filter = "";
 
   // ---------------------------------------------------------------------------------//
   public void setShowLines (boolean showLines)
@@ -46,11 +47,22 @@ public class TextFormatter
   {
     textList.clear ();
 
+    if (filter.isEmpty ())
+      return plainFormat (lines);
+
+    return filterFormat (lines);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  List<Text> plainFormat (List<String> lines)
+  // ---------------------------------------------------------------------------------//
+  {
     int lineNo = 0;
     for (String line : lines)
     {
       if (showLines)
         addText (String.format ("%06d ", lineNo++), numberColor);
+
       addTextNewLine (line, baseColor);
     }
     removeLastNewLine ();
@@ -59,7 +71,49 @@ public class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
+  List<Text> filterFormat (List<String> lines)
+  // ---------------------------------------------------------------------------------//
+  {
+    int lineNo = 0;
+    for (String line : lines)
+    {
+      if (showLines)
+        addText (String.format ("%06d ", lineNo++), numberColor);
+
+      if (highlight (line, filter, Color.RED))
+        continue;
+
+      addTextNewLine (line, baseColor);
+    }
+    removeLastNewLine ();
+
+    return textList;
+
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean highlight (String line, String text, Color color)
+  // ---------------------------------------------------------------------------------//
+  {
+    int pos = line.indexOf (text);
+    if (pos < 0)
+      return false;
+
+    addText (line.substring (0, pos), baseColor);
+    int pos2 = pos + text.length ();
+    if (pos2 < line.length ())
+    {
+      addText (line.substring (pos, pos2), color);
+      addTextNewLine (line.substring (pos2), baseColor);
+    }
+    else
+      addTextNewLine (line.substring (pos), color);
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean highlightAfter (String line, String text, Color color)
   // ---------------------------------------------------------------------------------//
   {
     int pos = line.indexOf (text);

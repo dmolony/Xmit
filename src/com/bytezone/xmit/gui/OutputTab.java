@@ -176,4 +176,11 @@ public class OutputTab extends XmitTab implements ShowLinesListener
     this.expandInclude = expandInclude;
     textFormatter.setShowLines (showLines);
   }
+
+  //----------------------------------------------------------------------------------- //
+  public void setFilter (String filter)
+  //----------------------------------------------------------------------------------- //
+  {
+    textFormatter.filter = filter;
+  }
 }

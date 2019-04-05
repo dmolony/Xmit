@@ -17,7 +17,7 @@ import javafx.scene.input.KeyCode;
 // ------------------------------------------------------------------------------------ //
 class OutputPane extends HeaderTabPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener,
-    FontChangeListener, OutputWriter, SaveState
+    FontChangeListener, OutputWriter, SaveState, FilterListener
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -195,5 +195,15 @@ class OutputPane extends HeaderTabPane
     {
       Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
     }
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void setFilter (String filter)
+  //----------------------------------------------------------------------------------- //
+  {
+    ((OutputTab) xmitTabs.get (3)).setFilter (filter);
+    clearText ();
+    updateCurrentTab ();
   }
 }

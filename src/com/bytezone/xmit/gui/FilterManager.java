@@ -80,7 +80,9 @@ public class FilterManager implements SaveState
     textField.setText (filter);
     textField.requestFocus ();
     textField.selectAll ();
+
     stage.show ();
+    stage.toFront ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -93,6 +93,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     // filter change listeners
     filterManager.addFilterListener (tablePane);
     filterManager.addFilterListener (xmitTable);
+    filterManager.addFilterListener (outputPane);
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
