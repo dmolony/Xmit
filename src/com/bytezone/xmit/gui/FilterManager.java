@@ -40,60 +40,7 @@ public class FilterManager implements SaveState
   //---------------------------------------------------------------------------------//
   {
     if (stage == null)
-    {
-      stage = new Stage ();
-      stage.setTitle ("Filter Manager");
-
-      BorderPane borderPane = new BorderPane ();
-      Label lblText = new Label ("Filter text");
-      Label lblExclusive = new Label ("Exclusive");
-      filterTextField.setPrefWidth (300);
-
-      Button btnApply = getButton ("Apply");
-      Button btnCancel = getButton ("Cancel");
-      Button btnAccept = getButton ("Accept");
-      Button btnRemove = getButton ("Remove");
-
-      HBox textBox1 = new HBox (10);
-      textBox1.setPrefHeight (30);
-      textBox1.setPadding (new Insets (6, 10, 6, 20));
-      textBox1.setAlignment (Pos.CENTER_LEFT);
-      textBox1.getChildren ().addAll (lblText, filterTextField);
-
-      HBox textBox2 = new HBox (10);
-      textBox2.setPrefHeight (30);
-      textBox2.setPadding (new Insets (6, 10, 6, 20));
-      textBox2.setAlignment (Pos.CENTER_LEFT);
-      textBox2.getChildren ().addAll (lblExclusive, filterCheckBox);
-
-      VBox vBox = new VBox (10);
-      vBox.setPrefHeight (100);
-      vBox.setPadding (new Insets (6, 10, 6, 10));
-      vBox.setAlignment (Pos.CENTER_LEFT);
-      vBox.getChildren ().addAll (textBox1, textBox2);
-
-      HBox controlBox = new HBox (10);
-      controlBox.setPrefHeight (20);
-      controlBox.setPadding (new Insets (6, 10, 6, 10));
-      controlBox.setAlignment (Pos.CENTER_LEFT);
-      Region filler = new Region ();
-      HBox.setHgrow (filler, Priority.ALWAYS);
-      controlBox.getChildren ().addAll (filler, btnCancel, btnApply, btnAccept,
-          btnRemove);
-
-      borderPane.setBottom (controlBox);
-      borderPane.setCenter (vBox);
-
-      btnApply.setOnAction (e -> apply ());
-      btnCancel.setOnAction (e -> cancel ());
-      btnAccept.setOnAction (e -> accept ());
-      btnRemove.setOnAction (e -> remove ());
-
-      btnAccept.setDefaultButton (true);
-      btnCancel.setCancelButton (true);
-
-      stage.setScene (new Scene (borderPane, 500, 140));
-    }
+      buildStage ();
 
     savedFilter = filter;
     savedFilterExc = filterExc;
@@ -196,5 +143,62 @@ public class FilterManager implements SaveState
   {
     if (!listeners.contains (listener))
       listeners.add (listener);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void buildStage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    stage = new Stage ();
+    stage.setTitle ("Filter Manager");
+
+    BorderPane borderPane = new BorderPane ();
+    Label lblText = new Label ("Filter text");
+    Label lblExclusive = new Label ("Exclusive");
+    filterTextField.setPrefWidth (300);
+
+    Button btnApply = getButton ("Apply");
+    Button btnCancel = getButton ("Cancel");
+    Button btnAccept = getButton ("Accept");
+    Button btnRemove = getButton ("Remove");
+
+    HBox textBox1 = new HBox (10);
+    textBox1.setPrefHeight (30);
+    textBox1.setPadding (new Insets (6, 10, 6, 20));
+    textBox1.setAlignment (Pos.CENTER_LEFT);
+    textBox1.getChildren ().addAll (lblText, filterTextField);
+
+    HBox textBox2 = new HBox (10);
+    textBox2.setPrefHeight (30);
+    textBox2.setPadding (new Insets (6, 10, 6, 20));
+    textBox2.setAlignment (Pos.CENTER_LEFT);
+    textBox2.getChildren ().addAll (lblExclusive, filterCheckBox);
+
+    VBox vBox = new VBox (10);
+    vBox.setPrefHeight (100);
+    vBox.setPadding (new Insets (6, 10, 6, 10));
+    vBox.setAlignment (Pos.CENTER_LEFT);
+    vBox.getChildren ().addAll (textBox1, textBox2);
+
+    HBox controlBox = new HBox (10);
+    controlBox.setPrefHeight (20);
+    controlBox.setPadding (new Insets (6, 10, 6, 10));
+    controlBox.setAlignment (Pos.CENTER_LEFT);
+    Region filler = new Region ();
+    HBox.setHgrow (filler, Priority.ALWAYS);
+    controlBox.getChildren ().addAll (filler, btnCancel, btnApply, btnAccept, btnRemove);
+
+    borderPane.setBottom (controlBox);
+    borderPane.setCenter (vBox);
+
+    btnApply.setOnAction (e -> apply ());
+    btnCancel.setOnAction (e -> cancel ());
+    btnAccept.setOnAction (e -> accept ());
+    btnRemove.setOnAction (e -> remove ());
+
+    btnAccept.setDefaultButton (true);
+    btnCancel.setCancelButton (true);
+
+    stage.setScene (new Scene (borderPane, 500, 140));
   }
 }
