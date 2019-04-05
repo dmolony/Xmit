@@ -9,11 +9,11 @@
 
 ## Sample screens
 ### MacOS
-![Mac](resources/xmitosx.png?raw=true "Mac")
+![Mac](resources/xmit-osx.png?raw=true "Mac")
 ### Windows
 ![Windows](resources/xmit-win.png?raw=true "Windows")
 ### Linux
-![Linux](resources/xmitlinux.png?raw=true "Linux")
+![Linux](resources/xmit-linux.png?raw=true "Linux")
 
 ## Installation
 - Download and install [Java 11](https://jdk.java.net/11/) and [JavaFX 11](https://gluonhq.com/products/javafx/), which are now separate downloads.
