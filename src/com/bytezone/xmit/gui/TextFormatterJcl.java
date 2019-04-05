@@ -16,24 +16,12 @@ public class TextFormatterJcl extends TextFormatter
   public List<Text> format (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    if (!Utility.isJCL (lines))
+    if (usingFilter () || !Utility.isJCL (lines))
       return super.format (lines);
 
     textList.clear ();
 
-    if (getFilter ().isEmpty ())
-      jclFormat (lines);
-    else
-      filterFormat (lines);
-
-    return textList;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void jclFormat (List<String> lines)
-  // ---------------------------------------------------------------------------------//
-  {
-    int lineNo = 0;
+    int lineNo = 1;
     for (String line : lines)
     {
       if (showLines)
@@ -64,5 +52,7 @@ public class TextFormatterJcl extends TextFormatter
     }
 
     removeLastNewLine ();
+
+    return textList;
   }
 }

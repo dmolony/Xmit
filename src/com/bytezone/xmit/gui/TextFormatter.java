@@ -45,6 +45,13 @@ public class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
+  public boolean usingFilter ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return !filter.isEmpty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   public List<Text> format (String line)
   // ---------------------------------------------------------------------------------//
   {
@@ -73,7 +80,7 @@ public class TextFormatter
   void plainFormat (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    int lineNo = 0;
+    int lineNo = 1;
     for (String line : lines)
     {
       if (showLines)
@@ -88,7 +95,7 @@ public class TextFormatter
   void filterFormat (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    int lineNo = 0;
+    int lineNo = 1;
     for (String line : lines)
     {
       if (showLines)
