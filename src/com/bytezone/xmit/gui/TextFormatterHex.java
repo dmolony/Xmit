@@ -15,6 +15,7 @@ public class TextFormatterHex extends TextFormatter
   // ---------------------------------------------------------------------------------//
   {
     textList.clear ();
+
     for (String line : lines)
     {
       String offset = line.substring (0, 6);

@@ -30,7 +30,7 @@ public class TextFormatterJcl extends TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
-  List<Text> jclFormat (List<String> lines)
+  void jclFormat (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
     int lineNo = 0;
@@ -64,7 +64,5 @@ public class TextFormatterJcl extends TextFormatter
     }
 
     removeLastNewLine ();
-
-    return textList;
   }
 }
