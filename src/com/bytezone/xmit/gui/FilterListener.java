@@ -2,5 +2,5 @@ package com.bytezone.xmit.gui;
 
 public interface FilterListener
 {
-  public void setFilter (String filter);
+  public void setFilter (String filter, boolean fullFilter);
 }

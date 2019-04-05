@@ -15,6 +15,7 @@ public class TextFormatter
   final Color numberColor = Color.LIGHTSEAGREEN;
   boolean showLines;
   private String filter = "";
+  boolean fullFilter;
 
   // ---------------------------------------------------------------------------------//
   public void setShowLines (boolean showLines)
@@ -31,10 +32,11 @@ public class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
-  public void setFilter (String filter)
+  public void setFilter (String filter, boolean fullFilter)
   // ---------------------------------------------------------------------------------//
   {
     this.filter = filter;
+    this.fullFilter = fullFilter;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -104,7 +106,13 @@ public class TextFormatter
       if (highlight (line, filter, Color.RED))
         continue;
 
-      addTextNewLine (line, baseColor);
+      if (fullFilter)
+      {
+        if (showLines)
+          textList.remove (textList.size () - 1);
+      }
+      else
+        addTextNewLine (line, baseColor);
     }
     removeLastNewLine ();
   }

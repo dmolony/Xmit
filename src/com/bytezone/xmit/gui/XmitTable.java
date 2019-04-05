@@ -189,7 +189,7 @@ class XmitTable extends TableView<CatalogEntryItem>
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter)
+  public void setFilter (String filter, boolean fullFilter)
   // ---------------------------------------------------------------------------------//
   {
     filteredList.setPredicate (new Predicate<CatalogEntryItem> ()

@@ -8,12 +8,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
@@ -22,12 +24,16 @@ public class FilterManager implements SaveState
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   private static final String PREFS_FILTER = "Filter";
+  private static final String PREFS_FILTER_EXC = "FilterExc";
 
   private final List<FilterListener> listeners = new ArrayList<> ();
   private String filter;
   private String savedFilter;
+  private boolean filterExc;
+  private boolean savedFilterExc;
   private Stage stage;
-  private final TextField textField = new TextField ();
+  private final TextField filterTextField = new TextField ();
+  private final CheckBox filterCheckBox = new CheckBox ();
 
   //---------------------------------------------------------------------------------//
   void showWindow ()
@@ -39,19 +45,32 @@ public class FilterManager implements SaveState
       stage.setTitle ("Filter Manager");
 
       BorderPane borderPane = new BorderPane ();
-      Label text = new Label ("Filter text");
-      textField.setPrefWidth (300);
+      Label lblText = new Label ("Filter text");
+      Label lblExclusive = new Label ("Exclusive");
+      filterTextField.setPrefWidth (300);
 
       Button btnApply = getButton ("Apply");
       Button btnCancel = getButton ("Cancel");
       Button btnAccept = getButton ("Accept");
       Button btnRemove = getButton ("Remove");
 
-      HBox textBox = new HBox (10);
-      textBox.setPrefHeight (70);
-      textBox.setPadding (new Insets (6, 10, 6, 20));
-      textBox.setAlignment (Pos.CENTER_LEFT);
-      textBox.getChildren ().addAll (text, textField);
+      HBox textBox1 = new HBox (10);
+      textBox1.setPrefHeight (30);
+      textBox1.setPadding (new Insets (6, 10, 6, 20));
+      textBox1.setAlignment (Pos.CENTER_LEFT);
+      textBox1.getChildren ().addAll (lblText, filterTextField);
+
+      HBox textBox2 = new HBox (10);
+      textBox2.setPrefHeight (30);
+      textBox2.setPadding (new Insets (6, 10, 6, 20));
+      textBox2.setAlignment (Pos.CENTER_LEFT);
+      textBox2.getChildren ().addAll (lblExclusive, filterCheckBox);
+
+      VBox vBox = new VBox (10);
+      vBox.setPrefHeight (100);
+      vBox.setPadding (new Insets (6, 10, 6, 10));
+      vBox.setAlignment (Pos.CENTER_LEFT);
+      vBox.getChildren ().addAll (textBox1, textBox2);
 
       HBox controlBox = new HBox (10);
       controlBox.setPrefHeight (20);
@@ -63,7 +82,7 @@ public class FilterManager implements SaveState
           btnRemove);
 
       borderPane.setBottom (controlBox);
-      borderPane.setCenter (textBox);
+      borderPane.setCenter (vBox);
 
       btnApply.setOnAction (e -> apply ());
       btnCancel.setOnAction (e -> cancel ());
@@ -73,13 +92,15 @@ public class FilterManager implements SaveState
       btnAccept.setDefaultButton (true);
       btnCancel.setCancelButton (true);
 
-      stage.setScene (new Scene (borderPane, 500, 100));
+      stage.setScene (new Scene (borderPane, 500, 140));
     }
 
     savedFilter = filter;
-    textField.setText (filter);
-    textField.requestFocus ();
-    textField.selectAll ();
+    savedFilterExc = filterExc;
+    filterTextField.setText (filter);
+    filterTextField.requestFocus ();
+    filterTextField.selectAll ();
+    filterCheckBox.setSelected (filterExc);
 
     stage.show ();
     stage.toFront ();
@@ -89,9 +110,12 @@ public class FilterManager implements SaveState
   private void apply ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filter.equals (textField.getText ()))
+    if (!filter.equals (filterTextField.getText ())
+        || filterExc != filterCheckBox.isSelected ())
     {
-      filter = textField.getText ();
+      filter = filterTextField.getText ();
+      filterExc = filterCheckBox.isSelected ();
+
       notifyListeners ();
     }
   }
@@ -100,9 +124,11 @@ public class FilterManager implements SaveState
   private void cancel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filter.equals (savedFilter))
+    if (!filter.equals (savedFilter) || filterExc != savedFilterExc)
     {
       filter = savedFilter;
+      filterExc = savedFilterExc;
+
       notifyListeners ();
     }
     stage.hide ();
@@ -121,6 +147,8 @@ public class FilterManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     savedFilter = "";
+    savedFilterExc = false;
+
     cancel ();
   }
 
@@ -130,6 +158,7 @@ public class FilterManager implements SaveState
   {
     Button button = new Button (text);
     button.setMinWidth (100);
+
     return button;
   }
 
@@ -139,6 +168,7 @@ public class FilterManager implements SaveState
   //---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_FILTER, filter);
+    prefs.putBoolean (PREFS_FILTER_EXC, filterExc);
   }
 
   //---------------------------------------------------------------------------------//
@@ -147,6 +177,8 @@ public class FilterManager implements SaveState
   //---------------------------------------------------------------------------------//
   {
     filter = prefs.get (PREFS_FILTER, "");
+    filterExc = prefs.getBoolean (PREFS_FILTER_EXC, false);
+
     notifyListeners ();
   }
 
@@ -155,7 +187,7 @@ public class FilterManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     for (FilterListener listener : listeners)
-      listener.setFilter (filter);
+      listener.setFilter (filter, filterExc);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -29,6 +29,8 @@ import javafx.stage.Stage;
 public class XmitApp extends Application implements CodePageSelectedListener
 //---------------------------------------------------------------------------------//
 {
+  private static String[] args;
+
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
@@ -57,11 +59,16 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private double dividerPosition2;
 
   private final List<SaveState> saveStateList = new ArrayList<> ();
+  public boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   private Parent createContent ()
   // ---------------------------------------------------------------------------------//
   {
+    for (String s : args)
+      if ("-debug".equals (s))
+        debug = true;
+
     // place menubar
     final String os = System.getProperty ("os.name");
     if (os != null && os.startsWith ("Mac"))
@@ -195,6 +202,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
     dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
     String windowLocation = prefs.get (PREFS_WINDOW_LOCATION, "");
 
+    if (debug)
+    {
+      System.out.println ("Restoring dividers");
+      System.out.printf ("  Div1: %f%n", dividerPosition1);
+      System.out.printf ("  Div2: %f%n", dividerPosition2);
+    }
+
     if (windowLocation.isEmpty ())
       setWindow ();
     else
@@ -235,6 +249,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
     double[] positions = splitPane.getDividerPositions ();
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
+
+    if (debug)
+    {
+      System.out.println ("Saving dividers");
+      System.out.printf ("  Div1: %f%n", positions[0]);
+      System.out.printf ("  Div2: %f%n", positions[1]);
+    }
 
     for (SaveState saveState : saveStateList)
       saveState.save ();
@@ -322,6 +343,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   public static void main (String[] args)
   // ---------------------------------------------------------------------------------//
   {
+    XmitApp.args = args;
     Application.launch (args);
   }
 }

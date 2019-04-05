@@ -38,7 +38,7 @@ class TablePane extends HeaderPane implements TreeItemSelectionListener, FilterL
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter)
+  public void setFilter (String filter, boolean fullFilter)
   // ---------------------------------------------------------------------------------//
   {
     lblFilter.setText (filter.isEmpty () ? "" : "filter: " + filter);

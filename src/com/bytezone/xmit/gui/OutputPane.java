@@ -199,10 +199,10 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void setFilter (String filter)
+  public void setFilter (String filter, boolean fullFilter)
   //----------------------------------------------------------------------------------- //
   {
-    ((OutputTab) xmitTabs.get (3)).setFilter (filter);
+    ((OutputTab) xmitTabs.get (3)).setFilter (filter, fullFilter);
     clearText ();
     updateCurrentTab ();
   }
