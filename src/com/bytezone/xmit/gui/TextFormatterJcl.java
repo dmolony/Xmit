@@ -21,7 +21,7 @@ public class TextFormatterJcl extends TextFormatter
 
     textList.clear ();
 
-    if (filter.isEmpty ())
+    if (getFilter ().isEmpty ())
       jclFormat (lines);
     else
       filterFormat (lines);
@@ -54,7 +54,7 @@ public class TextFormatterJcl extends TextFormatter
         continue;
       }
 
-      if (highlightAfter (line, "DSN=", Color.RED))
+      if (highlightAfter (line, "DSN=", Color.DEEPPINK))
         continue;
 
       if (highlightAfter (line, "PGM=", Color.BLUE))

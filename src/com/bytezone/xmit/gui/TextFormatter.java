@@ -14,7 +14,7 @@ public class TextFormatter
   final Color baseColor = Color.GREEN;
   final Color numberColor = Color.LIGHTSEAGREEN;
   boolean showLines;
-  String filter = "";
+  private String filter = "";
 
   // ---------------------------------------------------------------------------------//
   public void setShowLines (boolean showLines)
@@ -28,6 +28,20 @@ public class TextFormatter
   // ---------------------------------------------------------------------------------//
   {
     return showLines;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void setFilter (String filter)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.filter = filter;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getFilter ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return filter;
   }
 
   // ---------------------------------------------------------------------------------//
