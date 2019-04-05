@@ -48,13 +48,15 @@ public class TextFormatter
     textList.clear ();
 
     if (filter.isEmpty ())
-      return plainFormat (lines);
+      plainFormat (lines);
+    else
+      filterFormat (lines);
 
-    return filterFormat (lines);
+    return textList;
   }
 
   // ---------------------------------------------------------------------------------//
-  List<Text> plainFormat (List<String> lines)
+  void plainFormat (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
     int lineNo = 0;
@@ -66,12 +68,10 @@ public class TextFormatter
       addTextNewLine (line, baseColor);
     }
     removeLastNewLine ();
-
-    return textList;
   }
 
   // ---------------------------------------------------------------------------------//
-  List<Text> filterFormat (List<String> lines)
+  void filterFormat (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
     int lineNo = 0;
@@ -86,9 +86,6 @@ public class TextFormatter
       addTextNewLine (line, baseColor);
     }
     removeLastNewLine ();
-
-    return textList;
-
   }
 
   // ---------------------------------------------------------------------------------//

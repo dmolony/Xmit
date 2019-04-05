@@ -22,9 +22,11 @@ public class TextFormatterJcl extends TextFormatter
     textList.clear ();
 
     if (filter.isEmpty ())
-      return jclFormat (lines);
+      jclFormat (lines);
+    else
+      filterFormat (lines);
 
-    return filterFormat (lines);
+    return textList;
   }
 
   // ---------------------------------------------------------------------------------//
