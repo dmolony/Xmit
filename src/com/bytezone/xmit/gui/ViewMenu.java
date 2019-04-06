@@ -43,7 +43,6 @@ class ViewMenu implements SaveState, TableItemSelectionListener
   private final MenuItem filterMenuItem = new MenuItem ("Set PDS Filter...");
   private final CheckMenuItem exclusiveFilterMenuItem =
       new CheckMenuItem ("Exclusive Filter");
-  //  private final MenuItem jclMenuItem = new MenuItem ("JCL Viewer...");
 
   private final CheckMenuItem showLinesMenuItem;
   private final CheckMenuItem stripLinesMenuItem;
@@ -85,16 +84,12 @@ class ViewMenu implements SaveState, TableItemSelectionListener
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
     exclusiveFilterMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
         KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN));
-    //    jclMenuItem.setAccelerator (
-    //        new KeyCodeCombination (KeyCode.J, KeyCombination.SHORTCUT_DOWN));
     filterMenuItem.setOnAction (e -> filterManager.showWindow ());
     exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggle ());
-    //    jclMenuItem.setOnAction (e -> jclManager.showWindow ());
 
     menuItems.add (fontMenuItem);
     menuItems.add (filterMenuItem);
     menuItems.add (exclusiveFilterMenuItem);
-    //    menuItems.add (jclMenuItem);
 
     menuItems.add (new SeparatorMenuItem ());
 

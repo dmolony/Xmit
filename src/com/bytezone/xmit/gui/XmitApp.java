@@ -1,7 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import java.awt.Desktop;
-import java.awt.Desktop.Action;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +46,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private TreePane treePane;
   private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
-  //  private final JclManager jclManager = new JclManager ();
 
   private final MenuBar menuBar = new MenuBar ();
   private FileMenu fileMenu;
@@ -112,7 +109,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
-    //    xmitTable.addListener (jclManager);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
@@ -148,15 +144,15 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     scene.setOnKeyPressed (e -> keyPressed (e));
 
-    if (false)
-    {
-      Desktop desktop = Desktop.getDesktop ();
-      System.out.println (Desktop.isDesktopSupported ());
-      System.out.println (desktop.isSupported (Action.APP_ABOUT));
-      desktop.setAboutHandler (e -> squawk ("About dialog"));
-      desktop.setPreferencesHandler (e -> squawk ("Preferences dialog"));
-      desktop.setQuitHandler ( (e, r) -> squawk ("Quit dialog"));
-    }
+    //    if (false)
+    //    {
+    //      Desktop desktop = Desktop.getDesktop ();
+    //      System.out.println (Desktop.isDesktopSupported ());
+    //      System.out.println (desktop.isSupported (Action.APP_ABOUT));
+    //      desktop.setAboutHandler (e -> squawk ("About dialog"));
+    //      desktop.setPreferencesHandler (e -> squawk ("Preferences dialog"));
+    //      desktop.setQuitHandler ( (e, r) -> squawk ("Quit dialog"));
+    //    }
 
     primaryStage.show ();
 
@@ -164,10 +160,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
     splitPane.setDividerPosition (1, dividerPosition2);
   }
 
-  private void squawk (String s)
-  {
-    System.out.println (s);
-  }
+  //  private void squawk (String s)
+  //  {
+  //    System.out.println (s);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void keyPressed (KeyEvent keyEvent)
