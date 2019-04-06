@@ -41,7 +41,9 @@ class ViewMenu implements SaveState, TableItemSelectionListener
   private final Menu viewMenu = new Menu ("View");
   private final MenuItem fontMenuItem = new MenuItem ("Set Font...");
   private final MenuItem filterMenuItem = new MenuItem ("Set PDS Filter...");
-  private final MenuItem jclMenuItem = new MenuItem ("JCL viewer...");
+  private final CheckMenuItem exclusiveFilterMenuItem =
+      new CheckMenuItem ("Exclusive Filter");
+  //  private final MenuItem jclMenuItem = new MenuItem ("JCL Viewer...");
 
   private final CheckMenuItem showLinesMenuItem;
   private final CheckMenuItem stripLinesMenuItem;
@@ -61,7 +63,7 @@ class ViewMenu implements SaveState, TableItemSelectionListener
                    { "CP500", "CP1148" }, // International #5
                    { "CP870", "CP1153" }, // Latin-2
                    { "CP1047", "CP924" }, // Latin-1
-                   { "USER1", "USER1" } }; // CP1047 swap 0x15/25
+                   { "CP1047 (swap NL/LF)", "CP1047 (swap NL/LF)" } };
   private final KeyCode[] keyCodes =
       { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5,
         KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };
@@ -70,8 +72,7 @@ class ViewMenu implements SaveState, TableItemSelectionListener
   private final List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public ViewMenu (XmitApp xmitApp, TreeView<XmitFile> tree, FontManager fontManager,
-      FilterManager filterManager, JclManager jclManager)
+  public ViewMenu (XmitApp xmitApp, FontManager fontManager, FilterManager filterManager)
   // ---------------------------------------------------------------------------------//
   {
     this.xmitApp = xmitApp;
@@ -82,14 +83,18 @@ class ViewMenu implements SaveState, TableItemSelectionListener
     fontMenuItem.setOnAction (e -> fontManager.showWindow ());
     filterMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
-    jclMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.J, KeyCombination.SHORTCUT_DOWN));
+    exclusiveFilterMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
+        KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN));
+    //    jclMenuItem.setAccelerator (
+    //        new KeyCodeCombination (KeyCode.J, KeyCombination.SHORTCUT_DOWN));
     filterMenuItem.setOnAction (e -> filterManager.showWindow ());
-    jclMenuItem.setOnAction (e -> jclManager.showWindow ());
+    exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggle ());
+    //    jclMenuItem.setOnAction (e -> jclManager.showWindow ());
 
     menuItems.add (fontMenuItem);
     menuItems.add (filterMenuItem);
-    menuItems.add (jclMenuItem);
+    menuItems.add (exclusiveFilterMenuItem);
+    //    menuItems.add (jclMenuItem);
 
     menuItems.add (new SeparatorMenuItem ());
 

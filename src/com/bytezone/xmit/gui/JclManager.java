@@ -21,8 +21,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
+// not used
 // ---------------------------------------------------------------------------------//
-public class JclManager implements TableItemSelectionListener
+class JclManager implements TableItemSelectionListener
 //---------------------------------------------------------------------------------//
 {
   private Stage stage;
@@ -32,7 +33,7 @@ public class JclManager implements TableItemSelectionListener
   private final Color baseColor = Color.GREEN;
 
   //---------------------------------------------------------------------------------//
-  void showWindow ()
+  private void showWindow ()
   //---------------------------------------------------------------------------------//
   {
     if (stage == null)

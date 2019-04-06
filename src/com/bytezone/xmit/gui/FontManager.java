@@ -71,85 +71,7 @@ class FontManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     if (stage == null)
-    {
-      stage = new Stage ();
-      stage.setTitle ("Font Manager");
-
-      text = getTextArea ();
-      text.setPrefWidth (750);
-      text.setEditable (false);
-
-      BorderPane borderPane = new BorderPane ();
-
-      ObservableList<FontName> names = FXCollections.observableArrayList ();
-      names.addAll (getMonospacedFonts ());
-      fontNameListView = new ListView<> (names);
-
-      fontNameListView.getSelectionModel ().selectedItemProperty ()
-          .addListener ( (obs, o, n) -> setTextFont ());
-
-      //      fontNameListView.setCellFactory (CheckBoxListCell
-      //          .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
-      //          {
-      //            @Override
-      //            public ObservableValue<Boolean> call (FontName item)
-      //            {
-      //              return item.onProperty ();
-      //            }
-      //          }));
-      fontNameListView
-          .setCellFactory (CheckBoxListCell.forListView (FontName::onProperty));
-
-      factory.setWrapAround (true);
-      factory.valueProperty ().addListener ( (obs, o, n) -> setTextFont ());
-
-      HBox controlBox = new HBox (10);
-      controlBox.setPrefHeight (20);
-      controlBox.setPadding (new Insets (6, 10, 6, 10));
-      controlBox.setAlignment (Pos.CENTER_LEFT);
-
-      HBox messageBox = new HBox (10);
-      messageBox.setPrefHeight (70);
-      messageBox.setPadding (new Insets (6, 10, 6, 10));
-      messageBox.setAlignment (Pos.CENTER_LEFT);
-
-      Label message = new Label ();
-      message.setText ("These are the fixed-width fonts currently on your system. Please"
-          + " choose the ones that you wish to be able to select from."
-          + "\nWhen on the main screen use the COMMA and PERIOD keys to"
-          + " cycle through the selected fonts, and the LESS-THAN and"
-          + " GREATER-THAN \nkeys to alter the font size.");
-      messageBox.getChildren ().add (message);
-
-      Button btnApply = getButton ("Apply");
-      Button btnCancel = getButton ("Cancel");
-      Button btnAccept = getButton ("Accept");
-
-      btnApply.setOnAction (e -> apply ());
-      btnCancel.setOnAction (e -> cancel ());
-      btnAccept.setOnAction (e -> accept ());
-
-      btnAccept.setDefaultButton (true);
-      btnCancel.setCancelButton (true);
-
-      Region filler = new Region ();
-      HBox.setHgrow (filler, Priority.ALWAYS);
-      controlBox.getChildren ().addAll (new Label ("Font size"), new Spinner<> (factory),
-          filler, btnCancel, btnApply, btnAccept);
-
-      borderPane.setLeft (fontNameListView);
-      borderPane.setCenter (text);
-      borderPane.setBottom (controlBox);
-      borderPane.setTop (messageBox);
-
-      stage.addEventHandler (KeyEvent.KEY_RELEASED, (KeyEvent event) ->
-      {
-        if (KeyCode.ESCAPE == event.getCode ())
-          cancel ();
-      });
-
-      stage.setScene (new Scene (borderPane, 1000, 700));
-    }
+      buildStage ();
 
     savedFontIndex = currentFontIndex;
     savedFontSize = currentFontSize;
@@ -422,6 +344,88 @@ class FontManager implements SaveState
       text.deleteCharAt (text.length () - 1);
 
     return new TextArea (text.toString ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void buildStage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    stage = new Stage ();
+    stage.setTitle ("Font Manager");
+
+    text = getTextArea ();
+    text.setPrefWidth (750);
+    text.setEditable (false);
+
+    BorderPane borderPane = new BorderPane ();
+
+    ObservableList<FontName> names = FXCollections.observableArrayList ();
+    names.addAll (getMonospacedFonts ());
+    fontNameListView = new ListView<> (names);
+
+    fontNameListView.getSelectionModel ().selectedItemProperty ()
+        .addListener ( (obs, o, n) -> setTextFont ());
+
+    //      fontNameListView.setCellFactory (CheckBoxListCell
+    //          .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
+    //          {
+    //            @Override
+    //            public ObservableValue<Boolean> call (FontName item)
+    //            {
+    //              return item.onProperty ();
+    //            }
+    //          }));
+    fontNameListView.setCellFactory (CheckBoxListCell.forListView (FontName::onProperty));
+
+    factory.setWrapAround (true);
+    factory.valueProperty ().addListener ( (obs, o, n) -> setTextFont ());
+
+    HBox controlBox = new HBox (10);
+    controlBox.setPrefHeight (20);
+    controlBox.setPadding (new Insets (6, 10, 6, 10));
+    controlBox.setAlignment (Pos.CENTER_LEFT);
+
+    HBox messageBox = new HBox (10);
+    messageBox.setPrefHeight (70);
+    messageBox.setPadding (new Insets (6, 10, 6, 10));
+    messageBox.setAlignment (Pos.CENTER_LEFT);
+
+    Label message = new Label ();
+    message.setText ("These are the fixed-width fonts currently on your system. Please"
+        + " choose the ones that you wish to be able to select from."
+        + "\nWhen on the main screen use the COMMA and PERIOD keys to"
+        + " cycle through the selected fonts, and the LESS-THAN and"
+        + " GREATER-THAN \nkeys to alter the font size.");
+    messageBox.getChildren ().add (message);
+
+    Button btnApply = getButton ("Apply");
+    Button btnCancel = getButton ("Cancel");
+    Button btnAccept = getButton ("Accept");
+
+    btnApply.setOnAction (e -> apply ());
+    btnCancel.setOnAction (e -> cancel ());
+    btnAccept.setOnAction (e -> accept ());
+
+    btnAccept.setDefaultButton (true);
+    btnCancel.setCancelButton (true);
+
+    Region filler = new Region ();
+    HBox.setHgrow (filler, Priority.ALWAYS);
+    controlBox.getChildren ().addAll (new Label ("Font size"), new Spinner<> (factory),
+        filler, btnCancel, btnApply, btnAccept);
+
+    borderPane.setLeft (fontNameListView);
+    borderPane.setCenter (text);
+    borderPane.setBottom (controlBox);
+    borderPane.setTop (messageBox);
+
+    stage.addEventHandler (KeyEvent.KEY_RELEASED, (KeyEvent event) ->
+    {
+      if (KeyCode.ESCAPE == event.getCode ())
+        cancel ();
+    });
+
+    stage.setScene (new Scene (borderPane, 1000, 700));
   }
 
   // ---------------------------------------------------------------------------------//
