@@ -58,6 +58,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final List<SaveState> saveStateList = new ArrayList<> ();
   public boolean debug = false;
 
+  //  private final HBox statusBar = new HBox (10);
+  //  private final Label status = new Label ();
+  private final StatusBar statusBar = new StatusBar ();
+
   // ---------------------------------------------------------------------------------//
   private Parent createContent ()
   // ---------------------------------------------------------------------------------//
@@ -98,20 +102,28 @@ public class XmitApp extends Application implements CodePageSelectedListener
     filterManager.addFilterListener (tablePane);
     filterManager.addFilterListener (xmitTable);
     filterManager.addFilterListener (outputPane);
+    filterManager.addFilterListener (statusBar);
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
     xmitTree.addListener (outputPane);
     xmitTree.addListener (tablePane);
     xmitTree.addListener (xmitTable);
+    xmitTree.addListener (statusBar);
 
     // table listeners
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
+    xmitTable.addListener (statusBar);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
+
+    // status bar
+    mainPane.setBottom (statusBar);
+    if (args.length > 0)
+      statusBar.setText ("Args: " + args[0]);
 
     // add menus
     mainPane.setTop (menuBar);
@@ -170,6 +182,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   // ---------------------------------------------------------------------------------//
   {
     KeyCode keyCode = keyEvent.getCode ();
+    statusBar.setText (keyCode.toString ());
 
     if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
         || keyCode == KeyCode.O)
