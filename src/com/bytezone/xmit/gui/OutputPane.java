@@ -25,15 +25,17 @@ class OutputPane extends HeaderTabPane
   Dataset dataset;                // usually file #1 in the Reader
   DataFile dataFile;              // FlatFile or PdsMember
   CatalogEntry catalogEntry;      // needed for alias members
+  private boolean truncateLines;
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
   final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
-  final OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
   final HeadersTab headersTab = new HeadersTab (this, "Headers", KeyCode.H);
   final BlocksTab blocksTab = new BlocksTab (this, "Blocks", KeyCode.B);
   final HexTab hexTab = new HexTab (this, "Hex", KeyCode.X);
   final OutputTab outputTab = new OutputTab (this, "Output", KeyCode.O);
+
+  final OutputHeaderBar outputHeaderBar = new OutputHeaderBar (this);
 
   //----------------------------------------------------------------------------------- //
   OutputPane ()
@@ -88,21 +90,18 @@ class OutputPane extends HeaderTabPane
     dataFile = null;
 
     if (dataset != null)
-    {
       if (dataset.isPs ())
-      {
         dataFile = ((PsDataset) dataset).getFlatFile ();
-      }
       else if (dataset.isPds ())
       {
         String datasetName = dataset.getReader ().getFileName ();
         if (!datasets.containsKey (datasetName))
           datasets.put (datasetName, (PdsDataset) dataset);
       }
-    }
 
     clearText ();
     updateCurrentTab ();
+    outputHeaderBar.updateNameLabel (truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -118,6 +117,7 @@ class OutputPane extends HeaderTabPane
 
     clearText ();
     updateCurrentTab ();
+    outputHeaderBar.updateNameLabel (truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -126,10 +126,12 @@ class OutputPane extends HeaderTabPane
       boolean truncateLines, boolean expandInclude)
   //----------------------------------------------------------------------------------- //
   {
+    this.truncateLines = truncateLines;
     outputTab.showLinesSelected (showLines, stripLines, truncateLines, expandInclude);
 
     clearText ();
     updateCurrentTab ();
+    outputHeaderBar.updateNameLabel (truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -166,7 +168,7 @@ class OutputPane extends HeaderTabPane
   public void setFilter (String filter, boolean fullFilter)
   //----------------------------------------------------------------------------------- //
   {
-    ((OutputTab) xmitTabs.get (3)).setFilter (filter, fullFilter);
+    outputTab.setFilter (filter, fullFilter);
     clearText ();
     updateCurrentTab ();
   }

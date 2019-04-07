@@ -90,7 +90,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // lines listeners
     viewMenu.addShowLinesListener (outputPane);
-    viewMenu.addShowLinesListener (outputPane.outputHeaderBar);
 
     // font change listeners
     fontManager.addFontChangeListener (outputPane);
@@ -115,7 +114,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
-    xmitTable.addListener (outputPane.outputHeaderBar);
     xmitTable.addListener (statusBar);
 
     BorderPane mainPane = new BorderPane ();
