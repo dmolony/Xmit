@@ -3,6 +3,7 @@ package com.bytezone.xmit.gui;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PsDataset;
 
 // ----------------------------------------------------------------------------------- //
 public class OutputHeaderBar extends HeaderBar
@@ -39,6 +40,7 @@ public class OutputHeaderBar extends HeaderBar
       rightLabel.setText (dataset.getDisposition ().toString ());
       if (dataset.isPs ())
       {
+        dataFile = ((PsDataset) dataset).getFlatFile ();
         updateNameLabel ();
       }
     }

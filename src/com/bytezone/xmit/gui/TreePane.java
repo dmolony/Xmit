@@ -1,14 +1,14 @@
 package com.bytezone.xmit.gui;
 
-import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 
 // ---------------------------------------------------------------------------------//
-class TreePane extends HeaderPane
+class TreePane extends BorderPane
 //---------------------------------------------------------------------------------//
 {
-  private final Label lblSaveFolder = new Label ();
   private final String home = System.getProperty ("user.home");
   private final XmitTree tree;
+  final HeaderBar treeHeaderBar = new HeaderBar ();
 
   // ---------------------------------------------------------------------------------//
   public TreePane (XmitTree tree)
@@ -16,7 +16,7 @@ class TreePane extends HeaderPane
   {
     this.tree = tree;
     setCenter (tree);
-    setTop (getHBox (lblSaveFolder));
+    setTop (treeHeaderBar);
     setFolderName ();
   }
 
@@ -35,6 +35,6 @@ class TreePane extends HeaderPane
     String pathName = tree.getRoot ().getValue ().toPath ().toString ();
     if (pathName.startsWith (home))
       pathName = pathName.replace (home, "~");
-    lblSaveFolder.setText (pathName);
+    treeHeaderBar.leftLabel.setText (pathName);
   }
 }
