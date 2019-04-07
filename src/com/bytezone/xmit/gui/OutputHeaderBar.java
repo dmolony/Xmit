@@ -9,7 +9,6 @@ public class OutputHeaderBar extends HeaderBar implements TreeItemSelectionListe
 //----------------------------------------------------------------------------------- //
 {
   private final OutputPane parent;
-  //  private boolean truncateLines;
 
   //----------------------------------------------------------------------------------- //
   public OutputHeaderBar (OutputPane parent)
