@@ -58,6 +58,7 @@ public class StatusBar extends HBox
   public void setFilter (String filter, boolean fullFilter)
   // ---------------------------------------------------------------------------------//
   {
-    status.setText ("Filter: " + filter);
+    if (!filter.isEmpty ())
+      status.setText (String.format ("Filter: %s %s", filter, fullFilter ? "(exc)" : ""));
   }
 }

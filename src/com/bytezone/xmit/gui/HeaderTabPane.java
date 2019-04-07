@@ -7,10 +7,11 @@ import javafx.geometry.Side;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-abstract class HeaderTabPane extends HeaderPane
+abstract class HeaderTabPane extends BorderPane
 //---------------------------------------------------------------------------------//
 {
   private static final int TAB_WIDTH = 100;

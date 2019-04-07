@@ -58,8 +58,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final List<SaveState> saveStateList = new ArrayList<> ();
   public boolean debug = false;
 
-  //  private final HBox statusBar = new HBox (10);
-  //  private final Label status = new Label ();
   private final StatusBar statusBar = new StatusBar ();
 
   // ---------------------------------------------------------------------------------//
@@ -92,6 +90,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // lines listeners
     viewMenu.addShowLinesListener (outputPane);
+    viewMenu.addShowLinesListener (outputPane.outputHeaderBar);
 
     // font change listeners
     fontManager.addFontChangeListener (outputPane);
@@ -107,6 +106,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     // treeview listeners
     xmitTree.addListener (fileMenu);
     xmitTree.addListener (outputPane);
+    xmitTree.addListener (outputPane.outputHeaderBar);
     xmitTree.addListener (tablePane);
     xmitTree.addListener (xmitTable);
     xmitTree.addListener (statusBar);
@@ -115,6 +115,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
+    xmitTable.addListener (outputPane.outputHeaderBar);
     xmitTable.addListener (statusBar);
 
     BorderPane mainPane = new BorderPane ();

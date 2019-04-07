@@ -11,7 +11,6 @@ import java.util.prefs.Preferences;
 import com.bytezone.xmit.*;
 
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 
 // ------------------------------------------------------------------------------------ //
@@ -23,28 +22,29 @@ class OutputPane extends HeaderTabPane
   private static final String PREFS_LAST_TAB = "lastTab";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
-  private final Label lblMemberName = new Label ();
-  private final Label lblDisposition = new Label ();
-
   Dataset dataset;                // usually file #1 in the Reader
   DataFile dataFile;              // FlatFile or PdsMember
   CatalogEntry catalogEntry;      // needed for alias members
 
-  // keep track of all PDS datasets so that we can INCLUDE members
+  // keep track of all PDS datasets seen so that we can INCLUDE members
   final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
-  private boolean truncateLines;
+  final OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
+  final HeadersTab headersTab = new HeadersTab (this, "Headers", KeyCode.H);
+  final BlocksTab blocksTab = new BlocksTab (this, "Blocks", KeyCode.B);
+  final HexTab hexTab = new HexTab (this, "Hex", KeyCode.X);
+  final OutputTab outputTab = new OutputTab (this, "Output", KeyCode.O);
 
   //----------------------------------------------------------------------------------- //
   OutputPane ()
   //----------------------------------------------------------------------------------- //
   {
-    xmitTabs.add (new HeadersTab (this, "Headers", KeyCode.H));
-    xmitTabs.add (new BlocksTab (this, "Blocks", KeyCode.B));
-    xmitTabs.add (new HexTab (this, "Hex", KeyCode.X));
-    xmitTabs.add (new OutputTab (this, "Output", KeyCode.O));
+    xmitTabs.add (headersTab);
+    xmitTabs.add (blocksTab);
+    xmitTabs.add (hexTab);
+    xmitTabs.add (outputTab);
 
-    setTop (getHBox (lblMemberName, lblDisposition));
+    setTop (outputHeaderBar);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -70,13 +70,13 @@ class OutputPane extends HeaderTabPane
     tabPane.getTabs ().clear ();
 
     if (headersVisible)
-      tabPane.getTabs ().add (xmitTabs.get (0));
+      tabPane.getTabs ().add (headersTab);
     if (blocksVisible)
-      tabPane.getTabs ().add (xmitTabs.get (1));
+      tabPane.getTabs ().add (blocksTab);
     if (hexVisible)
-      tabPane.getTabs ().add (xmitTabs.get (2));
+      tabPane.getTabs ().add (hexTab);
 
-    tabPane.getTabs ().add (xmitTabs.get (3));         // always visible
+    tabPane.getTabs ().add (outputTab);         // always visible
   }
 
   //----------------------------------------------------------------------------------- //
@@ -87,18 +87,11 @@ class OutputPane extends HeaderTabPane
     this.dataset = dataset;
     dataFile = null;
 
-    if (dataset == null)
+    if (dataset != null)
     {
-      lblMemberName.setText ("");
-      lblDisposition.setText ("");
-    }
-    else
-    {
-      lblDisposition.setText (dataset.getDisposition ().toString ());
       if (dataset.isPs ())
       {
         dataFile = ((PsDataset) dataset).getFlatFile ();
-        updateNameLabel ();
       }
       else if (dataset.isPds ())
       {
@@ -122,34 +115,9 @@ class OutputPane extends HeaderTabPane
 
     this.catalogEntry = catalogEntry;
     dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
-    updateNameLabel ();
 
     clearText ();
     updateCurrentTab ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  private void updateNameLabel ()
-  //----------------------------------------------------------------------------------- //
-  {
-    if (dataset == null || catalogEntry == null)
-    {
-      lblMemberName.setText ("");
-      return;
-    }
-
-    String indicator = truncateLines ? "<-" : "";
-
-    if (dataset.isPds ())
-    {
-      if (catalogEntry.isAlias ())
-        lblMemberName.setText (indicator + catalogEntry.getMemberName () + " -> "
-            + catalogEntry.getAliasName ());
-      else
-        lblMemberName.setText (indicator + catalogEntry.getMemberName ());
-    }
-    else
-      lblMemberName.setText (indicator + dataFile.getName ());
   }
 
   //----------------------------------------------------------------------------------- //
@@ -158,11 +126,7 @@ class OutputPane extends HeaderTabPane
       boolean truncateLines, boolean expandInclude)
   //----------------------------------------------------------------------------------- //
   {
-    this.truncateLines = truncateLines;
-    ((OutputTab) xmitTabs.get (3)).showLinesSelected (showLines, stripLines,
-        truncateLines, expandInclude);
-
-    updateNameLabel ();              // toggle the '<-' indicator
+    outputTab.showLinesSelected (showLines, stripLines, truncateLines, expandInclude);
 
     clearText ();
     updateCurrentTab ();
@@ -186,7 +150,7 @@ class OutputPane extends HeaderTabPane
 
     try (BufferedWriter output = new BufferedWriter (new FileWriter (file)))
     {
-      for (String line : ((OutputTab) xmitTabs.get (3)).getLines (0))
+      for (String line : outputTab.getLines (0))
         output.write (line + "\n");
       Utility.showAlert (AlertType.INFORMATION, "Success",
           "File Saved: " + file.getName ());
