@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 
 // ---------------------------------------------------------------------------------//
 public class TableHeaderBar extends HeaderBar
-    implements TreeItemSelectionListener, FilterListener
+    implements TreeItemSelectionListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//

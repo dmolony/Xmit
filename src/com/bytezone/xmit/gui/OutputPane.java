@@ -16,7 +16,7 @@ import javafx.scene.input.KeyCode;
 // ------------------------------------------------------------------------------------ //
 class OutputPane extends HeaderTabPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener,
-    FontChangeListener, OutputWriter, SaveState, FilterListener
+    FontChangeListener, OutputWriter, SaveState, FilterChangeListener
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";

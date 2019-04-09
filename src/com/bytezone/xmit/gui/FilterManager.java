@@ -26,7 +26,7 @@ public class FilterManager implements SaveState
   private static final String PREFS_FILTER = "Filter";
   private static final String PREFS_FILTER_EXC = "FilterExc";
 
-  private final List<FilterListener> listeners = new ArrayList<> ();
+  private final List<FilterChangeListener> listeners = new ArrayList<> ();
   private String filter;
   private String savedFilter;
   private boolean filterExc;
@@ -141,12 +141,12 @@ public class FilterManager implements SaveState
   private void notifyListeners ()
   // ---------------------------------------------------------------------------------//
   {
-    for (FilterListener listener : listeners)
+    for (FilterChangeListener listener : listeners)
       listener.setFilter (filter, filterExc);
   }
 
   // ---------------------------------------------------------------------------------//
-  public void addFilterListener (FilterListener listener)
+  public void addFilterListener (FilterChangeListener listener)
   // ---------------------------------------------------------------------------------//
   {
     if (!listeners.contains (listener))

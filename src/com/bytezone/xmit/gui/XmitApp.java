@@ -35,15 +35,16 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
+  private Stage primaryStage;
   private String rootFolderName;
 
   private XmitTree xmitTree;
   private final XmitTable xmitTable = new XmitTable ();
 
-  private Stage primaryStage;
-  private final OutputPane outputPane = new OutputPane ();
-  private final TablePane tablePane = new TablePane (xmitTable);
   private TreePane treePane;
+  private final TablePane tablePane = new TablePane (xmitTable);
+  private final OutputPane outputPane = new OutputPane ();
+
   private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
 
@@ -102,6 +103,9 @@ public class XmitApp extends Application implements CodePageSelectedListener
     filterManager.addFilterListener (outputPane);
     filterManager.addFilterListener (statusBar);
 
+    // filter action listeners
+    xmitTable.addFilterListener (statusBar);
+
     // treeview listeners
     xmitTree.addListener (fileMenu);
     xmitTree.addListener (outputPane);
@@ -135,8 +139,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     primaryStage.setOnCloseRequest (e -> exit ());
 
     // ensure viewMenu (codepage) is set before xmitTree
-    saveStateList.addAll (Arrays.asList (outputPane, fileMenu, viewMenu, xmitTree,
-        xmitTable, fontManager, filterManager));
+    saveStateList.addAll (Arrays.asList (filterManager, outputPane, fileMenu, viewMenu,
+        xmitTree, xmitTable, fontManager));
 
     restore ();
 

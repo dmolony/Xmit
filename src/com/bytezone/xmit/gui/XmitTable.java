@@ -1,7 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
@@ -20,14 +19,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-class XmitTable extends TableView<CatalogEntryItem>
-    implements TreeItemSelectionListener, FontChangeListener, SaveState, FilterListener
+class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelectionListener,
+    FontChangeListener, SaveState, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
-  private final List<TableItemSelectionListener> listeners = new ArrayList<> ();
+  private final List<FilterActionListener> filterListeners = new ArrayList<> ();
+  private final List<TableItemSelectionListener> selectionListeners = new ArrayList<> ();
   private final ObservableList<CatalogEntryItem> items =
       FXCollections.observableArrayList ();
   private final FilteredList<CatalogEntryItem> filteredList = new FilteredList<> (items);
@@ -43,7 +43,8 @@ class XmitTable extends TableView<CatalogEntryItem>
   XmitTable ()
   // ---------------------------------------------------------------------------------//
   {
-    SortedList<CatalogEntryItem> sortedList = new SortedList<> (filteredList);
+    //    SortedList<CatalogEntryItem> sortedList = new SortedList<> (filteredList);  // items
+    SortedList<CatalogEntryItem> sortedList = new SortedList<> (items);
     sortedList.comparatorProperty ().bind (this.comparatorProperty ());
     setItems (sortedList);
 
@@ -76,27 +77,30 @@ class XmitTable extends TableView<CatalogEntryItem>
         .addListener ( (obs, oldSel, newSel) -> selected (newSel));
   }
 
+  // these should be handled by the selection model
   // ---------------------------------------------------------------------------------//
   private void selected (CatalogEntryItem catalogEntryItem)
   // ---------------------------------------------------------------------------------//
   {
     if (catalogEntryItem == null)
-      for (TableItemSelectionListener listener : listeners)
+      for (TableItemSelectionListener listener : selectionListeners)
         listener.tableItemSelected (null);
     else
     {
       CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
       selectedMembers.put (dataset, catalogEntry.getMemberName ());
 
-      for (TableItemSelectionListener listener : listeners)
+      for (TableItemSelectionListener listener : selectionListeners)
         listener.tableItemSelected (catalogEntry);
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  private void setVisibleColumns (DisplayType displayType)
+  private void setVisibleColumns (ModuleType moduleType)
   // ---------------------------------------------------------------------------------//
   {
+    DisplayType displayType =
+        moduleType == ModuleType.BASIC ? DisplayType.BASIC : DisplayType.LOAD;
     if (currentDisplayType != displayType)
     {
       currentDisplayType = displayType;
@@ -139,19 +143,36 @@ class XmitTable extends TableView<CatalogEntryItem>
     return null;
   }
 
+  // this will go
   // ---------------------------------------------------------------------------------//
   void addListener (TableItemSelectionListener listener)
   // ---------------------------------------------------------------------------------//
   {
-    if (!listeners.contains (listener))
-      listeners.add (listener);
+    if (!selectionListeners.contains (listener))
+      selectionListeners.add (listener);
   }
 
+  // this will go
   // ---------------------------------------------------------------------------------//
   void removeListener (TableItemSelectionListener listener)
   // ---------------------------------------------------------------------------------//
   {
-    listeners.remove (listener);
+    selectionListeners.remove (listener);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void addFilterListener (FilterActionListener listener)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!filterListeners.contains (listener))
+      filterListeners.add (listener);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void removeFilterListener (FilterActionListener listener)
+  // ---------------------------------------------------------------------------------//
+  {
+    filterListeners.remove (listener);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -161,21 +182,51 @@ class XmitTable extends TableView<CatalogEntryItem>
   {
     this.dataset = dataset;
 
-    items.clear ();
     if (dataset != null && dataset.isPds ())
     {
-      PdsDataset pdsDataset = (PdsDataset) dataset;
-
-      for (CatalogEntry catalogEntry : pdsDataset)
-        items.add (new CatalogEntryItem (catalogEntry));
-
-      select (selectedMembers.containsKey (dataset) ? find (selectedMembers.get (dataset))
-          : null);
-
-      setVisibleColumns (pdsDataset.getModuleType () == ModuleType.BASIC
-          ? DisplayType.BASIC : DisplayType.LOAD);
+      buildList ();
+      setVisibleColumns (((PdsDataset) dataset).getModuleType ());
     }
-    setEmptyTableMessage ();
+    else
+    {
+      items.clear ();
+      setPlaceholder (new Label ("Not a Partitioned Dataset"));
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setFilter (String filter, boolean fullFilter)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.filter = filter;
+
+    if (dataset != null && dataset.isPds ())
+      buildList ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void buildList ()
+  // ---------------------------------------------------------------------------------//
+  {
+    items.clear ();
+
+    int max = ((PdsDataset) dataset).size ();
+    for (FilterActionListener filterActionListener : filterListeners)
+      filterActionListener.filtering (0, max, false);
+
+    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries (filter))
+      items.add (new CatalogEntryItem (catalogEntry));
+
+    select (selectedMembers.containsKey (dataset) ? find (selectedMembers.get (dataset))
+        : null);
+
+    // setEmptyTableMessage
+    setPlaceholder (new Label (filter.isEmpty () ? "No members to display"
+        : String.format ("No members contain '%s'", filter)));
+
+    for (FilterActionListener filterActionListener : filterListeners)
+      filterActionListener.filtering (items.size (), max, true);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -188,44 +239,22 @@ class XmitTable extends TableView<CatalogEntryItem>
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void setFilter (String filter, boolean fullFilter)
-  // ---------------------------------------------------------------------------------//
-  {
-    filteredList.setPredicate (new Predicate<CatalogEntryItem> ()
-    {
-      @Override
-      public boolean test (CatalogEntryItem t)
-      {
-        return filter.isEmpty () ? true : t.getCatalogEntry ().contains (filter);
-      }
-    });
-
-    // the change may have filtered out the previously selected member
-    if (dataset != null && dataset.isPds () && getSelectedItem () == null)
-      select (null);
-
-    this.filter = filter;
-    setEmptyTableMessage ();
-  }
+  //  private void setEmptyTableMessage ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (dataset != null && dataset.isPds ())
+  //      setPlaceholder (new Label (filter.isEmpty () ? "No members to display"
+  //          : String.format ("No members contain '%s'", filter)));
+  //    else
+  //      setPlaceholder (new Label ("Not a Partitioned Dataset"));
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  private void setEmptyTableMessage ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (dataset != null && dataset.isPds ())
-      setPlaceholder (new Label (filter.isEmpty () ? "No members to display"
-          : String.format ("No members contain '%s'", filter)));
-    else
-      setPlaceholder (new Label ("Not a Partitioned Dataset"));
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private CatalogEntryItem getSelectedItem ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return getSelectionModel ().getSelectedItem ();
-  }
+  //  private CatalogEntryItem getSelectedItem ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return getSelectionModel ().getSelectedItem ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void select (CatalogEntryItem catalogEntryItem)
