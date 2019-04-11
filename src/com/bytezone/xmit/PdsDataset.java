@@ -71,11 +71,26 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  public List<CatalogEntry> getCatalogEntries ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntries;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean containsKey (String key)
+  // ---------------------------------------------------------------------------------//
+  {
+    return filterList.containsKey (key);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public List<CatalogEntry> getCatalogEntries (String key)
   // ---------------------------------------------------------------------------------//
   {
     if (key.isEmpty ())
       return catalogEntries;
+
     if (filterList.containsKey (key))
       return filterList.get (key);
 

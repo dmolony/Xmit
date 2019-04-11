@@ -36,6 +36,7 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
     getChildren ().addAll (status, filler);
     setPadding (new Insets (5));
     status.setFont (Utility.statusFont);
+    //    showProgress ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -49,8 +50,9 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   void showProgress ()
   // ---------------------------------------------------------------------------------//
   {
-    getChildren ().add (progressBox);
-    System.out.println ("show");
+    if (!getChildren ().contains (progressBox))
+      getChildren ().add (progressBox);
+    //    System.out.println ("show");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -65,8 +67,9 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   void hideProgress ()
   // ---------------------------------------------------------------------------------//
   {
-    getChildren ().remove (progressBox);
-    System.out.println ("hide");
+    if (getChildren ().contains (progressBox))
+      getChildren ().remove (progressBox);
+    //    System.out.println ("hide");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,7 +106,7 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   public void filtering (int found, int max, boolean done)
   // ---------------------------------------------------------------------------------//
   {
-    System.out.printf ("Found: %d  Max: %d  Done: %s%n", found, max, done);
+    //    System.out.printf ("Found: %d  Max: %d  Done: %s%n", found, max, done);
     if (done)
       hideProgress ();
     else if (found == 0)

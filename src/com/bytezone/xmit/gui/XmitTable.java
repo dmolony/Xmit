@@ -1,6 +1,8 @@
 package com.bytezone.xmit.gui;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
@@ -11,7 +13,6 @@ import com.bytezone.xmit.gui.DataColumn.DisplayType;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -30,20 +31,19 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private final List<TableItemSelectionListener> selectionListeners = new ArrayList<> ();
   private final ObservableList<CatalogEntryItem> items =
       FXCollections.observableArrayList ();
-  private final FilteredList<CatalogEntryItem> filteredList = new FilteredList<> (items);
 
   private Dataset dataset;
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
 
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
-  private String filter = "";
+  private String filterValue = "";
+  private final ExecutorService executor = Executors.newSingleThreadExecutor ();
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
   // ---------------------------------------------------------------------------------//
   {
-    //    SortedList<CatalogEntryItem> sortedList = new SortedList<> (filteredList);  // items
     SortedList<CatalogEntryItem> sortedList = new SortedList<> (items);
     sortedList.comparatorProperty ().bind (this.comparatorProperty ());
     setItems (sortedList);
@@ -121,6 +121,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     int seq = 0;
     for (TableColumn<CatalogEntryItem, ?> column : getColumns ())
       ((DataColumn<?>) column.getUserData ()).save (seq++);
+
+    executor.shutdown ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -130,14 +132,14 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   {
     String name = prefs.get (PREFS_LAST_MEMBER_NAME, "");
     CatalogEntryItem catalogEntryItem = find (name);
-    select (catalogEntryItem);
+    selectCatalogEntryItem (catalogEntryItem);
   }
 
   // ---------------------------------------------------------------------------------//
   private CatalogEntryItem find (String name)
   // ---------------------------------------------------------------------------------//
   {
-    for (CatalogEntryItem catalogEntryItem : filteredList)
+    for (CatalogEntryItem catalogEntryItem : items)
       if (name.equals (catalogEntryItem.getMemberName ()))
         return catalogEntryItem;
     return null;
@@ -184,8 +186,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
     if (dataset != null && dataset.isPds ())
     {
-      buildList ();
       setVisibleColumns (((PdsDataset) dataset).getModuleType ());
+      buildList ();
     }
     else
     {
@@ -196,10 +198,10 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter, boolean fullFilter)
+  public void setFilter (String filterValue, boolean fullFilter)
   // ---------------------------------------------------------------------------------//
   {
-    this.filter = filter;
+    this.filterValue = filterValue;
 
     if (dataset != null && dataset.isPds ())
       buildList ();
@@ -209,24 +211,60 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private void buildList ()
   // ---------------------------------------------------------------------------------//
   {
+    CatalogEntryItem selectedItem = getSelectionModel ().getSelectedItem ();
+    String selectedName = selectedItem == null ? "" : selectedItem.getMemberName ();
+
     items.clear ();
 
-    int max = ((PdsDataset) dataset).size ();
-    for (FilterActionListener filterActionListener : filterListeners)
-      filterActionListener.filtering (0, max, false);
+    if (filterValue.isEmpty ())
+    {
+      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
+        items.add (new CatalogEntryItem (catalogEntry));
 
-    for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries (filter))
-      items.add (new CatalogEntryItem (catalogEntry));
+      selectCatalogEntryItem (selectedMembers.containsKey (dataset)
+          ? find (selectedMembers.get (dataset)) : null);
 
-    select (selectedMembers.containsKey (dataset) ? find (selectedMembers.get (dataset))
-        : null);
+      // setEmptyTableMessage
+      setPlaceholder (new Label (String.format ("No members to display")));
+    }
+    else
+    {
+      int max = ((PdsDataset) dataset).size ();
+      for (FilterActionListener filterActionListener : filterListeners)
+        filterActionListener.filtering (0, max, false);
 
-    // setEmptyTableMessage
-    setPlaceholder (new Label (filter.isEmpty () ? "No members to display"
-        : String.format ("No members contain '%s'", filter)));
+      Filter filter = new Filter ((PdsDataset) dataset, filterValue);
+      filter.setOnSucceeded (event -> success (filter, selectedName, max));
+
+      // setEmptyTableMessage
+      setPlaceholder (new Label (String.format ("Searching %s for '%s'",
+          dataset.getReader ().getFileName (), filterValue)));
+
+      executor.execute (filter);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void success (Filter filter, String selectedName, int max)
+  // ---------------------------------------------------------------------------------//
+  {
+    CatalogEntryItem select = null;
+    for (CatalogEntry catalogEntry : filter.getValue ())
+    {
+      CatalogEntryItem catalogEntryItem = new CatalogEntryItem (catalogEntry);
+      items.add (catalogEntryItem);
+      if (selectedName.equals (catalogEntryItem.getMemberName ()))
+        select = catalogEntryItem;
+    }
+
+    selectCatalogEntryItem (selectedMembers.containsKey (dataset)
+        ? find (selectedMembers.get (dataset)) : select);
 
     for (FilterActionListener filterActionListener : filterListeners)
       filterActionListener.filtering (items.size (), max, true);
+
+    // setEmptyTableMessage
+    setPlaceholder (new Label (String.format ("No members contain '%s'", filterValue)));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -250,17 +288,10 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   //  }
 
   // ---------------------------------------------------------------------------------//
-  //  private CatalogEntryItem getSelectedItem ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return getSelectionModel ().getSelectedItem ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  private void select (CatalogEntryItem catalogEntryItem)
+  private void selectCatalogEntryItem (CatalogEntryItem catalogEntryItem)
   // ---------------------------------------------------------------------------------//
   {
-    if (filteredList.size () == 0)
+    if (items.size () == 0)
       return;
 
     if (catalogEntryItem == null)

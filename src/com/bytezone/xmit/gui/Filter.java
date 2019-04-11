@@ -11,8 +11,8 @@ import javafx.concurrent.Task;
 public class Filter extends Task<List<CatalogEntry>>
 // ---------------------------------------------------------------------------------//
 {
-  PdsDataset pdsDataset;
-  String key;
+  private final PdsDataset pdsDataset;
+  private final String key;
 
   // ---------------------------------------------------------------------------------//
   public Filter (PdsDataset pdsDataset, String key)
