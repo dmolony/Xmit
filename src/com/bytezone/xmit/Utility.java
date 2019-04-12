@@ -515,6 +515,22 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  static int find (byte[] haystack, byte[] needle)
+  // ---------------------------------------------------------------------------------//
+  {
+    loop: for (int i = 0; i <= haystack.length - needle.length; ++i)
+    {
+      for (int j = 0; j < needle.length; ++j)
+        if (haystack[i + j] != needle[j])
+          continue loop;
+
+      return i;
+    }
+
+    return -1;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static void showAlert (AlertType alertType, String title, String message)
   // ---------------------------------------------------------------------------------//
   {

@@ -83,11 +83,20 @@ public abstract class DataFile implements Comparable<DataFile>
   public boolean contains (String key)
   // ---------------------------------------------------------------------------------//
   {
-    for (String line : getLines ())
-      if (line.indexOf (key) >= 0)
-        return true;
+    // convert key to ebcdic
+    byte[] ebcdicKey = key.getBytes ();
+    CodePage codePage = Utility.getCodePage ();
+    for (int i = 0; i < ebcdicKey.length; i++)
+      ebcdicKey[i] = (byte) codePage.asc2ebc[ebcdicKey[i] & 0xFF];
 
-    return false;
+    //    if (true)
+    return Utility.find (getDataBuffer (), ebcdicKey) >= 0;
+
+    //    for (String line : getLines ())
+    //      if (line.indexOf (key) >= 0)
+    //        return true;
+    //
+    //    return false;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -188,11 +197,11 @@ public abstract class DataFile implements Comparable<DataFile>
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isJcl ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
-  }
+  //  boolean isJcl ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return false;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void objectDeck ()

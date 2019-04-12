@@ -13,6 +13,7 @@ public class CodePage
 {
   private static byte[] values;
   public final int[] ebc2asc = new int[256];
+  public final int[] asc2ebc = new int[256];
   final String name;
 
   static
@@ -41,6 +42,9 @@ public class CodePage
       {
         Utility.showAlert (AlertType.ERROR, "Encoding Exception", e.toString ());
       }
+
+    for (i = 0; i < 256; i++)
+      asc2ebc[ebc2asc[i]] = i;
   }
 
   // ---------------------------------------------------------------------------------//
