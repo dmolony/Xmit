@@ -251,6 +251,9 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
             break;
           }
       }
+
+    for (FilterActionListener listener : filterListeners)
+      listener.filtering (items.size (), ((PdsDataset) dataset).size (), true);
   }
 
   // ---------------------------------------------------------------------------------//

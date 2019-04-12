@@ -98,10 +98,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
     fontManager.addFontChangeListener (xmitTree);
 
     // filter change listeners
+    filterManager.addFilterListener (statusBar);
     filterManager.addFilterListener (tablePane.tableHeaderBar);
     filterManager.addFilterListener (xmitTable);
     filterManager.addFilterListener (outputPane);
-    filterManager.addFilterListener (statusBar);
 
     // filter action listeners
     xmitTable.addFilterListener (statusBar);
@@ -185,7 +185,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   // ---------------------------------------------------------------------------------//
   {
     KeyCode keyCode = keyEvent.getCode ();
-    statusBar.setText (keyCode.toString ());
+    //    statusBar.setText (keyCode.toString ());
 
     if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
         || keyCode == KeyCode.O)

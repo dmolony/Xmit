@@ -517,6 +517,7 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   static int find (byte[] haystack, byte[] needle)
   // ---------------------------------------------------------------------------------//
+  // see also: https://gist.github.com/coderodde/7f8ec57c13a265b51115ceb082d273e0
   {
     loop: for (int i = 0; i <= haystack.length - needle.length; ++i)
     {

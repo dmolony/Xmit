@@ -83,20 +83,14 @@ public abstract class DataFile implements Comparable<DataFile>
   public boolean contains (String key)
   // ---------------------------------------------------------------------------------//
   {
-    // convert key to ebcdic
     byte[] ebcdicKey = key.getBytes ();
     CodePage codePage = Utility.getCodePage ();
+
+    // convert key to ebcdic
     for (int i = 0; i < ebcdicKey.length; i++)
       ebcdicKey[i] = (byte) codePage.asc2ebc[ebcdicKey[i] & 0xFF];
 
-    //    if (true)
     return Utility.find (getDataBuffer (), ebcdicKey) >= 0;
-
-    //    for (String line : getLines ())
-    //      if (line.indexOf (key) >= 0)
-    //        return true;
-    //
-    //    return false;
   }
 
   // ---------------------------------------------------------------------------------//
