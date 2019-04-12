@@ -13,7 +13,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
   private final List<PdsMember> xmitMembers = new ArrayList<> ();
-  private final Map<String, List<CatalogEntry>> filterList = new HashMap<> ();
+  private final Map<String, Filter> filterList = new HashMap<> ();
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
@@ -85,23 +85,23 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<CatalogEntry> getCatalogEntries (String key)
+  public Filter getCatalogEntries (String key)
   // ---------------------------------------------------------------------------------//
   {
-    if (key.isEmpty ())
-      return catalogEntries;
+    //    if (key.isEmpty ())
+    //      return catalogEntries;
 
     if (filterList.containsKey (key))
       return filterList.get (key);
 
-    // this needs to run in a background thread
-    List<CatalogEntry> entries = new ArrayList<> ();
-    for (CatalogEntry catalogEntry : catalogEntries)
-      if (catalogEntry.contains (key))
-        entries.add (catalogEntry);
-    filterList.put (key, entries);
+    //    List<CatalogEntry> entries = new ArrayList<> ();
+    //    for (CatalogEntry catalogEntry : catalogEntries)
+    //      if (catalogEntry.contains (key))
+    //        entries.add (catalogEntry);
+    Filter filter = new Filter (this, key);
+    filterList.put (key, filter);
 
-    return entries;
+    return filter;
   }
 
   // ---------------------------------------------------------------------------------//

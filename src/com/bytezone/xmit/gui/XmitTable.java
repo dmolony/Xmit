@@ -6,6 +6,7 @@ import java.util.prefs.Preferences;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.Filter;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.gui.DataColumn.DisplayType;
 
@@ -36,7 +37,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
   private String filterValue = "";
-  //  private final ExecutorService executor = Executors.newSingleThreadExecutor ();
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -210,7 +210,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     {
       CatalogEntryItem selectedItem = getSelectionModel ().getSelectedItem ();
       String selectedName = selectedItem == null ? "" : selectedItem.getMemberName ();
-
       buildList (selectedName);
     }
   }
@@ -221,24 +220,18 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   {
     items.clear ();
 
+    // setEmptyTableMessage
     if (filterValue.isEmpty ())
-    {
-      for (CatalogEntry catalogEntry : ((PdsDataset) dataset).getCatalogEntries ())
-        items.add (new CatalogEntryItem (catalogEntry));
-
-      // setEmptyTableMessage
       setPlaceholder (new Label (String.format ("No members to display")));
-    }
     else
-    {
-      for (CatalogEntry catalogEntry : ((PdsDataset) dataset)
-          .getCatalogEntries (filterValue))
-        items.add (new CatalogEntryItem (catalogEntry));
-
-      // setEmptyTableMessage
       setPlaceholder (new Label (String.format ("No members contain '%s'", filterValue)));
-    }
 
+    // build items based on filter value
+    Filter filter = ((PdsDataset) dataset).getCatalogEntries (filterValue);
+    for (CatalogEntry catalogEntry : filter.getFilteredTrue ())
+      items.add (new CatalogEntryItem (catalogEntry));
+
+    // select a member
     if (items.size () > 0)
       if (selectedName.isEmpty ())
         selectCatalogEntryItem (null);
@@ -252,6 +245,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
           }
       }
 
+    // notify listeners
     for (FilterActionListener listener : filterListeners)
       listener.filtering (items.size (), ((PdsDataset) dataset).size (), true);
   }
@@ -264,17 +258,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     DataColumn.font = font;
     refresh ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  private void setEmptyTableMessage ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (dataset != null && dataset.isPds ())
-  //      setPlaceholder (new Label (filter.isEmpty () ? "No members to display"
-  //          : String.format ("No members contain '%s'", filter)));
-  //    else
-  //      setPlaceholder (new Label ("Not a Partitioned Dataset"));
-  //  }
 
   // ---------------------------------------------------------------------------------//
   private void selectCatalogEntryItem (CatalogEntryItem catalogEntryItem)
