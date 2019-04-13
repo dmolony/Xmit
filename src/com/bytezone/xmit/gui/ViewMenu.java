@@ -85,7 +85,7 @@ class ViewMenu implements SaveState, TableItemSelectionListener
     exclusiveFilterMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
         KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN));
     filterMenuItem.setOnAction (e -> filterManager.showWindow ());
-    exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggle ());
+    exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggleFilterExclusion ());
 
     menuItems.add (fontMenuItem);
     menuItems.add (filterMenuItem);

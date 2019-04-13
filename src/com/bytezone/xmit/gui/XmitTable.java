@@ -7,6 +7,7 @@ import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Filter;
+import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.gui.DataColumn.DisplayType;
 
@@ -37,6 +38,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
   private String filterValue = "";
+  private FilterMode filterMode = FilterMode.NONE;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -198,13 +200,14 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filterValue, boolean fullFilter)
+  public void setFilter (String filterValue, boolean fullFilter, FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
     if (filterValue.equals (this.filterValue))
       return;
 
     this.filterValue = filterValue;
+    this.filterMode = filterMode;
 
     if (dataset != null && dataset.isPds ())
     {
@@ -228,7 +231,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
     // build items based on filter value
     Filter filter = ((PdsDataset) dataset).getCatalogEntries (filterValue);
-    for (CatalogEntry catalogEntry : filter.getFilteredTrue ())
+    for (CatalogEntry catalogEntry : filter.getFiltered (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 
     // select a member

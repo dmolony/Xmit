@@ -1,6 +1,7 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.Reader;
 
 import javafx.scene.paint.Color;
@@ -27,7 +28,7 @@ public class TableHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter, boolean fullFilter)
+  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
     rightLabel.setText (filter.isEmpty () ? "" : "filter: " + filter);

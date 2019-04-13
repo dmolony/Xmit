@@ -22,8 +22,8 @@ public class OutputTab extends XmitTab implements ShowLinesListener
 
   private static Pattern includePattern =
       Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
-  private static Pattern memberPattern =
-      Pattern.compile ("^//\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
+  private static Pattern memberPattern = Pattern.compile (
+      "^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
   //  private static Pattern dsnPattern = Pattern
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
@@ -103,7 +103,7 @@ public class OutputTab extends XmitTab implements ShowLinesListener
     {
       Matcher m = memberPattern.matcher (line);
       if (m.find ())
-        append (newLines, includeDatasetName, m.group (1), "//*");
+        append (newLines, includeDatasetName, m.group (2), "//*");
     }
 
     Matcher m = includePattern.matcher (line);

@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.*;
+import com.bytezone.xmit.Filter.FilterMode;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
@@ -165,7 +166,7 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void setFilter (String filter, boolean fullFilter)
+  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
   //----------------------------------------------------------------------------------- //
   {
     outputTab.setFilter (filter, fullFilter);

@@ -5,6 +5,8 @@ import java.util.*;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
+// useful: https://stackoverflow.com/questions/28929563/
+// how-to-manipulate-the-result-of-a-future-in-javafx
 // ---------------------------------------------------------------------------------//
 public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 //---------------------------------------------------------------------------------//
@@ -88,20 +90,21 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public Filter getCatalogEntries (String key)
   // ---------------------------------------------------------------------------------//
   {
-    //    if (key.isEmpty ())
-    //      return catalogEntries;
-
     if (filterList.containsKey (key))
       return filterList.get (key);
 
-    //    List<CatalogEntry> entries = new ArrayList<> ();
-    //    for (CatalogEntry catalogEntry : catalogEntries)
-    //      if (catalogEntry.contains (key))
-    //        entries.add (catalogEntry);
     Filter filter = new Filter (this, key);
     filterList.put (key, filter);
 
     return filter;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void listFilters ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (String key : filterList.keySet ())
+      System.out.println (filterList.get (key));
   }
 
   // ---------------------------------------------------------------------------------//

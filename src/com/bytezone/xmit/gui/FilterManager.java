@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.Filter.FilterMode;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -27,13 +29,16 @@ public class FilterManager implements SaveState
   private static final String PREFS_FILTER_EXC = "FilterExc";
 
   private final List<FilterChangeListener> listeners = new ArrayList<> ();
-  private String filter;
-  private String savedFilter;
-  private boolean filterExc;
-  private boolean savedFilterExc;
   private Stage stage;
   private final TextField filterTextField = new TextField ();
   private final CheckBox filterCheckBox = new CheckBox ();
+
+  private String filterValue;
+  private String savedFilterValue;
+  private boolean filterExclusion;
+  private boolean savedFilterExclusion;
+  private FilterMode filterMode;
+  private FilterMode savedFilterMode;
 
   //---------------------------------------------------------------------------------//
   void showWindow ()
@@ -42,12 +47,14 @@ public class FilterManager implements SaveState
     if (stage == null)
       buildStage ();
 
-    savedFilter = filter;
-    savedFilterExc = filterExc;
-    filterTextField.setText (filter);
+    savedFilterValue = filterValue;
+    savedFilterExclusion = filterExclusion;
+    savedFilterMode = filterMode;
+
+    filterTextField.setText (filterValue);
     filterTextField.requestFocus ();
     filterTextField.selectAll ();
-    filterCheckBox.setSelected (filterExc);
+    filterCheckBox.setSelected (filterExclusion);
 
     stage.show ();
     stage.toFront ();
@@ -57,11 +64,11 @@ public class FilterManager implements SaveState
   private void apply ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filter.equals (filterTextField.getText ())
-        || filterExc != filterCheckBox.isSelected ())
+    if (!filterValue.equals (filterTextField.getText ())
+        || filterExclusion != filterCheckBox.isSelected ())
     {
-      filter = filterTextField.getText ();
-      filterExc = filterCheckBox.isSelected ();
+      filterValue = filterTextField.getText ();
+      filterExclusion = filterCheckBox.isSelected ();
 
       notifyListeners ();
     }
@@ -71,10 +78,12 @@ public class FilterManager implements SaveState
   private void cancel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filter.equals (savedFilter) || filterExc != savedFilterExc)
+    if (!filterValue.equals (savedFilterValue) || filterExclusion != savedFilterExclusion
+        || filterMode != savedFilterMode)
     {
-      filter = savedFilter;
-      filterExc = savedFilterExc;
+      filterValue = savedFilterValue;
+      filterExclusion = savedFilterExclusion;
+      filterMode = savedFilterMode;
 
       notifyListeners ();
     }
@@ -93,8 +102,9 @@ public class FilterManager implements SaveState
   private void remove ()
   // ---------------------------------------------------------------------------------//
   {
-    savedFilter = "";
-    savedFilterExc = false;
+    savedFilterValue = "";
+    savedFilterExclusion = false;
+    savedFilterMode = FilterMode.NONE;
 
     cancel ();
   }
@@ -114,8 +124,8 @@ public class FilterManager implements SaveState
   public void save ()
   //---------------------------------------------------------------------------------//
   {
-    prefs.put (PREFS_FILTER, filter);
-    prefs.putBoolean (PREFS_FILTER_EXC, filterExc);
+    prefs.put (PREFS_FILTER, filterValue);
+    prefs.putBoolean (PREFS_FILTER_EXC, filterExclusion);
   }
 
   //---------------------------------------------------------------------------------//
@@ -123,17 +133,30 @@ public class FilterManager implements SaveState
   public void restore ()
   //---------------------------------------------------------------------------------//
   {
-    filter = prefs.get (PREFS_FILTER, "");
-    filterExc = prefs.getBoolean (PREFS_FILTER_EXC, false);
+    filterValue = prefs.get (PREFS_FILTER, "");
+    filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
 
     notifyListeners ();
   }
 
   // ---------------------------------------------------------------------------------//
-  void toggle ()
+  void toggleFilterExclusion ()
   // ---------------------------------------------------------------------------------//
   {
-    filterExc = !filterExc;
+    filterExclusion = !filterExclusion;
+    notifyListeners ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void cycleFilterMode ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (filterMode == FilterMode.POSITIVE)
+      filterMode = FilterMode.NEGATIVE;
+    else if (filterMode == FilterMode.NEGATIVE)
+      filterMode = FilterMode.NONE;
+    else
+      filterMode = FilterMode.POSITIVE;
     notifyListeners ();
   }
 
@@ -142,7 +165,7 @@ public class FilterManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     for (FilterChangeListener listener : listeners)
-      listener.setFilter (filter, filterExc);
+      listener.setFilter (filterValue, filterExclusion, filterMode);
   }
 
   // ---------------------------------------------------------------------------------//

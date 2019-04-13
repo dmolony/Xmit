@@ -2,6 +2,7 @@ package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.Utility;
 
 import javafx.geometry.Insets;
@@ -92,7 +93,7 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter, boolean fullFilter)
+  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
     this.filter = filter;

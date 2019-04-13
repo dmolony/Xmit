@@ -12,6 +12,11 @@ public class Filter
   private final List<CatalogEntry> filteredTrue = new ArrayList<> ();
   private final List<CatalogEntry> filteredFalse = new ArrayList<> ();
 
+  public enum FilterMode
+  {
+    POSITIVE, NEGATIVE, NONE
+  }
+
   // ---------------------------------------------------------------------------------//
   public Filter (PdsDataset pdsDataset, String key)
   // ---------------------------------------------------------------------------------//
@@ -30,16 +35,18 @@ public class Filter
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<CatalogEntry> getFilteredTrue ()
+  public List<CatalogEntry> getFiltered (FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
     return filteredTrue;
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<CatalogEntry> getFilteredFalse ()
+  @Override
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return filteredFalse;
+    return String.format ("Filter: %-10s %,d / %,d", key, filteredTrue.size (),
+        filteredFalse.size ());
   }
 }
