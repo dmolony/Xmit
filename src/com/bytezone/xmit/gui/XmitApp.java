@@ -192,6 +192,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
       outputPane.keyPressed (keyCode);
     else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.PERIOD)
       fontManager.keyPressed (keyEvent);
+    else if (keyCode == KeyCode.F)
+      filterManager.keyPressed (keyEvent);
   }
 
   // ---------------------------------------------------------------------------------//

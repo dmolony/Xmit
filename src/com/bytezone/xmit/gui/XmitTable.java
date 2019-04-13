@@ -38,12 +38,13 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
   private String filterValue = "";
-  private FilterMode filterMode = FilterMode.NONE;
+  private FilterMode filterMode = FilterMode.ALL;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
   // ---------------------------------------------------------------------------------//
   {
+    System.out.println (filterMode);
     SortedList<CatalogEntryItem> sortedList = new SortedList<> (items);
     sortedList.comparatorProperty ().bind (this.comparatorProperty ());
     setItems (sortedList);
@@ -222,6 +223,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   // ---------------------------------------------------------------------------------//
   {
     items.clear ();
+    System.out.printf ("Selected: %s%n", selectedName);
 
     // setEmptyTableMessage
     if (filterValue.isEmpty ())
@@ -231,6 +233,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
     // build items based on filter value
     Filter filter = ((PdsDataset) dataset).getCatalogEntries (filterValue);
+    System.out.println (filterMode);
     for (CatalogEntry catalogEntry : filter.getFiltered (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 

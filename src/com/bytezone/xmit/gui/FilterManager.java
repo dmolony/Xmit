@@ -13,6 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -27,6 +29,7 @@ public class FilterManager implements SaveState
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   private static final String PREFS_FILTER = "Filter";
   private static final String PREFS_FILTER_EXC = "FilterExc";
+  private static final String PREFS_FILTER_MODE = "FilterMode";
 
   private final List<FilterChangeListener> listeners = new ArrayList<> ();
   private Stage stage;
@@ -104,7 +107,7 @@ public class FilterManager implements SaveState
   {
     savedFilterValue = "";
     savedFilterExclusion = false;
-    savedFilterMode = FilterMode.NONE;
+    savedFilterMode = FilterMode.ALL;
 
     cancel ();
   }
@@ -126,6 +129,9 @@ public class FilterManager implements SaveState
   {
     prefs.put (PREFS_FILTER, filterValue);
     prefs.putBoolean (PREFS_FILTER_EXC, filterExclusion);
+    int mode =
+        filterMode == FilterMode.FILTERED ? 0 : filterMode == FilterMode.REVERSED ? 1 : 2;
+    prefs.putInt (PREFS_FILTER_MODE, mode);
   }
 
   //---------------------------------------------------------------------------------//
@@ -135,8 +141,19 @@ public class FilterManager implements SaveState
   {
     filterValue = prefs.get (PREFS_FILTER, "");
     filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
+    int mode = prefs.getInt (PREFS_FILTER_MODE, 0);
+    filterMode = mode == 0 ? FilterMode.FILTERED
+        : mode == 1 ? FilterMode.REVERSED : FilterMode.ALL;
 
     notifyListeners ();
+  }
+
+  //---------------------------------------------------------------------------------//
+  void keyPressed (KeyEvent keyEvent)
+  //---------------------------------------------------------------------------------//
+  {
+    if (keyEvent.getCode () == KeyCode.F)
+      cycleFilterMode ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -151,12 +168,12 @@ public class FilterManager implements SaveState
   void cycleFilterMode ()
   // ---------------------------------------------------------------------------------//
   {
-    if (filterMode == FilterMode.POSITIVE)
-      filterMode = FilterMode.NEGATIVE;
-    else if (filterMode == FilterMode.NEGATIVE)
-      filterMode = FilterMode.NONE;
+    if (filterMode == FilterMode.FILTERED)
+      filterMode = FilterMode.REVERSED;
+    else if (filterMode == FilterMode.REVERSED)
+      filterMode = FilterMode.ALL;
     else
-      filterMode = FilterMode.POSITIVE;
+      filterMode = FilterMode.FILTERED;
     notifyListeners ();
   }
 

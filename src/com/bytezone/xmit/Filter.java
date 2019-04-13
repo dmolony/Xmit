@@ -9,12 +9,13 @@ public class Filter
 {
   private final PdsDataset pdsDataset;
   private final String key;
-  private final List<CatalogEntry> filteredTrue = new ArrayList<> ();
-  private final List<CatalogEntry> filteredFalse = new ArrayList<> ();
+  private final List<CatalogEntry> filtered = new ArrayList<> ();
+  private final List<CatalogEntry> reversed = new ArrayList<> ();
+  private final List<CatalogEntry> noFilter;
 
   public enum FilterMode
   {
-    POSITIVE, NEGATIVE, NONE
+    FILTERED, REVERSED, ALL
   }
 
   // ---------------------------------------------------------------------------------//
@@ -24,21 +25,34 @@ public class Filter
     this.pdsDataset = pdsDataset;
     this.key = key;
 
+    noFilter = pdsDataset.getCatalogEntries ();
+
     if (key.isEmpty ())
-      filteredTrue.addAll (pdsDataset.getCatalogEntries ());
+      filtered.addAll (noFilter);
     else
-      for (CatalogEntry catalogEntry : pdsDataset.getCatalogEntries ())
+      for (CatalogEntry catalogEntry : noFilter)
         if (catalogEntry.contains (key))
-          filteredTrue.add (catalogEntry);
+          filtered.add (catalogEntry);
         else
-          filteredFalse.add (catalogEntry);
+          reversed.add (catalogEntry);
   }
 
   // ---------------------------------------------------------------------------------//
   public List<CatalogEntry> getFiltered (FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
-    return filteredTrue;
+    switch (filterMode)
+    {
+      case ALL:
+        return noFilter;
+      case FILTERED:
+        return filtered;
+      case REVERSED:
+        return reversed;
+      default:
+        assert false;
+        return pdsDataset.getCatalogEntries ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -46,7 +60,7 @@ public class Filter
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("Filter: %-10s %,d / %,d", key, filteredTrue.size (),
-        filteredFalse.size ());
+    return String.format ("Filter: %-10s %,d + %,d = %,d", key, filtered.size (),
+        reversed.size (), noFilter.size ());
   }
 }
