@@ -107,7 +107,7 @@ public class FilterManager implements SaveState
   {
     savedFilterValue = "";
     savedFilterExclusion = false;
-    savedFilterMode = FilterMode.ALL;
+    savedFilterMode = FilterMode.OFF;
 
     cancel ();
   }
@@ -143,7 +143,7 @@ public class FilterManager implements SaveState
     filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
     int mode = prefs.getInt (PREFS_FILTER_MODE, 0);
     filterMode = mode == 0 ? FilterMode.FILTERED
-        : mode == 1 ? FilterMode.REVERSED : FilterMode.ALL;
+        : mode == 1 ? FilterMode.REVERSED : FilterMode.OFF;
 
     notifyListeners ();
   }
@@ -152,7 +152,7 @@ public class FilterManager implements SaveState
   void keyPressed (KeyEvent keyEvent)
   //---------------------------------------------------------------------------------//
   {
-    if (keyEvent.getCode () == KeyCode.F)
+    if (keyEvent.getCode () == KeyCode.F && !keyEvent.isMetaDown ())
       cycleFilterMode ();
   }
 
@@ -171,7 +171,7 @@ public class FilterManager implements SaveState
     if (filterMode == FilterMode.FILTERED)
       filterMode = FilterMode.REVERSED;
     else if (filterMode == FilterMode.REVERSED)
-      filterMode = FilterMode.ALL;
+      filterMode = FilterMode.OFF;
     else
       filterMode = FilterMode.FILTERED;
     notifyListeners ();

@@ -17,7 +17,6 @@ import com.bytezone.xmit.gui.XmitApp;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
 public class Utility
@@ -48,7 +47,7 @@ public class Utility
       };
 
   private static Alert alert;
-  public static Font statusFont = Font.font ("Lucida Sans Typewriter", 12);
+  //  public static Font statusFont = Font.font ("Lucida Sans Typewriter", 12);
 
   // ---------------------------------------------------------------------------------//
   public enum FileType

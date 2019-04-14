@@ -175,17 +175,11 @@ public class XmitApp extends Application implements CodePageSelectedListener
     splitPane.setDividerPosition (1, dividerPosition2);
   }
 
-  //  private void squawk (String s)
-  //  {
-  //    System.out.println (s);
-  //  }
-
   // ---------------------------------------------------------------------------------//
   private void keyPressed (KeyEvent keyEvent)
   // ---------------------------------------------------------------------------------//
   {
     KeyCode keyCode = keyEvent.getCode ();
-    //    statusBar.setText (keyCode.toString ());
 
     if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
         || keyCode == KeyCode.O)
@@ -326,7 +320,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
       directoryChooser.setInitialDirectory (new File (previousRootFolderName));
 
     File file = directoryChooser.showDialog (null);
-    System.out.println (file);
+    //    System.out.println (file);
     if (file != null && file.isDirectory ())
     {
       rootFolderName = file.getAbsolutePath ();

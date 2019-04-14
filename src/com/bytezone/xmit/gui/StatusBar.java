@@ -3,13 +3,13 @@ package com.bytezone.xmit.gui;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Filter.FilterMode;
-import com.bytezone.xmit.Utility;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
 public class StatusBar extends HBox implements TreeItemSelectionListener,
@@ -23,6 +23,10 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   //  private final Label slash = new Label (" / ");
   //  private final Label progressMax = new Label ();
   private String filter = "";
+  private boolean fullFilter;
+  private FilterMode filterMode;
+  private final Label filterSettings = new Label ();
+  public static Font statusFont = Font.font ("Monaco", 12);
 
   // ---------------------------------------------------------------------------------//
   public StatusBar ()
@@ -35,9 +39,10 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
 
     Region filler = new Region ();
     HBox.setHgrow (filler, Priority.ALWAYS);
-    getChildren ().addAll (status, filler);
+    getChildren ().addAll (status, filler, filterSettings);
     setPadding (new Insets (5));
-    status.setFont (Utility.statusFont);
+    status.setFont (statusFont);
+    filterSettings.setFont (statusFont);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -97,9 +102,12 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
   {
     this.filter = filter;
+    this.fullFilter = fullFilter;
+    this.filterMode = filterMode;
+
     if (filter.isEmpty ())
       status.setText ("");
-    //    System.out.printf ("%s%n", filter);
+    setFilterText ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -107,11 +115,24 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   public void filtering (int found, int max, boolean done)
   // ---------------------------------------------------------------------------------//
   {
+    if (!done)
+      return;
+
     if (filter.isEmpty ())
       status.setText ("");
-    else if (done)
-      status.setText (String.format ("Filter found %d member%s from %d", found,
+    else
+    {
+      String mode = filterMode.toString ();
+      status.setText (String.format ("%s found %d member%s from %d", mode, found,
           (found == 1 ? "" : "s"), max));
-    //    System.out.printf ("%s Found: %d  Max: %d  Done: %s%n", filter, found, max, done);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setFilterText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    filterSettings.setText (String.format ("Filter: %-10s  Mode: %-10s  Exclusive: %-10s",
+        filter, filterMode, fullFilter));
   }
 }

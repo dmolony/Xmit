@@ -38,13 +38,12 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
   private String filterValue = "";
-  private FilterMode filterMode = FilterMode.ALL;
+  private FilterMode filterMode = FilterMode.OFF;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println (filterMode);
     SortedList<CatalogEntryItem> sortedList = new SortedList<> (items);
     sortedList.comparatorProperty ().bind (this.comparatorProperty ());
     setItems (sortedList);
@@ -204,7 +203,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   public void setFilter (String filterValue, boolean fullFilter, FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
-    if (filterValue.equals (this.filterValue))
+    if (filterValue.equals (this.filterValue) && this.filterMode == filterMode)
       return;
 
     this.filterValue = filterValue;
@@ -223,7 +222,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   // ---------------------------------------------------------------------------------//
   {
     items.clear ();
-    System.out.printf ("Selected: %s%n", selectedName);
+    //    System.out.printf ("Selected: %s%n", selectedName);
+    //    System.out.println (filterMode);
 
     // setEmptyTableMessage
     if (filterValue.isEmpty ())
@@ -232,9 +232,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
       setPlaceholder (new Label (String.format ("No members contain '%s'", filterValue)));
 
     // build items based on filter value
-    Filter filter = ((PdsDataset) dataset).getCatalogEntries (filterValue);
-    System.out.println (filterMode);
-    for (CatalogEntry catalogEntry : filter.getFiltered (filterMode))
+    Filter filter = ((PdsDataset) dataset).getFilter (filterValue);
+    for (CatalogEntry catalogEntry : filter.getCatalogEntries (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 
     // select a member

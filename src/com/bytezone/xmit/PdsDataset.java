@@ -87,7 +87,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public Filter getCatalogEntries (String key)
+  public Filter getFilter (String key)
   // ---------------------------------------------------------------------------------//
   {
     if (filterList.containsKey (key))

@@ -7,52 +7,47 @@ import java.util.List;
 public class Filter
 // ---------------------------------------------------------------------------------//
 {
-  private final PdsDataset pdsDataset;
   private final String key;
-  private final List<CatalogEntry> filtered = new ArrayList<> ();
-  private final List<CatalogEntry> reversed = new ArrayList<> ();
-  private final List<CatalogEntry> noFilter;
+  private final PdsDataset pdsDataset;
+
+  private List<CatalogEntry> filtered;
+  private List<CatalogEntry> reversed;
 
   public enum FilterMode
   {
-    FILTERED, REVERSED, ALL
+    FILTERED, REVERSED, OFF
   }
 
   // ---------------------------------------------------------------------------------//
   public Filter (PdsDataset pdsDataset, String key)
   // ---------------------------------------------------------------------------------//
   {
-    this.pdsDataset = pdsDataset;
     this.key = key;
+    this.pdsDataset = pdsDataset;
+  }
 
-    noFilter = pdsDataset.getCatalogEntries ();
+  // ---------------------------------------------------------------------------------//
+  public List<CatalogEntry> getCatalogEntries (FilterMode filterMode)
+  // ---------------------------------------------------------------------------------//
+  {
+    // nothing to do
+    if (filterMode == FilterMode.OFF || key.isEmpty ())
+      return pdsDataset.getCatalogEntries ();
 
-    if (key.isEmpty ())
-      filtered.addAll (noFilter);
-    else
-      for (CatalogEntry catalogEntry : noFilter)
+    // lazy fill
+    if (filtered == null)
+    {
+      filtered = new ArrayList<> ();
+      reversed = new ArrayList<> ();
+
+      for (CatalogEntry catalogEntry : pdsDataset.getCatalogEntries ())
         if (catalogEntry.contains (key))
           filtered.add (catalogEntry);
         else
           reversed.add (catalogEntry);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public List<CatalogEntry> getFiltered (FilterMode filterMode)
-  // ---------------------------------------------------------------------------------//
-  {
-    switch (filterMode)
-    {
-      case ALL:
-        return noFilter;
-      case FILTERED:
-        return filtered;
-      case REVERSED:
-        return reversed;
-      default:
-        assert false;
-        return pdsDataset.getCatalogEntries ();
     }
+
+    return filterMode == FilterMode.FILTERED ? filtered : reversed;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -60,7 +55,11 @@ public class Filter
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
+    if (filtered == null)
+      return String.format ("Filter: %-10s  %,d", key,
+          pdsDataset.getCatalogEntries ().size ());
+
     return String.format ("Filter: %-10s %,d + %,d = %,d", key, filtered.size (),
-        reversed.size (), noFilter.size ());
+        reversed.size (), pdsDataset.getCatalogEntries ().size ());
   }
 }
