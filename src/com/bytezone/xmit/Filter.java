@@ -15,7 +15,7 @@ public class Filter
 
   public enum FilterMode
   {
-    FILTERED, REVERSED, OFF
+    ON, REVERSED, OFF
   }
 
   // ---------------------------------------------------------------------------------//
@@ -47,7 +47,7 @@ public class Filter
           reversed.add (catalogEntry);
     }
 
-    return filterMode == FilterMode.FILTERED ? filtered : reversed;
+    return filterMode == FilterMode.ON ? filtered : reversed;
   }
 
   // ---------------------------------------------------------------------------------//

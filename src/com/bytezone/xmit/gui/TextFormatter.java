@@ -3,6 +3,8 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.Filter.FilterMode;
+
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -16,6 +18,7 @@ public class TextFormatter
   boolean showLines;
   private String filter = "";
   boolean fullFilter;
+  FilterMode filterMode;
 
   // ---------------------------------------------------------------------------------//
   public void setShowLines (boolean showLines)
@@ -32,11 +35,12 @@ public class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
-  public void setFilter (String filter, boolean fullFilter)
+  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
     this.filter = filter;
     this.fullFilter = fullFilter;
+    this.filterMode = filterMode;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -38,7 +38,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
   private String filterValue = "";
-  private FilterMode filterMode = FilterMode.OFF;
+  private FilterMode filterMode;// = FilterMode.OFF;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -222,8 +222,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   // ---------------------------------------------------------------------------------//
   {
     items.clear ();
-    //    System.out.printf ("Selected: %s%n", selectedName);
-    //    System.out.println (filterMode);
 
     // setEmptyTableMessage
     if (filterValue.isEmpty ())
@@ -236,23 +234,27 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     for (CatalogEntry catalogEntry : filter.getCatalogEntries (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 
+    // notify filter listeners
+    for (FilterActionListener listener : filterListeners)
+      listener.filtering (items.size (), ((PdsDataset) dataset).size (), true);
+
     // select a member
     if (items.size () > 0)
       if (selectedName.isEmpty ())
         selectCatalogEntryItem (null);
       else
       {
+        boolean found = false;
         for (CatalogEntryItem catalogEntryItem : items)
           if (catalogEntryItem.getMemberName ().equals (selectedName))
           {
             selectCatalogEntryItem (catalogEntryItem);
+            found = true;
             break;
           }
+        if (!found)
+          selectCatalogEntryItem (null);
       }
-
-    // notify listeners
-    for (FilterActionListener listener : filterListeners)
-      listener.filtering (items.size (), ((PdsDataset) dataset).size (), true);
   }
 
   // ---------------------------------------------------------------------------------//

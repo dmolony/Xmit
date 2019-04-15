@@ -12,8 +12,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-public class StatusBar extends HBox implements TreeItemSelectionListener,
-    TableItemSelectionListener, FilterChangeListener, FilterActionListener
+public class StatusBar extends HBox
+    implements TreeItemSelectionListener, TableItemSelectionListener,
+    FilterChangeListener, FilterActionListener, ShowLinesListener
 // ---------------------------------------------------------------------------------//
 {
   private final Label status = new Label ();
@@ -22,11 +23,12 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   //  private final Label progressCount = new Label ();
   //  private final Label slash = new Label (" / ");
   //  private final Label progressMax = new Label ();
-  private String filter = "";
+  private String filterValue = "";
   private boolean fullFilter;
   private FilterMode filterMode;
   private final Label filterSettings = new Label ();
   public static Font statusFont = Font.font ("Monaco", 12);
+  private boolean expandInclude;
 
   // ---------------------------------------------------------------------------------//
   public StatusBar ()
@@ -98,14 +100,14 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
+  public void setFilter (String filterValue, boolean fullFilter, FilterMode filterMode)
   // ---------------------------------------------------------------------------------//
   {
-    this.filter = filter;
+    this.filterValue = filterValue;
     this.fullFilter = fullFilter;
     this.filterMode = filterMode;
 
-    if (filter.isEmpty ())
+    if (filterValue.isEmpty ())
       status.setText ("");
     setFilterText ();
   }
@@ -118,7 +120,7 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
     if (!done)
       return;
 
-    if (filter.isEmpty ())
+    if (filterValue.isEmpty ())
       status.setText ("");
     else
     {
@@ -132,7 +134,23 @@ public class StatusBar extends HBox implements TreeItemSelectionListener,
   private void setFilterText ()
   // ---------------------------------------------------------------------------------//
   {
-    filterSettings.setText (String.format ("Filter: %-10s  Mode: %-10s  Exclusive: %-10s",
-        filter, filterMode, fullFilter));
+    String showText = (filterMode != FilterMode.ON) ? "All lines"
+        : fullFilter ? "Filtered lines" : "All lines";
+    String includeText = expandInclude ? "ON" : "OFF";
+    String filterText = filterMode == FilterMode.OFF ? "OFF"
+        : filterMode == FilterMode.ON ? filterValue : "~" + filterValue;
+    filterSettings
+        .setText (String.format ("Filter: %-12s  Show: %-14s  JCL Include: %-3s ",
+            filterText, showText, includeText));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void showLinesSelected (boolean showLines, boolean stripLines,
+      boolean truncateLines, boolean expandInclude)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.expandInclude = expandInclude;
+    setFilterText ();
   }
 }

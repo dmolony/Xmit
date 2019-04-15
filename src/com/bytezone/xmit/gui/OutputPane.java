@@ -169,7 +169,7 @@ class OutputPane extends HeaderTabPane
   public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
   //----------------------------------------------------------------------------------- //
   {
-    outputTab.setFilter (filter, fullFilter);
+    outputTab.setFilter (filter, fullFilter, filterMode);
     clearText ();
     updateCurrentTab ();
   }

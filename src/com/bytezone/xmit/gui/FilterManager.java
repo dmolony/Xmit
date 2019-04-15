@@ -130,7 +130,7 @@ public class FilterManager implements SaveState
     prefs.put (PREFS_FILTER, filterValue);
     prefs.putBoolean (PREFS_FILTER_EXC, filterExclusion);
     int mode =
-        filterMode == FilterMode.FILTERED ? 0 : filterMode == FilterMode.REVERSED ? 1 : 2;
+        filterMode == FilterMode.ON ? 0 : filterMode == FilterMode.REVERSED ? 1 : 2;
     prefs.putInt (PREFS_FILTER_MODE, mode);
   }
 
@@ -142,7 +142,7 @@ public class FilterManager implements SaveState
     filterValue = prefs.get (PREFS_FILTER, "");
     filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
     int mode = prefs.getInt (PREFS_FILTER_MODE, 0);
-    filterMode = mode == 0 ? FilterMode.FILTERED
+    filterMode = mode == 0 ? FilterMode.ON
         : mode == 1 ? FilterMode.REVERSED : FilterMode.OFF;
 
     notifyListeners ();
@@ -168,12 +168,12 @@ public class FilterManager implements SaveState
   void cycleFilterMode ()
   // ---------------------------------------------------------------------------------//
   {
-    if (filterMode == FilterMode.FILTERED)
+    if (filterMode == FilterMode.ON)
       filterMode = FilterMode.REVERSED;
     else if (filterMode == FilterMode.REVERSED)
       filterMode = FilterMode.OFF;
     else
-      filterMode = FilterMode.FILTERED;
+      filterMode = FilterMode.ON;
     notifyListeners ();
   }
 
