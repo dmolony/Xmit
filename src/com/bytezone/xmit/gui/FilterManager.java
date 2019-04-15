@@ -67,8 +67,12 @@ public class FilterManager implements SaveState
   private void apply ()
   // ---------------------------------------------------------------------------------//
   {
+    if (!filterTextField.getText ().isEmpty ())
+      filterMode = FilterMode.ON;
+
     if (!filterValue.equals (filterTextField.getText ())
-        || filterExclusion != filterCheckBox.isSelected ())
+        || filterExclusion != filterCheckBox.isSelected ()
+        || filterMode != savedFilterMode)
     {
       filterValue = filterTextField.getText ();
       filterExclusion = filterCheckBox.isSelected ();
@@ -142,8 +146,8 @@ public class FilterManager implements SaveState
     filterValue = prefs.get (PREFS_FILTER, "");
     filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
     int mode = prefs.getInt (PREFS_FILTER_MODE, 0);
-    filterMode = mode == 0 ? FilterMode.ON
-        : mode == 1 ? FilterMode.REVERSED : FilterMode.OFF;
+    filterMode =
+        mode == 0 ? FilterMode.ON : mode == 1 ? FilterMode.REVERSED : FilterMode.OFF;
 
     notifyListeners ();
   }
@@ -168,6 +172,9 @@ public class FilterManager implements SaveState
   void cycleFilterMode ()
   // ---------------------------------------------------------------------------------//
   {
+    if (filterValue.isEmpty ())
+      return;
+
     if (filterMode == FilterMode.ON)
       filterMode = FilterMode.REVERSED;
     else if (filterMode == FilterMode.REVERSED)

@@ -100,12 +100,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // filter change listeners
     filterManager.addFilterListener (statusBar);
-    //    filterManager.addFilterListener (tablePane.tableHeaderBar);
+    filterManager.addFilterListener (tablePane.tableHeaderBar);
     filterManager.addFilterListener (xmitTable);
     filterManager.addFilterListener (outputPane);
 
     // filter action listeners
-    xmitTable.addFilterListener (statusBar);
+    //    xmitTable.addFilterListener (statusBar);
+    xmitTable.addFilterListener (tablePane.tableHeaderBar);
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
@@ -113,13 +114,11 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTree.addListener (outputPane.outputHeaderBar);
     xmitTree.addListener (tablePane.tableHeaderBar);
     xmitTree.addListener (xmitTable);
-    xmitTree.addListener (statusBar);
 
     // table listeners
     xmitTable.addListener (fileMenu);
     xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
-    xmitTable.addListener (statusBar);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);

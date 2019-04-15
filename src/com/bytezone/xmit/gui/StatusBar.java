@@ -1,7 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Filter.FilterMode;
 
 import javafx.geometry.Insets;
@@ -13,16 +11,10 @@ import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
 public class StatusBar extends HBox
-    implements TreeItemSelectionListener, TableItemSelectionListener,
-    FilterChangeListener, FilterActionListener, ShowLinesListener
+    implements FilterChangeListener, FilterActionListener, ShowLinesListener
 // ---------------------------------------------------------------------------------//
 {
   private final Label status = new Label ();
-  //  private final ProgressBar progressBar = new ProgressBar ();
-  //  private final HBox progressBox = new HBox (10);
-  //  private final Label progressCount = new Label ();
-  //  private final Label slash = new Label (" / ");
-  //  private final Label progressMax = new Label ();
   private String filterValue = "";
   private boolean fullFilter;
   private FilterMode filterMode;
@@ -35,9 +27,6 @@ public class StatusBar extends HBox
   // ---------------------------------------------------------------------------------//
   {
     super (10);
-
-    //    progressBox.getChildren ().addAll
-    //    (progressCount, slash, progressMax, progressBar);
 
     Region filler = new Region ();
     HBox.setHgrow (filler, Priority.ALWAYS);
@@ -52,50 +41,6 @@ public class StatusBar extends HBox
   // ---------------------------------------------------------------------------------//
   {
     status.setText (text);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  //  private void showProgress ()
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (!getChildren ().contains (progressBox))
-  //      getChildren ().add (progressBox);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  private void setProgress (int current, int max)
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    progressCount.setText (current + "");
-  //    progressMax.setText (max + "");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  private void hideProgress ()
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (getChildren ().contains (progressBox))
-  //      getChildren ().remove (progressBox);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void treeItemSelected (Dataset dataset, String name)
-  // ---------------------------------------------------------------------------------//
-  {
-    //    if (dataset == null)
-    //      status.setText ("");
-    //    else
-    //      status.setText (dataset.getDisposition ().toString ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
-  // ---------------------------------------------------------------------------------//
-  {
-    //    if (catalogEntry != null)
-    //      status.setText (catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
