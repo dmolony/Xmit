@@ -74,7 +74,7 @@ class TextFormatter
   {
     textList.clear ();
 
-    if (filter.isEmpty ())
+    if (filter.isEmpty () || filterMode != FilterMode.ON)
       plainFormat (lines);
     else
       filterFormat (lines);
