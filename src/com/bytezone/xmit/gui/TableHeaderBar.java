@@ -14,6 +14,7 @@ public class TableHeaderBar extends HeaderBar
 {
   private String filterValue;
   private Dataset dataset;
+  private FilterMode filterMode;
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -41,7 +42,7 @@ public class TableHeaderBar extends HeaderBar
   public void filtering (int found, int max, boolean done)
   // ---------------------------------------------------------------------------------//
   {
-    if (done && !filterValue.isEmpty ())
+    if (done && !filterValue.isEmpty () && filterMode == FilterMode.ON)
       rightLabel
           .setText (String.format ("%d / %d member%s", found, max, max == 1 ? "" : "s"));
   }
@@ -52,6 +53,7 @@ public class TableHeaderBar extends HeaderBar
   // ---------------------------------------------------------------------------------//
   {
     this.filterValue = filter;
+    this.filterMode = filterMode;
     setMembersLabel ();
   }
 
