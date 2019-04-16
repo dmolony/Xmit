@@ -63,9 +63,8 @@ public class StatusBar extends HBox
     String filterText = filterValue.isEmpty () ? "NONE" : filterMode == FilterMode.OFF
         ? "OFF" : filterMode == FilterMode.ON ? filterValue : "~" + filterValue;
 
-    filterSettings
-        .setText (String.format ("Filter: %-12s  Show: %-14s  JCL Include: %-3s ",
-            filterText, showText, includeText));
+    filterSettings.setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-3s ",
+        filterText, showText, includeText));
   }
 
   // ---------------------------------------------------------------------------------//

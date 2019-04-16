@@ -15,6 +15,8 @@ public class TableHeaderBar extends HeaderBar
   private String filterValue;
   private Dataset dataset;
   private FilterMode filterMode;
+  private int found;
+  private int max;
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -45,8 +47,10 @@ public class TableHeaderBar extends HeaderBar
     if (!done || filterValue.isEmpty () || filterMode == FilterMode.OFF)
       return;
 
-    rightLabel
-        .setText (String.format ("%d / %d member%s", found, max, max == 1 ? "" : "s"));
+    this.found = found;
+    this.max = max;
+
+    setMembersLabel ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -56,6 +60,7 @@ public class TableHeaderBar extends HeaderBar
   {
     this.filterValue = filter;
     this.filterMode = filterMode;
+
     setMembersLabel ();
   }
 
@@ -66,8 +71,13 @@ public class TableHeaderBar extends HeaderBar
     if (dataset != null && dataset.isPds ())
     {
       int members = ((PdsDataset) dataset).getCatalogEntries ().size ();
-      rightLabel
-          .setText (String.format ("%d member%s", members, members == 1 ? "" : "s"));
+
+      if (filterValue.isEmpty () || filterMode == FilterMode.OFF)
+        rightLabel
+            .setText (String.format ("%d member%s", members, members == 1 ? "" : "s"));
+      else
+        rightLabel.setText (
+            String.format ("%d / %d member%s", found, max, max == 1 ? "" : "s"));
     }
     else
       rightLabel.setText ("");
