@@ -27,8 +27,6 @@ import javafx.stage.Stage;
 public class XmitApp extends Application implements CodePageSelectedListener
 //---------------------------------------------------------------------------------//
 {
-  private static String[] args;
-
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
@@ -57,7 +55,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private double dividerPosition2;
 
   private final List<SaveState> saveStateList = new ArrayList<> ();
-  public boolean debug = false;
+  private boolean debug = false;
 
   private final StatusBar statusBar = new StatusBar ();
 
@@ -65,7 +63,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private Parent createContent ()
   // ---------------------------------------------------------------------------------//
   {
-    for (String s : args)
+    Parameters parameters = getParameters ();
+    for (String s : parameters.getUnnamed ())
       if ("-debug".equals (s))
         debug = true;
 
@@ -97,6 +96,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     fontManager.addFontChangeListener (outputPane);
     fontManager.addFontChangeListener (xmitTable);
     fontManager.addFontChangeListener (xmitTree);
+    fontManager.addFontChangeListener (statusBar);
 
     // filter change listeners
     filterManager.addFilterListener (statusBar);
@@ -125,8 +125,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // status bar
     mainPane.setBottom (statusBar);
-    if (args.length > 0)
-      statusBar.setText ("Args: " + args[0]);
 
     // add menus
     mainPane.setTop (menuBar);
@@ -351,7 +349,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   public static void main (String[] args)
   // ---------------------------------------------------------------------------------//
   {
-    XmitApp.args = args;
     Application.launch (args);
   }
 }

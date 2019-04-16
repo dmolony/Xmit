@@ -8,11 +8,15 @@ import com.bytezone.xmit.Utility;
 
 import javafx.scene.input.KeyCode;
 
-public class HexTab extends XmitTab
+// ----------------------------------------------------------------------------------- //
+class HexTab extends XmitTab
+//----------------------------------------------------------------------------------- //
 {
   private static final int MAX_HEX_BYTES = 0x20_000;
 
+  //----------------------------------------------------------------------------------- //
   public HexTab (OutputPane parent, String title, KeyCode keyCode)
+  //----------------------------------------------------------------------------------- //
   {
     super (title, parent, keyCode);
     textFormatter = new TextFormatterHex ();

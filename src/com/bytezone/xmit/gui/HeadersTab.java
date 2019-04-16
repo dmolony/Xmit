@@ -9,9 +9,13 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
 
-public class HeadersTab extends XmitTab
+// ----------------------------------------------------------------------------------- //
+class HeadersTab extends XmitTab
+//----------------------------------------------------------------------------------- //
 {
+  //----------------------------------------------------------------------------------- //
   public HeadersTab (OutputPane parent, String title, KeyCode keyCode)
+  //----------------------------------------------------------------------------------- //
   {
     super (title, parent, keyCode);
   }

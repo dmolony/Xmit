@@ -13,7 +13,7 @@ import com.bytezone.xmit.Utility;
 
 import javafx.scene.input.KeyCode;
 
-public class OutputTab extends XmitTab implements ShowLinesListener
+class OutputTab extends XmitTab implements ShowLinesListener
 {
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE_1 =

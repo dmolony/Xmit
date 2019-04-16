@@ -8,7 +8,9 @@ import com.bytezone.xmit.PdsMember;
 
 import javafx.scene.input.KeyCode;
 
-public class BlocksTab extends XmitTab
+// ----------------------------------------------------------------------------------- //
+class BlocksTab extends XmitTab
+//----------------------------------------------------------------------------------- //
 {
   //----------------------------------------------------------------------------------- //
   public BlocksTab (OutputPane parent, String title, KeyCode keyCode)

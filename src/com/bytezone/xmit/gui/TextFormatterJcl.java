@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 // ---------------------------------------------------------------------------------//
-public class TextFormatterJcl extends TextFormatter
+class TextFormatterJcl extends TextFormatter
 // ---------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//

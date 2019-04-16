@@ -12,8 +12,8 @@ public class TableHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
-  String filterValue;
-  Dataset dataset;
+  private String filterValue;
+  private Dataset dataset;
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -23,7 +23,10 @@ public class TableHeaderBar extends HeaderBar
     this.dataset = dataset;
 
     if (dataset == null)
+    {
       leftLabel.setText ("");
+      rightLabel.setText ("");
+    }
     else
     {
       Reader reader = dataset.getReader ();
@@ -31,6 +34,25 @@ public class TableHeaderBar extends HeaderBar
       leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void filtering (int found, int max, boolean done)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (done && !filterValue.isEmpty ())
+      rightLabel
+          .setText (String.format ("%d / %d member%s", found, max, max == 1 ? "" : "s"));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.filterValue = filter;
+    setMembersLabel ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -45,31 +67,5 @@ public class TableHeaderBar extends HeaderBar
     }
     else
       rightLabel.setText ("");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void filtering (int found, int max, boolean done)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (done && !filterValue.isEmpty ())
-    {
-      //      if (filterValue.isEmpty ())
-      //      {
-      //        rightLabel.setText (String.format ("%d member%s", max, max == 1 ? "" : "s"));
-      //      }
-      //      else
-      rightLabel
-          .setText (String.format ("%d / %d member%s", found, max, max == 1 ? "" : "s"));
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.filterValue = filter;
-    setMembersLabel ();
   }
 }

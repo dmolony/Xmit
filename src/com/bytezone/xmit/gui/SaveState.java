@@ -1,6 +1,6 @@
 package com.bytezone.xmit.gui;
 
-public interface SaveState
+interface SaveState
 {
   void save ();
 

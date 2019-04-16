@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 // ---------------------------------------------------------------------------------//
-public class TextFormatterHex extends TextFormatter
+class TextFormatterHex extends TextFormatter
 //---------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//

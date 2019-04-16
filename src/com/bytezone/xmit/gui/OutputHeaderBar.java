@@ -5,7 +5,7 @@ import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Dataset;
 
 // ----------------------------------------------------------------------------------- //
-public class OutputHeaderBar extends HeaderBar implements TreeItemSelectionListener
+class OutputHeaderBar extends HeaderBar implements TreeItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
   private final OutputPane parent;

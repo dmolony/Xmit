@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 // ---------------------------------------------------------------------------------//
-public class TextFormatter
+class TextFormatter
 // ---------------------------------------------------------------------------------//
 {
   final List<Text> textList = new ArrayList<> ();

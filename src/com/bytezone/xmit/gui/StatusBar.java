@@ -11,15 +11,15 @@ import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
 public class StatusBar extends HBox
-    implements FilterChangeListener, FilterActionListener, ShowLinesListener
+    implements FilterChangeListener, ShowLinesListener, FontChangeListener
 // ---------------------------------------------------------------------------------//
 {
   private final Label status = new Label ();
+  private final Label filterSettings = new Label ();
+
   private String filterValue = "";
   private boolean fullFilter;
   private FilterMode filterMode;
-  private final Label filterSettings = new Label ();
-  public static Font statusFont = Font.font ("Monaco", 12);
   private boolean expandInclude;
 
   // ---------------------------------------------------------------------------------//
@@ -32,12 +32,10 @@ public class StatusBar extends HBox
     HBox.setHgrow (filler, Priority.ALWAYS);
     getChildren ().addAll (status, filler, filterSettings);
     setPadding (new Insets (5));
-    status.setFont (statusFont);
-    filterSettings.setFont (statusFont);
   }
 
   // ---------------------------------------------------------------------------------//
-  void setText (String text)
+  void setStatus (String text)
   // ---------------------------------------------------------------------------------//
   {
     status.setText (text);
@@ -52,27 +50,7 @@ public class StatusBar extends HBox
     this.fullFilter = fullFilter;
     this.filterMode = filterMode;
 
-    if (filterValue.isEmpty ())
-      status.setText ("");
     setFilterText ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void filtering (int found, int max, boolean done)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (!done)
-      return;
-
-    if (filterValue.isEmpty ())
-      status.setText ("");
-    else
-    {
-      String mode = filterMode.toString ();
-      status.setText (String.format ("%s found %d member%s from %d", mode, found,
-          (found == 1 ? "" : "s"), max));
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -82,8 +60,9 @@ public class StatusBar extends HBox
     String showText = (filterMode != FilterMode.ON) ? "All lines"
         : fullFilter ? "Filtered lines" : "All lines";
     String includeText = expandInclude ? "ON" : "OFF";
-    String filterText = filterMode == FilterMode.OFF ? "OFF"
-        : filterMode == FilterMode.ON ? filterValue : "~" + filterValue;
+    String filterText = filterValue.isEmpty () ? "NONE" : filterMode == FilterMode.OFF
+        ? "OFF" : filterMode == FilterMode.ON ? filterValue : "~" + filterValue;
+
     filterSettings
         .setText (String.format ("Filter: %-12s  Show: %-14s  JCL Include: %-3s ",
             filterText, showText, includeText));
@@ -97,5 +76,14 @@ public class StatusBar extends HBox
   {
     this.expandInclude = expandInclude;
     setFilterText ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setFont (Font font)
+  // ---------------------------------------------------------------------------------//
+  {
+    status.setFont (font);
+    filterSettings.setFont (font);
   }
 }

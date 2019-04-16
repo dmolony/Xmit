@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
-public class FilterManager implements SaveState
+class FilterManager implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -152,6 +152,14 @@ public class FilterManager implements SaveState
     notifyListeners ();
   }
 
+  // ---------------------------------------------------------------------------------//
+  void toggleFilterExclusion ()
+  // ---------------------------------------------------------------------------------//
+  {
+    filterExclusion = !filterExclusion;
+    notifyListeners ();
+  }
+
   //---------------------------------------------------------------------------------//
   void keyPressed (KeyEvent keyEvent)
   //---------------------------------------------------------------------------------//
@@ -161,15 +169,7 @@ public class FilterManager implements SaveState
   }
 
   // ---------------------------------------------------------------------------------//
-  void toggleFilterExclusion ()
-  // ---------------------------------------------------------------------------------//
-  {
-    filterExclusion = !filterExclusion;
-    notifyListeners ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void cycleFilterMode ()
+  private void cycleFilterMode ()
   // ---------------------------------------------------------------------------------//
   {
     if (filterValue.isEmpty ())

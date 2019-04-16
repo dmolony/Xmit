@@ -1,7 +1,7 @@
 package com.bytezone.xmit.gui;
 
 // ---------------------------------------------------------------------------------//
-public interface ShowLinesListener
+interface ShowLinesListener
 //---------------------------------------------------------------------------------//
 {
   public void showLinesSelected (boolean showLines, boolean stripLines,
