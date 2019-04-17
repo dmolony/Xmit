@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Utility;
@@ -179,9 +178,9 @@ class OutputTab extends XmitTab implements ShowLinesListener
   }
 
   //----------------------------------------------------------------------------------- //
-  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
+  public void setFilter (String filter, boolean fullFilter, boolean filterReverse)
   //----------------------------------------------------------------------------------- //
   {
-    textFormatter.setFilter (filter, fullFilter, filterMode);
+    textFormatter.setFilter (filter, fullFilter, filterReverse);
   }
 }

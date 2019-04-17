@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.Filter.FilterMode;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -29,19 +26,21 @@ class FilterManager implements SaveState
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   private static final String PREFS_FILTER = "Filter";
   private static final String PREFS_FILTER_EXC = "FilterExc";
-  private static final String PREFS_FILTER_MODE = "FilterMode";
+  //  private static final String PREFS_FILTER_MODE = "FilterMode";
+  private static final String PREFS_FILTER_REVERSE = "FilterReverse";
 
   private final List<FilterChangeListener> listeners = new ArrayList<> ();
   private Stage stage;
   private final TextField filterTextField = new TextField ();
-  private final CheckBox filterCheckBox = new CheckBox ();
+  private final CheckBox filterExclusionCheckBox = new CheckBox ();
+  private final CheckBox filterReverseCheckBox = new CheckBox ();
 
   private String filterValue;
   private String savedFilterValue;
   private boolean filterExclusion;
   private boolean savedFilterExclusion;
-  private FilterMode filterMode;
-  private FilterMode savedFilterMode;
+  private boolean filterReverse;
+  private boolean savedFilterReverse;
 
   //---------------------------------------------------------------------------------//
   void showWindow ()
@@ -52,12 +51,14 @@ class FilterManager implements SaveState
 
     savedFilterValue = filterValue;
     savedFilterExclusion = filterExclusion;
-    savedFilterMode = filterMode;
+    savedFilterReverse = filterReverse;
 
     filterTextField.setText (filterValue);
     filterTextField.requestFocus ();
     filterTextField.selectAll ();
-    filterCheckBox.setSelected (filterExclusion);
+
+    filterExclusionCheckBox.setSelected (filterExclusion);
+    filterReverseCheckBox.setSelected (filterReverse);
 
     stage.show ();
     stage.toFront ();
@@ -67,15 +68,16 @@ class FilterManager implements SaveState
   private void apply ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filterTextField.getText ().isEmpty ())
-      filterMode = FilterMode.ON;
+    //    if (!filterTextField.getText ().isEmpty ())
+    //      filterMode = FilterMode.ON;
 
     if (!filterValue.equals (filterTextField.getText ())
-        || filterExclusion != filterCheckBox.isSelected ()
-        || filterMode != savedFilterMode)
+        || filterExclusion != filterExclusionCheckBox.isSelected ()
+        || filterReverse != filterReverseCheckBox.isSelected ())
     {
       filterValue = filterTextField.getText ();
-      filterExclusion = filterCheckBox.isSelected ();
+      filterExclusion = filterExclusionCheckBox.isSelected ();
+      filterReverse = filterReverseCheckBox.isSelected ();
 
       notifyListeners ();
     }
@@ -86,11 +88,11 @@ class FilterManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     if (!filterValue.equals (savedFilterValue) || filterExclusion != savedFilterExclusion
-        || filterMode != savedFilterMode)
+        || filterReverse != savedFilterReverse)
     {
       filterValue = savedFilterValue;
       filterExclusion = savedFilterExclusion;
-      filterMode = savedFilterMode;
+      filterReverse = savedFilterReverse;
 
       notifyListeners ();
     }
@@ -111,7 +113,7 @@ class FilterManager implements SaveState
   {
     savedFilterValue = "";
     savedFilterExclusion = false;
-    savedFilterMode = FilterMode.OFF;
+    savedFilterReverse = false;
 
     cancel ();
   }
@@ -133,9 +135,11 @@ class FilterManager implements SaveState
   {
     prefs.put (PREFS_FILTER, filterValue);
     prefs.putBoolean (PREFS_FILTER_EXC, filterExclusion);
-    int mode =
-        filterMode == FilterMode.ON ? 0 : filterMode == FilterMode.REVERSED ? 1 : 2;
-    prefs.putInt (PREFS_FILTER_MODE, mode);
+    prefs.putBoolean (PREFS_FILTER_REVERSE, filterReverse);
+
+    //    int mode =
+    //        filterMode == FilterMode.ON ? 0 : filterMode == FilterMode.REVERSED ? 1 : 2;
+    //    prefs.putInt (PREFS_FILTER_MODE, mode);
   }
 
   //---------------------------------------------------------------------------------//
@@ -145,9 +149,10 @@ class FilterManager implements SaveState
   {
     filterValue = prefs.get (PREFS_FILTER, "");
     filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
-    int mode = prefs.getInt (PREFS_FILTER_MODE, 0);
-    filterMode =
-        mode == 0 ? FilterMode.ON : mode == 1 ? FilterMode.REVERSED : FilterMode.OFF;
+    filterReverse = prefs.getBoolean (PREFS_FILTER_REVERSE, false);
+    //    int mode = prefs.getInt (PREFS_FILTER_MODE, 0);
+    //    filterMode =
+    //        mode == 0 ? FilterMode.ON : mode == 1 ? FilterMode.REVERSED : FilterMode.OFF;
 
     notifyListeners ();
   }
@@ -164,32 +169,31 @@ class FilterManager implements SaveState
   void keyPressed (KeyEvent keyEvent)
   //---------------------------------------------------------------------------------//
   {
-    if (keyEvent.getCode () == KeyCode.F && !keyEvent.isMetaDown ())
-      cycleFilterMode ();
+    //    if (keyEvent.getCode () == KeyCode.F && !keyEvent.isMetaDown ())
+    //      toggleFilter ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void cycleFilterMode ()
+  //  private void toggleFilter ()
   // ---------------------------------------------------------------------------------//
-  {
-    if (filterValue.isEmpty ())
-      return;
-
-    if (filterMode == FilterMode.ON)
-      filterMode = FilterMode.REVERSED;
-    else if (filterMode == FilterMode.REVERSED)
-      filterMode = FilterMode.OFF;
-    else
-      filterMode = FilterMode.ON;
-    notifyListeners ();
-  }
+  //  {
+  //    if (filterValue.isEmpty ())
+  //      return;
+  //
+  //    if (filterMode == FilterMode.ON)
+  //      filterMode = FilterMode.OFF;
+  //    else
+  //      filterMode = FilterMode.ON;
+  //
+  //    notifyListeners ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void notifyListeners ()
   // ---------------------------------------------------------------------------------//
   {
     for (FilterChangeListener listener : listeners)
-      listener.setFilter (filterValue, filterExclusion, filterMode);
+      listener.setFilter (filterValue, filterExclusion, filterReverse);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -210,6 +214,7 @@ class FilterManager implements SaveState
     BorderPane borderPane = new BorderPane ();
     Label lblText = new Label ("Filter text");
     Label lblExclusive = new Label ("Exclusive");
+    Label lblReverse = new Label ("Reverse");
     filterTextField.setPrefWidth (300);
 
     Button btnApply = getButton ("Apply");
@@ -227,7 +232,13 @@ class FilterManager implements SaveState
     textBox2.setPrefHeight (30);
     textBox2.setPadding (new Insets (6, 10, 6, 20));
     textBox2.setAlignment (Pos.CENTER_LEFT);
-    textBox2.getChildren ().addAll (lblExclusive, filterCheckBox);
+    textBox2.getChildren ().addAll (lblExclusive, filterExclusionCheckBox);
+
+    HBox textBox3 = new HBox (10);
+    textBox2.setPrefHeight (30);
+    textBox2.setPadding (new Insets (6, 10, 6, 20));
+    textBox2.setAlignment (Pos.CENTER_LEFT);
+    textBox2.getChildren ().addAll (lblReverse, filterReverseCheckBox);
 
     VBox vBox = new VBox (10);
     vBox.setPrefHeight (100);

@@ -1,7 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
 
@@ -14,7 +13,7 @@ public class TableHeaderBar extends HeaderBar
 {
   private String filterValue;
   private Dataset dataset;
-  private FilterMode filterMode;
+  private boolean filterReverse;
   private int found;
   private int max;
 
@@ -44,7 +43,7 @@ public class TableHeaderBar extends HeaderBar
   public void filtering (int found, int max, boolean done)
   // ---------------------------------------------------------------------------------//
   {
-    if (!done || filterValue.isEmpty () || filterMode == FilterMode.OFF)
+    if (!done || filterValue.isEmpty ())
       return;
 
     this.found = found;
@@ -55,11 +54,12 @@ public class TableHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter, boolean fullFilter, FilterMode filterMode)
+  public void setFilter (String filter, boolean fullFilter, boolean filterReverse)
   // ---------------------------------------------------------------------------------//
   {
     this.filterValue = filter;
-    this.filterMode = filterMode;
+    //    this.fullFilter = fullFilter;
+    this.filterReverse = filterReverse;
 
     setMembersLabel ();
   }
@@ -72,7 +72,7 @@ public class TableHeaderBar extends HeaderBar
     {
       int members = ((PdsDataset) dataset).getCatalogEntries ().size ();
 
-      if (filterValue.isEmpty () || filterMode == FilterMode.OFF)
+      if (filterValue.isEmpty ())
         rightLabel
             .setText (String.format ("%d member%s", members, members == 1 ? "" : "s"));
       else

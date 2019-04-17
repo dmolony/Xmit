@@ -1,7 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import com.bytezone.xmit.Filter.FilterMode;
-
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -19,7 +17,7 @@ public class StatusBar extends HBox
 
   private String filterValue = "";
   private boolean fullFilter;
-  private FilterMode filterMode;
+  private boolean filterReverse;
   private boolean expandInclude;
 
   // ---------------------------------------------------------------------------------//
@@ -43,12 +41,12 @@ public class StatusBar extends HBox
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filterValue, boolean fullFilter, FilterMode filterMode)
+  public void setFilter (String filterValue, boolean fullFilter, boolean filterReverse)
   // ---------------------------------------------------------------------------------//
   {
     this.filterValue = filterValue;
     this.fullFilter = fullFilter;
-    this.filterMode = filterMode;
+    this.filterReverse = filterReverse;
 
     setFilterText ();
   }
@@ -57,11 +55,11 @@ public class StatusBar extends HBox
   private void setFilterText ()
   // ---------------------------------------------------------------------------------//
   {
-    String showText = (filterMode != FilterMode.ON) ? "All lines"
+    String showText = (!filterValue.isEmpty ()) ? "All lines"
         : fullFilter ? "Filtered lines" : "All lines";
     String includeText = expandInclude ? "ON" : "OFF";
-    String filterText = filterValue.isEmpty () ? "NONE" : filterMode == FilterMode.OFF
-        ? "OFF" : filterMode == FilterMode.ON ? filterValue : "~" + filterValue;
+    String filterText =
+        filterValue.isEmpty () ? "NONE" : (filterReverse ? "~" : "") + filterValue;
 
     filterSettings.setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-3s ",
         filterText, showText, includeText));

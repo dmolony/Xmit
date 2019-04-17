@@ -38,7 +38,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
   private String filterValue = "";
-  private FilterMode filterMode;// = FilterMode.OFF;
+  private boolean filterReverse;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -200,14 +200,14 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filterValue, boolean fullFilter, FilterMode filterMode)
+  public void setFilter (String filterValue, boolean fullFilter, boolean filterReverse)
   // ---------------------------------------------------------------------------------//
   {
-    if (filterValue.equals (this.filterValue) && this.filterMode == filterMode)
+    if (filterValue.equals (this.filterValue) && this.filterReverse == filterReverse)
       return;
 
     this.filterValue = filterValue;
-    this.filterMode = filterMode;
+    this.filterReverse = filterReverse;
 
     if (dataset != null && dataset.isPds ())
     {
@@ -231,6 +231,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
     // build items based on filter value
     Filter filter = ((PdsDataset) dataset).getFilter (filterValue);
+    FilterMode filterMode = filterValue.isEmpty () ? FilterMode.OFF
+        : filterReverse ? FilterMode.REVERSED : FilterMode.ON;
     for (CatalogEntry catalogEntry : filter.getCatalogEntries (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 

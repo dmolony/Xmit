@@ -2,7 +2,6 @@ package com.bytezone.xmit.gui;
 
 import java.util.List;
 
-import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.Utility;
 
 import javafx.scene.paint.Color;
@@ -17,8 +16,7 @@ class TextFormatterJcl extends TextFormatter
   public List<Text> format (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    if ((usingFilter () && filterMode == FilterMode.ON)     // show filter instead
-        || !Utility.isJCL (lines))
+    if (usingFilter () || !Utility.isJCL (lines))
       return super.format (lines);
 
     textList.clear ();
