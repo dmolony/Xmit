@@ -4,5 +4,6 @@ package com.bytezone.xmit.gui;
 interface FilterChangeListener
 //----------------------------------------------------------------------------------- //
 {
-  public void setFilter (String filter, boolean fullFilter, boolean filterReverse);
+  public void setFilter (boolean active, String filter, boolean fullFilter,
+      boolean filterReverse);
 }

@@ -14,6 +14,7 @@ public class TableHeaderBar extends HeaderBar
   private String filterValue;
   private Dataset dataset;
   private boolean filterReverse;
+  private boolean filterActive;
   private int found;
   private int max;
 
@@ -54,12 +55,13 @@ public class TableHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filter, boolean fullFilter, boolean filterReverse)
+  public void setFilter (boolean filterActive, String filter, boolean fullFilter,
+      boolean filterReverse)
   // ---------------------------------------------------------------------------------//
   {
     this.filterValue = filter;
-    //    this.fullFilter = fullFilter;
     this.filterReverse = filterReverse;
+    this.filterActive = filterActive;
 
     setMembersLabel ();
   }
@@ -72,7 +74,7 @@ public class TableHeaderBar extends HeaderBar
     {
       int members = ((PdsDataset) dataset).getCatalogEntries ().size ();
 
-      if (filterValue.isEmpty ())
+      if (filterValue.isEmpty () || !filterActive)
         rightLabel
             .setText (String.format ("%d member%s", members, members == 1 ? "" : "s"));
       else

@@ -165,10 +165,11 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void setFilter (String filter, boolean fullFilter, boolean filterReverse)
+  public void setFilter (boolean active, String filter, boolean fullFilter,
+      boolean filterReverse)
   //----------------------------------------------------------------------------------- //
   {
-    outputTab.setFilter (filter, fullFilter, filterReverse);
+    outputTab.setFilter (active, filter, fullFilter, filterReverse);
     clearText ();
     updateCurrentTab ();
   }

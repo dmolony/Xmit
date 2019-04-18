@@ -15,10 +15,12 @@ public class StatusBar extends HBox
   private final Label status = new Label ();
   private final Label filterSettings = new Label ();
 
+  private boolean filterActive;
   private String filterValue = "";
   private boolean fullFilter;
-  private boolean filterReverse;
-  private boolean expandInclude;
+  private boolean reverseFilter;
+
+  private boolean expandJclInclude;
 
   // ---------------------------------------------------------------------------------//
   public StatusBar ()
@@ -33,21 +35,26 @@ public class StatusBar extends HBox
   }
 
   // ---------------------------------------------------------------------------------//
-  void setStatus (String text)
+  @Override
+  public void setFilter (boolean filterActive, String filterValue, boolean fullFilter,
+      boolean reverseFilter)
   // ---------------------------------------------------------------------------------//
   {
-    status.setText (text);
+    this.filterActive = filterActive;
+    this.filterValue = filterValue;
+    this.fullFilter = fullFilter;
+    this.reverseFilter = reverseFilter;
+
+    setFilterText ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (String filterValue, boolean fullFilter, boolean filterReverse)
+  public void showLinesSelected (boolean showLines, boolean stripLines,
+      boolean truncateLines, boolean expandJclInclude)
   // ---------------------------------------------------------------------------------//
   {
-    this.filterValue = filterValue;
-    this.fullFilter = fullFilter;
-    this.filterReverse = filterReverse;
-
+    this.expandJclInclude = expandJclInclude;
     setFilterText ();
   }
 
@@ -55,24 +62,15 @@ public class StatusBar extends HBox
   private void setFilterText ()
   // ---------------------------------------------------------------------------------//
   {
-    String showText = (!filterValue.isEmpty ()) ? "All lines"
-        : fullFilter ? "Filtered lines" : "All lines";
-    String includeText = expandInclude ? "ON" : "OFF";
-    String filterText =
-        filterValue.isEmpty () ? "NONE" : (filterReverse ? "~" : "") + filterValue;
+    String filterText = filterActive
+        ? filterValue.isEmpty () ? "NONE" : (reverseFilter ? "~" : "") + filterValue
+        : "OFF";
+    String showText = (filterActive && !filterValue.isEmpty ())
+        ? fullFilter ? "Filtered lines" : "All lines" : "All lines";
+    String includeText = expandJclInclude ? "ON" : "OFF";
 
     filterSettings.setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-3s ",
         filterText, showText, includeText));
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void showLinesSelected (boolean showLines, boolean stripLines,
-      boolean truncateLines, boolean expandInclude)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.expandInclude = expandInclude;
-    setFilterText ();
   }
 
   // ---------------------------------------------------------------------------------//

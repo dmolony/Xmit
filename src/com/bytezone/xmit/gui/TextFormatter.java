@@ -17,6 +17,7 @@ class TextFormatter
   private String filter = "";
   boolean fullFilter;
   boolean filterReverse;
+  boolean filterActive;
 
   // ---------------------------------------------------------------------------------//
   public void setShowLines (boolean showLines)
@@ -33,12 +34,14 @@ class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
-  public void setFilter (String filter, boolean fullFilter, boolean filterReverse)
+  public void setFilter (boolean active, String filter, boolean fullFilter,
+      boolean filterReverse)
   // ---------------------------------------------------------------------------------//
   {
     this.filter = filter;
     this.fullFilter = fullFilter;
     this.filterReverse = filterReverse;
+    this.filterActive = active;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -52,7 +55,7 @@ class TextFormatter
   public boolean usingFilter ()
   // ---------------------------------------------------------------------------------//
   {
-    return !filter.isEmpty ();
+    return !filter.isEmpty () && filterActive;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -72,7 +75,7 @@ class TextFormatter
   {
     textList.clear ();
 
-    if (filter.isEmpty ())
+    if (filter.isEmpty () || !filterActive)
       plainFormat (lines);
     else
       filterFormat (lines);
