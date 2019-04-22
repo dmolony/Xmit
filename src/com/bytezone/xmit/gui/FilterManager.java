@@ -37,13 +37,13 @@ class FilterManager implements SaveState
   private final CheckBox filterReverseCheckBox = new CheckBox ();
 
   private String filterValue;
-  private String savedFilterValue;
   private boolean filterExclusion;
-  private boolean savedFilterExclusion;
   private boolean filterReverse;
-  private boolean savedFilterReverse;
-
   private boolean filterActive;
+
+  private String savedFilterValue;
+  private boolean savedFilterExclusion;
+  private boolean savedFilterReverse;
   private boolean savedFilterActive;
 
   //---------------------------------------------------------------------------------//
@@ -53,10 +53,10 @@ class FilterManager implements SaveState
     if (stage == null)
       buildStage ();
 
-    savedFilterActive = filterActive;
     savedFilterValue = filterValue;
     savedFilterExclusion = filterExclusion;
     savedFilterReverse = filterReverse;
+    savedFilterActive = filterActive;
 
     filterTextField.setText (filterValue);
     filterTextField.requestFocus ();
@@ -80,7 +80,6 @@ class FilterManager implements SaveState
       filterValue = filterTextField.getText ();
       filterExclusion = filterExclusionCheckBox.isSelected ();
       filterReverse = filterReverseCheckBox.isSelected ();
-
       filterActive = !filterValue.isEmpty ();
 
       notifyListeners ();
@@ -172,7 +171,10 @@ class FilterManager implements SaveState
   {
     if (keyEvent.getCode () == KeyCode.F && !keyEvent.isMetaDown ())
     {
-      filterActive = !filterActive;
+      if (keyEvent.isShiftDown ())
+        filterReverse = !filterReverse;
+      else
+        filterActive = !filterActive;
       notifyListeners ();
     }
   }
@@ -203,7 +205,7 @@ class FilterManager implements SaveState
     BorderPane borderPane = new BorderPane ();
     Label lblText = new Label ("Filter text");
     Label lblExclusive = new Label ("Exclusive");
-    Label lblReverse = new Label ("Reverse");
+    //    Label lblReverse = new Label ("Reverse");
     filterTextField.setPrefWidth (300);
 
     Button btnApply = getButton ("Apply");
@@ -223,11 +225,11 @@ class FilterManager implements SaveState
     textBox2.setAlignment (Pos.CENTER_LEFT);
     textBox2.getChildren ().addAll (lblExclusive, filterExclusionCheckBox);
 
-    HBox textBox3 = new HBox (10);
-    textBox2.setPrefHeight (30);
-    textBox2.setPadding (new Insets (6, 10, 6, 20));
-    textBox2.setAlignment (Pos.CENTER_LEFT);
-    textBox2.getChildren ().addAll (lblReverse, filterReverseCheckBox);
+    //    HBox textBox3 = new HBox (10);
+    //    textBox2.setPrefHeight (30);
+    //    textBox2.setPadding (new Insets (6, 10, 6, 20));
+    //    textBox2.setAlignment (Pos.CENTER_LEFT);
+    //    textBox2.getChildren ().addAll (lblReverse, filterReverseCheckBox);
 
     VBox vBox = new VBox (10);
     vBox.setPrefHeight (100);

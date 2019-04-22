@@ -96,6 +96,23 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     }
   }
 
+  // this should go
+  // ---------------------------------------------------------------------------------//
+  void addListener (TableItemSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!selectionListeners.contains (listener))
+      selectionListeners.add (listener);
+  }
+
+  // this should go
+  // ---------------------------------------------------------------------------------//
+  void removeListener (TableItemSelectionListener listener)
+  // ---------------------------------------------------------------------------------//
+  {
+    selectionListeners.remove (listener);
+  }
+
   // ---------------------------------------------------------------------------------//
   private void setVisibleColumns (ModuleType moduleType)
   // ---------------------------------------------------------------------------------//
@@ -144,23 +161,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
       if (name.equals (catalogEntryItem.getMemberName ()))
         return catalogEntryItem;
     return null;
-  }
-
-  // this will go
-  // ---------------------------------------------------------------------------------//
-  void addListener (TableItemSelectionListener listener)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (!selectionListeners.contains (listener))
-      selectionListeners.add (listener);
-  }
-
-  // this will go
-  // ---------------------------------------------------------------------------------//
-  void removeListener (TableItemSelectionListener listener)
-  // ---------------------------------------------------------------------------------//
-  {
-    selectionListeners.remove (listener);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -279,10 +279,10 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     if (items.size () == 0)
       return;
 
-    if (catalogEntryItem == null)
-      getSelectionModel ().select (0);                      // select by index
-    else
+    if (catalogEntryItem != null)
       getSelectionModel ().select (catalogEntryItem);       // select by item
+    else
+      getSelectionModel ().select (0);                      // select by index
 
     scrollTo (getSelectionModel ().getSelectedIndex ());
   }
