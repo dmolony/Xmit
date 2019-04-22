@@ -37,9 +37,10 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
-  private String filterValue = "";
-  private boolean filterReverse;
-  private boolean filterActive;
+  //  private String filterValue = "";
+  //  private boolean filterReverse;
+  //  private boolean filterActive;
+  private final FilterStatus filterStatus = new FilterStatus ();
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -201,17 +202,18 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (boolean filterActive, String filterValue, boolean fullFilter,
-      boolean filterReverse)
+  public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    if (filterValue.equals (this.filterValue) && this.filterReverse == filterReverse
-        && this.filterActive == filterActive)
+    //    if (filterValue.equals (this.filterValue) && this.filterReverse == filterReverse
+    //        && this.filterActive == filterActive)
+    if (this.filterStatus.matches (filterStatus))
       return;
 
-    this.filterValue = filterValue;
-    this.filterReverse = filterReverse;
-    this.filterActive = filterActive;
+    //    this.filterValue = filterValue;
+    //    this.filterReverse = filterReverse;
+    //    this.filterActive = filterActive;
+    this.filterStatus.copy (filterStatus);
 
     if (dataset != null && dataset.isPds ())
     {
@@ -228,15 +230,17 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     items.clear ();
 
     // setEmptyTableMessage
-    if (filterValue.isEmpty ())
+    if (filterStatus.filterValue.isEmpty ())
       setPlaceholder (new Label (String.format ("No members to display")));
     else
-      setPlaceholder (new Label (String.format ("No members contain '%s'", filterValue)));
+      setPlaceholder (new Label (
+          String.format ("No members contain '%s'", filterStatus.filterValue)));
 
     // build items based on filter value
-    Filter filter = ((PdsDataset) dataset).getFilter (filterValue);
-    FilterMode filterMode = filterValue.isEmpty () || !filterActive ? FilterMode.OFF
-        : filterReverse ? FilterMode.REVERSED : FilterMode.ON;
+    Filter filter = ((PdsDataset) dataset).getFilter (filterStatus.filterValue);
+    FilterMode filterMode =
+        filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
+            : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
     for (CatalogEntry catalogEntry : filter.getCatalogEntries (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 

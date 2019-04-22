@@ -14,10 +14,11 @@ class TextFormatter
   final Color baseColor = Color.GREEN;
   final Color numberColor = Color.LIGHTSEAGREEN;
   boolean showLines;
-  private String filter = "";
-  boolean fullFilter;
-  boolean filterReverse;
-  boolean filterActive;
+  //  private String filter = "";
+  //  boolean fullFilter;
+  //  boolean filterReverse;
+  //  boolean filterActive;
+  private final FilterStatus filterStatus = new FilterStatus ();
 
   // ---------------------------------------------------------------------------------//
   public void setShowLines (boolean showLines)
@@ -34,28 +35,28 @@ class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
-  public void setFilter (boolean active, String filter, boolean fullFilter,
-      boolean filterReverse)
+  public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.filter = filter;
-    this.fullFilter = fullFilter;
-    this.filterReverse = filterReverse;
-    this.filterActive = active;
+    //    this.filter = filter;
+    //    this.fullFilter = fullFilter;
+    //    this.filterReverse = filterReverse;
+    //    this.filterActive = active;               <--- why was this always active?
+    this.filterStatus.copy (filterStatus);
   }
 
   // ---------------------------------------------------------------------------------//
   public String getFilter ()
   // ---------------------------------------------------------------------------------//
   {
-    return filter;
+    return filterStatus.filterValue;
   }
 
   // ---------------------------------------------------------------------------------//
   public boolean usingFilter ()
   // ---------------------------------------------------------------------------------//
   {
-    return !filter.isEmpty () && filterActive;
+    return !filterStatus.filterValue.isEmpty () && filterStatus.filterActive;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -75,7 +76,7 @@ class TextFormatter
   {
     textList.clear ();
 
-    if (filter.isEmpty () || !filterActive)
+    if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
       plainFormat (lines);
     else
       filterFormat (lines);
@@ -108,10 +109,10 @@ class TextFormatter
       if (showLines)
         addText (String.format ("%06d ", lineNo++), numberColor);
 
-      if (highlight (line, filter, Color.RED))
+      if (highlight (line, filterStatus.filterValue, Color.RED))
         continue;
 
-      if (fullFilter)
+      if (filterStatus.filterExclusion)
       {
         if (showLines)
           textList.remove (textList.size () - 1);

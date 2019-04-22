@@ -11,12 +11,13 @@ public class TableHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
-  private String filterValue;
+  //  private String filterValue;
   private Dataset dataset;
-  private boolean filterReverse;
-  private boolean filterActive;
+  //  private boolean filterReverse;
+  //  private boolean filterActive;
   private int found;
   private int max;
+  private final FilterStatus filterStatus = new FilterStatus ();
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -44,7 +45,7 @@ public class TableHeaderBar extends HeaderBar
   public void filtering (int found, int max, boolean done)
   // ---------------------------------------------------------------------------------//
   {
-    if (!done || filterValue.isEmpty ())
+    if (!done || filterStatus.filterValue.isEmpty ())
       return;
 
     this.found = found;
@@ -55,13 +56,13 @@ public class TableHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setFilter (boolean filterActive, String filter, boolean fullFilter,
-      boolean filterReverse)
+  public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.filterValue = filter;
-    this.filterReverse = filterReverse;
-    this.filterActive = filterActive;
+    //    this.filterValue = filter;
+    //    this.filterReverse = filterReverse;
+    //    this.filterActive = filterActive;
+    this.filterStatus.copy (filterStatus);
 
     setMembersLabel ();
   }
@@ -74,7 +75,7 @@ public class TableHeaderBar extends HeaderBar
     {
       int members = ((PdsDataset) dataset).getCatalogEntries ().size ();
 
-      if (filterValue.isEmpty () || !filterActive)
+      if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
         rightLabel
             .setText (String.format ("%d member%s", members, members == 1 ? "" : "s"));
       else

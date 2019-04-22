@@ -178,10 +178,9 @@ class OutputTab extends XmitTab implements ShowLinesListener
   }
 
   //----------------------------------------------------------------------------------- //
-  public void setFilter (boolean active, String filter, boolean fullFilter,
-      boolean filterReverse)
+  public void setFilter (FilterStatus filterStatus)
   //----------------------------------------------------------------------------------- //
   {
-    textFormatter.setFilter (active, filter, fullFilter, filterReverse);
+    textFormatter.setFilter (filterStatus);
   }
 }

@@ -25,10 +25,6 @@ class FilterManager implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-  private static final String PREFS_FILTER = "Filter";
-  private static final String PREFS_FILTER_EXC = "FilterExc";
-  private static final String PREFS_FILTER_REVERSE = "FilterReverse";
-  private static final String PREFS_FILTER_ACTIVE = "FilterActive";
 
   private final List<FilterChangeListener> listeners = new ArrayList<> ();
   private Stage stage;
@@ -36,15 +32,8 @@ class FilterManager implements SaveState
   private final CheckBox filterExclusionCheckBox = new CheckBox ();
   private final CheckBox filterReverseCheckBox = new CheckBox ();
 
-  private String filterValue;
-  private boolean filterExclusion;
-  private boolean filterReverse;
-  private boolean filterActive;
-
-  private String savedFilterValue;
-  private boolean savedFilterExclusion;
-  private boolean savedFilterReverse;
-  private boolean savedFilterActive;
+  private final FilterStatus filterStatus = new FilterStatus ();
+  private final FilterStatus savedFilterStatus = new FilterStatus ();
 
   //---------------------------------------------------------------------------------//
   void showWindow ()
@@ -53,17 +42,14 @@ class FilterManager implements SaveState
     if (stage == null)
       buildStage ();
 
-    savedFilterValue = filterValue;
-    savedFilterExclusion = filterExclusion;
-    savedFilterReverse = filterReverse;
-    savedFilterActive = filterActive;
+    savedFilterStatus.copy (filterStatus);
 
-    filterTextField.setText (filterValue);
+    filterTextField.setText (filterStatus.filterValue);
     filterTextField.requestFocus ();
     filterTextField.selectAll ();
 
-    filterExclusionCheckBox.setSelected (filterExclusion);
-    filterReverseCheckBox.setSelected (filterReverse);
+    filterExclusionCheckBox.setSelected (filterStatus.filterExclusion);
+    filterReverseCheckBox.setSelected (filterStatus.filterReverse);
 
     stage.show ();
     stage.toFront ();
@@ -73,14 +59,15 @@ class FilterManager implements SaveState
   private void apply ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filterValue.equals (filterTextField.getText ())
-        || filterExclusion != filterExclusionCheckBox.isSelected ()
-        || filterReverse != filterReverseCheckBox.isSelected ())
+    if (!filterStatus.filterValue.equals (filterTextField.getText ())
+        || filterStatus.filterExclusion != filterExclusionCheckBox.isSelected ()
+        || filterStatus.filterReverse != filterReverseCheckBox.isSelected ())
     {
-      filterValue = filterTextField.getText ();
-      filterExclusion = filterExclusionCheckBox.isSelected ();
-      filterReverse = filterReverseCheckBox.isSelected ();
-      filterActive = !filterValue.isEmpty ();
+      filterStatus.set (                            //
+          filterTextField.getText (),               //
+          filterExclusionCheckBox.isSelected (),    //
+          filterReverseCheckBox.isSelected (),      //
+          !filterTextField.getText ().isEmpty ());
 
       notifyListeners ();
     }
@@ -90,14 +77,9 @@ class FilterManager implements SaveState
   private void cancel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!filterValue.equals (savedFilterValue) || filterExclusion != savedFilterExclusion
-        || filterReverse != savedFilterReverse || filterActive != savedFilterActive)
+    if (!filterStatus.matches (savedFilterStatus))
     {
-      filterValue = savedFilterValue;
-      filterExclusion = savedFilterExclusion;
-      filterReverse = savedFilterReverse;
-      filterActive = savedFilterActive;
-
+      filterStatus.copy (savedFilterStatus);
       notifyListeners ();
     }
     stage.hide ();
@@ -115,11 +97,7 @@ class FilterManager implements SaveState
   private void remove ()
   // ---------------------------------------------------------------------------------//
   {
-    savedFilterValue = "";
-    savedFilterExclusion = false;
-    savedFilterReverse = false;
-    savedFilterActive = false;
-
+    savedFilterStatus.reset ();
     cancel ();
   }
 
@@ -138,10 +116,7 @@ class FilterManager implements SaveState
   public void save ()
   //---------------------------------------------------------------------------------//
   {
-    prefs.put (PREFS_FILTER, filterValue);
-    prefs.putBoolean (PREFS_FILTER_EXC, filterExclusion);
-    prefs.putBoolean (PREFS_FILTER_REVERSE, filterReverse);
-    prefs.putBoolean (PREFS_FILTER_ACTIVE, filterActive);
+    filterStatus.save (prefs);
   }
 
   //---------------------------------------------------------------------------------//
@@ -149,11 +124,7 @@ class FilterManager implements SaveState
   public void restore ()
   //---------------------------------------------------------------------------------//
   {
-    filterValue = prefs.get (PREFS_FILTER, "");
-    filterExclusion = prefs.getBoolean (PREFS_FILTER_EXC, false);
-    filterReverse = prefs.getBoolean (PREFS_FILTER_REVERSE, false);
-    filterActive = prefs.getBoolean (PREFS_FILTER_ACTIVE, false);
-
+    filterStatus.restore (prefs);
     notifyListeners ();
   }
 
@@ -161,7 +132,7 @@ class FilterManager implements SaveState
   void toggleFilterExclusion ()
   // ---------------------------------------------------------------------------------//
   {
-    filterExclusion = !filterExclusion;
+    filterStatus.filterExclusion = !filterStatus.filterExclusion;
     notifyListeners ();
   }
 
@@ -172,9 +143,9 @@ class FilterManager implements SaveState
     if (keyEvent.getCode () == KeyCode.F && !keyEvent.isMetaDown ())
     {
       if (keyEvent.isShiftDown ())
-        filterReverse = !filterReverse;
+        filterStatus.filterReverse = !filterStatus.filterReverse;
       else
-        filterActive = !filterActive;
+        filterStatus.filterActive = !filterStatus.filterActive;
       notifyListeners ();
     }
   }
@@ -184,7 +155,7 @@ class FilterManager implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     for (FilterChangeListener listener : listeners)
-      listener.setFilter (filterActive, filterValue, filterExclusion, filterReverse);
+      listener.setFilter (filterStatus);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -205,7 +176,6 @@ class FilterManager implements SaveState
     BorderPane borderPane = new BorderPane ();
     Label lblText = new Label ("Filter text");
     Label lblExclusive = new Label ("Exclusive");
-    //    Label lblReverse = new Label ("Reverse");
     filterTextField.setPrefWidth (300);
 
     Button btnApply = getButton ("Apply");
@@ -224,12 +194,6 @@ class FilterManager implements SaveState
     textBox2.setPadding (new Insets (6, 10, 6, 20));
     textBox2.setAlignment (Pos.CENTER_LEFT);
     textBox2.getChildren ().addAll (lblExclusive, filterExclusionCheckBox);
-
-    //    HBox textBox3 = new HBox (10);
-    //    textBox2.setPrefHeight (30);
-    //    textBox2.setPadding (new Insets (6, 10, 6, 20));
-    //    textBox2.setAlignment (Pos.CENTER_LEFT);
-    //    textBox2.getChildren ().addAll (lblReverse, filterReverseCheckBox);
 
     VBox vBox = new VBox (10);
     vBox.setPrefHeight (100);
