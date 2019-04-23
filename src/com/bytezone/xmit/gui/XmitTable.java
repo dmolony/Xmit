@@ -37,10 +37,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
-  //  private String filterValue = "";
-  //  private boolean filterReverse;
-  //  private boolean filterActive;
-  private final FilterStatus filterStatus = new FilterStatus ();
+  private FilterStatus filterStatus;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -205,15 +202,11 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    //    if (filterValue.equals (this.filterValue) && this.filterReverse == filterReverse
-    //        && this.filterActive == filterActive)
-    if (this.filterStatus.matches (filterStatus))
+    Objects.requireNonNull (filterStatus);
+    if (filterStatus.matches (this.filterStatus))
       return;
 
-    //    this.filterValue = filterValue;
-    //    this.filterReverse = filterReverse;
-    //    this.filterActive = filterActive;
-    this.filterStatus.copy (filterStatus);
+    this.filterStatus = filterStatus;
 
     if (dataset != null && dataset.isPds ())
     {

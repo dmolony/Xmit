@@ -154,8 +154,9 @@ class FilterManager implements SaveState
   private void notifyListeners ()
   // ---------------------------------------------------------------------------------//
   {
+    FilterStatus copy = new FilterStatus (filterStatus);
     for (FilterChangeListener listener : listeners)
-      listener.setFilter (filterStatus);
+      listener.setFilter (copy);
   }
 
   // ---------------------------------------------------------------------------------//

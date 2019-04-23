@@ -11,13 +11,10 @@ public class TableHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
-  //  private String filterValue;
   private Dataset dataset;
-  //  private boolean filterReverse;
-  //  private boolean filterActive;
   private int found;
   private int max;
-  private final FilterStatus filterStatus = new FilterStatus ();
+  private FilterStatus filterStatus;
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -59,11 +56,7 @@ public class TableHeaderBar extends HeaderBar
   public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.filterValue = filter;
-    //    this.filterReverse = filterReverse;
-    //    this.filterActive = filterActive;
-    this.filterStatus.copy (filterStatus);
-
+    this.filterStatus = filterStatus;
     setMembersLabel ();
   }
 

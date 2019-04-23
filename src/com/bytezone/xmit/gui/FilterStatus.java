@@ -24,6 +24,13 @@ public class FilterStatus
   }
 
   //---------------------------------------------------------------------------------//
+  FilterStatus (FilterStatus filterStatus)
+  //---------------------------------------------------------------------------------//
+  {
+    copy (filterStatus);
+  }
+
+  //---------------------------------------------------------------------------------//
   void copy (FilterStatus filterStatus)
   //---------------------------------------------------------------------------------//
   {
@@ -37,7 +44,8 @@ public class FilterStatus
   boolean matches (FilterStatus filterStatus)
   //---------------------------------------------------------------------------------//
   {
-    return this.filterValue.equals (filterStatus.filterValue)
+    return filterStatus != null       //
+        && this.filterValue.equals (filterStatus.filterValue)
         && this.filterExclusion == filterStatus.filterExclusion
         && this.filterReverse == filterStatus.filterReverse
         && this.filterActive == filterStatus.filterActive;

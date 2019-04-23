@@ -19,7 +19,7 @@ public class StatusBar extends HBox
   //  private String filterValue = "";
   //  private boolean fullFilter;
   //  private boolean reverseFilter;
-  private final FilterStatus filterStatus = new FilterStatus ();
+  private FilterStatus filterStatus;
 
   private boolean expandJclInclude;
 
@@ -40,12 +40,7 @@ public class StatusBar extends HBox
   public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.filterActive = filterActive;
-    //    this.filterValue = filterValue;
-    //    this.fullFilter = fullFilter;
-    //    this.reverseFilter = reverseFilter;
-    this.filterStatus.copy (filterStatus);
-
+    this.filterStatus = filterStatus;
     setFilterText ();
   }
 
