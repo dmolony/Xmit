@@ -98,14 +98,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
     fontManager.addFontChangeListener (xmitTree);
     fontManager.addFontChangeListener (statusBar);
 
-    // filter change listeners
+    // filter change listeners (filter parameters)
     filterManager.addFilterListener (statusBar);
     filterManager.addFilterListener (tablePane.tableHeaderBar);
     filterManager.addFilterListener (xmitTable);
     filterManager.addFilterListener (outputPane);
 
-    // filter action listeners
-    //    xmitTable.addFilterListener (statusBar);
+    // filter action listeners (filter results)
     xmitTable.addFilterListener (tablePane.tableHeaderBar);
 
     // treeview listeners
@@ -117,7 +116,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // table listeners
     xmitTable.addListener (fileMenu);
-    xmitTable.addListener (viewMenu);
     xmitTable.addListener (outputPane);
 
     BorderPane mainPane = new BorderPane ();

@@ -12,15 +12,10 @@ public class StatusBar extends HBox
     implements FilterChangeListener, ShowLinesListener, FontChangeListener
 // ---------------------------------------------------------------------------------//
 {
-  private final Label status = new Label ();
-  private final Label filterSettings = new Label ();
+  private final Label statusMessage = new Label ();
+  private final Label statusDisplay = new Label ();
 
-  //  private boolean filterActive;
-  //  private String filterValue = "";
-  //  private boolean fullFilter;
-  //  private boolean reverseFilter;
   private FilterStatus filterStatus;
-
   private boolean expandJclInclude;
 
   // ---------------------------------------------------------------------------------//
@@ -31,7 +26,7 @@ public class StatusBar extends HBox
 
     Region filler = new Region ();
     HBox.setHgrow (filler, Priority.ALWAYS);
-    getChildren ().addAll (status, filler, filterSettings);
+    getChildren ().addAll (statusMessage, filler, statusDisplay);
     setPadding (new Insets (5));
   }
 
@@ -41,21 +36,20 @@ public class StatusBar extends HBox
   // ---------------------------------------------------------------------------------//
   {
     this.filterStatus = filterStatus;
-    setFilterText ();
+    setStatusText ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void showLinesSelected (boolean showLines, boolean stripLines,
-      boolean truncateLines, boolean expandJclInclude)
+  public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.expandJclInclude = expandJclInclude;
-    setFilterText ();
+    this.expandJclInclude = lineDisplayStatus.expandInclude;
+    setStatusText ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void setFilterText ()
+  private void setStatusText ()
   // ---------------------------------------------------------------------------------//
   {
     String filterText =
@@ -67,7 +61,7 @@ public class StatusBar extends HBox
         ? filterStatus.filterExclusion ? "Filtered lines" : "All lines" : "All lines";
     String includeText = expandJclInclude ? "ON" : "OFF";
 
-    filterSettings.setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-3s ",
+    statusDisplay.setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-3s ",
         filterText, showText, includeText));
   }
 
@@ -76,7 +70,7 @@ public class StatusBar extends HBox
   public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
-    status.setFont (font);
-    filterSettings.setFont (font);
+    statusMessage.setFont (font);
+    statusDisplay.setFont (font);
   }
 }

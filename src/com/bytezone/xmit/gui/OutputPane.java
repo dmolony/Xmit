@@ -122,12 +122,11 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void showLinesSelected (boolean showLines, boolean stripLines,
-      boolean truncateLines, boolean expandInclude)
+  public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   //----------------------------------------------------------------------------------- //
   {
-    this.truncateLines = truncateLines;
-    outputTab.showLinesSelected (showLines, stripLines, truncateLines, expandInclude);
+    this.truncateLines = lineDisplayStatus.truncateLines;
+    outputTab.showLinesSelected (lineDisplayStatus);
 
     clearText ();
     updateCurrentTab ();

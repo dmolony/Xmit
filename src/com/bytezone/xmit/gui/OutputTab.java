@@ -27,9 +27,10 @@ class OutputTab extends XmitTab implements ShowLinesListener
   //  private static Pattern dsnPattern = Pattern
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
-  private boolean stripLines;
-  private boolean truncateLines;
-  private boolean expandInclude;
+  //  private boolean stripLines;
+  //  private boolean truncateLines;
+  //  private boolean expandInclude;
+  LineDisplayStatus lineDisplayStatus;
 
   private final OutputPane parent;
 
@@ -64,7 +65,7 @@ class OutputTab extends XmitTab implements ShowLinesListener
     int lineNo = 0;
     String includeDatasetName = "";
 
-    boolean isJCL = expandInclude && Utility.isJCL (lines);
+    boolean isJCL = lineDisplayStatus.expandInclude && Utility.isJCL (lines);
 
     if (maxLines == 0)
       maxLines = Integer.MAX_VALUE;
@@ -79,10 +80,10 @@ class OutputTab extends XmitTab implements ShowLinesListener
         break;
       }
 
-      if (stripLines)
+      if (lineDisplayStatus.stripLines)
         line = strip (line);
 
-      if (truncateLines && line.length () > 0)
+      if (lineDisplayStatus.truncateLines && line.length () > 0)
         newLines.add (line.substring (1));
       else
         newLines.add (line);
@@ -167,14 +168,14 @@ class OutputTab extends XmitTab implements ShowLinesListener
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void showLinesSelected (boolean showLines, boolean stripLines,
-      boolean truncateLines, boolean expandInclude)
+  public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   //----------------------------------------------------------------------------------- //
   {
-    this.stripLines = stripLines;
-    this.truncateLines = truncateLines;
-    this.expandInclude = expandInclude;
-    textFormatter.setShowLines (showLines);
+    //    this.stripLines = stripLines;
+    //    this.truncateLines = truncateLines;
+    //    this.expandInclude = expandInclude;
+    this.lineDisplayStatus = lineDisplayStatus;
+    textFormatter.setShowLines (lineDisplayStatus.showLines);
   }
 
   //----------------------------------------------------------------------------------- //
