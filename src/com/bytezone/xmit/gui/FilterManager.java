@@ -26,7 +26,6 @@ class FilterManager implements SaveState
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
-  private final List<FilterChangeListener> listeners = new ArrayList<> ();
   private Stage stage;
   private final TextField filterTextField = new TextField ();
   private final CheckBox filterExclusionCheckBox = new CheckBox ();
@@ -34,6 +33,7 @@ class FilterManager implements SaveState
 
   private final FilterStatus filterStatus = new FilterStatus ();
   private final FilterStatus savedFilterStatus = new FilterStatus ();
+  private final List<FilterChangeListener> listeners = new ArrayList<> ();
 
   //---------------------------------------------------------------------------------//
   void showWindow ()
