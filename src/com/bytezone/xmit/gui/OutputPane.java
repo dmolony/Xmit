@@ -4,11 +4,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.*;
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.DataFile;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PsDataset;
+import com.bytezone.xmit.Utility;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
@@ -27,13 +29,10 @@ class OutputPane extends HeaderTabPane
 
   private LineDisplayStatus lineDisplayStatus;
 
-  // keep track of all PDS datasets seen so that we can INCLUDE members
-  final Map<String, PdsDataset> datasets = new TreeMap<> ();
-
-  final HeadersTab headersTab = new HeadersTab (this, "Headers", KeyCode.H);
-  final BlocksTab blocksTab = new BlocksTab (this, "Blocks", KeyCode.B);
-  final HexTab hexTab = new HexTab (this, "Hex", KeyCode.X);
-  final OutputTab outputTab = new OutputTab (this, "Output", KeyCode.O);
+  final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
+  final BlocksTab blocksTab = new BlocksTab ("Blocks", KeyCode.B);
+  final HexTab hexTab = new HexTab ("Hex", KeyCode.X);
+  final OutputTab outputTab = new OutputTab ("Output", KeyCode.O);
 
   final OutputHeaderBar outputHeaderBar = new OutputHeaderBar (this);
 
@@ -89,15 +88,8 @@ class OutputPane extends HeaderTabPane
     this.dataset = dataset;
     dataFile = null;
 
-    if (dataset != null)
-      if (dataset.isPs ())
-        dataFile = ((PsDataset) dataset).getFlatFile ();
-      else if (dataset.isPds ())
-      {
-        String datasetName = dataset.getReader ().getFileName ();
-        if (!datasets.containsKey (datasetName))
-          datasets.put (datasetName, (PdsDataset) dataset);
-      }
+    if (dataset != null && dataset.isPs ())
+      dataFile = ((PsDataset) dataset).getFlatFile ();
 
     clearText ();
     updateCurrentTab ();

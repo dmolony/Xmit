@@ -14,13 +14,15 @@ class HeadersTab extends XmitTab
     implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
-  private Dataset dataset;
+  Dataset dataset;                // usually file #1 in the Reader
+  DataFile dataFile;              // FlatFile or PdsMember
+  CatalogEntry catalogEntry;      // needed for alias members
 
   //----------------------------------------------------------------------------------- //
-  public HeadersTab (OutputPane parent, String title, KeyCode keyCode)
+  public HeadersTab (String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
   {
-    super (title, parent, keyCode);
+    super (title, keyCode);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -30,7 +32,7 @@ class HeadersTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
-    Dataset dataset = parent.dataset;              // improve this
+    //    Dataset dataset = parent.dataset;              // improve this
     if (dataset == null)
       return lines;
 
@@ -91,5 +93,10 @@ class HeadersTab extends XmitTab
   public void tableItemSelected (CatalogEntry catalogEntry)
   //----------------------------------------------------------------------------------- //
   {
+    if (dataset == null || dataset.isPs ())
+      return;
+
+    this.catalogEntry = catalogEntry;
+    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }

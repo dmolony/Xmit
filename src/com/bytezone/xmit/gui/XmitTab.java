@@ -18,19 +18,17 @@ abstract class XmitTab extends Tab
   private final TextFlow textFlow;
   final KeyCode keyCode;
   final ScrollPane scrollPane;
-  final OutputPane parent;              // improve this
 
   private Font font;
   TextFormatter textFormatter = new TextFormatter ();
 
   // ---------------------------------------------------------------------------------//
-  public XmitTab (String title, OutputPane parent, KeyCode keyCode)
+  public XmitTab (String title, KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
     super (title);
 
     this.keyCode = keyCode;
-    this.parent = parent;
 
     textFlow = new TextFlow ();
     textFlow.setLineSpacing (1);

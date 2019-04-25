@@ -106,14 +106,22 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
-    xmitTree.addListener (outputPane);
+    xmitTree.addListener (outputPane.headersTab);
+    xmitTree.addListener (outputPane.hexTab);
+    xmitTree.addListener (outputPane.blocksTab);
+    xmitTree.addListener (outputPane.outputTab);
+    xmitTree.addListener (outputPane);               // must come after the tabs
     xmitTree.addListener (outputPane.outputHeaderBar);
     xmitTree.addListener (tablePane.tableHeaderBar);
     xmitTree.addListener (xmitTable);
 
     // table listeners
     xmitTable.addListener (fileMenu);
-    xmitTable.addListener (outputPane);
+    xmitTable.addListener (outputPane.headersTab);
+    xmitTable.addListener (outputPane.hexTab);
+    xmitTable.addListener (outputPane.blocksTab);
+    xmitTable.addListener (outputPane.outputTab);
+    xmitTable.addListener (outputPane);               // must come after the tabs
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);

@@ -2,15 +2,13 @@ package com.bytezone.xmit.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.PdsMember;
-import com.bytezone.xmit.Utility;
+import com.bytezone.xmit.*;
 
 import javafx.scene.input.KeyCode;
 
@@ -31,13 +29,18 @@ class OutputTab extends XmitTab
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
   LineDisplayStatus lineDisplayStatus;
-  private Dataset dataset;
+  Dataset dataset;                // usually file #1 in the Reader
+  DataFile dataFile;              // FlatFile or PdsMember
+  CatalogEntry catalogEntry;      // needed for alias members
+
+  // keep track of all PDS datasets seen so that we can INCLUDE members
+  final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
   //----------------------------------------------------------------------------------- //
-  public OutputTab (OutputPane parent, String title, KeyCode keyCode)
+  public OutputTab (String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
   {
-    super (title, parent, keyCode);
+    super (title, keyCode);
 
     textFormatter = new TextFormatterJcl ();
   }
@@ -47,7 +50,7 @@ class OutputTab extends XmitTab
   List<String> getLines ()
   //----------------------------------------------------------------------------------- //
   {
-    if (parent.dataFile == null)
+    if (dataFile == null)
       return new ArrayList<> ();
 
     return getLines (MAX_LINES);
@@ -59,7 +62,7 @@ class OutputTab extends XmitTab
   {
     List<String> newLines = new ArrayList<> ();
 
-    List<String> lines = parent.dataFile.getLines ();              // improve this
+    List<String> lines = dataFile.getLines ();              // improve this
     int lineNo = 0;
     String includeDatasetName = "";
 
@@ -141,9 +144,9 @@ class OutputTab extends XmitTab
   private List<String> findMember (String datasetName, String memberName)
   //----------------------------------------------------------------------------------- //
   {
-    if (parent.datasets.containsKey (datasetName))
+    if (datasets.containsKey (datasetName))
     {
-      PdsDataset dataset = parent.datasets.get (datasetName);
+      PdsDataset dataset = datasets.get (datasetName);
       Optional<PdsMember> optMember = dataset.findMember (memberName);
       if (optMember.isPresent ())
         return optMember.get ().getLines ();
@@ -169,9 +172,6 @@ class OutputTab extends XmitTab
   public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   //----------------------------------------------------------------------------------- //
   {
-    //    this.stripLines = stripLines;
-    //    this.truncateLines = truncateLines;
-    //    this.expandInclude = expandInclude;
     this.lineDisplayStatus = lineDisplayStatus;
     textFormatter.setShowLines (lineDisplayStatus.showLines);
   }
@@ -189,6 +189,13 @@ class OutputTab extends XmitTab
   //----------------------------------------------------------------------------------- //
   {
     this.dataset = dataset;
+
+    if (dataset != null && dataset.isPds ())
+    {
+      String datasetName = dataset.getReader ().getFileName ();
+      if (!datasets.containsKey (datasetName))
+        datasets.put (datasetName, (PdsDataset) dataset);
+    }
   }
 
   //----------------------------------------------------------------------------------- //
@@ -196,5 +203,10 @@ class OutputTab extends XmitTab
   public void tableItemSelected (CatalogEntry catalogEntry)
   //----------------------------------------------------------------------------------- //
   {
+    if (dataset == null || dataset.isPs ())
+      return;
+
+    this.catalogEntry = catalogEntry;
+    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }
