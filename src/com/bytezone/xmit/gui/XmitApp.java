@@ -28,7 +28,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
-  private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
   private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -53,6 +52,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private final SplitPane splitPane = new SplitPane ();
   private double dividerPosition1;
   private double dividerPosition2;
+  private final WindowStatus windowStatus = new WindowStatus ();
 
   private final List<SaveState> saveStateList = new ArrayList<> ();
   private boolean debug = false;
@@ -204,7 +204,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
     dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
-    String windowLocation = prefs.get (PREFS_WINDOW_LOCATION, "");
+    windowStatus.restore (prefs);
 
     if (debug)
     {
@@ -213,53 +213,32 @@ public class XmitApp extends Application implements CodePageSelectedListener
       System.out.printf ("  Div2: %f%n", dividerPosition2);
     }
 
-    if (windowLocation.isEmpty ())
+    if (windowStatus.width <= 0 || windowStatus.height <= 22 || windowStatus.x < 0
+        || windowStatus.y < 0)
       setWindow ();
     else
     {
-      String[] chunks = windowLocation.split (",");
-      double width = Double.parseDouble (chunks[0]);
-      double height = Double.parseDouble (chunks[1]);
-      double x = Double.parseDouble (chunks[2]);
-      double y = Double.parseDouble (chunks[3]);
-
-      if (width <= 0 || height <= 22 || x < 0 || y < 0)
-        setWindow ();
-      else
-      {
-        primaryStage.setWidth (width);
-        primaryStage.setHeight (height);
-        primaryStage.setX (x);
-        primaryStage.setY (y);
-      }
+      primaryStage.setWidth (windowStatus.width);
+      primaryStage.setHeight (windowStatus.height);
+      primaryStage.setX (windowStatus.x);
+      primaryStage.setY (windowStatus.y);
     }
   }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void exit ()
   // ---------------------------------------------------------------------------------//
   {
-    double width = primaryStage.getWidth ();
-    double height = primaryStage.getHeight ();
-    double x = primaryStage.getX ();
-    double y = primaryStage.getY ();
+    windowStatus.set (primaryStage.getWidth (), primaryStage.getHeight (),
+        primaryStage.getX (), primaryStage.getY ());
 
-    if (width > 100 && height > 100)
-    {
-      String text = String.format ("%f,%f,%f,%f", width, height, x, y);
-      prefs.put (PREFS_WINDOW_LOCATION, text);
-    }
+    if (windowStatus.width > 100 && windowStatus.height > 100)
+      windowStatus.save (prefs);
 
     double[] positions = splitPane.getDividerPositions ();
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
-
-    if (debug)
-    {
-      System.out.println ("Saving dividers");
-      System.out.printf ("  Div1: %f%n", positions[0]);
-      System.out.printf ("  Div2: %f%n", positions[1]);
-    }
 
     for (SaveState saveState : saveStateList)
       saveState.save (prefs);
