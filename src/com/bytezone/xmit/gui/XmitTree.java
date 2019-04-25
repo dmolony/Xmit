@@ -23,7 +23,6 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
@@ -117,7 +116,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_LAST_PATH, getSelectedItemPath ());
@@ -125,7 +124,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     String lastPath = prefs.get (PREFS_LAST_PATH, "");

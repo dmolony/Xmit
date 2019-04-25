@@ -200,7 +200,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   // ---------------------------------------------------------------------------------//
   {
     for (SaveState saveState : saveStateList)
-      saveState.restore ();
+      saveState.restore (prefs);
 
     dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
     dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
@@ -262,7 +262,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     }
 
     for (SaveState saveState : saveStateList)
-      saveState.save ();
+      saveState.save (prefs);
 
     Platform.exit ();
   }

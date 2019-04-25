@@ -20,7 +20,6 @@ class OutputPane extends HeaderTabPane
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   Dataset dataset;                // usually file #1 in the Reader
   DataFile dataFile;              // FlatFile or PdsMember
@@ -51,7 +50,7 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   //----------------------------------------------------------------------------------- //
   {
     tabPane.getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
@@ -59,7 +58,7 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   //----------------------------------------------------------------------------------- //
   {
     prefs.putInt (PREFS_LAST_TAB, tabPane.getSelectionModel ().getSelectedIndex ());

@@ -24,8 +24,6 @@ import javafx.stage.Stage;
 class FilterManager implements SaveState
 //---------------------------------------------------------------------------------//
 {
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-
   private Stage stage;
   private final TextField filterTextField = new TextField ();
   private final CheckBox filterExclusionCheckBox = new CheckBox ();
@@ -113,7 +111,7 @@ class FilterManager implements SaveState
 
   //---------------------------------------------------------------------------------//
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
     filterStatus.save (prefs);
@@ -121,7 +119,7 @@ class FilterManager implements SaveState
 
   //---------------------------------------------------------------------------------//
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
     filterStatus.restore (prefs);

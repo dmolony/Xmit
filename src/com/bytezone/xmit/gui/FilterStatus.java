@@ -3,7 +3,7 @@ package com.bytezone.xmit.gui;
 import java.util.prefs.Preferences;
 
 // ---------------------------------------------------------------------------------//
-public class FilterStatus
+public class FilterStatus implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_FILTER = "Filter";
@@ -73,7 +73,8 @@ public class FilterStatus
   }
 
   //---------------------------------------------------------------------------------//
-  void save (Preferences prefs)
+  @Override
+  public void save (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_FILTER, filterValue);
@@ -83,7 +84,8 @@ public class FilterStatus
   }
 
   //---------------------------------------------------------------------------------//
-  void restore (Preferences prefs)
+  @Override
+  public void restore (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
     filterValue = prefs.get (PREFS_FILTER, "");

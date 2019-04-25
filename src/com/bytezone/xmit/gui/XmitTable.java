@@ -25,7 +25,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 // ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final List<FilterActionListener> filterListeners = new ArrayList<> ();
   private final List<TableItemSelectionListener> selectionListeners = new ArrayList<> ();
@@ -127,7 +126,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     CatalogEntryItem catalogEntryItem = getSelectionModel ().getSelectedItem ();
@@ -143,7 +142,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     String name = prefs.get (PREFS_LAST_MEMBER_NAME, "");

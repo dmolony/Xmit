@@ -26,8 +26,6 @@ class ViewMenu implements SaveState
   private static final boolean SHIFT = true;
   private static final boolean NO_SHIFT = !SHIFT;
 
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-
   private final List<ShowLinesListener> showLinesListeners = new ArrayList<> ();
   private final List<CodePageSelectedListener> codePageListeners = new ArrayList<> ();
   private final XmitApp xmitApp;
@@ -229,7 +227,7 @@ class ViewMenu implements SaveState
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     lineDisplayStatus.restore (prefs);
@@ -261,7 +259,7 @@ class ViewMenu implements SaveState
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     lineDisplayStatus.save (prefs);

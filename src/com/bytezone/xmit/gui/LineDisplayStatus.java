@@ -3,7 +3,7 @@ package com.bytezone.xmit.gui;
 import java.util.prefs.Preferences;
 
 // ---------------------------------------------------------------------------------//
-public class LineDisplayStatus
+public class LineDisplayStatus implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_SHOW_LINES = "ShowLines";
@@ -62,7 +62,8 @@ public class LineDisplayStatus
   }
 
   //---------------------------------------------------------------------------------//
-  void save (Preferences prefs)
+  @Override
+  public void save (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
     prefs.putBoolean (PREFS_SHOW_LINES, showLines);
@@ -72,7 +73,8 @@ public class LineDisplayStatus
   }
 
   //---------------------------------------------------------------------------------//
-  void restore (Preferences prefs)
+  @Override
+  public void restore (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
     showLines = prefs.getBoolean (PREFS_SHOW_LINES, false);

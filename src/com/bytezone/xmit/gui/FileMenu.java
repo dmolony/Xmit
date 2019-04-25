@@ -28,7 +28,6 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
 {
   private static final String PREFS_EXTRACT_FOLDER = "ExtractFolder";
   private static final String PREFS_SAVE_FOLDER = "SaveFolder";
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private final Menu fileMenu = new Menu ("File");
   private final MenuItem rootMenuItem = new MenuItem ("Set XMIT root folder...");
@@ -146,7 +145,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     saveFolderName = prefs.get (PREFS_SAVE_FOLDER, System.getProperty ("user.home"));
@@ -156,7 +155,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     prefs.put (PREFS_SAVE_FOLDER, saveFolderName);

@@ -41,7 +41,6 @@ import javafx.stage.Stage;
 class FontManager implements SaveState
 //---------------------------------------------------------------------------------//
 {
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
   private static final String PREFS_FONT_NAME = "FontName";
   private static final String PREFS_FONT_SIZE = "FontSize";
   private static final String PREFS_FONTS_SELECTED = "FontsSelected";
@@ -259,7 +258,7 @@ class FontManager implements SaveState
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void restore ()
+  public void restore (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     fontNameSubList.addAll (
@@ -273,7 +272,7 @@ class FontManager implements SaveState
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void save ()
+  public void save (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
     if (stage != null && stage.isShowing ())
