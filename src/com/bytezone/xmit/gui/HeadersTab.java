@@ -11,8 +11,11 @@ import javafx.scene.input.KeyCode;
 
 // ----------------------------------------------------------------------------------- //
 class HeadersTab extends XmitTab
+    implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
+  private Dataset dataset;
+
   //----------------------------------------------------------------------------------- //
   public HeadersTab (OutputPane parent, String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
@@ -73,5 +76,20 @@ class HeadersTab extends XmitTab
     }
 
     return lines;
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void treeItemSelected (Dataset dataset, String name)
+  //----------------------------------------------------------------------------------- //
+  {
+    this.dataset = dataset;
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void tableItemSelected (CatalogEntry catalogEntry)
+  //----------------------------------------------------------------------------------- //
+  {
   }
 }

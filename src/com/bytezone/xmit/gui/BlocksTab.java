@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.xmit.DataFile;
+import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsMember;
 
 import javafx.scene.input.KeyCode;
 
 // ----------------------------------------------------------------------------------- //
-class BlocksTab extends XmitTab
+class BlocksTab extends XmitTab implements TreeItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
+  private Dataset dataset;
+
   //----------------------------------------------------------------------------------- //
   public BlocksTab (OutputPane parent, String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
@@ -36,5 +39,13 @@ class BlocksTab extends XmitTab
     lines.add (dataFile.toString ());
 
     return lines;
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void treeItemSelected (Dataset dataset, String name)
+  //----------------------------------------------------------------------------------- //
+  {
+    this.dataset = dataset;
   }
 }

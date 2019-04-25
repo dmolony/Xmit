@@ -24,7 +24,8 @@ class OutputPane extends HeaderTabPane
   Dataset dataset;                // usually file #1 in the Reader
   DataFile dataFile;              // FlatFile or PdsMember
   CatalogEntry catalogEntry;      // needed for alias members
-  private boolean truncateLines;
+
+  private LineDisplayStatus lineDisplayStatus;
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
   final Map<String, PdsDataset> datasets = new TreeMap<> ();
@@ -100,7 +101,7 @@ class OutputPane extends HeaderTabPane
 
     clearText ();
     updateCurrentTab ();
-    outputHeaderBar.updateNameLabel (truncateLines);
+    outputHeaderBar.updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -116,7 +117,7 @@ class OutputPane extends HeaderTabPane
 
     clearText ();
     updateCurrentTab ();
-    outputHeaderBar.updateNameLabel (truncateLines);
+    outputHeaderBar.updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -124,12 +125,13 @@ class OutputPane extends HeaderTabPane
   public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   //----------------------------------------------------------------------------------- //
   {
-    this.truncateLines = lineDisplayStatus.truncateLines;
+    //    this.truncateLines = lineDisplayStatus.truncateLines;
+    this.lineDisplayStatus = lineDisplayStatus;
     outputTab.showLinesSelected (lineDisplayStatus);
 
     clearText ();
     updateCurrentTab ();
-    outputHeaderBar.updateNameLabel (truncateLines);
+    outputHeaderBar.updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //

@@ -6,13 +6,16 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Utility;
 
 import javafx.scene.input.KeyCode;
 
-class OutputTab extends XmitTab implements ShowLinesListener
+class OutputTab extends XmitTab
+    implements ShowLinesListener, TreeItemSelectionListener, TableItemSelectionListener
 {
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE_1 =
@@ -28,6 +31,7 @@ class OutputTab extends XmitTab implements ShowLinesListener
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
   LineDisplayStatus lineDisplayStatus;
+  private Dataset dataset;
 
   //----------------------------------------------------------------------------------- //
   public OutputTab (OutputPane parent, String title, KeyCode keyCode)
@@ -177,5 +181,20 @@ class OutputTab extends XmitTab implements ShowLinesListener
   //----------------------------------------------------------------------------------- //
   {
     textFormatter.setFilter (filterStatus);
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void treeItemSelected (Dataset dataset, String name)
+  //----------------------------------------------------------------------------------- //
+  {
+    this.dataset = dataset;
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void tableItemSelected (CatalogEntry catalogEntry)
+  //----------------------------------------------------------------------------------- //
+  {
   }
 }
