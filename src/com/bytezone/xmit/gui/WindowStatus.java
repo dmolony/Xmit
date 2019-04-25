@@ -2,6 +2,7 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
+import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
@@ -28,7 +29,7 @@ public class WindowStatus implements SaveState
   }
 
   //---------------------------------------------------------------------------------//
-  void set (Stage stage)
+  void setLocation (Stage stage)
   //---------------------------------------------------------------------------------//
   {
     this.width = stage.getWidth ();
@@ -38,9 +39,10 @@ public class WindowStatus implements SaveState
   }
 
   //---------------------------------------------------------------------------------//
-  void set (double[] dividerPositions)
+  void setDividers (SplitPane splitPane)
   //---------------------------------------------------------------------------------//
   {
+    double[] dividerPositions = splitPane.getDividerPositions ();
     this.dividerPosition1 = dividerPositions[0];
     this.dividerPosition2 = dividerPositions[1];
   }

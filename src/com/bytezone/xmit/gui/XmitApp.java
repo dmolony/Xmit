@@ -164,7 +164,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     primaryStage.show ();
 
-    splitPane.setDividerPosition (0, windowStatus.dividerPosition1);  // must happen after show()
+    // this must happen after show()
+    splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
     splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
   }
 
@@ -218,8 +219,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private void exit ()
   // ---------------------------------------------------------------------------------//
   {
-    windowStatus.set (primaryStage);
-    windowStatus.set (splitPane.getDividerPositions ());
+    windowStatus.setLocation (primaryStage);
+    windowStatus.setDividers (splitPane);
 
     windowStatus.save (prefs);
 
