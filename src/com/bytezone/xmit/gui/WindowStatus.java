@@ -2,16 +2,23 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
+import javafx.stage.Stage;
+
 // ---------------------------------------------------------------------------------//
 public class WindowStatus implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
+  private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
+  private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
 
   double width;
   double height;
   double x;
   double y;
+
+  double dividerPosition1;
+  double dividerPosition2;
 
   //---------------------------------------------------------------------------------//
   public WindowStatus ()
@@ -21,13 +28,21 @@ public class WindowStatus implements SaveState
   }
 
   //---------------------------------------------------------------------------------//
-  void set (double width, double height, double x, double y)
+  void set (Stage stage)
   //---------------------------------------------------------------------------------//
   {
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;
+    this.width = stage.getWidth ();
+    this.height = stage.getHeight ();
+    this.x = stage.getX ();
+    this.y = stage.getY ();
+  }
+
+  //---------------------------------------------------------------------------------//
+  void set (double[] dividerPositions)
+  //---------------------------------------------------------------------------------//
+  {
+    this.dividerPosition1 = dividerPositions[0];
+    this.dividerPosition2 = dividerPositions[1];
   }
 
   //---------------------------------------------------------------------------------//
@@ -38,6 +53,9 @@ public class WindowStatus implements SaveState
     height = 0.0;
     x = 0.0;
     y = 0.0;
+
+    dividerPosition1 = 0.0;
+    dividerPosition2 = 0.0;
   }
 
   //---------------------------------------------------------------------------------//
@@ -45,8 +63,14 @@ public class WindowStatus implements SaveState
   public void save (Preferences prefs)
   //---------------------------------------------------------------------------------//
   {
-    String text = String.format ("%f,%f,%f,%f", width, height, x, y);
-    prefs.put (PREFS_WINDOW_LOCATION, text);
+    if (width > 100 && height > 100)
+    {
+      String text = String.format ("%f,%f,%f,%f", width, height, x, y);
+      prefs.put (PREFS_WINDOW_LOCATION, text);
+    }
+
+    prefs.putDouble (PREFS_DIVIDER_POSITION_1, dividerPosition1);
+    prefs.putDouble (PREFS_DIVIDER_POSITION_2, dividerPosition2);
   }
 
   //---------------------------------------------------------------------------------//
@@ -65,5 +89,8 @@ public class WindowStatus implements SaveState
       x = Double.parseDouble (chunks[2]);
       y = Double.parseDouble (chunks[3]);
     }
+
+    dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
+    dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
   }
 }

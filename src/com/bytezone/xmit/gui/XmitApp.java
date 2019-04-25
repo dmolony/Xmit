@@ -27,19 +27,19 @@ import javafx.stage.Stage;
 public class XmitApp extends Application implements CodePageSelectedListener
 //---------------------------------------------------------------------------------//
 {
-  private static final String PREFS_ROOT_FOLDER = "RootFolder";
-  private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
-  private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
+
+  private static final String PREFS_ROOT_FOLDER = "RootFolder";
 
   private Stage primaryStage;
   private String rootFolderName;
 
   private XmitTree xmitTree;
-  private final XmitTable xmitTable = new XmitTable ();
-
   private TreePane treePane;
+
+  private final XmitTable xmitTable = new XmitTable ();
   private final TablePane tablePane = new TablePane (xmitTable);
+
   private final OutputPane outputPane = new OutputPane ();
 
   private final FontManager fontManager = new FontManager ();
@@ -50,14 +50,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private ViewMenu viewMenu;
 
   private final SplitPane splitPane = new SplitPane ();
-  private double dividerPosition1;
-  private double dividerPosition2;
   private final WindowStatus windowStatus = new WindowStatus ();
 
   private final List<SaveState> saveStateList = new ArrayList<> ();
   private boolean debug = false;
-
-  private final StatusBar statusBar = new StatusBar ();
 
   // ---------------------------------------------------------------------------------//
   private Parent createContent ()
@@ -80,6 +76,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     treePane = new TreePane (xmitTree);
 
     splitPane.getItems ().addAll (treePane, tablePane, outputPane);
+    StatusBar statusBar = new StatusBar ();
 
     // menus
     fileMenu = new FileMenu (this, xmitTree);
@@ -167,8 +164,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     primaryStage.show ();
 
-    splitPane.setDividerPosition (0, dividerPosition1);      // must happen after show()
-    splitPane.setDividerPosition (1, dividerPosition2);
+    splitPane.setDividerPosition (0, windowStatus.dividerPosition1);  // must happen after show()
+    splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -202,16 +199,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     for (SaveState saveState : saveStateList)
       saveState.restore (prefs);
 
-    dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
-    dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
     windowStatus.restore (prefs);
-
-    if (debug)
-    {
-      System.out.println ("Restoring dividers");
-      System.out.printf ("  Div1: %f%n", dividerPosition1);
-      System.out.printf ("  Div2: %f%n", dividerPosition2);
-    }
 
     if (windowStatus.width <= 0 || windowStatus.height <= 22 || windowStatus.x < 0
         || windowStatus.y < 0)
@@ -230,15 +218,10 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private void exit ()
   // ---------------------------------------------------------------------------------//
   {
-    windowStatus.set (primaryStage.getWidth (), primaryStage.getHeight (),
-        primaryStage.getX (), primaryStage.getY ());
+    windowStatus.set (primaryStage);
+    windowStatus.set (splitPane.getDividerPositions ());
 
-    if (windowStatus.width > 100 && windowStatus.height > 100)
-      windowStatus.save (prefs);
-
-    double[] positions = splitPane.getDividerPositions ();
-    prefs.putDouble (PREFS_DIVIDER_POSITION_1, positions[0]);
-    prefs.putDouble (PREFS_DIVIDER_POSITION_2, positions[1]);
+    windowStatus.save (prefs);
 
     for (SaveState saveState : saveStateList)
       saveState.save (prefs);
@@ -295,7 +278,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
       directoryChooser.setInitialDirectory (new File (previousRootFolderName));
 
     File file = directoryChooser.showDialog (null);
-    //    System.out.println (file);
     if (file != null && file.isDirectory ())
     {
       rootFolderName = file.getAbsolutePath ();
