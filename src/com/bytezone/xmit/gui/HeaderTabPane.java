@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Side;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
@@ -27,7 +28,7 @@ abstract class HeaderTabPane extends BorderPane
     tabPane.setTabMinWidth (TAB_WIDTH);
 
     tabPane.getSelectionModel ().selectedItemProperty ()
-        .addListener ( (ov, oldTab, newTab) -> updateCurrentTab ());
+        .addListener ( (obs, prev, selectedTab) -> ((XmitTab) selectedTab).update ());
 
     setCenter (tabPane);
   }
@@ -36,9 +37,9 @@ abstract class HeaderTabPane extends BorderPane
   void updateCurrentTab ()
   // ---------------------------------------------------------------------------------//
   {
-    XmitTab selectedTab = (XmitTab) tabPane.getSelectionModel ().getSelectedItem ();
+    Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
     if (selectedTab != null)
-      selectedTab.update ();
+      ((XmitTab) selectedTab).update ();
   }
 
   // ---------------------------------------------------------------------------------//

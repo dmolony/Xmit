@@ -27,12 +27,7 @@ class OutputTab extends XmitTab implements ShowLinesListener
   //  private static Pattern dsnPattern = Pattern
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
-  //  private boolean stripLines;
-  //  private boolean truncateLines;
-  //  private boolean expandInclude;
   LineDisplayStatus lineDisplayStatus;
-
-  private final OutputPane parent;
 
   //----------------------------------------------------------------------------------- //
   public OutputTab (OutputPane parent, String title, KeyCode keyCode)
@@ -40,7 +35,6 @@ class OutputTab extends XmitTab implements ShowLinesListener
   {
     super (title, parent, keyCode);
 
-    this.parent = parent;       // needed to access parent.datasets
     textFormatter = new TextFormatterJcl ();
   }
 
@@ -61,7 +55,7 @@ class OutputTab extends XmitTab implements ShowLinesListener
   {
     List<String> newLines = new ArrayList<> ();
 
-    List<String> lines = parent.dataFile.getLines ();
+    List<String> lines = parent.dataFile.getLines ();              // improve this
     int lineNo = 0;
     String includeDatasetName = "";
 

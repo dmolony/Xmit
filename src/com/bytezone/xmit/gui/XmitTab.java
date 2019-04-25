@@ -18,7 +18,7 @@ abstract class XmitTab extends Tab
   private final TextFlow textFlow;
   final KeyCode keyCode;
   final ScrollPane scrollPane;
-  final OutputPane parent;
+  final OutputPane parent;              // improve this
 
   private Font font;
   TextFormatter textFormatter = new TextFormatter ();

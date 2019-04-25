@@ -27,7 +27,7 @@ class HeadersTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
-    Dataset dataset = parent.dataset;
+    Dataset dataset = parent.dataset;              // improve this
     if (dataset == null)
       return lines;
 

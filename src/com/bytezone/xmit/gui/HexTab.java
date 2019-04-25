@@ -29,7 +29,7 @@ class HexTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
-    DataFile dataFile = parent.dataFile;
+    DataFile dataFile = parent.dataFile;              // improve this
     if (dataFile == null)
       return lines;
 
