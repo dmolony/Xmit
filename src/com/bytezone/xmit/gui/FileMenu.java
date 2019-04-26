@@ -14,7 +14,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -41,7 +40,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private OutputWriter outputWriter;
 
   // ---------------------------------------------------------------------------------//
-  public FileMenu (XmitApp owner, TreeView<XmitFile> tree)
+  public FileMenu (XmitApp owner)
   // ---------------------------------------------------------------------------------//
   {
     fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem,

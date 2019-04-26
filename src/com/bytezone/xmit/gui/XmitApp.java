@@ -79,8 +79,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     StatusBar statusBar = new StatusBar ();
 
     // menus
-    fileMenu = new FileMenu (this, xmitTree);
-    viewMenu = new ViewMenu (this, fontManager, filterManager);
+    fileMenu = new FileMenu (this);
+    viewMenu = new ViewMenu (this, fontManager, filterManager);   // listeners??
 
     // codepage listeners
     viewMenu.addCodePageListener (this);

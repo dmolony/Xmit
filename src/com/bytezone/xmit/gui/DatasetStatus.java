@@ -1,12 +1,14 @@
 package com.bytezone.xmit.gui;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.PdsMember;
 
 // ----------------------------------------------------------------------------------- //
 public class DatasetStatus
@@ -18,7 +20,7 @@ public class DatasetStatus
   String name;
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
-  final Map<String, PdsDataset> datasets = new TreeMap<> ();
+  private final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
   //----------------------------------------------------------------------------------- //
   void datasetSelected (Dataset dataset, String name)
@@ -44,5 +46,30 @@ public class DatasetStatus
 
     this.catalogEntry = catalogEntry;
     dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  Optional<PdsMember> findMember (String datasetName, String memberName)
+  //----------------------------------------------------------------------------------- //
+  {
+    if (datasets.containsKey (datasetName))
+      return datasets.get (datasetName).findMember (memberName);
+
+    return Optional.empty ();
+  }
+
+  //---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  //---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Name............. %s%n", name));
+    text.append (String.format ("Dataset.......... %s%n", dataset));
+    text.append (String.format ("Datafile......... %s%n", dataFile.getName ()));
+    text.append (String.format ("CatalogEntry..... %s", catalogEntry));
+
+    return text.toString ();
   }
 }

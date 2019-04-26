@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Utility;
 
@@ -122,31 +121,14 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
       String commentIndicator)
   //----------------------------------------------------------------------------------- //
   {
-    List<String> lines = findMember (datasetName, memberName);
-    if (lines.size () == 0)
-    {
+    Optional<PdsMember> optMember = datasetStatus.findMember (datasetName, memberName);
+    if (optMember.isEmpty ())
       newLines.add (
           String.format ("==> %s(%s): dataset not seen yet", datasetName, memberName));
-      return;
-    }
-
-    for (String line : lines)
-      if (!line.startsWith (commentIndicator))
-        newLines.add (line);
-  }
-
-  //----------------------------------------------------------------------------------- //
-  private List<String> findMember (String datasetName, String memberName)
-  //----------------------------------------------------------------------------------- //
-  {
-    if (datasetStatus.datasets.containsKey (datasetName))
-    {
-      PdsDataset dataset = datasetStatus.datasets.get (datasetName);
-      Optional<PdsMember> optMember = dataset.findMember (memberName);
-      if (optMember.isPresent ())
-        return optMember.get ().getLines ();
-    }
-    return new ArrayList<String> ();
+    else
+      for (String line : optMember.get ().getLines ())
+        if (!line.startsWith (commentIndicator))
+          newLines.add (line);
   }
 
   //----------------------------------------------------------------------------------- //
