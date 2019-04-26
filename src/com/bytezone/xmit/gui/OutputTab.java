@@ -2,13 +2,13 @@ package com.bytezone.xmit.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bytezone.xmit.*;
+import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.PdsMember;
+import com.bytezone.xmit.Utility;
 
 import javafx.scene.input.KeyCode;
 
@@ -29,12 +29,7 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
   //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
   LineDisplayStatus lineDisplayStatus;
-  Dataset dataset;                // usually file #1 in the Reader
-  DataFile dataFile;              // FlatFile or PdsMember
-  CatalogEntry catalogEntry;      // needed for alias members
-
-  // keep track of all PDS datasets seen so that we can INCLUDE members
-  final Map<String, PdsDataset> datasets = new TreeMap<> ();
+  DatasetStatus datasetStatus;
 
   //----------------------------------------------------------------------------------- //
   public OutputTab (String title, KeyCode keyCode)
@@ -50,7 +45,7 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
   List<String> getLines ()
   //----------------------------------------------------------------------------------- //
   {
-    if (dataFile == null)
+    if (datasetStatus.dataFile == null)
       return new ArrayList<> ();
 
     return getLines (MAX_LINES);
@@ -62,7 +57,7 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
   {
     List<String> newLines = new ArrayList<> ();
 
-    List<String> lines = dataFile.getLines ();              // improve this
+    List<String> lines = datasetStatus.dataFile.getLines ();              // improve this
     int lineNo = 0;
     String includeDatasetName = "";
 
@@ -144,9 +139,9 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
   private List<String> findMember (String datasetName, String memberName)
   //----------------------------------------------------------------------------------- //
   {
-    if (datasets.containsKey (datasetName))
+    if (datasetStatus.datasets.containsKey (datasetName))
     {
-      PdsDataset dataset = datasets.get (datasetName);
+      PdsDataset dataset = datasetStatus.datasets.get (datasetName);
       Optional<PdsMember> optMember = dataset.findMember (memberName);
       if (optMember.isPresent ())
         return optMember.get ().getLines ();
@@ -186,28 +181,16 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void treeItemSelected (Dataset dataset, String name)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    this.dataset = dataset;
-
-    if (dataset != null && dataset.isPds ())
-    {
-      String datasetName = dataset.getReader ().getFileName ();
-      if (!datasets.containsKey (datasetName))
-        datasets.put (datasetName, (PdsDataset) dataset);
-    }
+    this.datasetStatus = datasetStatus;
   }
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
+  public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    if (dataset == null || dataset.isPs ())
-      return;
-
-    this.catalogEntry = catalogEntry;
-    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }

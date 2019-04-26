@@ -1,9 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Dataset;
-
 // ----------------------------------------------------------------------------------- //
 class OutputHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener
@@ -11,45 +7,16 @@ class OutputHeaderBar extends HeaderBar
 {
   //  private final OutputPane parent;
   private LineDisplayStatus lineDisplayStatus;
-  Dataset dataset;                // usually file #1 in the Reader
-  DataFile dataFile;              // FlatFile or PdsMember
-  CatalogEntry catalogEntry;      // needed for alias members
+  private DatasetStatus datasetStatus;
+  //  Dataset dataset;                // usually file #1 in the Reader
+  //  DataFile dataFile;              // FlatFile or PdsMember
+  //  CatalogEntry catalogEntry;      // needed for alias members
 
   //----------------------------------------------------------------------------------- //
   public OutputHeaderBar ()
   //----------------------------------------------------------------------------------- //
   {
     //    this.parent = parent;
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void treeItemSelected (Dataset dataset, String name)
-  //----------------------------------------------------------------------------------- //
-  {
-    this.dataset = dataset;
-
-    //    if (dataset != null && dataset.isPds ())
-    //    {
-    //      String datasetName = dataset.getReader ().getFileName ();
-    //      if (!datasets.containsKey (datasetName))
-    //        datasets.put (datasetName, (PdsDataset) dataset);
-    //    }
-    rightLabel.setText (dataset == null ? "" : dataset.getDisposition ().toString ());
-    updateNameLabel (lineDisplayStatus.truncateLines);
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
-  //----------------------------------------------------------------------------------- //
-  {
-    updateNameLabel (lineDisplayStatus.truncateLines);
-    if (dataset == null || dataset.isPs ())
-      return;
-
-    this.catalogEntry = catalogEntry;
-    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 
   //----------------------------------------------------------------------------------- //
@@ -60,7 +27,8 @@ class OutputHeaderBar extends HeaderBar
     //    CatalogEntry catalogEntry = parent.catalogEntry;
     //    DataFile dataFile = parent.dataFile;
 
-    if (dataset == null || catalogEntry == null)
+    if (datasetStatus == null || datasetStatus.dataset == null
+        || datasetStatus.catalogEntry == null)
     {
       leftLabel.setText ("");
       return;
@@ -68,16 +36,17 @@ class OutputHeaderBar extends HeaderBar
 
     String indicator = truncateLines ? "<-" : "";
 
-    if (dataset.isPds ())
+    if (datasetStatus.dataset.isPds ())
     {
-      String memberName = indicator + catalogEntry.getMemberName ();
-      if (catalogEntry.isAlias ())
-        leftLabel.setText (memberName + " -> " + catalogEntry.getAliasName ());
+      String memberName = indicator + datasetStatus.catalogEntry.getMemberName ();
+      if (datasetStatus.catalogEntry.isAlias ())
+        leftLabel
+            .setText (memberName + " -> " + datasetStatus.catalogEntry.getAliasName ());
       else
         leftLabel.setText (memberName);
     }
     else
-      leftLabel.setText (indicator + dataFile.getName ());
+      leftLabel.setText (indicator + datasetStatus.dataFile.getName ());
   }
 
   //----------------------------------------------------------------------------------- //
@@ -87,5 +56,37 @@ class OutputHeaderBar extends HeaderBar
   {
     this.lineDisplayStatus = lineDisplayStatus;
     updateNameLabel (lineDisplayStatus.truncateLines);
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void treeItemSelected (DatasetStatus datasetStatus)
+  //----------------------------------------------------------------------------------- //
+  {
+    this.datasetStatus = datasetStatus;
+
+    //    if (dataset != null && dataset.isPds ())
+    //    {
+    //      String datasetName = dataset.getReader ().getFileName ();
+    //      if (!datasets.containsKey (datasetName))
+    //        datasets.put (datasetName, (PdsDataset) dataset);
+    //    }
+    rightLabel.setText (datasetStatus.dataset == null ? ""
+        : datasetStatus.dataset.getDisposition ().toString ());
+    updateNameLabel (lineDisplayStatus.truncateLines);
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void tableItemSelected (DatasetStatus datasetStatus)
+  //----------------------------------------------------------------------------------- //
+  {
+    updateNameLabel (lineDisplayStatus.truncateLines);
+
+    //    if (dataset == null || dataset.isPs ())
+    //      return;
+    //
+    //    this.catalogEntry = catalogEntry;
+    //    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }

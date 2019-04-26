@@ -1,6 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
 
@@ -11,26 +10,26 @@ public class TableHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
-  private Dataset dataset;
+  private DatasetStatus datasetStatus;
   private int found;
   private int max;
   private FilterStatus filterStatus;
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (Dataset dataset, String name)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.dataset = dataset;
+    this.datasetStatus = datasetStatus;
 
-    if (dataset == null)
+    if (datasetStatus.dataset == null)
     {
       leftLabel.setText ("");
       rightLabel.setText ("");
     }
     else
     {
-      Reader reader = dataset.getReader ();
+      Reader reader = datasetStatus.dataset.getReader ();
       leftLabel.setText (reader.getFileName ());
       leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
@@ -64,9 +63,10 @@ public class TableHeaderBar extends HeaderBar
   private void setMembersLabel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataset != null && dataset.isPds ())
+    if (datasetStatus != null && datasetStatus.dataset != null
+        && datasetStatus.dataset.isPds ())
     {
-      int members = ((PdsDataset) dataset).getCatalogEntries ().size ();
+      int members = ((PdsDataset) datasetStatus.dataset).getCatalogEntries ().size ();
 
       if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
         rightLabel

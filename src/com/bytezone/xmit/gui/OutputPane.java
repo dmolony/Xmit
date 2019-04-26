@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Utility;
 
 import javafx.scene.control.Alert.AlertType;
@@ -20,12 +18,6 @@ class OutputPane extends HeaderTabPane
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";
-
-  //  Dataset dataset;                // usually file #1 in the Reader
-  //  DataFile dataFile;              // FlatFile or PdsMember
-  //  CatalogEntry catalogEntry;      // needed for alias members
-
-  //  private LineDisplayStatus lineDisplayStatus;
 
   final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
   final BlocksTab blocksTab = new BlocksTab ("Blocks", KeyCode.B);
@@ -80,7 +72,7 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void treeItemSelected (Dataset dataset, String name)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
     clearText ();
@@ -89,7 +81,7 @@ class OutputPane extends HeaderTabPane
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
+  public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
     clearText ();

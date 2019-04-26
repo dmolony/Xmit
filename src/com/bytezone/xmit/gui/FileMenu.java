@@ -6,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Utility;
 
@@ -35,8 +33,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private final MenuItem saveMenuItem = new MenuItem ("Save output...");
   private final MenuItem aboutMenuItem = new MenuItem ("Show version...");
 
-  private CatalogEntry catalogEntry;
-  private Dataset dataset;
+  private DatasetStatus datasetStatus;
 
   private String saveFolderName;
   private String extractFolderName;
@@ -86,8 +83,9 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
     if (outputWriter == null)
       return;
 
-    String extra = dataset.isPds () ? "." + catalogEntry.getMemberName () : "";
-    String name = dataset.getReader ().getFileName () + extra + ".txt";
+    String extra = datasetStatus.dataset.isPds ()
+        ? "." + datasetStatus.catalogEntry.getMemberName () : "";
+    String name = datasetStatus.dataset.getReader ().getFileName () + extra + ".txt";
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Save output text to");
@@ -109,18 +107,19 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
     byte[] buffer = null;
     String fileName = "";
 
-    if (dataset.isPs ())
+    if (datasetStatus.dataset.isPs ())
     {
-      DataFile member = ((PsDataset) dataset).getFlatFile ();
+      DataFile member = ((PsDataset) datasetStatus.dataset).getFlatFile ();
       buffer = member.getDataBuffer ();
-      fileName =
-          dataset.getReader ().getFileName () + "." + member.getFileType ().name ();
+      fileName = datasetStatus.dataset.getReader ().getFileName () + "."
+          + member.getFileType ().name ();
     }
     else
     {
-      buffer = catalogEntry.getMember ().getDataBuffer ();
-      fileName = dataset.getReader ().getFileName () + "." + catalogEntry.getMemberName ()
-          + "." + catalogEntry.getMember ().getFileType ().name ();
+      buffer = datasetStatus.catalogEntry.getMember ().getDataBuffer ();
+      fileName = datasetStatus.dataset.getReader ().getFileName () + "."
+          + datasetStatus.catalogEntry.getMemberName () + "."
+          + datasetStatus.catalogEntry.getMember ().getFileType ().name ();
     }
 
     FileChooser fileChooser = new FileChooser ();
@@ -171,44 +170,44 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.catalogEntry = catalogEntry;
-    if (catalogEntry == null)
+    this.datasetStatus = datasetStatus;
+
+    if (datasetStatus.dataset == null)
+    {
+      extractMenuItem.setText ("Extract file...");
+      extractMenuItem.setDisable (true);
+    }
+    else if (datasetStatus.dataset.isPs ())
+    {
+      extractMenuItem.setText (
+          "Extract " + datasetStatus.dataset.getReader ().getFileName () + "...");
+      extractMenuItem.setDisable (false);
+    }
+    else
+    {
+      extractMenuItem.setText ("Extract " + datasetStatus.name + "...");
+      extractMenuItem.setDisable (true);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void tableItemSelected (DatasetStatus datasetStatus)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (datasetStatus.catalogEntry == null)
     {
       extractMenuItem.setText ("Extract... ");
       extractMenuItem.setDisable (true);
     }
     else
     {
-      extractMenuItem.setText ("Extract " + catalogEntry.getMemberName () + "...");
+      extractMenuItem
+          .setText ("Extract " + datasetStatus.catalogEntry.getMemberName () + "...");
       extractMenuItem.setDisable (false);
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void treeItemSelected (Dataset dataset, String name)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.dataset = dataset;
-    catalogEntry = null;
-
-    if (dataset == null)
-    {
-      extractMenuItem.setText ("Extract file...");
-      extractMenuItem.setDisable (true);
-    }
-    else if (dataset.isPs ())
-    {
-      extractMenuItem.setText ("Extract " + dataset.getReader ().getFileName () + "...");
-      extractMenuItem.setDisable (false);
-    }
-    else
-    {
-      extractMenuItem.setText ("Extract " + name + "...");
-      extractMenuItem.setDisable (true);
     }
   }
 }

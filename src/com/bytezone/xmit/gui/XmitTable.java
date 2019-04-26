@@ -31,7 +31,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   private final ObservableList<CatalogEntryItem> items =
       FXCollections.observableArrayList ();
 
-  private Dataset dataset;
+  private DatasetStatus datasetStatus;
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
 
   private DisplayType currentDisplayType = null;
@@ -81,16 +81,16 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   // ---------------------------------------------------------------------------------//
   {
     if (catalogEntryItem == null)
-      for (TableItemSelectionListener listener : selectionListeners)
-        listener.tableItemSelected (null);
+      datasetStatus.catalogEntrySelected (null);
     else
     {
       CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
-      selectedMembers.put (dataset, catalogEntry.getMemberName ());
-
-      for (TableItemSelectionListener listener : selectionListeners)
-        listener.tableItemSelected (catalogEntry);
+      datasetStatus.catalogEntrySelected (catalogEntry);
+      selectedMembers.put (datasetStatus.dataset, catalogEntry.getMemberName ());
     }
+
+    for (TableItemSelectionListener listener : selectionListeners)
+      listener.tableItemSelected (datasetStatus);
   }
 
   // this should go
@@ -177,16 +177,16 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (Dataset dataset, String name)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.dataset = dataset;
+    this.datasetStatus = datasetStatus;
 
-    if (dataset != null && dataset.isPds ())
+    if (datasetStatus.dataset != null && datasetStatus.dataset.isPds ())
     {
-      setVisibleColumns (((PdsDataset) dataset).getModuleType ());
-      String selectedName =
-          (selectedMembers.containsKey (dataset) ? selectedMembers.get (dataset) : "");
+      setVisibleColumns (((PdsDataset) datasetStatus.dataset).getModuleType ());
+      String selectedName = (selectedMembers.containsKey (datasetStatus.dataset)
+          ? selectedMembers.get (datasetStatus.dataset) : "");
       buildList (selectedName);
     }
     else
@@ -207,7 +207,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
     this.filterStatus = filterStatus;
 
-    if (dataset != null && dataset.isPds ())
+    if (datasetStatus != null && datasetStatus.dataset != null
+        && datasetStatus.dataset.isPds ())
     {
       CatalogEntryItem selectedItem = getSelectionModel ().getSelectedItem ();
       String selectedName = selectedItem == null ? "" : selectedItem.getMemberName ();
@@ -229,7 +230,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
           String.format ("No members contain '%s'", filterStatus.filterValue)));
 
     // build items based on filter value
-    Filter filter = ((PdsDataset) dataset).getFilter (filterStatus.filterValue);
+    Filter filter =
+        ((PdsDataset) datasetStatus.dataset).getFilter (filterStatus.filterValue);
     FilterMode filterMode =
         filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
             : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
@@ -238,7 +240,8 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
 
     // notify filter listeners
     for (FilterActionListener listener : filterListeners)
-      listener.filtering (items.size (), ((PdsDataset) dataset).size (), true);
+      listener.filtering (items.size (), ((PdsDataset) datasetStatus.dataset).size (),
+          true);
 
     // select a member
     if (items.size () > 0)

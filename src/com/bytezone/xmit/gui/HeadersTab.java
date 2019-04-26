@@ -14,9 +14,7 @@ class HeadersTab extends XmitTab
     implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
-  Dataset dataset;                // usually file #1 in the Reader
-  DataFile dataFile;              // FlatFile or PdsMember
-  CatalogEntry catalogEntry;      // needed for alias members
+  DatasetStatus datasetStatus;
 
   //----------------------------------------------------------------------------------- //
   public HeadersTab (String title, KeyCode keyCode)
@@ -32,11 +30,10 @@ class HeadersTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
-    //    Dataset dataset = parent.dataset;              // improve this
-    if (dataset == null)
+    if (datasetStatus.dataset == null)
       return lines;
 
-    Reader reader = dataset.getReader ();
+    Reader reader = datasetStatus.dataset.getReader ();
 
     if (reader.size () > 1)
     {
@@ -53,12 +50,13 @@ class HeadersTab extends XmitTab
             "Unexpected disposition for file #1: " + firstDataset.getDisposition ());
     }
 
-    for (ControlRecord controlRecord : dataset.getReader ().getControlRecords ())
+    for (ControlRecord controlRecord : datasetStatus.dataset.getReader ()
+        .getControlRecords ())
       lines.add (controlRecord.toString ());
 
-    if (dataset.isPds ())
+    if (datasetStatus.dataset.isPds ())
     {
-      PdsDataset pdsDataset = (PdsDataset) dataset;
+      PdsDataset pdsDataset = (PdsDataset) datasetStatus.dataset;
       lines.add ("COPYR1");
       lines.addAll (pdsDataset.getCopyR1 ().toLines ());
       lines.add ("");
@@ -66,7 +64,8 @@ class HeadersTab extends XmitTab
       lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
-      lines.add (String.format ("%s Catalog Blocks:", dataset.getReader ().getName ()));
+      lines.add (String.format ("%s Catalog Blocks:",
+          datasetStatus.dataset.getReader ().getName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
@@ -82,21 +81,16 @@ class HeadersTab extends XmitTab
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void treeItemSelected (Dataset dataset, String name)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    this.dataset = dataset;
+    this.datasetStatus = datasetStatus;
   }
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
+  public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    if (dataset == null || dataset.isPs ())
-      return;
-
-    this.catalogEntry = catalogEntry;
-    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }

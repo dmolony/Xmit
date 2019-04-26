@@ -3,9 +3,6 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsMember;
 
 import javafx.scene.input.KeyCode;
@@ -15,9 +12,10 @@ class BlocksTab extends XmitTab
     implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
-  Dataset dataset;                // usually file #1 in the Reader
-  DataFile dataFile;              // FlatFile or PdsMember
-  CatalogEntry catalogEntry;      // needed for alias members
+  //  Dataset dataset;                // usually file #1 in the Reader
+  //  DataFile dataFile;              // FlatFile or PdsMember
+  //  CatalogEntry catalogEntry;      // needed for alias members
+  DatasetStatus datasetStatus;
 
   //----------------------------------------------------------------------------------- //
   public BlocksTab (String title, KeyCode keyCode)
@@ -34,34 +32,34 @@ class BlocksTab extends XmitTab
     List<String> lines = new ArrayList<> ();
 
     //    DataFile dataFile = parent.dataFile;              // improve this
-    if (dataFile == null)
+    if (datasetStatus.dataFile == null)
       return lines;
 
-    if (dataFile instanceof PdsMember)
-      ((PdsMember) dataFile).listSizeCounts (lines);
+    if (datasetStatus.dataFile instanceof PdsMember)
+      ((PdsMember) datasetStatus.dataFile).listSizeCounts (lines);
 
-    lines.add (dataFile.toString ());
+    lines.add (datasetStatus.dataFile.toString ());
 
     return lines;
   }
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void treeItemSelected (Dataset dataset, String name)
+  public void treeItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    this.dataset = dataset;
+    this.datasetStatus = datasetStatus;
   }
 
   //----------------------------------------------------------------------------------- //
   @Override
-  public void tableItemSelected (CatalogEntry catalogEntry)
+  public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    if (dataset == null || dataset.isPs ())
-      return;
-
-    this.catalogEntry = catalogEntry;
-    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
+    //    if (datasetStatus.dataset == null || datasetStatus.dataset.isPs ())
+    //      return;
+    //
+    ////    this.catalogEntry = catalogEntry;
+    //    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }

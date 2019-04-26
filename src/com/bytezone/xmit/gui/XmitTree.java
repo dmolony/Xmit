@@ -32,6 +32,8 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
   private final Image folderImage;
   private Font font;
 
+  private final DatasetStatus datasetStatus = new DatasetStatus ();
+
   // ---------------------------------------------------------------------------------//
   XmitTree (FileTreeItem fileTreeItem)
   // ---------------------------------------------------------------------------------//
@@ -92,7 +94,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
     {
       if (newSel == null)
       {
-        notify (null, null);
+        notifyListeners (null, null);
         return;
       }
 
@@ -100,18 +102,19 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
       Reader reader = xmitFile.getReader ((FileTreeItem) newSel);
 
       if (reader == null)
-        notify (null, null);
+        notifyListeners (null, null);
       else
-        notify (reader.getActiveDataset (), xmitFile.getName ());
+        notifyListeners (reader.getActiveDataset (), xmitFile.getName ());
     });
   }
 
   // ---------------------------------------------------------------------------------//
-  private void notify (Dataset dataset, String name)
+  private void notifyListeners (Dataset dataset, String name)
   // ---------------------------------------------------------------------------------//
   {
+    datasetStatus.datasetSelected (dataset, name);
     for (TreeItemSelectionListener listener : listeners)
-      listener.treeItemSelected (dataset, name);
+      listener.treeItemSelected (datasetStatus);
   }
 
   // ---------------------------------------------------------------------------------//
