@@ -1,5 +1,6 @@
 package com.bytezone.xmit.gui;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -21,6 +22,9 @@ public class DatasetStatus
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
   private final Map<String, PdsDataset> datasets = new TreeMap<> ();
+
+  // keep track of last selected member for each dataset
+  final Map<Dataset, String> selectedMembers = new HashMap<> ();
 
   //----------------------------------------------------------------------------------- //
   void datasetSelected (Dataset dataset, String name)
@@ -45,7 +49,16 @@ public class DatasetStatus
       return;
 
     this.catalogEntry = catalogEntry;
-    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
+
+    if (catalogEntry == null)
+    {
+      dataFile = null;
+    }
+    else
+    {
+      dataFile = catalogEntry.getMember ();
+      selectedMembers.put (dataset, catalogEntry.getMemberName ());
+    }
   }
 
   //----------------------------------------------------------------------------------- //
@@ -56,6 +69,20 @@ public class DatasetStatus
       return datasets.get (datasetName).findMember (memberName);
 
     return Optional.empty ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  String previousSelection ()
+  //----------------------------------------------------------------------------------- //
+  {
+    return (selectedMembers.containsKey (dataset) ? selectedMembers.get (dataset) : "");
+  }
+
+  //----------------------------------------------------------------------------------- //
+  boolean isPds ()
+  //----------------------------------------------------------------------------------- //
+  {
+    return dataset != null && dataset.isPds ();
   }
 
   //---------------------------------------------------------------------------------//

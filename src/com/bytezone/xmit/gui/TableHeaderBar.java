@@ -11,9 +11,9 @@ public class TableHeaderBar extends HeaderBar
 // ---------------------------------------------------------------------------------//
 {
   private DatasetStatus datasetStatus;
+  private FilterStatus filterStatus;
   private int found;
   private int max;
-  private FilterStatus filterStatus;
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -63,8 +63,7 @@ public class TableHeaderBar extends HeaderBar
   private void setMembersLabel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (datasetStatus != null && datasetStatus.dataset != null
-        && datasetStatus.dataset.isPds ())
+    if (datasetStatus != null && datasetStatus.isPds ())
     {
       int members = ((PdsDataset) datasetStatus.dataset).getCatalogEntries ().size ();
 

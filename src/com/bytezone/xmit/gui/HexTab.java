@@ -13,9 +13,6 @@ class HexTab extends XmitTab
 //----------------------------------------------------------------------------------- //
 {
   private static final int MAX_HEX_BYTES = 0x20_000;
-  //  Dataset dataset;                // usually file #1 in the Reader
-  //  DataFile dataFile;              // FlatFile or PdsMember
-  //  CatalogEntry catalogEntry;      // needed for alias members
   DatasetStatus datasetStatus;
 
   //----------------------------------------------------------------------------------- //
@@ -33,7 +30,6 @@ class HexTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
-    //    DataFile dataFile = parent.dataFile;              // improve this
     if (datasetStatus.dataFile == null)
       return lines;
 
@@ -54,10 +50,5 @@ class HexTab extends XmitTab
   public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    //    if (dataset == null || dataset.isPs ())
-    //      return;
-
-    //    datasetStatus.catalogEntry = catalogEntry;
-    //    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }

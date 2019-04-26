@@ -54,7 +54,7 @@ class HeadersTab extends XmitTab
         .getControlRecords ())
       lines.add (controlRecord.toString ());
 
-    if (datasetStatus.dataset.isPds ())
+    if (datasetStatus.isPds ())
     {
       PdsDataset pdsDataset = (PdsDataset) datasetStatus.dataset;
       lines.add ("COPYR1");

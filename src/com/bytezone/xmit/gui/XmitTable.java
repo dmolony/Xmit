@@ -1,11 +1,14 @@
 package com.bytezone.xmit.gui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
-import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.Filter;
 import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.PdsDataset;
@@ -20,8 +23,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelectionListener,
-    FontChangeListener, SaveState, FilterChangeListener
+class XmitTable extends TableView<CatalogEntryItem> implements SaveState,
+    TreeItemSelectionListener, FontChangeListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
@@ -32,11 +35,10 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
       FXCollections.observableArrayList ();
 
   private DatasetStatus datasetStatus;
-  private final Map<Dataset, String> selectedMembers = new HashMap<> ();
+  private FilterStatus filterStatus;
 
   private DisplayType currentDisplayType = null;
   private final List<DataColumn<?>> dataColumns = new ArrayList<> ();
-  private FilterStatus filterStatus;
 
   // ---------------------------------------------------------------------------------//
   XmitTable ()
@@ -75,7 +77,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
         .addListener ( (obs, oldSel, newSel) -> selected (newSel));
   }
 
-  // these should be handled by the selection model
   // ---------------------------------------------------------------------------------//
   private void selected (CatalogEntryItem catalogEntryItem)
   // ---------------------------------------------------------------------------------//
@@ -83,31 +84,18 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     if (catalogEntryItem == null)
       datasetStatus.catalogEntrySelected (null);
     else
-    {
-      CatalogEntry catalogEntry = catalogEntryItem.getCatalogEntry ();
-      datasetStatus.catalogEntrySelected (catalogEntry);
-      selectedMembers.put (datasetStatus.dataset, catalogEntry.getMemberName ());
-    }
+      datasetStatus.catalogEntrySelected (catalogEntryItem.getCatalogEntry ());
 
     for (TableItemSelectionListener listener : selectionListeners)
       listener.tableItemSelected (datasetStatus);
   }
 
-  // this should go
   // ---------------------------------------------------------------------------------//
   void addListener (TableItemSelectionListener listener)
   // ---------------------------------------------------------------------------------//
   {
     if (!selectionListeners.contains (listener))
       selectionListeners.add (listener);
-  }
-
-  // this should go
-  // ---------------------------------------------------------------------------------//
-  void removeListener (TableItemSelectionListener listener)
-  // ---------------------------------------------------------------------------------//
-  {
-    selectionListeners.remove (listener);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -136,8 +124,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     int seq = 0;
     for (TableColumn<CatalogEntryItem, ?> column : getColumns ())
       ((DataColumn<?>) column.getUserData ()).save (seq++);
-
-    //    executor.shutdown ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -146,8 +132,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   // ---------------------------------------------------------------------------------//
   {
     String name = prefs.get (PREFS_LAST_MEMBER_NAME, "");
-    CatalogEntryItem catalogEntryItem = find (name);
-    selectCatalogEntryItem (catalogEntryItem);
+    selectCatalogEntryItem (find (name));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -169,25 +154,16 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
   }
 
   // ---------------------------------------------------------------------------------//
-  void removeFilterListener (FilterActionListener listener)
-  // ---------------------------------------------------------------------------------//
-  {
-    filterListeners.remove (listener);
-  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public void treeItemSelected (DatasetStatus datasetStatus)
   // ---------------------------------------------------------------------------------//
   {
     this.datasetStatus = datasetStatus;
 
-    if (datasetStatus.dataset != null && datasetStatus.dataset.isPds ())
+    if (datasetStatus.isPds ())
     {
       setVisibleColumns (((PdsDataset) datasetStatus.dataset).getModuleType ());
-      String selectedName = (selectedMembers.containsKey (datasetStatus.dataset)
-          ? selectedMembers.get (datasetStatus.dataset) : "");
-      buildList (selectedName);
+      buildList (datasetStatus.previousSelection ());
     }
     else
     {
@@ -235,6 +211,7 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     FilterMode filterMode =
         filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
             : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
+
     for (CatalogEntry catalogEntry : filter.getCatalogEntries (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 
@@ -278,10 +255,10 @@ class XmitTable extends TableView<CatalogEntryItem> implements TreeItemSelection
     if (items.size () == 0)
       return;
 
-    if (catalogEntryItem != null)
-      getSelectionModel ().select (catalogEntryItem);       // select by item
-    else
+    if (catalogEntryItem == null)
       getSelectionModel ().select (0);                      // select by index
+    else
+      getSelectionModel ().select (catalogEntryItem);       // select by item
 
     scrollTo (getSelectionModel ().getSelectedIndex ());
   }

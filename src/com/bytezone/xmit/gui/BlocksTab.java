@@ -12,9 +12,6 @@ class BlocksTab extends XmitTab
     implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
-  //  Dataset dataset;                // usually file #1 in the Reader
-  //  DataFile dataFile;              // FlatFile or PdsMember
-  //  CatalogEntry catalogEntry;      // needed for alias members
   DatasetStatus datasetStatus;
 
   //----------------------------------------------------------------------------------- //
@@ -31,7 +28,6 @@ class BlocksTab extends XmitTab
   {
     List<String> lines = new ArrayList<> ();
 
-    //    DataFile dataFile = parent.dataFile;              // improve this
     if (datasetStatus.dataFile == null)
       return lines;
 
@@ -56,10 +52,5 @@ class BlocksTab extends XmitTab
   public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    //    if (datasetStatus.dataset == null || datasetStatus.dataset.isPs ())
-    //      return;
-    //
-    ////    this.catalogEntry = catalogEntry;
-    //    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
   }
 }
