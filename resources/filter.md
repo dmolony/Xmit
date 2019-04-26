@@ -19,3 +19,6 @@ To toggle the exclusive line display, use Option-Cmd-F.
 
 ![filter](xmit-filter-5.png?raw=true "filter")  
 
+To reverse the filter setting (to only show members that do not contain the filter value), use Shift-F.  
+
+![filter](xmit-filter-6.png?raw=true "filter")  
