@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Utility;
 
 import javafx.scene.control.Alert.AlertType;
@@ -23,18 +21,18 @@ class OutputPane extends HeaderTabPane
 {
   private static final String PREFS_LAST_TAB = "lastTab";
 
-  Dataset dataset;                // usually file #1 in the Reader
-  DataFile dataFile;              // FlatFile or PdsMember
-  CatalogEntry catalogEntry;      // needed for alias members
+  //  Dataset dataset;                // usually file #1 in the Reader
+  //  DataFile dataFile;              // FlatFile or PdsMember
+  //  CatalogEntry catalogEntry;      // needed for alias members
 
-  private LineDisplayStatus lineDisplayStatus;
+  //  private LineDisplayStatus lineDisplayStatus;
 
   final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
   final BlocksTab blocksTab = new BlocksTab ("Blocks", KeyCode.B);
   final HexTab hexTab = new HexTab ("Hex", KeyCode.X);
   final OutputTab outputTab = new OutputTab ("Output", KeyCode.O);
 
-  final OutputHeaderBar outputHeaderBar = new OutputHeaderBar (this);
+  final OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
   //----------------------------------------------------------------------------------- //
   OutputPane ()
@@ -85,15 +83,8 @@ class OutputPane extends HeaderTabPane
   public void treeItemSelected (Dataset dataset, String name)
   //----------------------------------------------------------------------------------- //
   {
-    this.dataset = dataset;
-    dataFile = null;
-
-    if (dataset != null && dataset.isPs ())
-      dataFile = ((PsDataset) dataset).getFlatFile ();
-
     clearText ();
     updateCurrentTab ();
-    outputHeaderBar.updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -101,15 +92,8 @@ class OutputPane extends HeaderTabPane
   public void tableItemSelected (CatalogEntry catalogEntry)
   //----------------------------------------------------------------------------------- //
   {
-    if (dataset == null || dataset.isPs ())
-      return;
-
-    this.catalogEntry = catalogEntry;
-    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
-
     clearText ();
     updateCurrentTab ();
-    outputHeaderBar.updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -117,17 +101,21 @@ class OutputPane extends HeaderTabPane
   public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   //----------------------------------------------------------------------------------- //
   {
-    //    this.truncateLines = lineDisplayStatus.truncateLines;
-    this.lineDisplayStatus = lineDisplayStatus;
-    outputTab.showLinesSelected (lineDisplayStatus);
-
     clearText ();
     updateCurrentTab ();
-    outputHeaderBar.updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   //----------------------------------------------------------------------------------- //
   public void selectCodePage ()
+  //----------------------------------------------------------------------------------- //
+  {
+    clearText ();
+    updateCurrentTab ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void setFilter (FilterStatus filterStatus)
   //----------------------------------------------------------------------------------- //
   {
     clearText ();
@@ -153,15 +141,5 @@ class OutputPane extends HeaderTabPane
     {
       Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
     }
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void setFilter (FilterStatus filterStatus)
-  //----------------------------------------------------------------------------------- //
-  {
-    outputTab.setFilter (filterStatus);
-    clearText ();
-    updateCurrentTab ();
   }
 }

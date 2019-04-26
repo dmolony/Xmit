@@ -14,10 +14,7 @@ class TextFormatter
   final Color baseColor = Color.GREEN;
   final Color numberColor = Color.LIGHTSEAGREEN;
   boolean showLines;
-  //  private String filter = "";
-  //  boolean fullFilter;
-  //  boolean filterReverse;
-  //  boolean filterActive;
+
   private final FilterStatus filterStatus = new FilterStatus ();
 
   // ---------------------------------------------------------------------------------//
@@ -38,10 +35,6 @@ class TextFormatter
   public void setFilter (FilterStatus filterStatus)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.filter = filter;
-    //    this.fullFilter = fullFilter;
-    //    this.filterReverse = filterReverse;
-    //    this.filterActive = active;               <--- why was this always active?
     this.filterStatus.copy (filterStatus);
   }
 

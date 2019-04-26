@@ -82,4 +82,19 @@ public class LineDisplayStatus implements SaveState
     truncateLines = prefs.getBoolean (PREFS_TRUNCATE, false);
     expandInclude = prefs.getBoolean (PREFS_CHECK_INCLUDE, false);
   }
+
+  //---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  //---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Show lines...... %s%n", showLines));
+    text.append (String.format ("Strip lines..... %s%n", stripLines));
+    text.append (String.format ("Truncate.lines.. %s%n", truncateLines));
+    text.append (String.format ("Expand include.. %s", expandInclude));
+
+    return text.toString ();
+  }
 }

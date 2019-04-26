@@ -16,7 +16,7 @@ class TextFormatterJcl extends TextFormatter
   public List<Text> format (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    if (usingFilter () || !Utility.isJCL (lines))
+    if (usingFilter () || !Utility.isJCL (lines))     // truncation buggers this
       return super.format (lines);
 
     textList.clear ();

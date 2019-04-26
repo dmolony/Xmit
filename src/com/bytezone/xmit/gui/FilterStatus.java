@@ -93,4 +93,19 @@ public class FilterStatus implements SaveState
     filterReverse = prefs.getBoolean (PREFS_FILTER_REVERSE, false);
     filterActive = prefs.getBoolean (PREFS_FILTER_ACTIVE, false);
   }
+
+  //---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  //---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Filter value.... %s%n", filterValue));
+    text.append (String.format ("Exclusion....... %s%n", filterExclusion));
+    text.append (String.format ("Reverse......... %s%n", filterReverse));
+    text.append (String.format ("Active.......... %s", filterActive));
+
+    return text.toString ();
+  }
 }
