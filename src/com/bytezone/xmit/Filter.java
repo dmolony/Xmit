@@ -13,9 +13,6 @@ public class Filter
   private List<CatalogEntry> filtered;
   private List<CatalogEntry> reversed;
 
-  //  private boolean filter;
-  //  private boolean reverse;
-
   public enum FilterMode
   {
     ON, REVERSED, OFF

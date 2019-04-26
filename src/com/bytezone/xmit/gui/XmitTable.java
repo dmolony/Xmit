@@ -23,8 +23,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-class XmitTable extends TableView<CatalogEntryItem> implements SaveState,
-    TreeItemSelectionListener, FontChangeListener, FilterChangeListener
+class XmitTable extends TableView<CatalogEntryItem>                                 //
+    implements SaveState, TreeItemSelectionListener, FontChangeListener,
+    FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
@@ -196,8 +197,6 @@ class XmitTable extends TableView<CatalogEntryItem> implements SaveState,
   private void buildList (String selectedName)
   // ---------------------------------------------------------------------------------//
   {
-    items.clear ();
-
     // setEmptyTableMessage
     if (filterStatus.filterValue.isEmpty ())
       setPlaceholder (new Label (String.format ("No members to display")));
@@ -205,13 +204,15 @@ class XmitTable extends TableView<CatalogEntryItem> implements SaveState,
       setPlaceholder (new Label (
           String.format ("No members contain '%s'", filterStatus.filterValue)));
 
-    // build items based on filter value
+    // create filter
     Filter filter =
         ((PdsDataset) datasetStatus.dataset).getFilter (filterStatus.filterValue);
     FilterMode filterMode =
         filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
             : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
 
+    // build items based on filter value
+    items.clear ();
     for (CatalogEntry catalogEntry : filter.getCatalogEntries (filterMode))
       items.add (new CatalogEntryItem (catalogEntry));
 
@@ -221,22 +222,18 @@ class XmitTable extends TableView<CatalogEntryItem> implements SaveState,
           true);
 
     // select a member
-    if (items.size () > 0)
-      if (selectedName.isEmpty ())
-        selectCatalogEntryItem (null);
-      else
-      {
-        boolean found = false;
-        for (CatalogEntryItem catalogEntryItem : items)
-          if (catalogEntryItem.getMemberName ().equals (selectedName))
-          {
-            selectCatalogEntryItem (catalogEntryItem);
-            found = true;
-            break;
-          }
-        if (!found)
-          selectCatalogEntryItem (null);
-      }
+    selectCatalogEntryItem (findItem (selectedName));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private CatalogEntryItem findItem (String name)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!name.isEmpty ())
+      for (CatalogEntryItem catalogEntryItem : items)
+        if (catalogEntryItem.getMemberName ().equals (name))
+          return catalogEntryItem;
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//
