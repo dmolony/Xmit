@@ -8,7 +8,7 @@ import com.bytezone.xmit.PdsMember;
 import javafx.scene.input.KeyCode;
 
 // ----------------------------------------------------------------------------------- //
-class BlocksTab extends XmitTab
+class BlocksTab extends XmitTextTab
     implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {

@@ -38,8 +38,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private TreePane treePane;
 
   private final XmitTable xmitTable = new XmitTable ();
-  private final TablePane tablePane = new TablePane (xmitTable);
-
   private final OutputPane outputPane = new OutputPane ();
 
   private final FontManager fontManager = new FontManager ();
@@ -75,6 +73,14 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
+    BorderPane tablePane = new BorderPane ();
+    TableHeaderBar tableHeaderBar = new TableHeaderBar ();
+    OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
+
+    outputPane.setTop (outputHeaderBar);
+    tablePane.setCenter (xmitTable);
+    tablePane.setTop (tableHeaderBar);
+
     splitPane.getItems ().addAll (treePane, tablePane, outputPane);
     StatusBar statusBar = new StatusBar ();
 
@@ -87,7 +93,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // lines listeners
     viewMenu.addShowLinesListener (statusBar);
-    viewMenu.addShowLinesListener (outputPane.outputHeaderBar);
+    viewMenu.addShowLinesListener (outputHeaderBar);
     viewMenu.addShowLinesListener (outputPane.outputTab);
     viewMenu.addShowLinesListener (outputPane);
 
@@ -99,13 +105,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // filter change listeners (filter parameters)
     filterManager.addFilterListener (statusBar);
-    filterManager.addFilterListener (tablePane.tableHeaderBar);
+    filterManager.addFilterListener (tableHeaderBar);
     filterManager.addFilterListener (outputPane.outputTab);
     filterManager.addFilterListener (outputPane);
     filterManager.addFilterListener (xmitTable);
 
     // filter action listeners (filter results)
-    xmitTable.addFilterListener (tablePane.tableHeaderBar);
+    xmitTable.addFilterListener (tableHeaderBar);
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
@@ -114,8 +120,8 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTree.addListener (outputPane.blocksTab);
     xmitTree.addListener (outputPane.outputTab);
     xmitTree.addListener (outputPane);               // must come after the tabs
-    xmitTree.addListener (outputPane.outputHeaderBar);
-    xmitTree.addListener (tablePane.tableHeaderBar);
+    xmitTree.addListener (outputHeaderBar);
+    xmitTree.addListener (tableHeaderBar);
     xmitTree.addListener (xmitTable);
 
     // table listeners
@@ -125,7 +131,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTable.addListener (outputPane.blocksTab);
     xmitTable.addListener (outputPane.outputTab);
     xmitTable.addListener (outputPane);               // must come after the tabs
-    xmitTable.addListener (outputPane.outputHeaderBar);
+    xmitTable.addListener (outputHeaderBar);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
@@ -138,7 +144,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     ObservableList<Menu> menus = menuBar.getMenus ();
     menus.addAll (fileMenu.getMenu (), viewMenu.getMenu ());
 
-    fileMenu.setOutputWriter (outputPane);
+    fileMenu.setOutputWriter (outputPane.outputTab);
 
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());

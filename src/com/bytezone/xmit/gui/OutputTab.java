@@ -1,5 +1,9 @@
 package com.bytezone.xmit.gui;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,10 +13,12 @@ import java.util.regex.Pattern;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Utility;
 
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 
-class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionListener,
-    TableItemSelectionListener, FilterChangeListener
+class OutputTab extends XmitTextTab
+    implements ShowLinesListener, TreeItemSelectionListener, TableItemSelectionListener,
+    FilterChangeListener, OutputWriter
 {
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE_1 =
@@ -142,6 +148,27 @@ class OutputTab extends XmitTab implements ShowLinesListener, TreeItemSelectionL
       if ((c < '0' || c > '9') && c != ' ')
         return line;
     return line.substring (0, 72).stripTrailing ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void write (File file)
+  //----------------------------------------------------------------------------------- //
+  {
+    if (file == null)
+      return;
+
+    try (BufferedWriter output = new BufferedWriter (new FileWriter (file)))
+    {
+      for (String line : getLines (0))
+        output.write (line + "\n");
+      Utility.showAlert (AlertType.INFORMATION, "Success",
+          "File Saved: " + file.getName ());
+    }
+    catch (IOException e)
+    {
+      Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
+    }
   }
 
   //----------------------------------------------------------------------------------- //

@@ -1,20 +1,13 @@
 package com.bytezone.xmit.gui;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.prefs.Preferences;
 
-import com.bytezone.xmit.Utility;
-
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 
 // ------------------------------------------------------------------------------------ //
 class OutputPane extends HeaderTabPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener,
-    FontChangeListener, OutputWriter, SaveState, FilterChangeListener
+    FontChangeListener, SaveState, FilterChangeListener
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -24,8 +17,6 @@ class OutputPane extends HeaderTabPane
   final HexTab hexTab = new HexTab ("Hex", KeyCode.X);
   final OutputTab outputTab = new OutputTab ("Output", KeyCode.O);
 
-  final OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
-
   //----------------------------------------------------------------------------------- //
   OutputPane ()
   //----------------------------------------------------------------------------------- //
@@ -34,8 +25,6 @@ class OutputPane extends HeaderTabPane
     xmitTabs.add (blocksTab);
     xmitTabs.add (hexTab);
     xmitTabs.add (outputTab);
-
-    setTop (outputHeaderBar);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -75,7 +64,6 @@ class OutputPane extends HeaderTabPane
   public void treeItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    clearText ();
     updateCurrentTab ();
   }
 
@@ -84,7 +72,6 @@ class OutputPane extends HeaderTabPane
   public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
-    clearText ();
     updateCurrentTab ();
   }
 
@@ -93,7 +80,6 @@ class OutputPane extends HeaderTabPane
   public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
   //----------------------------------------------------------------------------------- //
   {
-    clearText ();
     updateCurrentTab ();
   }
 
@@ -101,7 +87,6 @@ class OutputPane extends HeaderTabPane
   public void selectCodePage ()
   //----------------------------------------------------------------------------------- //
   {
-    clearText ();
     updateCurrentTab ();
   }
 
@@ -110,28 +95,6 @@ class OutputPane extends HeaderTabPane
   public void setFilter (FilterStatus filterStatus)
   //----------------------------------------------------------------------------------- //
   {
-    clearText ();
     updateCurrentTab ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void write (File file)
-  //----------------------------------------------------------------------------------- //
-  {
-    if (file == null)
-      return;
-
-    try (BufferedWriter output = new BufferedWriter (new FileWriter (file)))
-    {
-      for (String line : outputTab.getLines (0))
-        output.write (line + "\n");
-      Utility.showAlert (AlertType.INFORMATION, "Success",
-          "File Saved: " + file.getName ());
-    }
-    catch (IOException e)
-    {
-      Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
-    }
   }
 }

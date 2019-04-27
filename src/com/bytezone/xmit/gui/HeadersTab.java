@@ -10,7 +10,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import javafx.scene.input.KeyCode;
 
 // ----------------------------------------------------------------------------------- //
-class HeadersTab extends XmitTab
+class HeadersTab extends XmitTextTab
     implements TreeItemSelectionListener, TableItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {

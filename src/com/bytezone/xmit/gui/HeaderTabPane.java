@@ -17,7 +17,7 @@ abstract class HeaderTabPane extends BorderPane
 {
   private static final int TAB_WIDTH = 100;
   final TabPane tabPane = new TabPane ();
-  final List<XmitTab> xmitTabs = new ArrayList<> ();
+  final List<XmitTextTab> xmitTabs = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public HeaderTabPane ()
@@ -28,7 +28,7 @@ abstract class HeaderTabPane extends BorderPane
     tabPane.setTabMinWidth (TAB_WIDTH);
 
     tabPane.getSelectionModel ().selectedItemProperty ()
-        .addListener ( (obs, prev, selectedTab) -> ((XmitTab) selectedTab).update ());
+        .addListener ( (obs, prev, selectedTab) -> ((XmitTextTab) selectedTab).update ());
 
     setCenter (tabPane);
   }
@@ -37,24 +37,19 @@ abstract class HeaderTabPane extends BorderPane
   void updateCurrentTab ()
   // ---------------------------------------------------------------------------------//
   {
+    for (XmitTextTab xmitTab : xmitTabs)
+      xmitTab.clear ();
+
     Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
     if (selectedTab != null)
-      ((XmitTab) selectedTab).update ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void clearText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    for (XmitTab xmitTab : xmitTabs)
-      xmitTab.clear ();
+      ((XmitTextTab) selectedTab).update ();
   }
 
   // ---------------------------------------------------------------------------------//
   public void keyPressed (KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTab xmitTab : xmitTabs)
+    for (XmitTextTab xmitTab : xmitTabs)
       if (xmitTab.keyCode == keyCode)
       {
         tabPane.getSelectionModel ().select (xmitTab);
@@ -66,7 +61,7 @@ abstract class HeaderTabPane extends BorderPane
   public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTab xmitTab : xmitTabs)
+    for (XmitTextTab xmitTab : xmitTabs)
       xmitTab.setFont (font);
   }
 }
