@@ -11,7 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-abstract class HeaderTabPane extends BorderPane
+abstract class XmitTabPane extends BorderPane
 //---------------------------------------------------------------------------------//
 {
   private static final int TAB_WIDTH = 100;
@@ -19,7 +19,7 @@ abstract class HeaderTabPane extends BorderPane
   final List<XmitTab> xmitTabs = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public HeaderTabPane ()
+  public XmitTabPane ()
   // ---------------------------------------------------------------------------------//
   {
     tabPane.setSide (Side.BOTTOM);

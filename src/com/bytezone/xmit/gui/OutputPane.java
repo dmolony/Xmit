@@ -5,7 +5,7 @@ import java.util.prefs.Preferences;
 import javafx.scene.input.KeyCode;
 
 // ------------------------------------------------------------------------------------ //
-class OutputPane extends HeaderTabPane
+class OutputPane extends XmitTabPane
     implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener,
     FontChangeListener, SaveState, FilterChangeListener
 //------------------------------------------------------------------------------------- //
