@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Side;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.KeyCode;
@@ -17,7 +16,7 @@ abstract class HeaderTabPane extends BorderPane
 {
   private static final int TAB_WIDTH = 100;
   final TabPane tabPane = new TabPane ();
-  final List<XmitTextTab> xmitTabs = new ArrayList<> ();
+  final List<XmitTab> xmitTabs = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public HeaderTabPane ()
@@ -37,19 +36,19 @@ abstract class HeaderTabPane extends BorderPane
   void updateCurrentTab ()
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTextTab xmitTab : xmitTabs)
+    for (XmitTab xmitTab : xmitTabs)
       xmitTab.clear ();
 
-    Tab selectedTab = tabPane.getSelectionModel ().getSelectedItem ();
+    XmitTab selectedTab = (XmitTab) tabPane.getSelectionModel ().getSelectedItem ();
     if (selectedTab != null)
-      ((XmitTextTab) selectedTab).update ();
+      selectedTab.update ();
   }
 
   // ---------------------------------------------------------------------------------//
   public void keyPressed (KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTextTab xmitTab : xmitTabs)
+    for (XmitTab xmitTab : xmitTabs)
       if (xmitTab.keyCode == keyCode)
       {
         tabPane.getSelectionModel ().select (xmitTab);
@@ -61,7 +60,7 @@ abstract class HeaderTabPane extends BorderPane
   public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
-    for (XmitTextTab xmitTab : xmitTabs)
+    for (XmitTab xmitTab : xmitTabs)
       xmitTab.setFont (font);
   }
 }

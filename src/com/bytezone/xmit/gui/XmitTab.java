@@ -4,7 +4,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
-public class XmitTab extends Tab
+public abstract class XmitTab extends Tab
 {
   final KeyCode keyCode;
   Font font;
@@ -24,4 +24,8 @@ public class XmitTab extends Tab
   {
     this.font = font;
   }
+
+  abstract void clear ();
+
+  abstract void update ();
 }
