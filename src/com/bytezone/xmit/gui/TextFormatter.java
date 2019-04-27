@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 // ---------------------------------------------------------------------------------//
@@ -14,6 +15,7 @@ class TextFormatter
   final Color baseColor = Color.GREEN;
   final Color numberColor = Color.LIGHTSEAGREEN;
   boolean showLines;
+  Font font;
 
   private final FilterStatus filterStatus = new FilterStatus ();
 
@@ -29,6 +31,13 @@ class TextFormatter
   // ---------------------------------------------------------------------------------//
   {
     return showLines;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void setFont (Font font)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.font = font;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -180,6 +189,7 @@ class TextFormatter
 
     Text text = new Text (line);
     text.setFill (color);
+    text.setFont (font);
     textList.add (text);
   }
 

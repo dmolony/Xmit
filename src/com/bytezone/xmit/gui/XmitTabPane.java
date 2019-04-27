@@ -13,8 +13,7 @@ abstract class XmitTabPane extends TabPane
 //---------------------------------------------------------------------------------//
 {
   private static final int TAB_WIDTH = 100;
-  //  final TabPane tabPane = new TabPane ();
-  final List<XmitTab> xmitTabs = new ArrayList<> ();
+  private final List<XmitTab> xmitTabs = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public XmitTabPane ()
@@ -26,6 +25,13 @@ abstract class XmitTabPane extends TabPane
 
     getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, prev, selectedTab) -> ((XmitTextTab) selectedTab).update ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void add (XmitTab tab)
+  // ---------------------------------------------------------------------------------//
+  {
+    xmitTabs.add (tab);
   }
 
   // ---------------------------------------------------------------------------------//

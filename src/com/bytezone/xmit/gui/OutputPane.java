@@ -21,10 +21,10 @@ class OutputPane extends XmitTabPane
   OutputPane ()
   //----------------------------------------------------------------------------------- //
   {
-    xmitTabs.add (headersTab);
-    xmitTabs.add (blocksTab);
-    xmitTabs.add (hexTab);
-    xmitTabs.add (outputTab);
+    add (headersTab);
+    add (blocksTab);
+    add (hexTab);
+    add (outputTab);
   }
 
   //----------------------------------------------------------------------------------- //

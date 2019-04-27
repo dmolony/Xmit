@@ -57,8 +57,8 @@ abstract class XmitTextTab extends XmitTab
 
     List<Text> textList = textFormatter.format (getLines ());
 
-    for (Text text : textList)
-      text.setFont (font);
+    //    for (Text text : textList)
+    //      text.setFont (font);
 
     textFlow.getChildren ().setAll (textList);
 
@@ -73,6 +73,7 @@ abstract class XmitTextTab extends XmitTab
   {
     super.setFont (font);
 
+    textFormatter.setFont (font);
     for (Node node : textFlow.getChildren ())
       ((Text) node).setFont (font);
   }
