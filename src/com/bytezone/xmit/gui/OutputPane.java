@@ -32,7 +32,7 @@ class OutputPane extends XmitTabPane
   public void restore (Preferences prefs)
   //----------------------------------------------------------------------------------- //
   {
-    tabPane.getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
+    getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
   }
 
   //----------------------------------------------------------------------------------- //
@@ -40,23 +40,23 @@ class OutputPane extends XmitTabPane
   public void save (Preferences prefs)
   //----------------------------------------------------------------------------------- //
   {
-    prefs.putInt (PREFS_LAST_TAB, tabPane.getSelectionModel ().getSelectedIndex ());
+    prefs.putInt (PREFS_LAST_TAB, getSelectionModel ().getSelectedIndex ());
   }
 
   //----------------------------------------------------------------------------------- //
   void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
   //----------------------------------------------------------------------------------- //
   {
-    tabPane.getTabs ().clear ();
+    getTabs ().clear ();
 
     if (headersVisible)
-      tabPane.getTabs ().add (headersTab);
+      getTabs ().add (headersTab);
     if (blocksVisible)
-      tabPane.getTabs ().add (blocksTab);
+      getTabs ().add (blocksTab);
     if (hexVisible)
-      tabPane.getTabs ().add (hexTab);
+      getTabs ().add (hexTab);
 
-    tabPane.getTabs ().add (outputTab);         // always visible
+    getTabs ().add (outputTab);         // always visible
   }
 
   //----------------------------------------------------------------------------------- //

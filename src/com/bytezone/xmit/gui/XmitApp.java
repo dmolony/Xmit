@@ -73,15 +73,17 @@ public class XmitApp extends Application implements CodePageSelectedListener
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
-    BorderPane tablePane = new BorderPane ();
+    BorderPane tableBorderPane = new BorderPane ();
+    BorderPane outputBorderPane = new BorderPane ();
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();
     OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
-    outputPane.setTop (outputHeaderBar);
-    tablePane.setCenter (xmitTable);
-    tablePane.setTop (tableHeaderBar);
+    outputBorderPane.setTop (outputHeaderBar);
+    outputBorderPane.setCenter (outputPane);
+    tableBorderPane.setCenter (xmitTable);
+    tableBorderPane.setTop (tableHeaderBar);
 
-    splitPane.getItems ().addAll (treePane, tablePane, outputPane);
+    splitPane.getItems ().addAll (treePane, tableBorderPane, outputBorderPane);
     StatusBar statusBar = new StatusBar ();
 
     // menus
