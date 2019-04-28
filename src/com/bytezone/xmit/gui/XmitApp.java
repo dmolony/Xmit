@@ -38,7 +38,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   private TreePane treePane;
 
   private final XmitTable xmitTable = new XmitTable ();
-  private final OutputPane outputPane = new OutputPane ();
+  private final OutputTabPane outputTabPane = new OutputTabPane ();
 
   private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
@@ -79,7 +79,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
     OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
     outputBorderPane.setTop (outputHeaderBar);
-    outputBorderPane.setCenter (outputPane);
+    outputBorderPane.setCenter (outputTabPane);
     tableBorderPane.setCenter (xmitTable);
     tableBorderPane.setTop (tableHeaderBar);
 
@@ -96,18 +96,18 @@ public class XmitApp extends Application implements CodePageSelectedListener
     // lines listeners
     viewMenu.addShowLinesListener (statusBar);
     viewMenu.addShowLinesListener (outputHeaderBar);
-    viewMenu.addShowLinesListener (outputPane.outputTab);
+    viewMenu.addShowLinesListener (outputTabPane.outputTab);
 
     // font change listeners
     fontManager.addFontChangeListener (xmitTable);
     fontManager.addFontChangeListener (xmitTree);
-    fontManager.addFontChangeListener (outputPane);
+    fontManager.addFontChangeListener (outputTabPane);
     fontManager.addFontChangeListener (statusBar);
 
     // filter change listeners (filter parameters)
     filterManager.addFilterListener (statusBar);
     filterManager.addFilterListener (tableHeaderBar);
-    filterManager.addFilterListener (outputPane.outputTab);
+    filterManager.addFilterListener (outputTabPane.outputTab);
     filterManager.addFilterListener (xmitTable);
 
     // filter action listeners (filter results)
@@ -115,19 +115,19 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
-    xmitTree.addListener (outputPane.headersTab);
-    xmitTree.addListener (outputPane.hexTab);
-    xmitTree.addListener (outputPane.blocksTab);
-    xmitTree.addListener (outputPane.outputTab);
+    xmitTree.addListener (outputTabPane.headersTab);
+    xmitTree.addListener (outputTabPane.hexTab);
+    xmitTree.addListener (outputTabPane.blocksTab);
+    xmitTree.addListener (outputTabPane.outputTab);
     xmitTree.addListener (outputHeaderBar);
     xmitTree.addListener (tableHeaderBar);
     xmitTree.addListener (xmitTable);
 
     // table listeners
     xmitTable.addListener (fileMenu);
-    xmitTable.addListener (outputPane.hexTab);
-    xmitTable.addListener (outputPane.blocksTab);
-    xmitTable.addListener (outputPane.outputTab);
+    xmitTable.addListener (outputTabPane.hexTab);
+    xmitTable.addListener (outputTabPane.blocksTab);
+    xmitTable.addListener (outputTabPane.outputTab);
     xmitTable.addListener (outputHeaderBar);
 
     BorderPane mainPane = new BorderPane ();
@@ -141,13 +141,13 @@ public class XmitApp extends Application implements CodePageSelectedListener
     ObservableList<Menu> menus = menuBar.getMenus ();
     menus.addAll (fileMenu.getMenu (), viewMenu.getMenu ());
 
-    fileMenu.setOutputWriter (outputPane.outputTab);
+    fileMenu.setOutputWriter (outputTabPane.outputTab);
 
     // exit action
     primaryStage.setOnCloseRequest (e -> exit ());
 
     // ensure viewMenu (codepage) is set before xmitTree
-    saveStateList.addAll (Arrays.asList (filterManager, outputPane, fileMenu, viewMenu,
+    saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu,
         xmitTree, xmitTable, fontManager));
 
     restore ();
@@ -192,7 +192,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
         || keyCode == KeyCode.O)
-      outputPane.keyPressed (keyCode);
+      outputTabPane.keyPressed (keyCode);
     else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.PERIOD)
       fontManager.keyPressed (keyEvent);
     else if (keyCode == KeyCode.F)
@@ -308,7 +308,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
   // ---------------------------------------------------------------------------------//
   {
-    outputPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
+    outputTabPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -317,7 +317,7 @@ public class XmitApp extends Application implements CodePageSelectedListener
   // ---------------------------------------------------------------------------------//
   {
     Utility.setCodePage (codePageName);     // ensure correct code page is set first
-    outputPane.selectCodePage ();
+    outputTabPane.selectCodePage ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -5,7 +5,7 @@ import java.util.prefs.Preferences;
 import javafx.scene.input.KeyCode;
 
 // ------------------------------------------------------------------------------------ //
-class OutputPane extends XmitTabPane implements SaveState
+class OutputTabPane extends XmitTabPane implements SaveState
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -16,7 +16,7 @@ class OutputPane extends XmitTabPane implements SaveState
   final OutputTab outputTab = new OutputTab ("Output", KeyCode.O);
 
   //----------------------------------------------------------------------------------- //
-  OutputPane ()
+  OutputTabPane ()
   //----------------------------------------------------------------------------------- //
   {
     add (headersTab);
