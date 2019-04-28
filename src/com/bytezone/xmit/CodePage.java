@@ -30,13 +30,18 @@ public class CodePage
     this.name = name;
     int i = 0;
     if (name.startsWith ("USER"))
+      //    if (name.startsWith ("CP1047 (swap"))
       for (String s : Utility.getLocalCodePage (name).split (" "))
         ebc2asc[i++] = Integer.parseInt (s, 16);
     else
       try
       {
         for (char c : new String (values, name).toCharArray ())
+        {
+          //          if (c < 256)
+          //            asc2ebc[c] = i;
           ebc2asc[i++] = c;
+        }
       }
       catch (UnsupportedEncodingException e)
       {
@@ -44,7 +49,11 @@ public class CodePage
       }
 
     for (i = 0; i < 256; i++)
-      asc2ebc[ebc2asc[i]] = i;
+    {
+      int j = ebc2asc[i];
+      if (j < 256)              // CP870 requires this
+        asc2ebc[j] = i;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
