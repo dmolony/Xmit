@@ -10,8 +10,7 @@ import com.bytezone.xmit.textunit.ControlRecord;
 import javafx.scene.input.KeyCode;
 
 // ----------------------------------------------------------------------------------- //
-class HeadersTab extends XmitTextTab
-    implements TreeItemSelectionListener, TableItemSelectionListener
+class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
 //----------------------------------------------------------------------------------- //
 {
   DatasetStatus datasetStatus;
@@ -85,12 +84,6 @@ class HeadersTab extends XmitTextTab
   //----------------------------------------------------------------------------------- //
   {
     this.datasetStatus = datasetStatus;
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void tableItemSelected (DatasetStatus datasetStatus)
-  //----------------------------------------------------------------------------------- //
-  {
+    refresh ();
   }
 }

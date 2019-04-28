@@ -16,9 +16,11 @@ import com.bytezone.xmit.Utility;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 
+// ----------------------------------------------------------------------------------- //
 class OutputTab extends XmitTextTab
     implements ShowLinesListener, TreeItemSelectionListener, TableItemSelectionListener,
     FilterChangeListener, OutputWriter
+//----------------------------------------------------------------------------------- //
 {
   private static final int MAX_LINES = 2500;
   private static final String TRUNCATE_MESSAGE_1 =

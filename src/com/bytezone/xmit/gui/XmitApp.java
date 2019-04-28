@@ -125,7 +125,6 @@ public class XmitApp extends Application implements CodePageSelectedListener
 
     // table listeners
     xmitTable.addListener (fileMenu);
-    xmitTable.addListener (outputPane.headersTab);
     xmitTable.addListener (outputPane.hexTab);
     xmitTable.addListener (outputPane.blocksTab);
     xmitTable.addListener (outputPane.outputTab);

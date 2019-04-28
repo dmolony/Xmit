@@ -87,9 +87,9 @@ class ViewMenu implements SaveState
     menuItems.add (new SeparatorMenuItem ());
 
     EventHandler<ActionEvent> action = e -> alterLineStatus ();
-    showLinesMenuItem =
-        setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, SHIFT, action);
-    stripLinesMenuItem = setCheckMenuItem ("Strip Line Numbers", KeyCode.L, action);
+    showLinesMenuItem = setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, action);
+    stripLinesMenuItem =
+        setCheckMenuItem ("Strip Line Numbers", KeyCode.L, SHIFT, action);
     truncateMenuItem = setCheckMenuItem ("Truncate Column 1", KeyCode.T, action);
     expandIncludeMenuItem =
         setCheckMenuItem ("Expand Include Members", KeyCode.I, action);
