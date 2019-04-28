@@ -38,7 +38,7 @@ public class XmitApp extends Application //implements CodePageSelectedListener
   private TreePane treePane;
 
   private final XmitTable xmitTable = new XmitTable ();
-  private final OutputTabPane outputTabPane = new OutputTabPane ();
+  private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
 
   private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
