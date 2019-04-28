@@ -8,8 +8,8 @@ import com.bytezone.xmit.Utility;
 import javafx.scene.input.KeyCode;
 
 // ----------------------------------------------------------------------------------- //
-class HexTab extends XmitTextTab
-    implements TreeItemSelectionListener, TableItemSelectionListener
+class HexTab extends XmitTextTab implements TreeItemSelectionListener,
+    TableItemSelectionListener, CodePageSelectedListener
 //----------------------------------------------------------------------------------- //
 {
   private static final int MAX_HEX_BYTES = 0x20_000;
@@ -49,6 +49,14 @@ class HexTab extends XmitTextTab
   //----------------------------------------------------------------------------------- //
   @Override
   public void tableItemSelected (DatasetStatus datasetStatus)
+  //----------------------------------------------------------------------------------- //
+  {
+    refresh ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void selectCodePage (String codePageName)
   //----------------------------------------------------------------------------------- //
   {
     refresh ();

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.Utility;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -199,6 +201,7 @@ class ViewMenu implements SaveState
     {
       Object o = toggle.getUserData ();
       String codePageName = o.toString ();
+      Utility.setCodePage (codePageName);     // ensure correct code page is set first
       for (CodePageSelectedListener listener : codePageListeners)
         listener.selectCodePage (codePageName);
     }

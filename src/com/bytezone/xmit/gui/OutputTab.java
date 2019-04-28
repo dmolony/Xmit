@@ -19,7 +19,7 @@ import javafx.scene.input.KeyCode;
 // ----------------------------------------------------------------------------------- //
 class OutputTab extends XmitTextTab
     implements ShowLinesListener, TreeItemSelectionListener, TableItemSelectionListener,
-    FilterChangeListener, OutputWriter
+    FilterChangeListener, OutputWriter, CodePageSelectedListener
 //----------------------------------------------------------------------------------- //
 {
   private static final int MAX_LINES = 2500;
@@ -204,6 +204,14 @@ class OutputTab extends XmitTextTab
   //----------------------------------------------------------------------------------- //
   @Override
   public void tableItemSelected (DatasetStatus datasetStatus)
+  //----------------------------------------------------------------------------------- //
+  {
+    refresh ();
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void selectCodePage (String codePageName)
   //----------------------------------------------------------------------------------- //
   {
     refresh ();

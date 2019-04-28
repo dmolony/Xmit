@@ -56,11 +56,4 @@ class OutputTabPane extends XmitTabPane implements SaveState
 
     getTabs ().add (outputTab);         // always visible
   }
-
-  //----------------------------------------------------------------------------------- //
-  public void selectCodePage ()
-  //----------------------------------------------------------------------------------- //
-  {
-    updateCurrentTab ();
-  }
 }
