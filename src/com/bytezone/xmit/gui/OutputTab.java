@@ -57,7 +57,7 @@ class OutputTab extends XmitTextTab
   }
 
   //----------------------------------------------------------------------------------- //
-  List<String> getLines (int maxLines)
+  private List<String> getLines (int maxLines)
   //----------------------------------------------------------------------------------- //
   {
     List<String> newLines = new ArrayList<> ();
@@ -178,6 +178,7 @@ class OutputTab extends XmitTextTab
   {
     this.lineDisplayStatus = lineDisplayStatus;
     textFormatter.setShowLines (lineDisplayStatus.showLines);
+    refresh ();
   }
 
   //----------------------------------------------------------------------------------- //
@@ -186,6 +187,7 @@ class OutputTab extends XmitTextTab
   //----------------------------------------------------------------------------------- //
   {
     textFormatter.setFilter (filterStatus);
+    refresh ();
   }
 
   //----------------------------------------------------------------------------------- //
@@ -194,6 +196,7 @@ class OutputTab extends XmitTextTab
   //----------------------------------------------------------------------------------- //
   {
     this.datasetStatus = datasetStatus;
+    refresh ();
   }
 
   //----------------------------------------------------------------------------------- //
@@ -201,5 +204,6 @@ class OutputTab extends XmitTextTab
   public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
+    refresh ();
   }
 }

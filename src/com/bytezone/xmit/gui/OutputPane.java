@@ -5,9 +5,7 @@ import java.util.prefs.Preferences;
 import javafx.scene.input.KeyCode;
 
 // ------------------------------------------------------------------------------------ //
-class OutputPane extends XmitTabPane
-    implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener,
-    FontChangeListener, SaveState, FilterChangeListener
+class OutputPane extends XmitTabPane implements SaveState
 //------------------------------------------------------------------------------------- //
 {
   private static final String PREFS_LAST_TAB = "lastTab";
@@ -60,39 +58,7 @@ class OutputPane extends XmitTabPane
   }
 
   //----------------------------------------------------------------------------------- //
-  @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
-  //----------------------------------------------------------------------------------- //
-  {
-    updateCurrentTab ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void tableItemSelected (DatasetStatus datasetStatus)
-  //----------------------------------------------------------------------------------- //
-  {
-    updateCurrentTab ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void showLinesSelected (LineDisplayStatus lineDisplayStatus)
-  //----------------------------------------------------------------------------------- //
-  {
-    updateCurrentTab ();
-  }
-
-  //----------------------------------------------------------------------------------- //
   public void selectCodePage ()
-  //----------------------------------------------------------------------------------- //
-  {
-    updateCurrentTab ();
-  }
-
-  //----------------------------------------------------------------------------------- //
-  @Override
-  public void setFilter (FilterStatus filterStatus)
   //----------------------------------------------------------------------------------- //
   {
     updateCurrentTab ();

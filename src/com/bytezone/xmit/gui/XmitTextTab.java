@@ -14,8 +14,8 @@ import javafx.scene.text.TextFlow;
 abstract class XmitTextTab extends XmitTab
 //---------------------------------------------------------------------------------//
 {
-  private final TextFlow textFlow;
-  final ScrollPane scrollPane;
+  private final TextFlow textFlow = new TextFlow ();
+  private final ScrollPane scrollPane = new ScrollPane (textFlow);
 
   TextFormatter textFormatter = new TextFormatter ();
 
@@ -25,14 +25,12 @@ abstract class XmitTextTab extends XmitTab
   {
     super (title, keyCode);
 
-    textFlow = new TextFlow ();
     textFlow.setLineSpacing (1);
 
-    scrollPane = new ScrollPane (textFlow);
     scrollPane.setPadding (new Insets (5, 5, 5, 5));
     scrollPane.setStyle ("-fx-background: white;-fx-border-color: lightgray;");
 
-    this.setContent (scrollPane);
+    setContent (scrollPane);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -55,12 +53,7 @@ abstract class XmitTextTab extends XmitTab
     if (textFlow.getChildren ().size () > 0)
       return;
 
-    List<Text> textList = textFormatter.format (getLines ());
-
-    //    for (Text text : textList)
-    //      text.setFont (font);
-
-    textFlow.getChildren ().setAll (textList);
+    textFlow.getChildren ().setAll (textFormatter.format (getLines ()));
 
     scrollPane.setVvalue (0);
     scrollPane.setHvalue (0);
@@ -74,6 +67,7 @@ abstract class XmitTextTab extends XmitTab
     super.setFont (font);
 
     textFormatter.setFont (font);
+
     for (Node node : textFlow.getChildren ())
       ((Text) node).setFont (font);
   }

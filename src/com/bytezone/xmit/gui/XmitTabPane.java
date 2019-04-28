@@ -3,13 +3,15 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-abstract class XmitTabPane extends TabPane
+abstract class XmitTabPane extends TabPane implements FontChangeListener
 //---------------------------------------------------------------------------------//
 {
   private static final int TAB_WIDTH = 100;
@@ -24,7 +26,21 @@ abstract class XmitTabPane extends TabPane
     setTabMinWidth (TAB_WIDTH);
 
     getSelectionModel ().selectedItemProperty ()
-        .addListener ( (obs, prev, selectedTab) -> ((XmitTextTab) selectedTab).update ());
+        .addListener ( (obs, prev, next) -> select (obs, prev, next));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void select (ObservableValue<? extends Tab> obs, Tab prev, Tab next)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (prev != null)
+      ((XmitTab) prev).active = false;
+
+    if (next != null)
+    {
+      ((XmitTab) next).active = true;
+      ((XmitTab) next).update ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -59,6 +75,7 @@ abstract class XmitTabPane extends TabPane
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {

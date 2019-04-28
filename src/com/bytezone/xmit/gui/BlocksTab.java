@@ -45,6 +45,7 @@ class BlocksTab extends XmitTextTab
   //----------------------------------------------------------------------------------- //
   {
     this.datasetStatus = datasetStatus;
+    refresh ();
   }
 
   //----------------------------------------------------------------------------------- //
@@ -52,5 +53,6 @@ class BlocksTab extends XmitTextTab
   public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
+    refresh ();
   }
 }
