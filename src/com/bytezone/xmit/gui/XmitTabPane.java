@@ -27,6 +27,7 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
     setSide (Side.BOTTOM);
     setTabClosingPolicy (TabClosingPolicy.UNAVAILABLE);
     setTabMinWidth (TAB_WIDTH);
+    setFocusTraversable (false);
 
     PREFS_LAST_TAB = "lastTab" + prefsId;
 

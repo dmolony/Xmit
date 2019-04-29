@@ -29,7 +29,7 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus.dataset == null)
+    if (datasetStatus == null || datasetStatus.dataset == null)
       return lines;
 
     Reader reader = datasetStatus.dataset.getReader ();

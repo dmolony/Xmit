@@ -3,10 +3,10 @@ package com.bytezone.xmit.gui;
 import javafx.scene.input.KeyCode;
 
 // ------------------------------------------------------------------------------------ //
-class OutputTabPane extends XmitTabPane implements SaveState
+class OutputTabPane extends XmitTabPane
 //------------------------------------------------------------------------------------- //
 {
-  final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
+  //  final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
   final BlocksTab blocksTab = new BlocksTab ("Blocks", KeyCode.B);
   final HexTab hexTab = new HexTab ("Hex", KeyCode.X);
   final OutputTab outputTab = new OutputTab ("Output", KeyCode.O);
@@ -17,7 +17,7 @@ class OutputTabPane extends XmitTabPane implements SaveState
   {
     super (prefsId);
 
-    add (headersTab);
+    //    add (headersTab);
     add (blocksTab);
     add (hexTab);
     add (outputTab);
@@ -29,8 +29,8 @@ class OutputTabPane extends XmitTabPane implements SaveState
   {
     getTabs ().clear ();
 
-    if (headersVisible)
-      getTabs ().add (headersTab);
+    //    if (headersVisible)
+    //      getTabs ().add (headersTab);
     if (blocksVisible)
       getTabs ().add (blocksTab);
     if (hexVisible)
