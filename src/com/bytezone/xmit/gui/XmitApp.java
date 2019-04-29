@@ -17,7 +17,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
@@ -189,16 +188,31 @@ public class XmitApp extends Application
   private void keyPressed (KeyEvent keyEvent)
   // ---------------------------------------------------------------------------------//
   {
-    KeyCode keyCode = keyEvent.getCode ();
-
-    if (keyCode == KeyCode.B || keyCode == KeyCode.X || keyCode == KeyCode.O)
-      outputTabPane.keyPressed (keyCode);
-    else if (keyCode == KeyCode.H || keyCode == KeyCode.M)
-      tableTabPane.keyPressed (keyCode);
-    else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.PERIOD)
-      fontManager.keyPressed (keyEvent);
-    else if (keyCode == KeyCode.F)
-      filterManager.keyPressed (keyEvent);
+    switch (keyEvent.getCode ())
+    {
+      case B:
+      case X:
+      case O:
+        outputTabPane.keyPressed (keyEvent);
+        keyEvent.consume ();
+        break;
+      case H:
+      case M:
+        tableTabPane.keyPressed (keyEvent);
+        keyEvent.consume ();
+        break;
+      case COMMA:
+      case PERIOD:
+        fontManager.keyPressed (keyEvent);
+        keyEvent.consume ();
+        break;
+      case F:
+        filterManager.keyPressed (keyEvent);
+        keyEvent.consume ();
+        break;
+      default:
+        break;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

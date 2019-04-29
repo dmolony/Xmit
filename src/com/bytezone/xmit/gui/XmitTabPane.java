@@ -9,6 +9,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
@@ -69,9 +70,10 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
   }
 
   // ---------------------------------------------------------------------------------//
-  public void keyPressed (KeyCode keyCode)
+  public void keyPressed (KeyEvent keyEvent)
   // ---------------------------------------------------------------------------------//
   {
+    KeyCode keyCode = keyEvent.getCode ();
     for (XmitTab xmitTab : xmitTabs)
       if (xmitTab.keyCode == keyCode)
       {
