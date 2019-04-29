@@ -18,9 +18,9 @@ import javafx.scene.input.KeyCombination;
 class ViewMenu implements SaveState
 //---------------------------------------------------------------------------------//
 {
-  private static final String PREFS_SHOW_HEADERS = "ShowHeaders";
-  private static final String PREFS_SHOW_BLOCKS = "ShowBlocks";
-  private static final String PREFS_SHOW_HEX = "ShowHex";
+  //  private static final String PREFS_SHOW_HEADERS = "ShowHeaders";
+  //  private static final String PREFS_SHOW_BLOCKS = "ShowBlocks";
+  //  private static final String PREFS_SHOW_HEX = "ShowHex";
 
   private static final String PREFS_CODE_PAGE = "CodePage";
   private static final String PREFS_EURO_PAGE = "EuroPage";
@@ -30,7 +30,7 @@ class ViewMenu implements SaveState
 
   private final List<ShowLinesListener> showLinesListeners = new ArrayList<> ();
   private final List<CodePageSelectedListener> codePageListeners = new ArrayList<> ();
-  private final XmitApp xmitApp;
+  //  private final XmitApp xmitApp;
   private final LineDisplayStatus lineDisplayStatus = new LineDisplayStatus ();
 
   private final Menu viewMenu = new Menu ("View");
@@ -43,9 +43,9 @@ class ViewMenu implements SaveState
   private final CheckMenuItem stripLinesMenuItem;
   private final CheckMenuItem truncateMenuItem;
   private final CheckMenuItem expandIncludeMenuItem;
-  private final CheckMenuItem headersMenuItem;
-  private final CheckMenuItem blocksMenuItem;
-  private final CheckMenuItem hexMenuItem;
+  //  private final CheckMenuItem headersMenuItem;
+  //  private final CheckMenuItem blocksMenuItem;
+  //  private final CheckMenuItem hexMenuItem;
   private final CheckMenuItem euroMenuItem;
 
   private final String[][]                    //
@@ -69,7 +69,7 @@ class ViewMenu implements SaveState
   public ViewMenu (XmitApp xmitApp, FontManager fontManager, FilterManager filterManager)
   // ---------------------------------------------------------------------------------//
   {
-    this.xmitApp = xmitApp;
+    //    this.xmitApp = xmitApp;
     ObservableList<MenuItem> menuItems = viewMenu.getItems ();
 
     fontMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
@@ -98,12 +98,12 @@ class ViewMenu implements SaveState
 
     menuItems.add (new SeparatorMenuItem ());
 
-    action = e -> setTabs ();
-    headersMenuItem = setCheckMenuItem ("Headers tab", action);
-    blocksMenuItem = setCheckMenuItem ("Blocks tab", action);
-    hexMenuItem = setCheckMenuItem ("Hex tab", action);
+    //    action = e -> setTabs ();
+    //    headersMenuItem = setCheckMenuItem ("Headers tab", action);
+    //    blocksMenuItem = setCheckMenuItem ("Blocks tab", action);
+    //    hexMenuItem = setCheckMenuItem ("Hex tab", action);
 
-    menuItems.add (new SeparatorMenuItem ());
+    //    menuItems.add (new SeparatorMenuItem ());
 
     for (int i = 0; i < codePageNames.length; i++)
     {
@@ -119,11 +119,11 @@ class ViewMenu implements SaveState
   }
 
   // ---------------------------------------------------------------------------------//
-  private CheckMenuItem setCheckMenuItem (String name, EventHandler<ActionEvent> action)
-  // ---------------------------------------------------------------------------------//
-  {
-    return setCheckMenuItem (name, null, NO_SHIFT, action);
-  }
+  //  private CheckMenuItem setCheckMenuItem (String name, EventHandler<ActionEvent> action)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return setCheckMenuItem (name, null, NO_SHIFT, action);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private CheckMenuItem setCheckMenuItem (String name, KeyCode keyCode,
@@ -221,12 +221,12 @@ class ViewMenu implements SaveState
   }
 
   // ---------------------------------------------------------------------------------//
-  private void setTabs ()
-  // ---------------------------------------------------------------------------------//
-  {
-    xmitApp.setTabVisible (headersMenuItem.isSelected (), blocksMenuItem.isSelected (),
-        hexMenuItem.isSelected ());
-  }
+  //  private void setTabs ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    xmitApp.setTabVisible (headersMenuItem.isSelected (), blocksMenuItem.isSelected (),
+  //        hexMenuItem.isSelected ());
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -240,10 +240,10 @@ class ViewMenu implements SaveState
     expandIncludeMenuItem.setSelected (lineDisplayStatus.expandInclude);
     notifyLinesListeners ();
 
-    headersMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEADERS, false));
-    blocksMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_BLOCKS, false));
-    hexMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEX, false));
-    setTabs ();
+    //    headersMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEADERS, false));
+    //    blocksMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_BLOCKS, false));
+    //    hexMenuItem.setSelected (prefs.getBoolean (PREFS_SHOW_HEX, false));
+    //    setTabs ();
 
     euroMenuItem.setSelected (prefs.getBoolean (PREFS_EURO_PAGE, false));
 
@@ -266,9 +266,9 @@ class ViewMenu implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     lineDisplayStatus.save (prefs);
-    prefs.putBoolean (PREFS_SHOW_HEADERS, headersMenuItem.isSelected ());
-    prefs.putBoolean (PREFS_SHOW_BLOCKS, blocksMenuItem.isSelected ());
-    prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());
+    //    prefs.putBoolean (PREFS_SHOW_HEADERS, headersMenuItem.isSelected ());
+    //    prefs.putBoolean (PREFS_SHOW_BLOCKS, blocksMenuItem.isSelected ());
+    //    prefs.putBoolean (PREFS_SHOW_HEX, hexMenuItem.isSelected ());
     prefs.putBoolean (PREFS_EURO_PAGE, euroMenuItem.isSelected ());
 
     Toggle toggle = toggleGroup.getSelectedToggle ();

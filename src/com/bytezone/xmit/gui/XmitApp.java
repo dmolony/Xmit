@@ -308,11 +308,11 @@ public class XmitApp extends Application //implements CodePageSelectedListener
   }
 
   // ---------------------------------------------------------------------------------//
-  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
-  // ---------------------------------------------------------------------------------//
-  {
-    outputTabPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
-  }
+  //  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    outputTabPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public static void main (String[] args)

@@ -21,21 +21,22 @@ class OutputTabPane extends XmitTabPane
     add (blocksTab);
     add (hexTab);
     add (outputTab);
+    getTabs ().addAll (blocksTab, hexTab, outputTab);
   }
 
   //----------------------------------------------------------------------------------- //
-  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
-  //----------------------------------------------------------------------------------- //
-  {
-    getTabs ().clear ();
-
-    //    if (headersVisible)
-    //      getTabs ().add (headersTab);
-    if (blocksVisible)
-      getTabs ().add (blocksTab);
-    if (hexVisible)
-      getTabs ().add (hexTab);
-
-    getTabs ().add (outputTab);         // always visible
-  }
+  //  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
+  //  //----------------------------------------------------------------------------------- //
+  //  {
+  //    getTabs ().clear ();
+  //
+  //    //    if (headersVisible)
+  //    //      getTabs ().add (headersTab);
+  //    if (blocksVisible)
+  //      getTabs ().add (blocksTab);
+  //    if (hexVisible)
+  //      getTabs ().add (hexTab);
+  //
+  //    getTabs ().add (outputTab);         // always visible
+  //  }
 }

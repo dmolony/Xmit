@@ -28,7 +28,7 @@ class BlocksTab extends XmitTextTab
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus.dataFile == null)
+    if (datasetStatus == null || datasetStatus.dataFile == null)
       return lines;
 
     if (datasetStatus.dataFile instanceof PdsMember)
