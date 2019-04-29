@@ -12,7 +12,7 @@ import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 
 // ----------------------------------------------------------------------------------- //
-public class DatasetStatus
+class DatasetStatus
 //----------------------------------------------------------------------------------- //
 {
   Dataset dataset;                // usually file #1 in the Reader

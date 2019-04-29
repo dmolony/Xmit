@@ -8,7 +8,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-public class StatusBar extends HBox
+class StatusBar extends HBox
     implements FilterChangeListener, ShowLinesListener, FontChangeListener
 // ---------------------------------------------------------------------------------//
 {

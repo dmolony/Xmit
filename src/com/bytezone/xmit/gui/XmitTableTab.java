@@ -3,7 +3,7 @@ package com.bytezone.xmit.gui;
 import javafx.scene.input.KeyCode;
 
 // ---------------------------------------------------------------------------------//
-public class XmitTableTab extends XmitTab
+class XmitTableTab extends XmitTab
 // ---------------------------------------------------------------------------------//
 {
 

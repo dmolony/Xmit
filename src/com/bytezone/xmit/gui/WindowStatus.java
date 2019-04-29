@@ -6,7 +6,7 @@ import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
-public class WindowStatus implements SaveState
+class WindowStatus implements SaveState
 //---------------------------------------------------------------------------------//
 {
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";

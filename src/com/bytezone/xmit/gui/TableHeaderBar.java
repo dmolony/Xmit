@@ -6,7 +6,7 @@ import com.bytezone.xmit.Reader;
 import javafx.scene.paint.Color;
 
 // ---------------------------------------------------------------------------------//
-public class TableHeaderBar extends HeaderBar
+class TableHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
 // ---------------------------------------------------------------------------------//
 {

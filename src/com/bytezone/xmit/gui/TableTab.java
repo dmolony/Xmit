@@ -4,7 +4,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
 // ----------------------------------------------------------------------------------- //
-public class TableTab extends XmitTableTab
+class TableTab extends XmitTableTab
 //----------------------------------------------------------------------------------- //
 {
   XmitTable xmitTable = new XmitTable ();
