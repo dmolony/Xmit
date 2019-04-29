@@ -58,20 +58,20 @@ class ViewMenu implements SaveState
   private final List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public ViewMenu (FontManager fontManager, FilterManager filterManager)
+  public ViewMenu ()
   // ---------------------------------------------------------------------------------//
   {
     ObservableList<MenuItem> menuItems = viewMenu.getItems ();
 
     fontMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
         KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
-    fontMenuItem.setOnAction (e -> fontManager.showWindow ());
+    //    fontMenuItem.setOnAction (e -> fontManager.showWindow ());
     filterMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
     exclusiveFilterMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
         KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN));
-    filterMenuItem.setOnAction (e -> filterManager.showWindow ());
-    exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggleFilterExclusion ());
+    //    filterMenuItem.setOnAction (e -> filterManager.showWindow ());
+    //    exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggleFilterExclusion ());
 
     menuItems.add (fontMenuItem);
     menuItems.add (filterMenuItem);
@@ -100,6 +100,27 @@ class ViewMenu implements SaveState
 
     euroMenuItem = setCheckMenuItem ("Euro update", KeyCode.DIGIT9,
         e -> setEuroAndNotifyListeners ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setFontAction (EventHandler<ActionEvent> action)
+  // ---------------------------------------------------------------------------------//
+  {
+    fontMenuItem.setOnAction (action);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setFilterAction (EventHandler<ActionEvent> action)
+  // ---------------------------------------------------------------------------------//
+  {
+    filterMenuItem.setOnAction (action);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setExclusiveFilterAction (EventHandler<ActionEvent> action)
+  // ---------------------------------------------------------------------------------//
+  {
+    exclusiveFilterMenuItem.setOnAction (action);
   }
 
   // ---------------------------------------------------------------------------------//

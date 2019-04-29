@@ -43,8 +43,8 @@ public class XmitApp extends Application
   private final FilterManager filterManager = new FilterManager ();
 
   private final MenuBar menuBar = new MenuBar ();
-  private FileMenu fileMenu;
-  private ViewMenu viewMenu;
+  private final FileMenu fileMenu = new FileMenu ();
+  private final ViewMenu viewMenu = new ViewMenu ();
 
   private final SplitPane splitPane = new SplitPane ();
   private final WindowStatus windowStatus = new WindowStatus ();
@@ -85,9 +85,11 @@ public class XmitApp extends Application
     splitPane.getItems ().addAll (treePane, tableBorderPane, outputBorderPane);
     StatusBar statusBar = new StatusBar ();
 
-    // menus
-    fileMenu = new FileMenu (this);
-    viewMenu = new ViewMenu (fontManager, filterManager);   // listeners??
+    // menu listeners
+    viewMenu.setExclusiveFilterAction (e -> filterManager.toggleFilterExclusion ());
+    viewMenu.setFilterAction (e -> filterManager.showWindow ());
+    viewMenu.setFontAction (e -> fontManager.showWindow ());
+    fileMenu.setRootAction (e -> changeRootFolder ());
 
     // codepage listeners
     viewMenu.addCodePageListener (outputTabPane.outputTab);
@@ -244,7 +246,6 @@ public class XmitApp extends Application
       primaryStage.setY (windowStatus.y);
     }
   }
-  //  }
 
   // ---------------------------------------------------------------------------------//
   private void exit ()

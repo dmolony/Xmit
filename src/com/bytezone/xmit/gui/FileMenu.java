@@ -10,6 +10,8 @@ import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Utility;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -40,7 +42,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private OutputWriter outputWriter;
 
   // ---------------------------------------------------------------------------------//
-  public FileMenu (XmitApp owner)
+  public FileMenu ()
   // ---------------------------------------------------------------------------------//
   {
     fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem,
@@ -52,11 +54,17 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
     saveMenuItem.setAccelerator (
         new KeyCodeCombination (KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 
-    rootMenuItem.setOnAction (e -> owner.changeRootFolder ());
     extractMenuItem.setOnAction (e -> extractFile ());
     saveMenuItem.setOnAction (e -> saveFile ());
     aboutMenuItem.setOnAction (e -> about ());
     saveMenuItem.setDisable (true);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setRootAction (EventHandler<ActionEvent> action)
+  // ---------------------------------------------------------------------------------//
+  {
+    rootMenuItem.setOnAction (action);
   }
 
   // ---------------------------------------------------------------------------------//
