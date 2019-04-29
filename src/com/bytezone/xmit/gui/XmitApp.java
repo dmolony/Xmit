@@ -24,7 +24,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 // ---------------------------------------------------------------------------------//
-public class XmitApp extends Application //implements CodePageSelectedListener
+public class XmitApp extends Application
 //---------------------------------------------------------------------------------//
 {
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
@@ -37,7 +37,6 @@ public class XmitApp extends Application //implements CodePageSelectedListener
   private XmitTree xmitTree;
   private TreePane treePane;
 
-  //  private final XmitTable xmitTable = new XmitTable ();
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
   private final TableTabPane tableTabPane = new TableTabPane ("Table");
 
@@ -89,7 +88,7 @@ public class XmitApp extends Application //implements CodePageSelectedListener
 
     // menus
     fileMenu = new FileMenu (this);
-    viewMenu = new ViewMenu (this, fontManager, filterManager);   // listeners??
+    viewMenu = new ViewMenu (fontManager, filterManager);   // listeners??
 
     // codepage listeners
     viewMenu.addCodePageListener (outputTabPane.outputTab);
@@ -306,13 +305,6 @@ public class XmitApp extends Application //implements CodePageSelectedListener
 
     return false;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  void setTabVisible (boolean headersVisible, boolean blocksVisible, boolean hexVisible)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    outputTabPane.setTabVisible (headersVisible, blocksVisible, hexVisible);
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public static void main (String[] args)

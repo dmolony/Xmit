@@ -32,8 +32,6 @@ class OutputTab extends XmitTextTab
       Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
   private static Pattern memberPattern = Pattern.compile (
       "^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
-  //  private static Pattern dsnPattern = Pattern
-  //      .compile ("DSN=(" + Utility.validName + ")\\((" + Utility.validPart + ")\\)");
 
   LineDisplayStatus lineDisplayStatus;
   DatasetStatus datasetStatus;
@@ -113,13 +111,6 @@ class OutputTab extends XmitTextTab
     Matcher m = includePattern.matcher (line);
     if (m.find ())
       includeDatasetName = m.group (1);
-
-    //    if (false)        // will expand output datasets too
-    //    {
-    //      m = dsnPattern.matcher (line);
-    //      if (m.find ())
-    //        append (newLines, m.group (1), m.group (2), "*");
-    //    }
 
     return includeDatasetName;
   }
