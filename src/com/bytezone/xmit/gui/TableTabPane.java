@@ -17,8 +17,7 @@ public class TableTabPane extends XmitTabPane
 
     add (headersTab);
     add (tableTab);
-    getTabs ().add (headersTab);
-    getTabs ().add (tableTab);
+    getTabs ().addAll (headersTab, tableTab);
   }
 
 }

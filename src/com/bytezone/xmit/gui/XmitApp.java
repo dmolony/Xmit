@@ -192,9 +192,10 @@ public class XmitApp extends Application //implements CodePageSelectedListener
   {
     KeyCode keyCode = keyEvent.getCode ();
 
-    if (keyCode == KeyCode.H || keyCode == KeyCode.B || keyCode == KeyCode.X
-        || keyCode == KeyCode.O)
+    if (keyCode == KeyCode.B || keyCode == KeyCode.X || keyCode == KeyCode.O)
       outputTabPane.keyPressed (keyCode);
+    else if (keyCode == KeyCode.H || keyCode == KeyCode.M)
+      tableTabPane.keyPressed (keyCode);
     else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.PERIOD)
       fontManager.keyPressed (keyEvent);
     else if (keyCode == KeyCode.F)
