@@ -32,6 +32,7 @@ class DatasetStatus
   {
     this.dataset = dataset;
     this.name = name;
+    catalogEntry = null;
 
     if (dataset != null && dataset.isPds ())
     {
@@ -39,14 +40,18 @@ class DatasetStatus
       if (!datasets.containsKey (datasetName))
         datasets.put (datasetName, (PdsDataset) dataset);
     }
+    //    else
+    //    {
+    //      catalogEntry = null;
+    //    }
   }
 
   //----------------------------------------------------------------------------------- //
   void catalogEntrySelected (CatalogEntry catalogEntry)
   //----------------------------------------------------------------------------------- //
   {
-    if (dataset == null || dataset.isPs ())
-      return;
+    //    if (dataset == null || dataset.isPs ())
+    //      return;
 
     this.catalogEntry = catalogEntry;
 

@@ -51,6 +51,7 @@ class HexTab extends XmitTextTab implements TreeItemSelectionListener,
   public void tableItemSelected (DatasetStatus datasetStatus)
   //----------------------------------------------------------------------------------- //
   {
+    this.datasetStatus = datasetStatus;
     refresh ();
   }
 

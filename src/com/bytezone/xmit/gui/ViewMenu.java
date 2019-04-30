@@ -63,15 +63,16 @@ class ViewMenu implements SaveState
   {
     ObservableList<MenuItem> menuItems = viewMenu.getItems ();
 
-    fontMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
-        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
-    //    fontMenuItem.setOnAction (e -> fontManager.showWindow ());
-    filterMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN));
-    exclusiveFilterMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.F,
-        KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN));
-    //    filterMenuItem.setOnAction (e -> filterManager.showWindow ());
-    //    exclusiveFilterMenuItem.setOnAction (e -> filterManager.toggleFilterExclusion ());
+    KeyCodeCombination cmdShiftF = new KeyCodeCombination (KeyCode.F,
+        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
+    KeyCodeCombination cmdF =
+        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN);
+    KeyCodeCombination cmdAltF = new KeyCodeCombination (KeyCode.F,
+        KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN);
+
+    fontMenuItem.setAccelerator (cmdAltF);
+    filterMenuItem.setAccelerator (cmdF);
+    exclusiveFilterMenuItem.setAccelerator (cmdShiftF);
 
     menuItems.add (fontMenuItem);
     menuItems.add (filterMenuItem);
