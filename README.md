@@ -1,11 +1,10 @@
 # Xmit
 - view the contents of xmit files
 - view xmit files [stored as PDS members](resources/embedded.md)
-- view [compressed xmit files](resources/compressed.md)
+- view [compressed xmit files](resources/compressed.md) without decompressing
+- selectable [codepages](resources/view.md) and [fonts](resources/fonts.md)
+- [filter/search](resources/filter.md) PDS members
 - extract [individual PDS members](resources/extract.md)
-- selectable [codepages](resources/view.md)
-- selectable [fonts](resources/fonts.md)
-- [filter](resources/filter.md) PDS members
 
 ## Sample screens
 ### MacOS
@@ -19,10 +18,10 @@
 - Download and install [Java 12](https://jdk.java.net/12/) and [JavaFX 12](https://gluonhq.com/products/javafx/), which are now separate downloads.
 - Download [XmitApp](https://github.com/dmolony/xmit/releases).
 - Create executable run file.  
-#### MacOS or Unix shell file  
+#### MacOS or Linux shell file  
 
 ```
-/path/to/jdk-12.jdk/Contents/Home/bin/java    \
+/path/to/jdk-12.jdk/Contents/Home/bin/java        \
 --module-path /path/to/javafx-sdk-12/lib          \
 --add-modules=javafx.controls                     \
 -Dfile.encoding=UTF-8                             \
@@ -31,7 +30,7 @@
 #### Windows batch file  
 
 ```
-C:\path\to\jdk-12\bin\java.exe                \
+C:\path\to\jdk-12\bin\java.exe                    \
 --module-path C:\path\to\javafx-sdk-12\lib        \
 --add-modules=javafx.controls                     \
 -Dfile.encoding=UTF-8                             \
