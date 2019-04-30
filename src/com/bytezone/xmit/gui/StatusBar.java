@@ -52,6 +52,8 @@ class StatusBar extends HBox
   private void setStatusText ()
   // ---------------------------------------------------------------------------------//
   {
+    statusMessage.setText ("");
+
     String filterText =
         filterStatus.filterActive
             ? filterStatus.filterValue.isEmpty () ? "NONE"
@@ -72,5 +74,6 @@ class StatusBar extends HBox
   {
     statusMessage.setFont (font);
     statusDisplay.setFont (font);
+    statusMessage.setText (font.getName () + " " + font.getSize ());
   }
 }

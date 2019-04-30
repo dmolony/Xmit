@@ -187,45 +187,15 @@ class FontManager implements SaveState
 
     if (keyCode == KeyCode.COMMA)
       if (shiftDown)
-        smaller ();
+        --currentFontSize;
       else
-        previous ();
+        --currentFontIndex;
     else if (keyCode == KeyCode.PERIOD)
       if (shiftDown)
-        bigger ();
+        ++currentFontSize;
       else
-        next ();
-  }
+        ++currentFontIndex;
 
-  // ---------------------------------------------------------------------------------//
-  private void smaller ()
-  // ---------------------------------------------------------------------------------//
-  {
-    --currentFontSize;
-    notifyListeners ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void bigger ()
-  // ---------------------------------------------------------------------------------//
-  {
-    ++currentFontSize;
-    notifyListeners ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void previous ()
-  // ---------------------------------------------------------------------------------//
-  {
-    --currentFontIndex;
-    notifyListeners ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void next ()
-  // ---------------------------------------------------------------------------------//
-  {
-    ++currentFontIndex;
     notifyListeners ();
   }
 

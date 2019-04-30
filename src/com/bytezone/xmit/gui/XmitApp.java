@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility;
@@ -56,11 +57,6 @@ public class XmitApp extends Application
   private Parent createContent ()
   // ---------------------------------------------------------------------------------//
   {
-    Parameters parameters = getParameters ();
-    for (String s : parameters.getUnnamed ())
-      if ("-debug".equals (s))
-        debug = true;
-
     // place menubar
     final String os = System.getProperty ("os.name");
     if (os != null && os.startsWith ("Mac"))
@@ -162,6 +158,8 @@ public class XmitApp extends Application
   public void start (Stage primaryStage) throws Exception
   // ---------------------------------------------------------------------------------//
   {
+    checkParameters ();
+
     this.primaryStage = primaryStage;
     primaryStage.setTitle ("XmitApp");
     Scene scene = new Scene (createContent ());
@@ -319,6 +317,31 @@ public class XmitApp extends Application
     }
 
     return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void checkParameters ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (String s : getParameters ().getUnnamed ())
+    {
+      System.out.printf ("Parameter: %s%n", s);
+      if ("-debug".equals (s))
+        debug = true;
+      else if ("-reset".equals (s))
+        try
+        {
+          prefs.clear ();
+          System.out.println ("Preferences reset");
+        }
+        catch (BackingStoreException e1)
+        {
+          System.out.println ("Preferences NOT reset");
+          e1.printStackTrace ();
+        }
+      else
+        System.out.printf ("Unknown parameter: %s%n", s);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
