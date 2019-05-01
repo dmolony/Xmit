@@ -12,11 +12,13 @@ class StatusBar extends HBox
     implements FilterChangeListener, ShowLinesListener, FontChangeListener
 // ---------------------------------------------------------------------------------//
 {
+  private static final int MAX_TICKS = 3;
   private final Label statusMessage = new Label ();
   private final Label statusDisplay = new Label ();
 
   private FilterStatus filterStatus;
   private boolean expandJclInclude;
+  private int ticksLeft;
 
   // ---------------------------------------------------------------------------------//
   public StatusBar ()
@@ -74,13 +76,24 @@ class StatusBar extends HBox
   {
     statusMessage.setFont (font);
     statusDisplay.setFont (font);
-    statusMessage.setText (font.getName () + " " + font.getSize ());
+    setStatusMessage (font.getName () + " " + font.getSize ());
   }
 
   // ---------------------------------------------------------------------------------//
-  void resetMessage ()
+  void setStatusMessage (String message)
   // ---------------------------------------------------------------------------------//
   {
-    statusMessage.setText ("");
+    statusMessage.setText (message);
+    ticksLeft = MAX_TICKS;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void tick ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (ticksLeft == 0)
+      statusMessage.setText ("");
+    else
+      --ticksLeft;
   }
 }

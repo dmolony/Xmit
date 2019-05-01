@@ -188,13 +188,13 @@ public class XmitApp extends Application
     splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
     splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
 
-    Timeline clock = new Timeline (
-        new KeyFrame (Duration.seconds (10), new EventHandler<ActionEvent> ()
+    Timeline clock =
+        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
         {
           @Override
           public void handle (ActionEvent event)
           {
-            statusBar.resetMessage ();
+            statusBar.tick ();
           }
         }));
     clock.setCycleCount (Timeline.INDEFINITE);
