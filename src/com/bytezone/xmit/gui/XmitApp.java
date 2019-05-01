@@ -188,18 +188,17 @@ public class XmitApp extends Application
     splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
     splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
 
-    Timeline fiveSecondsWonder =
-        new Timeline (new KeyFrame (Duration.seconds (5), new EventHandler<ActionEvent> ()
+    Timeline clock = new Timeline (
+        new KeyFrame (Duration.seconds (10), new EventHandler<ActionEvent> ()
         {
-
           @Override
           public void handle (ActionEvent event)
           {
             statusBar.resetMessage ();
           }
         }));
-    fiveSecondsWonder.setCycleCount (Timeline.INDEFINITE);
-    fiveSecondsWonder.play ();
+    clock.setCycleCount (Timeline.INDEFINITE);
+    clock.play ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -214,20 +213,24 @@ public class XmitApp extends Application
         outputTabPane.keyPressed (keyEvent);
         keyEvent.consume ();
         break;
+
       case H:
       case M:
         tableTabPane.keyPressed (keyEvent);
         keyEvent.consume ();
         break;
+
       case COMMA:
       case PERIOD:
         fontManager.keyPressed (keyEvent);
         keyEvent.consume ();
         break;
+
       case F:
         filterManager.keyPressed (keyEvent);
         keyEvent.consume ();
         break;
+
       default:
         break;
     }
