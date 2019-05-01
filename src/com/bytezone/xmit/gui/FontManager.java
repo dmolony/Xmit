@@ -182,20 +182,27 @@ class FontManager implements SaveState
   void keyPressed (KeyEvent keyEvent)
   // ---------------------------------------------------------------------------------//
   {
-    KeyCode keyCode = keyEvent.getCode ();
-    boolean shiftDown = keyEvent.isShiftDown ();
+    switch (keyEvent.getCode ())
+    {
+      case COMMA:
+        if (keyEvent.isShiftDown ())
+          --currentFontSize;
+        else
+          --currentFontIndex;
+        break;
 
-    if (keyCode == KeyCode.COMMA)
-      if (shiftDown)
-        --currentFontSize;
-      else
-        --currentFontIndex;
-    else if (keyCode == KeyCode.PERIOD)
-      if (shiftDown)
-        ++currentFontSize;
-      else
-        ++currentFontIndex;
+      case PERIOD:
+        if (keyEvent.isShiftDown ())
+          ++currentFontSize;
+        else
+          ++currentFontIndex;
+        break;
 
+      default:
+        return;         // not mine - shouldn't happen
+    }
+
+    keyEvent.consume ();
     notifyListeners ();
   }
 

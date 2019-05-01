@@ -76,4 +76,11 @@ class StatusBar extends HBox
     statusDisplay.setFont (font);
     statusMessage.setText (font.getName () + " " + font.getSize ());
   }
+
+  // ---------------------------------------------------------------------------------//
+  void resetMessage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    statusMessage.setText ("");
+  }
 }

@@ -9,9 +9,13 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
@@ -22,6 +26,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 // ---------------------------------------------------------------------------------//
 public class XmitApp extends Application
@@ -52,6 +57,7 @@ public class XmitApp extends Application
 
   private final List<SaveState> saveStateList = new ArrayList<> ();
   private boolean debug = false;
+  private final StatusBar statusBar = new StatusBar ();
 
   // ---------------------------------------------------------------------------------//
   private Parent createContent ()
@@ -79,7 +85,6 @@ public class XmitApp extends Application
     tableBorderPane.setTop (tableHeaderBar);
 
     splitPane.getItems ().addAll (treePane, tableBorderPane, outputBorderPane);
-    StatusBar statusBar = new StatusBar ();
 
     // menu listeners
     viewMenu.setExclusiveFilterAction (e -> filterManager.toggleFilterExclusion ());
@@ -182,6 +187,19 @@ public class XmitApp extends Application
     // this must happen after show()
     splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
     splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
+
+    Timeline fiveSecondsWonder =
+        new Timeline (new KeyFrame (Duration.seconds (5), new EventHandler<ActionEvent> ()
+        {
+
+          @Override
+          public void handle (ActionEvent event)
+          {
+            statusBar.resetMessage ();
+          }
+        }));
+    fiveSecondsWonder.setCycleCount (Timeline.INDEFINITE);
+    fiveSecondsWonder.play ();
   }
 
   // ---------------------------------------------------------------------------------//

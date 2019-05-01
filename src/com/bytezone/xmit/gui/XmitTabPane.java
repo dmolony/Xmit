@@ -32,8 +32,7 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
 
     PREFS_LAST_TAB = "lastTab" + prefsId;
 
-    getSelectionModel ().selectedItemProperty ()
-        .addListener ( (obs, prev, next) -> select (obs, prev, next));
+    getSelectionModel ().selectedItemProperty ().addListener (this::select);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -55,19 +54,7 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
   }
 
   // ---------------------------------------------------------------------------------//
-  void updateCurrentTab ()
-  // ---------------------------------------------------------------------------------//
-  {
-    for (XmitTab xmitTab : xmitTabs)
-      xmitTab.clear ();
-
-    XmitTab selectedTab = (XmitTab) getSelectionModel ().getSelectedItem ();
-    if (selectedTab != null)
-      selectedTab.update ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public void keyPressed (KeyEvent keyEvent)
+  void keyPressed (KeyEvent keyEvent)
   // ---------------------------------------------------------------------------------//
   {
     KeyCode keyCode = keyEvent.getCode ();
