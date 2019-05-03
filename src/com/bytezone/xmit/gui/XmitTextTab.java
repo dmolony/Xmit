@@ -39,19 +39,13 @@ abstract class XmitTextTab extends XmitTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void clear ()
-  // ---------------------------------------------------------------------------------//
-  {
-    textFlow.getChildren ().clear ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   void update ()
   // ---------------------------------------------------------------------------------//
   {
-    if (textFlow.getChildren ().size () > 0)
+    if (valid)
       return;
+
+    valid = true;
 
     textFlow.getChildren ().setAll (textFormatter.format (getLines ()));
 

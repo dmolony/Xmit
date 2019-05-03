@@ -11,6 +11,7 @@ abstract class XmitTab extends Tab implements SaveState
   final KeyCode keyCode;
   Font font;
   boolean active;
+  boolean valid;
 
   // ---------------------------------------------------------------------------------//
   public XmitTab (String title, KeyCode keyCode)
@@ -32,9 +33,12 @@ abstract class XmitTab extends Tab implements SaveState
   void refresh ()
   // ---------------------------------------------------------------------------------//
   {
-    clear ();
+    valid = false;
     if (active)
+    {
       update ();
+      valid = true;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -50,10 +54,6 @@ abstract class XmitTab extends Tab implements SaveState
   // ---------------------------------------------------------------------------------//
   {
   }
-
-  // ---------------------------------------------------------------------------------//
-  abstract void clear ();
-  // ---------------------------------------------------------------------------------//
 
   // ---------------------------------------------------------------------------------//
   abstract void update ();
