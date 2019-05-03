@@ -33,11 +33,12 @@ abstract class XmitTab extends Tab implements SaveState
   void refresh ()
   // ---------------------------------------------------------------------------------//
   {
-    valid = false;
+    valid = false;        // force an update (when next active)
     if (active)
     {
       update ();
-      valid = true;
+      assert valid == true;
+      //      valid = true;       // in case update() forgets to do it
     }
   }
 

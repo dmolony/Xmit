@@ -44,6 +44,7 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
 
     ((XmitTab) next).active = true;
     ((XmitTab) next).update ();
+    assert ((XmitTab) next).valid == true;
   }
 
   // ---------------------------------------------------------------------------------//
