@@ -22,6 +22,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
@@ -74,17 +75,14 @@ public class XmitApp extends Application
     xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
-    BorderPane tableBorderPane = new BorderPane ();
-    BorderPane outputBorderPane = new BorderPane ();
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();
     OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
-    outputBorderPane.setTop (outputHeaderBar);
-    outputBorderPane.setCenter (outputTabPane);
-    tableBorderPane.setCenter (tableTabPane);
-    tableBorderPane.setTop (tableHeaderBar);
+    splitPane.getItems ().addAll (treePane,
+        createBorderPane (tableHeaderBar, tableTabPane),
+        createBorderPane (outputHeaderBar, outputTabPane));
 
-    splitPane.getItems ().addAll (treePane, tableBorderPane, outputBorderPane);
+    XmitTable xmitTable = tableTabPane.tableTab.xmitTable;
 
     // menu listeners
     viewMenu.setExclusiveFilterAction (e -> filterManager.toggleFilterExclusion ());
@@ -111,10 +109,10 @@ public class XmitApp extends Application
     filterManager.addFilterListener (statusBar);
     filterManager.addFilterListener (tableHeaderBar);
     filterManager.addFilterListener (outputTabPane.outputTab);
-    filterManager.addFilterListener (tableTabPane.tableTab.xmitTable);
+    filterManager.addFilterListener (xmitTable);
 
     // filter action listeners (filter results)
-    tableTabPane.tableTab.xmitTable.addFilterListener (tableHeaderBar);
+    xmitTable.addFilterListener (tableHeaderBar);
 
     // treeview listeners
     xmitTree.addListener (fileMenu);
@@ -124,14 +122,14 @@ public class XmitApp extends Application
     xmitTree.addListener (outputHeaderBar);
     xmitTree.addListener (tableHeaderBar);
     xmitTree.addListener (tableTabPane.headersTab);
-    xmitTree.addListener (tableTabPane.tableTab.xmitTable);
+    xmitTree.addListener (xmitTable);
 
     // table listeners
-    tableTabPane.tableTab.xmitTable.addListener (fileMenu);
-    tableTabPane.tableTab.xmitTable.addListener (outputTabPane.hexTab);
-    tableTabPane.tableTab.xmitTable.addListener (outputTabPane.blocksTab);
-    tableTabPane.tableTab.xmitTable.addListener (outputTabPane.outputTab);
-    tableTabPane.tableTab.xmitTable.addListener (outputHeaderBar);
+    xmitTable.addListener (fileMenu);
+    xmitTable.addListener (outputTabPane.hexTab);
+    xmitTable.addListener (outputTabPane.blocksTab);
+    xmitTable.addListener (outputTabPane.outputTab);
+    xmitTable.addListener (outputHeaderBar);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
@@ -151,11 +149,21 @@ public class XmitApp extends Application
 
     // ensure viewMenu (codepage) is set before xmitTree
     saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu,
-        xmitTree, tableTabPane, tableTabPane.tableTab.xmitTable, fontManager));
+        xmitTree, tableTabPane, fontManager));
 
     restore ();
 
     return mainPane;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private BorderPane createBorderPane (HeaderBar headerBar, TabPane tabPane)
+  // ---------------------------------------------------------------------------------//
+  {
+    BorderPane borderPane = new BorderPane ();
+    borderPane.setTop (headerBar);
+    borderPane.setCenter (tabPane);
+    return borderPane;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -1,21 +1,39 @@
 package com.bytezone.xmit.gui;
 
+import java.util.prefs.Preferences;
+
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
 // ----------------------------------------------------------------------------------- //
-class TableTab extends XmitTableTab
+class MembersTab extends XmitTableTab
 //----------------------------------------------------------------------------------- //
 {
   XmitTable xmitTable = new XmitTable ();
 
   //----------------------------------------------------------------------------------- //
-  public TableTab (String title, KeyCode keyCode)
+  public MembersTab (String title, KeyCode keyCode)
   //----------------------------------------------------------------------------------- //
   {
     super (title, keyCode);
 
     setContent (xmitTable);
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void restore (Preferences prefs)
+  //----------------------------------------------------------------------------------- //
+  {
+    xmitTable.restore (prefs);
+  }
+
+  //----------------------------------------------------------------------------------- //
+  @Override
+  public void save (Preferences prefs)
+  //----------------------------------------------------------------------------------- //
+  {
+    xmitTable.save (prefs);
   }
 
   // ---------------------------------------------------------------------------------//

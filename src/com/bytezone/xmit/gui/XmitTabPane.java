@@ -81,6 +81,8 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
   //----------------------------------------------------------------------------------- //
   {
     getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
+    for (XmitTab xmitTab : xmitTabs)
+      xmitTab.restore (prefs);
   }
 
   //----------------------------------------------------------------------------------- //
@@ -89,5 +91,7 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
   //----------------------------------------------------------------------------------- //
   {
     prefs.putInt (PREFS_LAST_TAB, getSelectionModel ().getSelectedIndex ());
+    for (XmitTab xmitTab : xmitTabs)
+      xmitTab.save (prefs);
   }
 }

@@ -1,10 +1,12 @@
 package com.bytezone.xmit.gui;
 
+import java.util.prefs.Preferences;
+
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
-abstract class XmitTab extends Tab
+abstract class XmitTab extends Tab implements SaveState
 {
   final KeyCode keyCode;
   Font font;
@@ -33,6 +35,20 @@ abstract class XmitTab extends Tab
     clear ();
     if (active)
       update ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void restore (Preferences prefs)
+  // ---------------------------------------------------------------------------------//
+  {
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void save (Preferences prefs)
+  // ---------------------------------------------------------------------------------//
+  {
   }
 
   // ---------------------------------------------------------------------------------//
