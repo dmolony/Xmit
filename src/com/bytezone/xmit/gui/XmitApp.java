@@ -93,6 +93,7 @@ public class XmitApp extends Application
     // codepage listeners
     viewMenu.addCodePageListener (outputTabPane.outputTab);
     viewMenu.addCodePageListener (outputTabPane.hexTab);
+    viewMenu.addCodePageListener (statusBar);
 
     // lines listeners
     viewMenu.addShowLinesListener (statusBar);

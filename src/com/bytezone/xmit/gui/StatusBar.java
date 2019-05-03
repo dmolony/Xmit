@@ -8,8 +8,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 // ---------------------------------------------------------------------------------//
-class StatusBar extends HBox
-    implements FilterChangeListener, ShowLinesListener, FontChangeListener
+class StatusBar extends HBox implements FilterChangeListener, ShowLinesListener,
+    FontChangeListener, CodePageSelectedListener
 // ---------------------------------------------------------------------------------//
 {
   private static final int MAX_TICKS = 3;
@@ -19,6 +19,7 @@ class StatusBar extends HBox
   private FilterStatus filterStatus;
   private boolean expandJclInclude;
   private int ticksLeft;
+  private String codePageName;
 
   // ---------------------------------------------------------------------------------//
   public StatusBar ()
@@ -65,8 +66,9 @@ class StatusBar extends HBox
         ? filterStatus.filterExclusion ? "Filtered lines" : "All lines" : "All lines";
     String includeText = expandJclInclude ? "ON" : "OFF";
 
-    statusDisplay.setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-3s ",
-        filterText, showText, includeText));
+    statusDisplay.setText (String.format (
+        "Filter: %-20s Show: %-20s JCL Include: %-3s         Codepage: %-6s", filterText,
+        showText, includeText, codePageName));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -95,5 +97,14 @@ class StatusBar extends HBox
       statusMessage.setText ("");
     else
       --ticksLeft;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void selectCodePage (String codePageName)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.codePageName = codePageName;
+    setStatusText ();
   }
 }
