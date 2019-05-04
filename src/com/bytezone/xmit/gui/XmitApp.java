@@ -82,7 +82,7 @@ public class XmitApp extends Application
         createBorderPane (tableHeaderBar, tableTabPane),
         createBorderPane (outputHeaderBar, outputTabPane));
 
-    XmitTable xmitTable = tableTabPane.tableTab.xmitTable;
+    XmitTable xmitTable = tableTabPane.membersTab.xmitTable;
 
     // menu listeners
     viewMenu.setExclusiveFilterAction (e -> filterManager.toggleFilterExclusion ());

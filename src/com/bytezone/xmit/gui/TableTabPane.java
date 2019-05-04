@@ -6,9 +6,9 @@ import javafx.scene.input.KeyCode;
 class TableTabPane extends XmitTabPane
 //----------------------------------------------------------------------------------- //
 {
-  final MembersTab tableTab = new MembersTab ("Members", KeyCode.M);
   final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
   final CommentsTab commentsTab = new CommentsTab ("Comments", KeyCode.C);
+  final MembersTab membersTab = new MembersTab ("Members", KeyCode.M);
 
   //----------------------------------------------------------------------------------- //
   public TableTabPane (String prefsId)
@@ -17,10 +17,10 @@ class TableTabPane extends XmitTabPane
     super (prefsId);
 
     add (headersTab);
-    add (tableTab);
     add (commentsTab);
+    add (membersTab);
 
-    getTabs ().addAll (headersTab, tableTab, commentsTab);
+    getTabs ().addAll (headersTab, commentsTab, membersTab);
   }
 
 }
