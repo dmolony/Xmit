@@ -47,7 +47,6 @@ public class Utility
       };
 
   private static Alert alert;
-  //  public static Font statusFont = Font.font ("Lucida Sans Typewriter", 12);
 
   // ---------------------------------------------------------------------------------//
   public enum FileType

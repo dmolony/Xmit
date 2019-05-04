@@ -368,7 +368,7 @@ class FontManager implements SaveState
 
     Label message = new Label ();
     message.setText ("These are the fixed-width fonts currently on your system. Please"
-        + " choose the ones that you wish to be able to select from."
+        + " choose the ones that you wish to be able to quickly switch between."
         + "\nWhen on the main screen use the COMMA and PERIOD keys to"
         + " cycle through the selected fonts, and the LESS-THAN and"
         + " GREATER-THAN \nkeys to alter the font size.");

@@ -66,9 +66,9 @@ class StatusBar extends HBox implements FilterChangeListener, ShowLinesListener,
         ? filterStatus.filterExclusion ? "Filtered lines" : "All lines" : "All lines";
     String includeText = expandJclInclude ? "ON" : "OFF";
 
-    statusDisplay.setText (String.format (
-        "Filter: %-20s Show: %-20s JCL Include: %-3s         Codepage: %-6s", filterText,
-        showText, includeText, codePageName));
+    statusDisplay.setText (
+        String.format ("Filter: %-20s Show: %-20s JCL Include: %-12s Codepage: %-6s",
+            filterText, showText, includeText, codePageName));
   }
 
   // ---------------------------------------------------------------------------------//
