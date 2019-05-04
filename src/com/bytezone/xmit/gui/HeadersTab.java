@@ -3,8 +3,11 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.*;
+import com.bytezone.xmit.BasicModule;
+import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
+import com.bytezone.xmit.LoadModule;
+import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
@@ -31,23 +34,6 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
 
     if (datasetStatus == null || datasetStatus.dataset == null)
       return lines;
-
-    Reader reader = datasetStatus.dataset.getReader ();
-
-    if (reader.size () > 1)
-    {
-      Dataset firstDataset = reader.getDatasets ().get (0);
-      if (firstDataset.isPs ())
-      {
-        FlatFile file = ((PsDataset) firstDataset).getFlatFile ();
-        for (String s : file.getLines ())
-          lines.add (s);
-        lines.add ("");
-      }
-      else
-        lines.add (
-            "Unexpected disposition for file #1: " + firstDataset.getDisposition ());
-    }
 
     for (ControlRecord controlRecord : datasetStatus.dataset.getReader ()
         .getControlRecords ())

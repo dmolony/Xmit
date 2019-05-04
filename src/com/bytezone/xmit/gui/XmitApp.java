@@ -123,6 +123,7 @@ public class XmitApp extends Application
     xmitTree.addListener (outputHeaderBar);
     xmitTree.addListener (tableHeaderBar);
     xmitTree.addListener (tableTabPane.headersTab);
+    xmitTree.addListener (tableTabPane.commentsTab);
     xmitTree.addListener (xmitTable);
 
     // table listeners
@@ -225,6 +226,7 @@ public class XmitApp extends Application
 
       case H:
       case M:
+      case C:
         tableTabPane.keyPressed (keyEvent);
         keyEvent.consume ();
         break;

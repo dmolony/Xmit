@@ -8,6 +8,7 @@ class TableTabPane extends XmitTabPane
 {
   final MembersTab tableTab = new MembersTab ("Members", KeyCode.M);
   final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);
+  final CommentsTab commentsTab = new CommentsTab ("Comments", KeyCode.C);
 
   //----------------------------------------------------------------------------------- //
   public TableTabPane (String prefsId)
@@ -17,8 +18,9 @@ class TableTabPane extends XmitTabPane
 
     add (headersTab);
     add (tableTab);
+    add (commentsTab);
 
-    getTabs ().addAll (headersTab, tableTab);
+    getTabs ().addAll (headersTab, tableTab, commentsTab);
   }
 
 }
