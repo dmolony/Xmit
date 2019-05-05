@@ -19,8 +19,8 @@ class TableTabPane extends XmitTabPane
     add (headersTab);
     add (commentsTab);
     add (membersTab);
+    setDefaultTab (2);
 
     getTabs ().addAll (headersTab, commentsTab, membersTab);
   }
-
 }

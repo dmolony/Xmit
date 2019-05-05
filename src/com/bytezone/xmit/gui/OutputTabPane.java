@@ -19,6 +19,7 @@ class OutputTabPane extends XmitTabPane
     add (blocksTab);
     add (hexTab);
     add (outputTab);
+    setDefaultTab (2);
 
     getTabs ().addAll (blocksTab, hexTab, outputTab);
   }

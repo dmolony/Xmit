@@ -20,6 +20,7 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
 
   private static final int TAB_WIDTH = 100;
   private final List<XmitTab> xmitTabs = new ArrayList<> ();
+  private int defaultTab;
 
   // ---------------------------------------------------------------------------------//
   public XmitTabPane (String prefsId)
@@ -76,12 +77,19 @@ abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveSt
       xmitTab.setFont (font);
   }
 
+  // ---------------------------------------------------------------------------------//
+  void setDefaultTab (int defaultTab)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.defaultTab = defaultTab;
+  }
+
   //----------------------------------------------------------------------------------- //
   @Override
   public void restore (Preferences prefs)
   //----------------------------------------------------------------------------------- //
   {
-    getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, 0));
+    getSelectionModel ().select (prefs.getInt (PREFS_LAST_TAB, defaultTab));
     for (XmitTab xmitTab : xmitTabs)
       xmitTab.restore (prefs);
   }
