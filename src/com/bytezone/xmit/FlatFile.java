@@ -29,7 +29,7 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   void addSegment (Segment segment)
   {
     segments.add (segment);
-    dataLength += segment.getRawBufferLength ();
+    incrementDataLength (segment.getRawBufferLength ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -39,13 +39,13 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   @Override
   public byte[] getDataBuffer ()
   {
-    byte[] buffer = new byte[dataLength];
+    byte[] buffer = new byte[getDataLength ()];
     int ptr = 0;
 
     for (Segment segment : segments)
       ptr = segment.packBuffer (buffer, ptr);
 
-    assert ptr == dataLength;
+    assert ptr == getDataLength ();
     return buffer;
   }
 
@@ -56,7 +56,7 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   @Override
   public byte[] getDataBuffer (int limit)
   {
-    if (dataLength <= limit)
+    if (getDataLength () <= limit)
       return getDataBuffer ();
 
     int length = 0;

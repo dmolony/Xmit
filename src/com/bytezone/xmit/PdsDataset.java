@@ -197,7 +197,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     int count = 0;
     for (PdsMember pdsMember : members)
       System.out.printf ("%4d  %-8s  %,9d%n", count++, pdsMember.getName (),
-          pdsMember.dataLength);
+          pdsMember.getDataLength ());
   }
 
   // ---------------------------------------------------------------------------------//

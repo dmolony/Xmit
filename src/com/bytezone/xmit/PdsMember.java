@@ -44,7 +44,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     if (type == 0x00 || type == (byte) 0x80)      // basic PDS data
     {
       dataBlocks.add (dataBlock);
-      dataLength += dataBlock.getSize ();
+      incrementDataLength (dataBlock.getSize ());
       incrementSizeCount (dataBlock.getSize ());
     }
     else                                          // additional PDS/E blocks
@@ -116,13 +116,13 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   public byte[] getDataBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = new byte[dataLength];
+    byte[] buffer = new byte[getDataLength ()];
     int ptr = 0;
 
     for (DataBlock dataBlock : dataBlocks)
       ptr = dataBlock.packBuffer (buffer, ptr);
 
-    assert ptr == dataLength;
+    assert ptr == getDataLength ();
     return buffer;
   }
 
@@ -131,7 +131,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   public byte[] getDataBuffer (int limit)
   // ---------------------------------------------------------------------------------//
   {
-    if (dataLength <= limit)
+    if (getDataLength () <= limit)
       return getDataBuffer ();
 
     int length = 0;

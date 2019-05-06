@@ -15,10 +15,10 @@ public abstract class DataFile implements Comparable<DataFile>
   private final Disposition disposition;
   private final Reader reader;
 
-  int dataLength = 0;
+  private int dataLength = 0;
 
-  final List<String> lines = new ArrayList<> ();
-  private CodePage codePage;
+  final List<String> lines = new ArrayList<> ();      // current formatted output...
+  private CodePage codePage;                          // .. built using this codepage
 
   // ---------------------------------------------------------------------------------//
   DataFile (Dataset dataset, Disposition disposition)
@@ -61,6 +61,13 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   {
     return dataLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void incrementDataLength (int increment)
+  // ---------------------------------------------------------------------------------//
+  {
+    dataLength += increment;
   }
 
   // ---------------------------------------------------------------------------------//
