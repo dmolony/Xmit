@@ -27,9 +27,6 @@ class TextFormatterJcl extends TextFormatter
       if (showLines)
         addText (String.format ("%06d ", lineNo++), numberColor);
 
-      if (line.length () > 72)
-        line = line.substring (0, 72);            // remove editor line numbers
-
       if (line.startsWith ("//*"))                // line comment
       {
         addTextNewLine (line, Color.GRAY);

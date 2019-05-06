@@ -62,7 +62,7 @@ public abstract class CatalogEntry
   public Disposition getDisposition ()
   // ---------------------------------------------------------------------------------//
   {
-    return member.disposition;
+    return member.getDisposition ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -92,7 +92,7 @@ public abstract class CatalogEntry
   public int getDataLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return member.dataLength;
+    return member.getDataLength ();
   }
 
   // ---------------------------------------------------------------------------------//

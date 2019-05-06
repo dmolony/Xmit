@@ -12,8 +12,8 @@ public abstract class DataFile implements Comparable<DataFile>
 //---------------------------------------------------------------------------------//
 {
   private String name = "";
-  final Disposition disposition;
-  final Reader reader;
+  private final Disposition disposition;
+  private final Reader reader;
 
   int dataLength = 0;
 

@@ -255,6 +255,19 @@ public class Utility
     return true;
   }
 
+  //----------------------------------------------------------------------------------- //
+  public static String stripLineNumber (String line)
+  //----------------------------------------------------------------------------------- //
+  {
+    if (line.length () < 72 || line.length () > 80)
+      return line;
+    String numbers = line.substring (72);
+    for (char c : numbers.toCharArray ())
+      if ((c < '0' || c > '9') && c != ' ')
+        return line;
+    return line.substring (0, 72).stripTrailing ();
+  }
+
   // ---------------------------------------------------------------------------------//
   public static int getTwoBytes (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
