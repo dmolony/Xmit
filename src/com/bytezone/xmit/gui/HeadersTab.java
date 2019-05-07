@@ -32,16 +32,15 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || datasetStatus.dataset == null)
+    if (datasetStatus == null || datasetStatus.getDataset () == null)
       return lines;
 
-    for (ControlRecord controlRecord : datasetStatus.dataset.getReader ()
-        .getControlRecords ())
+    for (ControlRecord controlRecord : datasetStatus.getReader ().getControlRecords ())
       lines.add (controlRecord.toString ());
 
     if (datasetStatus.isPds ())
     {
-      PdsDataset pdsDataset = (PdsDataset) datasetStatus.dataset;
+      PdsDataset pdsDataset = (PdsDataset) datasetStatus.getDataset ();
       lines.add ("COPYR1");
       lines.addAll (pdsDataset.getCopyR1 ().toLines ());
       lines.add ("");
@@ -49,8 +48,7 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
       lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
-      lines.add (String.format ("%s Catalog Blocks:",
-          datasetStatus.dataset.getReader ().getName ()));
+      lines.add (String.format ("%s Catalog Blocks:", datasetStatus.getReaderName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());

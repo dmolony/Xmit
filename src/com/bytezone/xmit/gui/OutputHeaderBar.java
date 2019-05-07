@@ -12,8 +12,8 @@ class OutputHeaderBar extends HeaderBar
   void updateNameLabel (boolean truncateLines)
   //----------------------------------------------------------------------------------- //
   {
-    if (datasetStatus == null || datasetStatus.dataset == null
-        || datasetStatus.catalogEntry == null)
+    if (datasetStatus == null || datasetStatus.getDataset () == null
+        || datasetStatus.getCatalogEntry () == null)
     {
       leftLabel.setText ("");
       return;
@@ -21,17 +21,16 @@ class OutputHeaderBar extends HeaderBar
 
     String indicator = truncateLines ? "<-" : "";
 
-    if (datasetStatus.dataset.isPds ())
+    if (datasetStatus.isPds ())
     {
-      String memberName = indicator + datasetStatus.catalogEntry.getMemberName ();
-      if (datasetStatus.catalogEntry.isAlias ())
-        leftLabel
-            .setText (memberName + " -> " + datasetStatus.catalogEntry.getAliasName ());
+      String memberName = indicator + datasetStatus.getMemberName ();
+      if (datasetStatus.isAlias ())
+        leftLabel.setText (memberName + " -> " + datasetStatus.getAliasName ());
       else
         leftLabel.setText (memberName);
     }
     else
-      leftLabel.setText (indicator + datasetStatus.dataFile.getName ());
+      leftLabel.setText (indicator + datasetStatus.getDataFileName ());
   }
 
   //----------------------------------------------------------------------------------- //
@@ -50,8 +49,8 @@ class OutputHeaderBar extends HeaderBar
   {
     this.datasetStatus = datasetStatus;
 
-    rightLabel.setText (datasetStatus.dataset == null ? ""
-        : datasetStatus.dataset.getDisposition ().toString ());
+    rightLabel.setText (datasetStatus.getDataset () == null ? ""
+        : datasetStatus.getDisposition ().toString ());
     updateNameLabel (lineDisplayStatus.truncateLines);
   }
 

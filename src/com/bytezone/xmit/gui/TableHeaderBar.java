@@ -22,14 +22,14 @@ class TableHeaderBar extends HeaderBar
   {
     this.datasetStatus = datasetStatus;
 
-    if (datasetStatus.dataset == null)
+    if (datasetStatus.getDataset () == null)
     {
       leftLabel.setText ("");
       rightLabel.setText ("");
     }
     else
     {
-      Reader reader = datasetStatus.dataset.getReader ();
+      Reader reader = datasetStatus.getReader ();
       leftLabel.setText (reader.getFileName ());
       leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
@@ -65,7 +65,8 @@ class TableHeaderBar extends HeaderBar
   {
     if (datasetStatus != null && datasetStatus.isPds ())
     {
-      int members = ((PdsDataset) datasetStatus.dataset).getCatalogEntries ().size ();
+      int members =
+          ((PdsDataset) datasetStatus.getDataset ()).getCatalogEntries ().size ();
 
       if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
         rightLabel

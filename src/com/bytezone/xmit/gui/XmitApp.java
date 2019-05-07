@@ -33,9 +33,8 @@ import javafx.util.Duration;
 public class XmitApp extends Application
 //---------------------------------------------------------------------------------//
 {
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
-
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
+  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
   private Stage primaryStage;
   private String rootFolderName;
@@ -57,8 +56,9 @@ public class XmitApp extends Application
   private final WindowStatus windowStatus = new WindowStatus ();
 
   private final List<SaveState> saveStateList = new ArrayList<> ();
-  private boolean debug = false;
   private final StatusBar statusBar = new StatusBar ();
+
+  private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   private Parent createContent ()

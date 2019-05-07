@@ -28,13 +28,13 @@ class BlocksTab extends XmitTextTab
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || datasetStatus.dataFile == null)
+    if (datasetStatus == null || datasetStatus.getDataFile () == null)
       return lines;
 
-    if (datasetStatus.dataFile instanceof PdsMember)
-      ((PdsMember) datasetStatus.dataFile).listSizeCounts (lines);
+    if (datasetStatus.getDataFile () instanceof PdsMember)
+      ((PdsMember) datasetStatus.getDataFile ()).listSizeCounts (lines);
 
-    lines.add (datasetStatus.dataFile.toString ());
+    lines.add (datasetStatus.getDataFile ().toString ());
 
     return lines;
   }

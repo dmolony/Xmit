@@ -163,7 +163,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     if (datasetStatus.isPds ())
     {
-      setVisibleColumns (((PdsDataset) datasetStatus.dataset).getModuleType ());
+      setVisibleColumns (((PdsDataset) datasetStatus.getDataset ()).getModuleType ());
       buildList (datasetStatus.previousSelection ());
     }
     else
@@ -184,8 +184,8 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     this.filterStatus = filterStatus;
 
-    if (datasetStatus != null && datasetStatus.dataset != null
-        && datasetStatus.dataset.isPds ())
+    if (datasetStatus != null && datasetStatus.getDataset () != null
+        && datasetStatus.isPds ())
     {
       CatalogEntryItem selectedItem = getSelectionModel ().getSelectedItem ();
       String selectedName = selectedItem == null ? "" : selectedItem.getMemberName ();
@@ -206,7 +206,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     // create filter
     Filter filter =
-        ((PdsDataset) datasetStatus.dataset).getFilter (filterStatus.filterValue);
+        ((PdsDataset) datasetStatus.getDataset ()).getFilter (filterStatus.filterValue);
     FilterMode filterMode =
         filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
             : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
@@ -218,8 +218,8 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     // notify filter listeners
     for (FilterActionListener listener : filterListeners)
-      listener.filtering (items.size (), ((PdsDataset) datasetStatus.dataset).size (),
-          true);
+      listener.filtering (items.size (),
+          ((PdsDataset) datasetStatus.getDataset ()).size (), true);
 
     // select a member
     selectCatalogEntryItem (findItem (selectedName));
