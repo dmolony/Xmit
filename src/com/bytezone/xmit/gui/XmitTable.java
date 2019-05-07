@@ -184,8 +184,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     this.filterStatus = filterStatus;
 
-    if (datasetStatus != null && datasetStatus.getDataset () != null
-        && datasetStatus.isPds ())
+    if (datasetStatus != null && !datasetStatus.hasDataset () && datasetStatus.isPds ())
     {
       CatalogEntryItem selectedItem = getSelectionModel ().getSelectedItem ();
       String selectedName = selectedItem == null ? "" : selectedItem.getMemberName ();

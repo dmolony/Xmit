@@ -22,7 +22,7 @@ class TableHeaderBar extends HeaderBar
   {
     this.datasetStatus = datasetStatus;
 
-    if (datasetStatus.getDataset () == null)
+    if (!datasetStatus.hasDataset ())
     {
       leftLabel.setText ("");
       rightLabel.setText ("");

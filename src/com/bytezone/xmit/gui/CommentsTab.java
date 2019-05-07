@@ -28,7 +28,7 @@ public class CommentsTab extends XmitTextTab implements TreeItemSelectionListene
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || datasetStatus.getDataset () == null)
+    if (datasetStatus == null || !datasetStatus.hasDataset ())
       return lines;
 
     Reader reader = datasetStatus.getReader ();

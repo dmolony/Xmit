@@ -12,8 +12,8 @@ class OutputHeaderBar extends HeaderBar
   void updateNameLabel (boolean truncateLines)
   //----------------------------------------------------------------------------------- //
   {
-    if (datasetStatus == null || datasetStatus.getDataset () == null
-        || datasetStatus.getCatalogEntry () == null)
+    if (datasetStatus == null || !datasetStatus.hasDataset ()
+        || !datasetStatus.hasCatalogEntry ())
     {
       leftLabel.setText ("");
       return;
@@ -49,8 +49,8 @@ class OutputHeaderBar extends HeaderBar
   {
     this.datasetStatus = datasetStatus;
 
-    rightLabel.setText (datasetStatus.getDataset () == null ? ""
-        : datasetStatus.getDisposition ().toString ());
+    rightLabel.setText (
+        !datasetStatus.hasDataset () ? "" : datasetStatus.getDisposition ().toString ());
     updateNameLabel (lineDisplayStatus.truncateLines);
   }
 

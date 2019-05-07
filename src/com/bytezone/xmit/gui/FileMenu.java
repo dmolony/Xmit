@@ -178,7 +178,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   {
     this.datasetStatus = datasetStatus;
 
-    if (datasetStatus.getDataset () == null)
+    if (!datasetStatus.hasDataset ())
     {
       extractMenuItem.setText ("Extract file...");
       extractMenuItem.setDisable (true);
@@ -200,7 +200,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   public void tableItemSelected (DatasetStatus datasetStatus)
   // ---------------------------------------------------------------------------------//
   {
-    if (datasetStatus.getCatalogEntry () == null)
+    if (!datasetStatus.hasCatalogEntry ())
     {
       extractMenuItem.setText ("Extract... ");
       extractMenuItem.setDisable (true);

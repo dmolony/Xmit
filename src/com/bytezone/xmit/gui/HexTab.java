@@ -30,7 +30,7 @@ class HexTab extends XmitTextTab implements TreeItemSelectionListener,
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || datasetStatus.getDataFile () == null)
+    if (datasetStatus == null || !datasetStatus.hasDataFile ())
       return lines;
 
     byte[] buffer = datasetStatus.getDataBuffer ();

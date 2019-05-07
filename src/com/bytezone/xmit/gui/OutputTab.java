@@ -50,7 +50,7 @@ class OutputTab extends XmitTextTab
   List<String> getLines ()
   //----------------------------------------------------------------------------------- //
   {
-    if (datasetStatus == null || datasetStatus.getDataFile () == null)
+    if (datasetStatus == null || !datasetStatus.hasDataFile ())
       return new ArrayList<> ();
 
     return getLines (MAX_LINES);
