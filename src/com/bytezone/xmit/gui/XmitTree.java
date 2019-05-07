@@ -94,6 +94,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
     {
       if (newSel == null)
       {
+        System.out.println ("Never happens");
         notifyListeners (null, null);
         return;
       }

@@ -499,4 +499,12 @@ public class CatalogEntryItem                   // must be public
       attr = new SimpleStringProperty ();
     return attr;
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.toString ();
+  }
 }

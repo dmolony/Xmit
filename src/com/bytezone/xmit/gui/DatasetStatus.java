@@ -14,7 +14,7 @@ class DatasetStatus
   private Dataset dataset;                // usually file #1 in the Reader
   private DataFile dataFile;              // FlatFile or PdsMember
   private CatalogEntry catalogEntry;      // needed for alias members
-  private String name;
+  private String fileName;                // xmit file name (xxx.XMI)
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
   private final Map<String, PdsDataset> datasets = new TreeMap<> ();
@@ -23,11 +23,11 @@ class DatasetStatus
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
 
   //----------------------------------------------------------------------------------- //
-  void datasetSelected (Dataset dataset, String name)
+  void datasetSelected (Dataset dataset, String fileName)
   //----------------------------------------------------------------------------------- //
   {
     this.dataset = dataset;
-    this.name = name;
+    this.fileName = fileName;
     catalogEntry = null;
     dataFile = null;
 
@@ -91,10 +91,10 @@ class DatasetStatus
   }
 
   //----------------------------------------------------------------------------------- //
-  String getName ()
+  String getFileName ()
   //----------------------------------------------------------------------------------- //
   {
-    return name;
+    return fileName;
   }
 
   //----------------------------------------------------------------------------------- //
@@ -214,7 +214,7 @@ class DatasetStatus
 
     String dataFileName = dataFile == null ? "" : dataFile.getName ();
 
-    text.append (String.format ("Name............. %s%n", name));
+    text.append (String.format ("Name............. %s%n", fileName));
     text.append (String.format ("Dataset.......... %s%n", dataset));
     text.append (String.format ("Datafile......... %s%n", dataFileName));
     text.append (String.format ("CatalogEntry..... %s", catalogEntry));

@@ -14,6 +14,7 @@ import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.gui.DataColumn.DisplayType;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -75,17 +76,18 @@ class XmitTable extends TableView<CatalogEntryItem>                             
       getColumns ().add (dataColumn.createColumn ());
 
     getSelectionModel ().selectedItemProperty ()
-        .addListener ( (obs, oldSel, newSel) -> selected (newSel));
+        .addListener ( (obs, oldSel, newSel) -> selected (obs, oldSel, newSel));
   }
 
   // ---------------------------------------------------------------------------------//
-  private void selected (CatalogEntryItem catalogEntryItem)
+  private void selected (ObservableValue<? extends CatalogEntryItem> obs,
+      CatalogEntryItem oldSel, CatalogEntryItem newSel)
   // ---------------------------------------------------------------------------------//
   {
-    if (catalogEntryItem == null)
-      datasetStatus.catalogEntrySelected (null);
-    else
-      datasetStatus.catalogEntrySelected (catalogEntryItem.getCatalogEntry ());
+    if (newSel == null)
+      return;
+
+    datasetStatus.catalogEntrySelected (newSel.getCatalogEntry ());
 
     for (TableItemSelectionListener listener : selectionListeners)
       listener.tableItemSelected (datasetStatus);
@@ -184,7 +186,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     this.filterStatus = filterStatus;
 
-    if (datasetStatus != null && !datasetStatus.hasDataset () && datasetStatus.isPds ())
+    if (datasetStatus != null && datasetStatus.isPds ())
     {
       CatalogEntryItem selectedItem = getSelectionModel ().getSelectedItem ();
       String selectedName = selectedItem == null ? "" : selectedItem.getMemberName ();

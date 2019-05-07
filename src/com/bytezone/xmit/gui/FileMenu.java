@@ -177,22 +177,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   // ---------------------------------------------------------------------------------//
   {
     this.datasetStatus = datasetStatus;
-
-    if (!datasetStatus.hasDataset ())
-    {
-      extractMenuItem.setText ("Extract file...");
-      extractMenuItem.setDisable (true);
-    }
-    else if (datasetStatus.isPs ())
-    {
-      extractMenuItem.setText ("Extract " + datasetStatus.getReaderFileName () + "...");
-      extractMenuItem.setDisable (false);
-    }
-    else
-    {
-      extractMenuItem.setText ("Extract " + datasetStatus.getName () + "...");
-      extractMenuItem.setDisable (true);
-    }
+    setMenu ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -200,15 +185,28 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   public void tableItemSelected (DatasetStatus datasetStatus)
   // ---------------------------------------------------------------------------------//
   {
-    if (!datasetStatus.hasCatalogEntry ())
+    this.datasetStatus = datasetStatus;
+    setMenu ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void setMenu ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (datasetStatus.isPs ())         // flat file
     {
-      extractMenuItem.setText ("Extract... ");
-      extractMenuItem.setDisable (true);
+      extractMenuItem.setText ("Extract " + datasetStatus.getReaderFileName () + "...");
+      extractMenuItem.setDisable (false);
     }
-    else
+    else if (datasetStatus.isPds () && datasetStatus.hasCatalogEntry ())
     {
       extractMenuItem.setText ("Extract " + datasetStatus.getMemberName () + "...");
       extractMenuItem.setDisable (false);
+    }
+    else
+    {
+      extractMenuItem.setText ("Extract... ");
+      extractMenuItem.setDisable (true);
     }
   }
 }

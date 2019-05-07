@@ -127,11 +127,11 @@ public class XmitApp extends Application
     xmitTree.addListener (xmitTable);
 
     // table listeners
-    xmitTable.addListener (fileMenu);
     xmitTable.addListener (outputTabPane.hexTab);
     xmitTable.addListener (outputTabPane.blocksTab);
     xmitTable.addListener (outputTabPane.outputTab);
     xmitTable.addListener (outputHeaderBar);
+    xmitTable.addListener (fileMenu);
 
     BorderPane mainPane = new BorderPane ();
     mainPane.setCenter (splitPane);
