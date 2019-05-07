@@ -1,6 +1,7 @@
 package com.bytezone.xmit;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import javafx.scene.control.Alert.AlertType;
 
@@ -27,15 +28,22 @@ public class CodePage
   public CodePage (String name)
   // ---------------------------------------------------------------------------------//
   {
-    this.name = name;
-    int i = 0;
     if (name.startsWith ("USER"))
-      //    if (name.startsWith ("CP1047 (swap"))
+    {
+      int i = 0;
       for (String s : Utility.getLocalCodePage (name).split (" "))
         ebc2asc[i++] = Integer.parseInt (s, 16);
+    }
     else
+    {
+      if (!Charset.isSupported (name))
+      {
+        System.out.printf ("Charset %s is not supported%n", name);
+        name = "CP037";
+      }
       try
       {
+        int i = 0;
         for (char c : new String (values, name).toCharArray ())
         {
           //          if (c < 256)
@@ -47,13 +55,15 @@ public class CodePage
       {
         Utility.showAlert (AlertType.ERROR, "Encoding Exception", e.toString ());
       }
+    }
 
-    for (i = 0; i < 256; i++)
+    for (int i = 0; i < 256; i++)
     {
       int j = ebc2asc[i];
       if (j < 256)              // CP870 requires this
         asc2ebc[j] = i;
     }
+    this.name = name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -77,29 +87,36 @@ public class CodePage
   public static void main (String[] args)
   // ---------------------------------------------------------------------------------//
   {
-    String[] codePageNames =
-        { "CP037", "CP273", "CP285", "CP297", "CP500", "CP1047", "USER1" };
-    CodePage[] codePages = new CodePage[codePageNames.length];
-    int count = 0;
-
-    System.out.print ("   ");
-    for (String codePageName : codePageNames)
+    if (true)
     {
-      System.out.printf (" %-6.6s", codePageNames[count]);
-      codePages[count++] = new CodePage (codePageName);
+      list ();
     }
-    System.out.println ();
-
-    for (int i = 0; i < 256; i++)
+    else
     {
-      if (allSame (codePages, i))
-        continue;
-      System.out.printf ("%02X:   ", i);
-      for (CodePage codePage : codePages)
-        System.out.printf ("%02X     ", codePage.ebc2asc[i]);
-      if (codePages[5].ebc2asc[i] != codePages[6].ebc2asc[i])
-        System.out.print (" **");
+      String[] codePageNames =
+          { "CP037", "CP273", "CP285", "CP297", "CP500", "CP1047", "USER1" };
+      CodePage[] codePages = new CodePage[codePageNames.length];
+      int count = 0;
+
+      System.out.print ("   ");
+      for (String codePageName : codePageNames)
+      {
+        System.out.printf (" %-6.6s", codePageNames[count]);
+        codePages[count++] = new CodePage (codePageName);
+      }
       System.out.println ();
+
+      for (int i = 0; i < 256; i++)
+      {
+        if (allSame (codePages, i))
+          continue;
+        System.out.printf ("%02X:   ", i);
+        for (CodePage codePage : codePages)
+          System.out.printf ("%02X     ", codePage.ebc2asc[i]);
+        if (codePages[5].ebc2asc[i] != codePages[6].ebc2asc[i])
+          System.out.print (" **");
+        System.out.println ();
+      }
     }
   }
 
@@ -122,5 +139,21 @@ public class CodePage
       if (codePage.ebc2asc[i] != i)
         return false;
     return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private static void list ()
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.println ("Canonical name   Display name   Can encode   Aliases");
+
+    for (Charset charset : Charset.availableCharsets ().values ())
+    {
+      System.out.printf ("%-15s %-15s %-6s", charset.name (), charset.displayName (),
+          charset.canEncode ());
+      for (String aliasName : charset.aliases ())
+        System.out.printf (" %-15s", aliasName);
+      System.out.println ();
+    }
   }
 }

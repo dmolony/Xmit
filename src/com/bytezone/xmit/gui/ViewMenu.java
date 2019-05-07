@@ -1,5 +1,6 @@
 package com.bytezone.xmit.gui;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -10,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -200,9 +202,15 @@ class ViewMenu implements SaveState
     {
       Object o = toggle.getUserData ();
       String codePageName = o.toString ();
-      Utility.setCodePage (codePageName);     // ensure correct code page is set first
-      for (CodePageSelectedListener listener : codePageListeners)
-        listener.selectCodePage (codePageName);
+      if (!codePageName.startsWith ("USER") && !Charset.isSupported (codePageName))
+        Utility.showAlert (AlertType.ERROR, "Encoding Exception",
+            "Charset " + codePageName + " is not supported");
+      else
+      {
+        Utility.setCodePage (codePageName);     // ensure correct code page is set first
+        for (CodePageSelectedListener listener : codePageListeners)
+          listener.selectCodePage (codePageName);
+      }
     }
   }
 
