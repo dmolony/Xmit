@@ -53,6 +53,8 @@ class DatasetStatus
       dataFile = catalogEntry.getMember ();
       selectedMembers.put (dataset, catalogEntry.getMemberName ());
     }
+    else if (dataset.isPds ())        // filter might have no members
+      dataFile = null;
   }
 
   //----------------------------------------------------------------------------------- //

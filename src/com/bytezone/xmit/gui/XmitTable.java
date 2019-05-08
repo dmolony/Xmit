@@ -85,9 +85,9 @@ class XmitTable extends TableView<CatalogEntryItem>                             
   // ---------------------------------------------------------------------------------//
   {
     if (newSel == null)
-      return;
-
-    datasetStatus.catalogEntrySelected (newSel.getCatalogEntry ());
+      datasetStatus.catalogEntrySelected (null);
+    else
+      datasetStatus.catalogEntrySelected (newSel.getCatalogEntry ());
 
     for (TableItemSelectionListener listener : selectionListeners)
       listener.tableItemSelected (datasetStatus);
