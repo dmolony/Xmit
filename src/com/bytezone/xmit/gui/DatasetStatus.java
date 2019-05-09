@@ -48,13 +48,16 @@ class DatasetStatus
   {
     this.catalogEntry = catalogEntry;
 
-    if (catalogEntry != null)
+    if (catalogEntry == null)
+    {
+      if (dataset != null && dataset.isPds ())        // filter might have no members
+        dataFile = null;
+    }
+    else
     {
       dataFile = catalogEntry.getMember ();
       selectedMembers.put (dataset, catalogEntry.getMemberName ());
     }
-    else if (dataset.isPds ())        // filter might have no members
-      dataFile = null;
   }
 
   //----------------------------------------------------------------------------------- //

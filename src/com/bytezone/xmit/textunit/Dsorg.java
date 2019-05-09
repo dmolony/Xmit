@@ -18,7 +18,7 @@ public class Dsorg extends TextUnit
     VSAM, PDS, PS
   }
 
-  public Org type;
+  public final Org type;
 
   public Dsorg (byte[] buffer, int ptr)
   {
@@ -38,6 +38,7 @@ public class Dsorg extends TextUnit
         break;
       default:
         System.out.printf ("** Unknown DSORG value: %04X%n", value);
+        type = null;
     }
   }
 

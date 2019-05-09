@@ -18,6 +18,7 @@ public class DatasetType extends TextUnitNumber
   public DatasetType (byte[] buffer, int ptr)
   {
     super (buffer, ptr);
+
     type = "";
     if ((number & 0x80) != 0)
       type = "Data library";
