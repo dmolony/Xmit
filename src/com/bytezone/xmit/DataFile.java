@@ -248,7 +248,7 @@ public abstract class DataFile implements Comparable<DataFile>
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
 
-      if (dataset.isPds ())
+      if (dataset.isPartitionedDataset ())
       {
         lines.add (String.format ("Members: %s%n", ((PdsDataset) dataset).size ()));
         lines.add (" Member     User      Size     Date        Time     Alias");

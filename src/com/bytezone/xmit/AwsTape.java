@@ -21,9 +21,9 @@ public class AwsTape
       int record = 0;
       while (ptr < buffer.length)
       {
-        int next = bif (buffer, ptr);
-        int prev = bif (buffer, ptr + 2);
-        int flag = bif (buffer, ptr + 4);
+        int next = Utility.getTwoBytesReversed (buffer, ptr);
+        int prev = Utility.getTwoBytesReversed (buffer, ptr + 2);
+        int flag = Utility.getTwoBytesReversed (buffer, ptr + 4);
         record++;
         System.out.printf ("%,6d  %06X: %04X  %04X  %04X%n", record, ptr, next, prev,
             flag);
@@ -41,10 +41,29 @@ public class AwsTape
     }
   }
 
-  // ---------------------------------------------------------------------------------//
-  private static int bif (byte[] buffer, int ptr)
-  // ---------------------------------------------------------------------------------//
-  {
-    return (buffer[ptr] & 0xFF) | ((buffer[ptr + 1] & 0xFF) << 8);
-  }
+  // from FILE533.XMI -> M370VTT2
+  /*
+   *           HEADER TYPE       ACTION                       **
+  **           ------ ----       ------                       **
+  **           X'80'             Initialize buffer address.   **
+  **                             Write chunk of data to       **
+  **                              the buffer.                 **
+  **                                                          **
+  **           X'00'             Write another chunk of data  **
+  **                              to the end of the previous  **
+  **                              chunk in the buffer.        **
+  **                                                          **
+  **           X'20'             Add the chunk of data to     **
+  **                              the buffer.                 **
+  **                             Write out the entire buffer. **
+  **                             Initialize the start of      **
+  **                              buffer address.             **
+  **                                                          **
+  **           X'A0'             X'80' and X'20' combined.    **
+  **                                                          **
+  **           X'40'             Write a tape mark.           **
+  **                             Finalize the tape file.      **
+  **                             Initialize the output buffer **
+  **                              location.                   **
+   */
 }

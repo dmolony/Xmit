@@ -3,7 +3,6 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.textunit.ControlRecord;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 
 // ---------------------------------------------------------------------------------//
@@ -11,7 +10,6 @@ public abstract class Dataset
 //---------------------------------------------------------------------------------//
 {
   final Reader reader;
-  final ControlRecord inmr02;
   final Disposition disposition;
 
   final List<Segment> segments = new ArrayList<> ();
@@ -21,11 +19,10 @@ public abstract class Dataset
   // constructor
   // ---------------------------------------------------------------------------------//
 
-  Dataset (Reader reader, ControlRecord inmr02)
+  Dataset (Reader reader, Disposition disposition)
   {
     this.reader = reader;
-    this.inmr02 = inmr02;
-    disposition = new Disposition (inmr02);
+    this.disposition = disposition;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -50,7 +47,7 @@ public abstract class Dataset
   // isPs
   // ---------------------------------------------------------------------------------//
 
-  public boolean isPs ()
+  public boolean isPhysicalSequential ()
   {
     return disposition.dsorg == Org.PS;
   }
@@ -59,7 +56,7 @@ public abstract class Dataset
   // isPds
   // ---------------------------------------------------------------------------------//
 
-  public boolean isPds ()
+  public boolean isPartitionedDataset ()
   {
     return disposition.dsorg == Org.PDS;
   }
@@ -93,10 +90,10 @@ public abstract class Dataset
   // getControlRecord
   // ---------------------------------------------------------------------------------//
 
-  public ControlRecord getControlRecord ()
-  {
-    return inmr02;
-  }
+  //  private ControlRecord getControlRecord ()
+  //  {
+  //    return inmr02;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   // toString

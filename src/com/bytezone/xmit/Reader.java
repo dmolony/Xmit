@@ -82,12 +82,6 @@ public class Reader
       if (recordNumber)
         System.out.println ("******** Found a record number");
 
-      //  String name =
-      //    controlRecord && firstSegment ? Utility.getString (buffer, ptr + 2, 6) : "";
-      //  System.out.printf ("%02X  %2s  %2s  %2s  %2s  %s%n", length,
-      //    firstSegment ? "FS" : "", lastSegment ? "LS" : "", controlRecord ? "CR" : "",
-      //         recordNumber ? "RN" : "", name);
-
       if (firstSegment)
         currentSegment = new Segment (buffer);
 
@@ -110,23 +104,26 @@ public class Reader
           if (cr.nameMatches ("INMR03"))
           {
             Optional<Org> optOrg = getDsorg (datasets.size () + 1);
-            ControlRecord inmr02 = getInmr02 (datasets.size () + 1).get ();
             if (optOrg.isPresent ())
+            {
+              Disposition disposition =
+                  new Disposition (getInmr02 (datasets.size () + 1).get ());
               switch (optOrg.get ())
               {
                 case PS:
-                  currentDataset = new PsDataset (this, inmr02);
+                  currentDataset = new PsDataset (this, disposition);
                   break;
 
                 case PDS:
-                  currentDataset = new PdsDataset (this, inmr02);
+                  currentDataset = new PdsDataset (this, disposition);
                   break;
 
                 case VSAM:
                   currentDataset = null;         // will crash
-                  System.out.println ("VSAM dataset");
+                  System.out.println ("VSAM datasets are not supported");
                   break;
               }
+            }
             else
               currentDataset = null;
 
@@ -144,9 +141,6 @@ public class Reader
     // allocate the data records
     for (Dataset dataset : datasets)
       dataset.allocateSegments ();
-
-    //    if (datasets.size () > 1)
-    //      System.out.printf ("%s contains %d datasets%n", fileName, datasets.size ());
 
     // set active dataset
     activeDataset = datasets.get (datasets.size () - 1);     // always last
@@ -307,89 +301,4 @@ public class Reader
       return null;
     }
   }
-
-  // ---------------------------------------------------------------------------------//
-  // getControlRecordNumber
-  // ---------------------------------------------------------------------------------//
-
-  //  int getControlRecordNumber (int key)
-  //  {
-  //    for (ControlRecord controlRecord : controlRecords)
-  //    {
-  //      TextUnit textUnit = controlRecord.getTextUnit (key);
-  //      if (textUnit != null && textUnit instanceof TextUnitNumber)
-  //        return (int) ((TextUnitNumber) textUnit).getNumber ();
-  //    }
-  //    return -1;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // getRecordLength
-  // ---------------------------------------------------------------------------------//
-
-  //  int getRecordLength (String utility)
-  //  {
-  //    Optional<ControlRecord> opt = getControlRecord
-  //            ("INMR02", TextUnit.INMUTILN, utility);
-  //    if (opt.isPresent ())
-  //    {
-  //      TextUnit textUnit = opt.get ().getTextUnit (TextUnit.INMLRECL);
-  //      if (textUnit != null && textUnit instanceof TextUnitNumber)
-  //        return (int) ((TextUnitNumber) textUnit).getNumber ();
-  //    }
-  //    return 0;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // getControlRecord
-  // ---------------------------------------------------------------------------------//
-
-  //  private Optional<ControlRecord> getControlRecord (String stepName, int key,
-  //      String value)
-  //  {
-  //    for (ControlRecord controlRecord : controlRecords)
-  //      if (controlRecord.nameMatches (stepName))
-  //      {
-  //        TextUnit textUnit = controlRecord.getTextUnit (key);
-  //        if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
-  //          return Optional.of (controlRecord);
-  //      }
-  //    return Optional.empty ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // getOrg
-  // ---------------------------------------------------------------------------------//
-
-  //  Org getDsorg ()
-  //  {
-  //    Optional<ControlRecord> opt =
-  //        getControlRecord ("INMR02", TextUnit.INMUTILN, "IEBCOPY");
-  //    if (opt.isEmpty ())
-  //      opt = getControlRecord ("INMR02", TextUnit.INMUTILN, "INMCOPY");
-  //    if (opt.isPresent ())
-  //    {
-  //      ControlRecord controlRecord = opt.get ();
-  //      TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMDSORG);
-  //      if (textUnit != null)
-  //        return ((Dsorg) textUnit).type;
-  //    }
-  //
-  //    return null;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  // getControlRecord
-  // ---------------------------------------------------------------------------------//
-
-  //  Optional<ControlRecord> getControlRecord (int key, String value)
-  //  {
-  //    for (ControlRecord controlRecord : controlRecords)
-  //    {
-  //      TextUnit textUnit = controlRecord.getTextUnit (key);
-  //      if (textUnit != null && ((TextUnitString) textUnit).getString ().equals (value))
-  //        return Optional.of (controlRecord);
-  //    }
-  //    return Optional.empty ();
-  //  }
 }

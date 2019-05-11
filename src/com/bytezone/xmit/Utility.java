@@ -272,9 +272,20 @@ public class Utility
   public static int getTwoBytes (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    int a = (buffer[ptr] & 0xFF) << 8;
-    int b = (buffer[ptr + 1] & 0xFF);
-    return a + b;
+    //    int a = (buffer[ptr] & 0xFF) << 8;
+    //    int b = (buffer[ptr + 1] & 0xFF);
+    //    return a + b;
+    return ((buffer[ptr] & 0xFF) << 8) | (buffer[++ptr] & 0xFF);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int getTwoBytesReversed (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    //    int a = (buffer[ptr] & 0xFF);
+    //    int b = (buffer[ptr + 1] & 0xFF) << 8;
+    //    return a + b;
+    return (buffer[ptr] & 0xFF) | ((buffer[++ptr] & 0xFF) << 8);
   }
 
   // ---------------------------------------------------------------------------------//

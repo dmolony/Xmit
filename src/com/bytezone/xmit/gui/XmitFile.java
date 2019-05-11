@@ -121,7 +121,7 @@ class XmitFile
     if (reader != null)
     {
       Dataset dataset = reader.getActiveDataset ();
-      if (dataset.isPds () && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
+      if (dataset.isPartitionedDataset () && ((PdsDataset) dataset).getXmitMembers ().size () > 0)
         fileTreeItem.buildChildren ();
     }
     return reader;

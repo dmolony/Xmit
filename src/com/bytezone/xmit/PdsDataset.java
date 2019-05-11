@@ -3,7 +3,6 @@ package com.bytezone.xmit;
 import java.util.*;
 
 import com.bytezone.xmit.CatalogEntry.ModuleType;
-import com.bytezone.xmit.textunit.ControlRecord;
 
 // useful: https://stackoverflow.com/questions/28929563/
 // how-to-manipulate-the-result-of-a-future-in-javafx
@@ -21,10 +20,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private CopyR2 copyR2;
 
   // ---------------------------------------------------------------------------------//
-  PdsDataset (Reader reader, ControlRecord inmr02)
+  PdsDataset (Reader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, inmr02);
+    super (reader, disposition);
   }
 
   // ---------------------------------------------------------------------------------//

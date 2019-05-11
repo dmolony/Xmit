@@ -1,7 +1,5 @@
 package com.bytezone.xmit;
 
-import com.bytezone.xmit.textunit.ControlRecord;
-
 // ---------------------------------------------------------------------------------//
 public class PsDataset extends Dataset
 // ---------------------------------------------------------------------------------//
@@ -9,10 +7,10 @@ public class PsDataset extends Dataset
   private FlatFile flatFile;
 
   // ---------------------------------------------------------------------------------//
-  PsDataset (Reader reader, ControlRecord inmr02)
+  PsDataset (Reader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, inmr02);
+    super (reader, disposition);
   }
 
   // ---------------------------------------------------------------------------------//

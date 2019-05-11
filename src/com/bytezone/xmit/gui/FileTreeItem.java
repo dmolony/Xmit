@@ -113,7 +113,7 @@ class FileTreeItem extends TreeItem<XmitFile>
     Dataset dataset = xmitFile.getReader ().getActiveDataset ();
     ObservableList<TreeItem<XmitFile>> children = FXCollections.observableArrayList ();
 
-    if (dataset.isPds ())
+    if (dataset.isPartitionedDataset ())
     {
       List<PdsMember> members = ((PdsDataset) dataset).getXmitMembers ();
       if (members.size () > 0)

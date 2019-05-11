@@ -32,13 +32,13 @@ class DatasetStatus
     dataFile = null;
 
     if (dataset != null)
-      if (dataset.isPds ())
+      if (dataset.isPartitionedDataset ())
       {
         String datasetName = dataset.getReader ().getFileName ();
         if (!datasets.containsKey (datasetName))
           datasets.put (datasetName, (PdsDataset) dataset);
       }
-      else if (dataset.isPs ())
+      else if (dataset.isPhysicalSequential ())
         dataFile = ((PsDataset) dataset).getFlatFile ();
   }
 
@@ -50,7 +50,7 @@ class DatasetStatus
 
     if (catalogEntry == null)
     {
-      if (dataset != null && dataset.isPds ())        // filter might have no members
+      if (dataset != null && dataset.isPartitionedDataset ())        // filter might have no members
         dataFile = null;
     }
     else
@@ -172,14 +172,14 @@ class DatasetStatus
   boolean isPs ()
   //----------------------------------------------------------------------------------- //
   {
-    return dataset != null && dataset.isPs ();
+    return dataset != null && dataset.isPhysicalSequential ();
   }
 
   //----------------------------------------------------------------------------------- //
   boolean isPds ()
   //----------------------------------------------------------------------------------- //
   {
-    return dataset != null && dataset.isPds ();
+    return dataset != null && dataset.isPartitionedDataset ();
   }
 
   //----------------------------------------------------------------------------------- //
