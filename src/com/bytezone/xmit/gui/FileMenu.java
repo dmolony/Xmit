@@ -78,7 +78,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private void about ()
   // ---------------------------------------------------------------------------------//
   {
-    Utility.showAlert (AlertType.INFORMATION, "About",
+    Utility.showAlert (AlertType.INFORMATION, "About XmitApp",
         "Version: 1.0.23\nReleased: 1 May 2019\nAuthor: Denis Molony");
   }
 
