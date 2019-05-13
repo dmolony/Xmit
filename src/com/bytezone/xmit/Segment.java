@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-//---------------------------------------------------------------------------------//
+// ---------------------------------------------------------------------------------//
 class Segment implements Iterable<BlockPointer>
 //---------------------------------------------------------------------------------//
 {
@@ -45,7 +45,7 @@ class Segment implements Iterable<BlockPointer>
       return;
     }
     rawBlockPointers.add (blockPointer);
-    rawBufferLength += blockPointer.length;       // used for non-data blocks
+    rawBufferLength += blockPointer.length;               // used for non-data blocks
   }
 
   // ---------------------------------------------------------------------------------//
@@ -110,11 +110,8 @@ class Segment implements Iterable<BlockPointer>
       }
     }
 
-    //    System.out.println (dataBlocks.size ());
     if (dataBlocks.size () > 0 && dataBlocks.get (0).getHeader ().isEmpty ())
-    {
       System.out.println ("empty header found");
-    }
 
     return dataBlocks;
   }
@@ -187,27 +184,6 @@ class Segment implements Iterable<BlockPointer>
     BlockPointer blockPointer = rawBlockPointers.get (0);
     return Utility.matches (Reader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
   }
-
-  // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
-  //  @Override
-  //  public String toString ()
-  //  {
-  //    StringBuilder text = new StringBuilder ();
-  //
-  //    text.append (String.format ("Data length  : %04X  %<,8d%n", rawBufferLength));
-  //
-  //    for (BlockPointer blockPointer : rawBlockPointers)
-  //    {
-  //      text.append ("      ");
-  //      text.append (blockPointer);
-  //      text.append ("\n");
-  //    }
-  //
-  //    return text.toString ();
-  //  }
 
   // ---------------------------------------------------------------------------------//
   // toString

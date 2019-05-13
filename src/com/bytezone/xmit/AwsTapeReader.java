@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.textunit.Dsorg.Org;
-
 // ---------------------------------------------------------------------------------//
 public class AwsTapeReader
 {
@@ -44,12 +42,13 @@ public class AwsTapeReader
       }
 
       BlockPointer blockPointer = new BlockPointer (buffer, ptr, next);
+      ptr += next;
 
       if (tapeMarkCount == 1)
         currentSegment.addData (blockPointer);
       else
       {
-        String header = Utility.getString (buffer, ptr, 4);
+        String header = blockPointer.getString (0, 4);
 
         switch (header)
         {
@@ -75,8 +74,6 @@ public class AwsTapeReader
             System.out.println ("Unknown header: " + header);
         }
       }
-
-      ptr += next;
     }
 
     System.out.println ();
@@ -137,6 +134,7 @@ public class AwsTapeReader
     String largeBlockLength;
 
     int dataLength;
+    Disposition disposition;
 
     private final List<BlockPointer> blockPointers = new ArrayList<> ();
     private final List<BlockPointer> headers = new ArrayList<> ();
@@ -179,6 +177,7 @@ public class AwsTapeReader
       recfm = hdr2.getString (4, 1);
       blockLength = hdr2.getString (5, 5);
       recordLength = hdr2.getString (10, 5);
+
       tapeDensity = hdr2.getString (15, 1);
       datasetPosition = hdr2.getString (16, 1);
       jobName = hdr2.getString (17, 8);
@@ -194,8 +193,7 @@ public class AwsTapeReader
       String notUsed3 = hdr2.getString (48, 22);
       largeBlockLength = hdr2.getString (70, 10);
 
-      Disposition disposition = new Disposition (Org.PS, 0x5000,
-          Integer.parseInt (recordLength), Integer.parseInt (blockLength));
+      disposition = new Disposition (recfm, recordLength, blockLength);
       //      System.out.println (disposition);
     }
 
