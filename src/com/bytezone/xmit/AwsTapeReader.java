@@ -6,34 +6,20 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.textunit.Dsorg.Org;
+
 // ---------------------------------------------------------------------------------//
 public class AwsTapeReader
 {
-  private static final byte[] vol = { (byte) 0xE5, (byte) 0xD6, (byte) 0xD3 };
-  private static final byte[] eov = { (byte) 0xC5, (byte) 0xD6, (byte) 0xE5 };
-  private static final byte[] hdr1 =
-      { (byte) 0xC8, (byte) 0xC4, (byte) 0xD9, (byte) 0xF1 };
-  private static final byte[] eof1 =
-      { (byte) 0xC5, (byte) 0xD6, (byte) 0xC6, (byte) 0xF1 };
-  private static final byte[] hdr2 =
-      { (byte) 0xC8, (byte) 0xC4, (byte) 0xD9, (byte) 0xF2 };
-  private static final byte[] eof2 =
-      { (byte) 0xC5, (byte) 0xD6, (byte) 0xC6, (byte) 0xF2 };
-
   private final List<Segment> segments = new ArrayList<> ();
-
-  enum State
-  {
-    VOL, HDR1, HDR2, HDR_END, DATA, EOF1, EOF2, EOF_END, EOV
-  }
 
   // ---------------------------------------------------------------------------------//
   public AwsTapeReader (File file)
   // ---------------------------------------------------------------------------------//
   {
     Utility.setCodePage ("CP037");
-    State currentState = State.VOL;
     Segment currentSegment = null;
+    int tapeMarkCount = 0;
 
     byte[] buffer = readFile (file);
 
@@ -48,75 +34,46 @@ public class AwsTapeReader
 
       record++;
       ptr += 6;
+      //      System.out.printf ("%,6d  %d  %04X  %04X  %04X%n", record, tapeMarkCount, next,
+      //          prev, flag);
 
-      if (prev == 0 && next == 0)
-        break;
-
-      if (currentState != State.DATA)
+      if (next == 0)            // tape mark
       {
-        System.out.printf ("%,6d  %s%n", record, currentState);
-
-        if (currentState != State.HDR_END && currentState != State.EOF_END)
-          System.out.println (Utility.getHexDump (buffer, ptr, next));
+        ++tapeMarkCount;
+        continue;
       }
 
       BlockPointer blockPointer = new BlockPointer (buffer, ptr, next);
 
-      switch (currentState)
+      if (tapeMarkCount == 1)
+        currentSegment.addData (blockPointer);
+      else
       {
-        case VOL:
-          assert Utility.matches (vol, buffer, ptr);
-          currentState = State.HDR1;
-          break;
+        String header = Utility.getString (buffer, ptr, 4);
 
-        case HDR1:
-          assert Utility.matches (hdr1, buffer, ptr);
-          currentSegment = new Segment (blockPointer);
-          segments.add (currentSegment);
-          currentState = State.HDR2;
-          break;
+        switch (header)
+        {
+          case "HDR1":
+            currentSegment = new Segment (blockPointer);
+            segments.add (currentSegment);
+            tapeMarkCount = 0;
+            break;
 
-        case HDR2:
-          assert Utility.matches (hdr2, buffer, ptr);
-          currentSegment.addHeader2 (blockPointer);
-          currentState = State.HDR_END;
-          break;
+          case "HDR2":
+            currentSegment.addHeader2 (blockPointer);
+            break;
 
-        case HDR_END:
-          assert next == 0;
-          currentState = State.DATA;
-          break;
+          case "EOF1":
+          case "EOF2":
+            currentSegment.trailers.add (blockPointer);
+            break;
 
-        case DATA:
-          if (next == 0x0000 && flag == 0x0040)
-            currentState = State.EOF1;
-          else
-            currentSegment.addData (blockPointer);
-          break;
+          case "VOL1":
+            break;
 
-        case EOF1:
-          assert Utility.matches (eof1, buffer, ptr);
-          currentSegment.trailers.add (blockPointer);
-          currentState = State.EOF2;
-          break;
-
-        case EOF2:
-          assert Utility.matches (eof2, buffer, ptr);
-          currentSegment.trailers.add (blockPointer);
-          currentState = State.EOF_END;
-          break;
-
-        case EOF_END:
-          assert next == 0;
-          currentState = State.HDR1;
-          break;
-
-        case EOV:
-          System.out.println ("End of Volume not written");
-          break;
-
-        default:
-          System.out.println ("Bollocks");
+          default:
+            System.out.println ("Unknown header: " + header);
+        }
       }
 
       ptr += next;
@@ -236,6 +193,10 @@ public class AwsTapeReader
       checkpointDatasetIdentifier = hdr2.getString (47, 1);
       String notUsed3 = hdr2.getString (48, 22);
       largeBlockLength = hdr2.getString (70, 10);
+
+      Disposition disposition = new Disposition (Org.PS, 0x5000,
+          Integer.parseInt (recordLength), Integer.parseInt (blockLength));
+      //      System.out.println (disposition);
     }
 
     // ---------------------------------------------------------------------------------//
