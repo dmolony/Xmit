@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-class AwsSegment
-// ---------------------------------------------------------------------------------//
+class AwsTapeSegment
 {
   String name;
   String serialNumber;
@@ -43,7 +42,7 @@ class AwsSegment
   private final List<BlockPointer> trailers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  AwsSegment (BlockPointer hdr1)
+  AwsTapeSegment (BlockPointer hdr1)
   // ---------------------------------------------------------------------------------//
   {
     addHeader1 (hdr1);

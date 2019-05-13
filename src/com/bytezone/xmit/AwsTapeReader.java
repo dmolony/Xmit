@@ -9,14 +9,14 @@ import java.util.List;
 // ---------------------------------------------------------------------------------//
 public class AwsTapeReader
 {
-  private final List<AwsSegment> segments = new ArrayList<> ();
+  private final List<AwsTapeSegment> segments = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public AwsTapeReader (File file)
   // ---------------------------------------------------------------------------------//
   {
     Utility.setCodePage ("CP037");
-    AwsSegment currentSegment = null;
+    AwsTapeSegment currentSegment = null;
     int tapeMarkCount = 0;
 
     byte[] buffer = readFile (file);
@@ -53,7 +53,7 @@ public class AwsTapeReader
         switch (header)
         {
           case "HDR1":
-            currentSegment = new AwsSegment (blockPointer);
+            currentSegment = new AwsTapeSegment (blockPointer);
             segments.add (currentSegment);
             tapeMarkCount = 0;
             break;
@@ -77,7 +77,7 @@ public class AwsTapeReader
     }
 
     System.out.println ();
-    for (AwsSegment segment : segments)
+    for (AwsTapeSegment segment : segments)
     {
       System.out.println (segment);
       System.out.println (segment.header2 ());
