@@ -24,7 +24,7 @@ class XmitFile
   private final String suffix;
   private final String name;
 
-  private Reader reader;                    // can contain multiple datasets
+  private XmitReader reader;                    // can contain multiple datasets
   private DataFile dataFile;                // PDS member or flat file
 
   // ---------------------------------------------------------------------------------//
@@ -107,17 +107,17 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  void setReader (Reader reader)
+  void setReader (XmitReader reader)
   // ---------------------------------------------------------------------------------//
   {
     this.reader = reader;
   }
 
   // ---------------------------------------------------------------------------------//
-  Reader getReader (FileTreeItem fileTreeItem)
+  XmitReader getReader (FileTreeItem fileTreeItem)
   // ---------------------------------------------------------------------------------//
   {
-    Reader reader = getReader ();
+    XmitReader reader = getReader ();
     if (reader != null)
     {
       Dataset dataset = reader.getActiveDataset ();
@@ -128,14 +128,14 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  Reader getReader ()
+  XmitReader getReader ()
   // ---------------------------------------------------------------------------------//
   {
     if (reader == null)
       if (isMember ())                            // xmit file contained in a PdsMember
-        reader = new Reader (dataFile);
+        reader = new XmitReader (dataFile);
       else if (isFile () && !isCompressed ())
-        reader = new Reader (file);
+        reader = new XmitReader (file);
 
     return reader;
   }

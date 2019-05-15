@@ -13,7 +13,7 @@ public abstract class DataFile implements Comparable<DataFile>
 {
   private String name = "";
   private final Disposition disposition;
-  private final Reader reader;
+  private final XmitReader reader;
 
   private int dataLength = 0;
 
@@ -242,7 +242,7 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     try
     {
-      Reader reader = new Reader (this);
+      XmitReader reader = new XmitReader (this);
       Dataset dataset = reader.getActiveDataset ();
 
       for (ControlRecord controlRecord : reader.getControlRecords ())

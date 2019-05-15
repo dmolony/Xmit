@@ -20,7 +20,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private CopyR2 copyR2;
 
   // ---------------------------------------------------------------------------------//
-  PdsDataset (Reader reader, Disposition disposition)
+  PdsDataset (XmitReader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
   {
     super (reader, disposition);
@@ -123,7 +123,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 
     for (int i = 2; i < segments.size (); i++)
     {
-      Segment segment = segments.get (i);
+      XmitSegment segment = segments.get (i);
       if (inCatalog)
         inCatalog = addCatalogEntries (segment.getRawBuffer (), catalogMap);
       else

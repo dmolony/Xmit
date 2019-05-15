@@ -117,16 +117,25 @@ class AwsTapeSegment
   void dump ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = new byte[dataLength];
-    int ptr = 0;
-    for (BlockPointer blockPointer : blockPointers)
+    CopyR1 r1 = new CopyR1 (blockPointers.get (0).getData (8));
+    //    CopyR2 r2 = new CopyR2 (blockPointers.get (1).getData (8));
+    System.out.println (r1);
+    //    System.out.println (r2);
+    //    byte[] buffer = new byte[dataLength];
+    //    int ptr = 0;
+
+    for (int i = 2; i < blockPointers.size (); i++)
     {
-      System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, ptr,
-          blockPointer.length);
-      ptr += blockPointer.length;
+      BlockPointer blockPointer = blockPointers.get (i);
+      byte[] buffer = blockPointer.getData (8);
+      System.out.println (Utility.getHexDump (buffer));
+      //      System.out.println (blockPointer.toHex ());
+      //      System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, ptr,
+      //          blockPointer.length);
+      //      ptr += blockPointer.length;
     }
-    assert ptr == dataLength;
-    System.out.println (Utility.getHexDump (buffer));
+    //    assert ptr == dataLength;
+    //    System.out.println (Utility.getHexDump (buffer));
   }
 
   // ---------------------------------------------------------------------------------//

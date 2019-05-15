@@ -83,7 +83,7 @@ public class AwsTapeReader
       System.out.println (segment.header2 ());
     }
 
-    //    segments.get (2).dump ();
+    segments.get (2).dump ();
   }
 
   // ---------------------------------------------------------------------------------//

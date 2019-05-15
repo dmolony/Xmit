@@ -9,88 +9,70 @@ import com.bytezone.xmit.textunit.Dsorg.Org;
 public abstract class Dataset
 //---------------------------------------------------------------------------------//
 {
-  final Reader reader;
+  final XmitReader reader;
   final Disposition disposition;
 
-  final List<Segment> segments = new ArrayList<> ();
+  final List<XmitSegment> segments = new ArrayList<> ();
   int rawBufferLength;
 
   // ---------------------------------------------------------------------------------//
-  // constructor
+  Dataset (XmitReader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
-
-  Dataset (Reader reader, Disposition disposition)
   {
     this.reader = reader;
     this.disposition = disposition;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getReader
+  public XmitReader getReader ()
   // ---------------------------------------------------------------------------------//
-
-  public Reader getReader ()
   {
     return reader;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getDisposition
-  // ---------------------------------------------------------------------------------//
-
   public Disposition getDisposition ()
+  // ---------------------------------------------------------------------------------//
   {
     return disposition;
   }
 
   // ---------------------------------------------------------------------------------//
-  // isPs
-  // ---------------------------------------------------------------------------------//
-
   public boolean isPhysicalSequential ()
+  // ---------------------------------------------------------------------------------//
   {
     return disposition.dsorg == Org.PS;
   }
 
   // ---------------------------------------------------------------------------------//
-  // isPds
-  // ---------------------------------------------------------------------------------//
-
   public boolean isPartitionedDataset ()
+  // ---------------------------------------------------------------------------------//
   {
     return disposition.dsorg == Org.PDS;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getRawBufferLength
-  // ---------------------------------------------------------------------------------//
-
   int getRawBufferLength ()
+  // ---------------------------------------------------------------------------------//
   {
     return rawBufferLength;
   }
 
   // ---------------------------------------------------------------------------------//
-  // allocateSegments
-  // ---------------------------------------------------------------------------------//
-
   abstract void allocateSegments ();
-
-  // ---------------------------------------------------------------------------------//
-  // addSegment
   // ---------------------------------------------------------------------------------//
 
-  void addSegment (Segment segment)
+  // ---------------------------------------------------------------------------------//
+  void addSegment (XmitSegment segment)
+  // ---------------------------------------------------------------------------------//
   {
     segments.add (segment);
     rawBufferLength += segment.getRawBufferLength ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
   public String listSegments ()
+  // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
@@ -99,7 +81,7 @@ public abstract class Dataset
 
     int count = 0;
     int total = 0;
-    for (Segment segment : segments)
+    for (XmitSegment segment : segments)
     {
       total += segment.getRawBufferLength ();
       text.append (String.format ("%,5d  %,7d  %,7d  %3d%n", count++,
@@ -115,11 +97,9 @@ public abstract class Dataset
   }
 
   // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     return String.format ("%-20s %s", reader.getFileName (), disposition);
   }

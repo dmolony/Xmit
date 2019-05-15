@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-class Segment implements Iterable<BlockPointer>
+class XmitSegment implements Iterable<BlockPointer>
 //---------------------------------------------------------------------------------//
 {
   private final byte[] buffer;          // all block pointers refer to this
@@ -13,28 +13,22 @@ class Segment implements Iterable<BlockPointer>
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  // constructor
+  XmitSegment (byte[] buffer)
   // ---------------------------------------------------------------------------------//
-
-  Segment (byte[] buffer)
   {
     this.buffer = buffer;
   }
 
   // ---------------------------------------------------------------------------------//
-  // size
-  // ---------------------------------------------------------------------------------//
-
   public int size ()
+  // ---------------------------------------------------------------------------------//
   {
     return rawBlockPointers.size ();
   }
 
   // ---------------------------------------------------------------------------------//
-  // addBlockPointer
-  // ---------------------------------------------------------------------------------//
-
   public void addBlockPointer (BlockPointer blockPointer)
+  // ---------------------------------------------------------------------------------//
   {
     if (blockPointer.offset + blockPointer.length > buffer.length)
     {
@@ -49,10 +43,8 @@ class Segment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // createDataBlocks
-  // ---------------------------------------------------------------------------------//
-
   List<DataBlock> createDataBlocks ()                     // used only for data blocks
+  // ---------------------------------------------------------------------------------//
   {
     int recLen = 0;
     int headerPtr = 0;
@@ -117,19 +109,15 @@ class Segment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getRawBufferLength
-  // ---------------------------------------------------------------------------------//
-
   public int getRawBufferLength ()
+  // ---------------------------------------------------------------------------------//
   {
     return rawBufferLength;
   }
 
   // ---------------------------------------------------------------------------------//
-  // getEightBytes
-  // ---------------------------------------------------------------------------------//
-
   byte[] getEightBytes ()
+  // ---------------------------------------------------------------------------------//
   {
     byte[] eightBytes = new byte[8];
 
@@ -141,10 +129,8 @@ class Segment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getRawBuffer - contains no headers
+  public byte[] getRawBuffer ()                           // contains no headers
   // ---------------------------------------------------------------------------------//
-
-  public byte[] getRawBuffer ()
   {
     byte[] fullBlock = new byte[rawBufferLength];
     int ptr = 0;
@@ -158,10 +144,8 @@ class Segment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // getRawBuffer - contains no headers
-  // ---------------------------------------------------------------------------------//
-
   int packBuffer (byte[] dataBuffer, int ptr)
+  // ---------------------------------------------------------------------------------//
   {
     assert buffer.length >= ptr + rawBufferLength;
 
@@ -176,21 +160,17 @@ class Segment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // isXmit
-  // ---------------------------------------------------------------------------------//
-
   boolean isXmit ()
+  // ---------------------------------------------------------------------------------//
   {
     BlockPointer blockPointer = rawBlockPointers.get (0);
-    return Utility.matches (Reader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
+    return Utility.matches (XmitReader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
   }
 
   // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     BlockPointer blockPointer = rawBlockPointers.get (0);
     return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset,
@@ -198,11 +178,9 @@ class Segment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  // Iterator
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public Iterator<BlockPointer> iterator ()
+  // ---------------------------------------------------------------------------------//
   {
     return rawBlockPointers.iterator ();
   }

@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.XmitReader;
 
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
@@ -100,7 +100,7 @@ class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveSta
       }
 
       XmitFile xmitFile = newSel.getValue ();
-      Reader reader = xmitFile.getReader ((FileTreeItem) newSel);
+      XmitReader reader = xmitFile.getReader ((FileTreeItem) newSel);
 
       if (reader == null)
         notifyListeners (null, null);
