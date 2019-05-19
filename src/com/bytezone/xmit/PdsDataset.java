@@ -111,27 +111,38 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   void allocateSegments ()
   // ---------------------------------------------------------------------------------//
   {
-    // convert first two DataBlock entries
-    copyR1 = new CopyR1 (segments.get (0).getRawBuffer ());
-    copyR2 = new CopyR2 (segments.get (1).getRawBuffer ());
+    int segmentNbr = 0;
 
+    // convert first two DataBlock entries
+    copyR1 = new CopyR1 (segments.get (segmentNbr++).getRawBuffer ());
+    copyR2 = new CopyR2 (segments.get (segmentNbr++).getRawBuffer ());
     disposition.setPdse (copyR1.isPdse ());
 
-    boolean inCatalog = true;
-    List<DataBlock> dataBlocks = new ArrayList<> ();
+    // read catalog entries
     Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
-
-    for (int i = 2; i < segments.size (); i++)
+    while (segmentNbr < segments.size ())
     {
-      XmitSegment segment = segments.get (i);
-      if (inCatalog)
-        inCatalog = addCatalogEntries (segment.getRawBuffer (), catalogMap);
-      else
-        dataBlocks.addAll (segment.createDataBlocks ());
+      XmitSegment segment = segments.get (segmentNbr++);
+      if (!addCatalogEntries (segment.getRawBuffer (), catalogMap))
+        break;
     }
 
-    // catalogMap : list of all CatalogEntries that share a TTL in TTL sequence
-    // members    : list of PdsMember (List<DataBlock>) in ascending TTL sequence
+    // read data blocks
+    List<DataBlock> dataBlocks = new ArrayList<> ();
+    while (segmentNbr < segments.size ())
+    {
+      XmitSegment segment = segments.get (segmentNbr++);
+      dataBlocks.addAll (segment.createDataBlocks ());
+    }
+
+    for (XmitSegment segment : segments)
+    {
+      System.out.println (Utility.getHexDump (segment.getRawBuffer (), 0, 12));
+
+    }
+
+    // catalogMap : list of all CatalogEntries that share a TTL, in TTL sequence
+    // members    : list of PdsMember (List<DataBlock>) in TTL sequence
 
     List<PdsMember> members =
         copyR1.isPdse () ? createPdsEMembers (dataBlocks) : createPdsMembers (dataBlocks);

@@ -30,27 +30,27 @@ public class XmitReader
   private final int level;
 
   // ---------------------------------------------------------------------------------//
-  public XmitReader (DataFile dataFile)
-  // ---------------------------------------------------------------------------------//
-  {
-    fileName = dataFile.getName ();
-    level = dataFile.getLevel ();
-
-    reader (dataFile.getDataBuffer ());
-  }
-
-  // ---------------------------------------------------------------------------------//
   public XmitReader (File file)
   // ---------------------------------------------------------------------------------//
   {
     fileName = file.getName ();
     level = 0;
 
-    reader (getBuffer (file));
+    read (getBuffer (file));
   }
 
   // ---------------------------------------------------------------------------------//
-  private void reader (byte[] buffer)
+  public XmitReader (DataFile dataFile)
+  // ---------------------------------------------------------------------------------//
+  {
+    fileName = dataFile.getName ();
+    level = dataFile.getLevel ();
+
+    read (dataFile.getDataBuffer ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void read (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     XmitSegment currentSegment = null;
@@ -76,7 +76,7 @@ public class XmitReader
         System.out.println ("******** Found a record number");
 
       if (firstSegment)
-        currentSegment = new XmitSegment (buffer);
+        currentSegment = new XmitSegment ();
 
       currentSegment.addBlockPointer (new BlockPointer (buffer, ptr + 2, length - 2));
 

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-class AwsTapeSegment
+class AwsTapeDataset
 {
   String name;
   String serialNumber;
   String volSeq;
   String dsnSeq;
   String genNumber;
-  String versionNumber;
+  String genVersionNumber;
   String creationDate;
   String expirationDate;
   String datasetSecurity;
@@ -36,22 +36,27 @@ class AwsTapeSegment
 
   int dataLength;
   Disposition disposition;
+  AwsTapeReader reader;
 
   private final List<BlockPointer> blockPointers = new ArrayList<> ();
   private final List<BlockPointer> headers = new ArrayList<> ();
   private final List<BlockPointer> trailers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  AwsTapeSegment (BlockPointer hdr1)
+  AwsTapeDataset (AwsTapeReader reader, BlockPointer hdr1, BlockPointer hdr2)
   // ---------------------------------------------------------------------------------//
   {
+    this.reader = reader;
     addHeader1 (hdr1);
+    addHeader2 (hdr2);
   }
 
   // ---------------------------------------------------------------------------------//
-  void addHeader1 (BlockPointer hdr1)
+  private void addHeader1 (BlockPointer hdr1)
   // ---------------------------------------------------------------------------------//
   {
+    assert hdr1.length == 0x50;
+
     headers.add (hdr1);
 
     name = hdr1.getString (4, 17);
@@ -59,7 +64,7 @@ class AwsTapeSegment
     volSeq = hdr1.getString (27, 4);
     dsnSeq = hdr1.getString (31, 4);
     genNumber = hdr1.getString (35, 4);
-    versionNumber = hdr1.getString (39, 2);
+    genVersionNumber = hdr1.getString (39, 2);
     creationDate = hdr1.getString (41, 6);      // space=1900, 0=2000, 1=2100
     expirationDate = hdr1.getString (47, 6);    // space=1900, 0=2000, 1=2100
     datasetSecurity = hdr1.getString (53, 1);
@@ -70,9 +75,11 @@ class AwsTapeSegment
   }
 
   // ---------------------------------------------------------------------------------//
-  void addHeader2 (BlockPointer hdr2)
+  private void addHeader2 (BlockPointer hdr2)
   // ---------------------------------------------------------------------------------//
   {
+    assert hdr2.length == 0x50;
+
     headers.add (hdr2);
 
     recfm = hdr2.getString (4, 1);
@@ -102,6 +109,7 @@ class AwsTapeSegment
   void addTrailer (BlockPointer blockPointer)
   // ---------------------------------------------------------------------------------//
   {
+    assert blockPointer.length == 0x50;
     trailers.add (blockPointer);
   }
 
@@ -114,28 +122,68 @@ class AwsTapeSegment
   }
 
   // ---------------------------------------------------------------------------------//
+  List<DataBlock> createDataBlocks ()                     // used only for data blocks
+  // ---------------------------------------------------------------------------------//
+  {
+    // convert BlockPointers to DataBlocks
+    List<DataBlock> dataBlocks = new ArrayList<> ();
+    return dataBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //  byte[] getRawBuffer ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    byte[] buffer = new byte[dataLength - blockPointers.size () * 8];
+  //    int ptr = 0;
+  //    for (BlockPointer blockPointer : blockPointers)
+  //    {
+  //      int len = blockPointer.length - 8;
+  //      System.arraycopy (blockPointer.buffer, blockPointer.offset + 8, buffer, ptr, len);
+  //      ptr += len;
+  //    }
+  //    assert ptr == buffer.length;
+  //    return buffer;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   void dump ()
   // ---------------------------------------------------------------------------------//
   {
     CopyR1 r1 = new CopyR1 (blockPointers.get (0).getData (8));
-    //    CopyR2 r2 = new CopyR2 (blockPointers.get (1).getData (8));
+    CopyR2 r2 = new CopyR2 (blockPointers.get (1).getData (8));
     System.out.println (r1);
     //    System.out.println (r2);
-    //    byte[] buffer = new byte[dataLength];
-    //    int ptr = 0;
 
     for (int i = 2; i < blockPointers.size (); i++)
     {
       BlockPointer blockPointer = blockPointers.get (i);
       byte[] buffer = blockPointer.getData (8);
-      System.out.println (Utility.getHexDump (buffer));
-      //      System.out.println (blockPointer.toHex ());
-      //      System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, ptr,
-      //          blockPointer.length);
-      //      ptr += blockPointer.length;
+      System.out.println (Utility.getHexDump (buffer, 0, 12));
     }
-    //    assert ptr == dataLength;
-    //    System.out.println (Utility.getHexDump (buffer));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void dump2 ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int count = 0;
+    for (int i = 2; i < blockPointers.size (); i++)
+    {
+      BlockPointer blockPointer = blockPointers.get (i);
+
+      byte[] buffer = blockPointer.getData (8);
+      if (buffer[9] == 0x08)          // skip catalog entries
+        continue;
+      int ptr = 0;
+
+      while (ptr < buffer.length)
+      {
+        System.out.printf ("%3d  %s%n", ++count, Utility.getHexDump (buffer, ptr, 12));
+        int len = Utility.getTwoBytes (buffer, ptr + 10);
+        ptr += len + 12;
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -156,7 +204,7 @@ class AwsTapeSegment
     return String.format (
         "%s  %s  %s  %s  %s %,6d %,10d  [%s]  [%s]  %s  %s  %s  %s  %s  %s", name,
         serialNumber, volSeq, dsnSeq, genNumber, blockPointers.size (), dataLength,
-        versionNumber, creationDate, expirationDate, datasetSecurity, blockCountLo,
+        genVersionNumber, creationDate, expirationDate, datasetSecurity, blockCountLo,
         systemCode, blockCountHi, largeBlockLength);
   }
 }

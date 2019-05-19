@@ -149,7 +149,24 @@ class DataBlock
       return false;
 
     BlockPointer blockPointer = blockPointers.get (0);
-    return Utility.matches (XmitReader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
+    return Utility.matches (XmitReader.INMR01, blockPointer.buffer,
+        blockPointer.offset + 1);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getDetails ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    if (blockPointers.size () > 0)
+    {
+      for (BlockPointer blockPointer : blockPointers)
+        text.append (blockPointer + "\n");
+      text.deleteCharAt (text.length () - 1);
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

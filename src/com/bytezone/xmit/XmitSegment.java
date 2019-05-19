@@ -1,23 +1,14 @@
 package com.bytezone.xmit;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-class XmitSegment implements Iterable<BlockPointer>
+class XmitSegment
 //---------------------------------------------------------------------------------//
 {
-  private final byte[] buffer;          // all block pointers refer to this
   private int rawBufferLength;
   private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
-
-  // ---------------------------------------------------------------------------------//
-  XmitSegment (byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.buffer = buffer;
-  }
 
   // ---------------------------------------------------------------------------------//
   public int size ()
@@ -30,12 +21,12 @@ class XmitSegment implements Iterable<BlockPointer>
   public void addBlockPointer (BlockPointer blockPointer)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockPointer.offset + blockPointer.length > buffer.length)
+    if (blockPointer.offset + blockPointer.length > blockPointer.buffer.length)
     {
       // FILE185.XMI / FILE234I
       System.out.println ("invalid block pointer");
       System.out.printf ("%06X  %02X  %06X%n", blockPointer.offset, blockPointer.length,
-          buffer.length);
+          blockPointer.buffer.length);
       return;
     }
     rawBlockPointers.add (blockPointer);
@@ -50,12 +41,21 @@ class XmitSegment implements Iterable<BlockPointer>
     int headerPtr = 0;
     Header header = null;
     DataBlock dataBlock = null;
-    List<DataBlock> dataBlocks = new ArrayList<> ();
 
-    for (BlockPointer rawBlockPointer : rawBlockPointers)
+    List<DataBlock> dataBlocks = new ArrayList<> ();
+    boolean debug = false;
+
+    if (debug)
     {
-      int ptr = rawBlockPointer.offset;
-      int avail = rawBlockPointer.length;
+      System.out.println ("\nCreating data blocks");
+      for (BlockPointer blockPointer : rawBlockPointers)
+        System.out.println (blockPointer);
+    }
+
+    for (BlockPointer blockPointer : rawBlockPointers)
+    {
+      int ptr = blockPointer.offset;
+      int avail = blockPointer.length;
 
       while (avail > 0)
       {
@@ -70,7 +70,7 @@ class XmitSegment implements Iterable<BlockPointer>
 
           if (avail < 12 - headerPtr)
           {
-            System.arraycopy (buffer, ptr, header.buffer, headerPtr, avail);
+            System.arraycopy (blockPointer.buffer, ptr, header.buffer, headerPtr, avail);
             ptr += avail;
             headerPtr += avail;
             avail = 0;
@@ -78,7 +78,7 @@ class XmitSegment implements Iterable<BlockPointer>
           }
 
           int needed = 12 - headerPtr;
-          System.arraycopy (buffer, ptr, header.buffer, headerPtr, needed);
+          System.arraycopy (blockPointer.buffer, ptr, header.buffer, headerPtr, needed);
           ptr += needed;
           avail -= needed;
           headerPtr = 0;
@@ -94,8 +94,8 @@ class XmitSegment implements Iterable<BlockPointer>
         }
 
         int len = Math.min (recLen, avail);
-        BlockPointer dataBlockPointer = new BlockPointer (buffer, ptr, len);
-        dataBlock.add (dataBlockPointer);
+        // BlockPointer dataBlockPointer = new BlockPointer (blockPointer.buffer, ptr, len);
+        dataBlock.add (new BlockPointer (blockPointer.buffer, ptr, len));
         ptr += len;
         avail -= len;
         recLen -= len;
@@ -104,6 +104,13 @@ class XmitSegment implements Iterable<BlockPointer>
 
     if (dataBlocks.size () > 0 && dataBlocks.get (0).getHeader ().isEmpty ())
       System.out.println ("empty header found");
+
+    if (debug)
+    {
+      System.out.println ("\nReturning data blocks");
+      for (DataBlock block : dataBlocks)
+        System.out.println (block);
+    }
 
     return dataBlocks;
   }
@@ -129,17 +136,18 @@ class XmitSegment implements Iterable<BlockPointer>
   }
 
   // ---------------------------------------------------------------------------------//
-  public byte[] getRawBuffer ()                           // contains no headers
+  public byte[] getRawBuffer ()                                 // contains no headers
   // ---------------------------------------------------------------------------------//
   {
     byte[] fullBlock = new byte[rawBufferLength];
     int ptr = 0;
     for (BlockPointer blockPointer : rawBlockPointers)
     {
-      System.arraycopy (buffer, blockPointer.offset, fullBlock, ptr, blockPointer.length);
+      System.arraycopy (blockPointer.buffer, blockPointer.offset, fullBlock, ptr,
+          blockPointer.length);
       ptr += blockPointer.length;
     }
-    assert ptr == rawBufferLength;
+    assert ptr == fullBlock.length;
     return fullBlock;
   }
 
@@ -147,11 +155,11 @@ class XmitSegment implements Iterable<BlockPointer>
   int packBuffer (byte[] dataBuffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    assert buffer.length >= ptr + rawBufferLength;
+    //    assert buffer.length >= ptr + rawBufferLength;
 
     for (BlockPointer blockPointer : rawBlockPointers)
     {
-      System.arraycopy (buffer, blockPointer.offset, dataBuffer, ptr,
+      System.arraycopy (blockPointer.buffer, blockPointer.offset, dataBuffer, ptr,
           blockPointer.length);
       ptr += blockPointer.length;
     }
@@ -164,7 +172,8 @@ class XmitSegment implements Iterable<BlockPointer>
   // ---------------------------------------------------------------------------------//
   {
     BlockPointer blockPointer = rawBlockPointers.get (0);
-    return Utility.matches (XmitReader.INMR01, blockPointer.buffer, blockPointer.offset + 1);
+    return Utility.matches (XmitReader.INMR01, blockPointer.buffer,
+        blockPointer.offset + 1);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -175,13 +184,5 @@ class XmitSegment implements Iterable<BlockPointer>
     BlockPointer blockPointer = rawBlockPointers.get (0);
     return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset,
         rawBufferLength, rawBlockPointers.size ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public Iterator<BlockPointer> iterator ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return rawBlockPointers.iterator ();
   }
 }

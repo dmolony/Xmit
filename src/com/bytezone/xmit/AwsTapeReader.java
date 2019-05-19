@@ -9,20 +9,23 @@ import java.util.List;
 // ---------------------------------------------------------------------------------//
 public class AwsTapeReader
 {
-  private final List<AwsTapeSegment> segments = new ArrayList<> ();
+  private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
+  private final List<AwsTapeDataset> datasets = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public AwsTapeReader (File file)
   // ---------------------------------------------------------------------------------//
   {
     Utility.setCodePage ("CP037");
-    AwsTapeSegment currentSegment = null;
+    AwsTapeDataset currentDataset = null;
+    BlockPointer hdr1 = null;
+    BlockPointer hdr2 = null;
     int tapeMarkCount = 0;
 
     byte[] buffer = readFile (file);
 
     int ptr = 0;
-    int record = 0;
+    //    int record = 0;
 
     while (ptr < buffer.length)
     {
@@ -30,7 +33,7 @@ public class AwsTapeReader
       int prev = Utility.getTwoBytesReversed (buffer, ptr + 2);
       int flag = Utility.getTwoBytesReversed (buffer, ptr + 4);
 
-      record++;
+      //      record++;
       ptr += 6;
       //      System.out.printf ("%,6d  %d  %04X  %04X  %04X%n", record, tapeMarkCount, next,
       //          prev, flag);
@@ -45,7 +48,25 @@ public class AwsTapeReader
       ptr += next;
 
       if (tapeMarkCount == 1)
-        currentSegment.addData (blockPointer);
+      {
+        if (currentDataset == null)
+        {
+          // why is there no dsorg?
+          if (Utility.matches (header, buffer, blockPointer.offset + 9))
+          {
+            currentDataset = new AwsTapeDataset (this, hdr1, hdr2);     // PDS
+            datasets.add (currentDataset);
+          }
+          else
+          {
+            System.out.println ("flat file??");
+            break;
+          }
+          hdr1 = null;
+          hdr2 = null;
+        }
+        currentDataset.addData (blockPointer);
+      }
       else
       {
         String header = blockPointer.getString (0, 4);
@@ -53,18 +74,21 @@ public class AwsTapeReader
         switch (header)
         {
           case "HDR1":
-            currentSegment = new AwsTapeSegment (blockPointer);
-            segments.add (currentSegment);
+            hdr1 = blockPointer;
             tapeMarkCount = 0;
             break;
 
           case "HDR2":
-            currentSegment.addHeader2 (blockPointer);
+            hdr2 = blockPointer;
             break;
 
           case "EOF1":
+            currentDataset.addTrailer (blockPointer);
+            break;
+
           case "EOF2":
-            currentSegment.addTrailer (blockPointer);
+            currentDataset.addTrailer (blockPointer);
+            currentDataset = null;
             break;
 
           case "VOL1":
@@ -77,13 +101,15 @@ public class AwsTapeReader
     }
 
     System.out.println ();
-    for (AwsTapeSegment segment : segments)
+    for (AwsTapeDataset dataset : datasets)
     {
-      System.out.println (segment);
-      System.out.println (segment.header2 ());
+      System.out.println (dataset);
+      System.out.println (dataset.header2 ());
+      dataset.dump2 ();
     }
 
-    segments.get (2).dump ();
+    //    AwsTapeDataset dataset = datasets.get (4);
+    //    dataset.dump2 ();
   }
 
   // ---------------------------------------------------------------------------------//

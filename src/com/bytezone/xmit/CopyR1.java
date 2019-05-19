@@ -15,6 +15,7 @@ public class CopyR1
   private final byte[] buffer;
 
   private final byte unloadFlags;
+  private final int dsorg;
   private final int blksize;
   private final int reclen;
   private final byte recfm;
@@ -33,6 +34,10 @@ public class CopyR1
   private final int trbal;
   private final int zero2;
 
+  private final boolean managed;
+  private final boolean reblockable;
+  private final boolean pdse;
+
   // ---------------------------------------------------------------------------------//
   CopyR1 (byte[] buffer)
   // ---------------------------------------------------------------------------------//
@@ -41,12 +46,13 @@ public class CopyR1
 
     unloadFlags = buffer[0];
     assert Utility.matches (header, buffer, 1);
+    dsorg = Utility.getTwoBytes (buffer, 4);          // 0x0200 = PDS
     blksize = Utility.getTwoBytes (buffer, 6);
     reclen = Utility.getTwoBytes (buffer, 8);
     recfm = buffer[10];
     keylen = buffer[11];
     optcd = buffer[12];
-    smsfg = buffer[13];
+    smsfg = buffer[13];         // includes PDSE flag
     containerBlksize = Utility.getTwoBytes (buffer, 14);
     headerRecords = Utility.getTwoBytes (buffer, 36);
     zero = buffer[38];
@@ -56,6 +62,8 @@ public class CopyR1
     scext = (int) Utility.getValue (buffer, 42, 3);
     scalo = (int) Utility.getFourBytes (buffer, 45);
     lstar = (int) Utility.getValue (buffer, 49, 3);
+
+    //    System.out.printf ("DSORG: %04X%n", dsorg);
 
     if (buffer.length > 52)       // FILE776.XMI/XMCLOAD
     {
@@ -67,6 +75,10 @@ public class CopyR1
       trbal = 0;
       zero2 = 0;
     }
+
+    managed = (smsfg & 0x80) != 0;
+    reblockable = (smsfg & 0x20) != 0;
+    pdse = (smsfg & 0x08) != 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -96,6 +108,7 @@ public class CopyR1
     List<String> lines = new ArrayList<> ();
     String flagsText = isPdse () ? "PDSE" : "PDS";
 
+    lines.add ("-----------------------------------------------------------");
     lines.add (String.format ("Unld flags ...... %02X    %s", unloadFlags, flagsText));
     lines.add (String.format ("Block size ...... %04X  %<,7d", blksize));
     lines.add (String.format ("Record length.... %04X  %<,7d", reclen));
@@ -114,6 +127,7 @@ public class CopyR1
     lines.add (String.format ("Last trk used ... %06X", lstar));
     lines.add (String.format ("Last trk bal .... %04X  %<,7d", trbal));
     lines.add (String.format ("Zero ............ %02X", zero2));
+    lines.add ("-----------------------------------------------------------");
 
     return lines;
   }

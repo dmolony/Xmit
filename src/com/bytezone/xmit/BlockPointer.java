@@ -60,6 +60,7 @@ class BlockPointer
   @Override
   public String toString ()
   {
-    return String.format ("%06X -   %02X    %<3d", offset, length);
+    return String.format ("%06X - %06X:  %s", offset, offset + length - 1,
+        Utility.getHexDump (buffer, offset, 12));
   }
 }

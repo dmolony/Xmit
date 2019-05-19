@@ -88,7 +88,10 @@ public abstract class Dataset
           segment.getRawBufferLength (), total, segment.size ()));
 
       if (count > 500)
+      {
+        text.append ("Incomplete list\n");
         break;
+      }
     }
 
     Utility.removeTrailingNewlines (text);
