@@ -104,6 +104,6 @@ public abstract class Dataset
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s %s", reader.getDisplayName (), disposition);
+    return String.format ("%-20s %s", reader.getDatasetName (), disposition);
   }
 }

@@ -90,7 +90,7 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
       return;
 
     String extra = datasetStatus.isPds () ? "." + datasetStatus.getMemberName () : "";
-    String name = datasetStatus.getReaderFileName () + extra + ".txt";
+    String name = datasetStatus.getReaderDatasetName () + extra + ".txt";
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Save output text to");
@@ -116,13 +116,15 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
     {
       DataFile member = datasetStatus.getFlatFile ();
       buffer = member.getDataBuffer ();
-      fileName = datasetStatus.getReaderFileName () + "." + member.getFileType ().name ();
+      fileName =
+          datasetStatus.getReaderDatasetName () + "." + member.getFileType ().name ();
     }
     else
     {
       buffer = datasetStatus.getMember ().getDataBuffer ();
-      fileName = datasetStatus.getReaderFileName () + "." + datasetStatus.getMemberName ()
-          + "." + datasetStatus.getMember ().getFileType ().name ();
+      fileName =
+          datasetStatus.getReaderDatasetName () + "." + datasetStatus.getMemberName ()
+              + "." + datasetStatus.getMember ().getFileType ().name ();
     }
 
     FileChooser fileChooser = new FileChooser ();
@@ -195,7 +197,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   {
     if (datasetStatus.isPs ())         // flat file
     {
-      extractMenuItem.setText ("Extract " + datasetStatus.getReaderFileName () + "...");
+      extractMenuItem
+          .setText ("Extract " + datasetStatus.getReaderDatasetName () + "...");
       extractMenuItem.setDisable (false);
     }
     else if (datasetStatus.isPds () && datasetStatus.hasCatalogEntry ())

@@ -194,7 +194,7 @@ public class XmitReader extends Reader
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getDisplayName ()
+  public String getDatasetName ()
   // ---------------------------------------------------------------------------------//
   {
     return getControlRecordString (TextUnit.INMDSNAM);

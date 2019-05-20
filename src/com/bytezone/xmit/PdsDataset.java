@@ -331,7 +331,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return reader.getDisplayName ();
+    return reader.getDatasetName ();
   }
 
   // ---------------------------------------------------------------------------------//

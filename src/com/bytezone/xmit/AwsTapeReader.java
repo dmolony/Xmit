@@ -108,7 +108,7 @@ public class AwsTapeReader extends Reader
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getDisplayName ()
+  public String getDatasetName ()
   // ---------------------------------------------------------------------------------//
   {
     return "bugger me";
