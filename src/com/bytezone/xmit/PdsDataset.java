@@ -122,7 +122,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
     while (segmentNbr < segments.size ())
     {
-      XmitSegment segment = segments.get (segmentNbr++);
+      Segment segment = segments.get (segmentNbr++);
       if (!addCatalogEntries (segment.getRawBuffer (), catalogMap))
         break;
     }
@@ -131,11 +131,11 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     List<DataBlock> dataBlocks = new ArrayList<> ();
     while (segmentNbr < segments.size ())
     {
-      XmitSegment segment = segments.get (segmentNbr++);
+      Segment segment = segments.get (segmentNbr++);
       dataBlocks.addAll (segment.createDataBlocks ());
     }
 
-    for (XmitSegment segment : segments)
+    for (Segment segment : segments)
     {
       System.out.println (Utility.getHexDump (segment.getRawBuffer (), 0, 12));
 
@@ -331,7 +331,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return reader.getFileName ();
+    return reader.getDisplayName ();
   }
 
   // ---------------------------------------------------------------------------------//

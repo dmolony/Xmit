@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-public class FlatFile extends DataFile implements Iterable<XmitSegment>
-//---------------------------------------------------------------------------------//
+public class FlatFile extends DataFile implements Iterable<Segment>
+// ---------------------------------------------------------------------------------//
 {
-  private final List<XmitSegment> segments;                        // PS
+  private final List<Segment> segments;                        // PS
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -26,7 +26,7 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
   // addSegment
   // ---------------------------------------------------------------------------------//
 
-  void addSegment (XmitSegment segment)
+  void addSegment (Segment segment)
   {
     segments.add (segment);
     incrementDataLength (segment.getRawBufferLength ());
@@ -42,7 +42,7 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
     byte[] buffer = new byte[getDataLength ()];
     int ptr = 0;
 
-    for (XmitSegment segment : segments)
+    for (Segment segment : segments)
       ptr = segment.packBuffer (buffer, ptr);
 
     assert ptr == getDataLength ();
@@ -60,8 +60,8 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
       return getDataBuffer ();
 
     int length = 0;
-    List<XmitSegment> tmpSegments = new ArrayList<> ();
-    for (XmitSegment segment : segments)
+    List<Segment> tmpSegments = new ArrayList<> ();
+    for (Segment segment : segments)
     {
       tmpSegments.add (segment);
       length += segment.getRawBufferLength ();
@@ -72,7 +72,7 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
     byte[] buffer = new byte[length];
     int ptr = 0;
 
-    for (XmitSegment segment : tmpSegments)
+    for (Segment segment : tmpSegments)
       ptr = segment.packBuffer (buffer, ptr);
 
     assert ptr == length;
@@ -109,7 +109,7 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
   {
     int count = 0;
     int max = 500;
-    for (XmitSegment segment : segments)
+    for (Segment segment : segments)
     {
       byte[] buffer = segment.getRawBuffer ();
       if (Utility.isBinary (buffer))
@@ -232,7 +232,7 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
 
     text.append ("\n    #   Offset     Data     Data     Ptr\n");
     text.append ("  ----  ------    ------   ------    ---\n");
-    for (XmitSegment segment : segments)                // PS
+    for (Segment segment : segments)                // PS
     {
       total += segment.getRawBufferLength ();
       text.append (String.format ("   %3d  %s%n", count++, segment));
@@ -248,7 +248,7 @@ public class FlatFile extends DataFile implements Iterable<XmitSegment>
   // ---------------------------------------------------------------------------------//
 
   @Override
-  public Iterator<XmitSegment> iterator ()
+  public Iterator<Segment> iterator ()
   {
     return segments.iterator ();
   }

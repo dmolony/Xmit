@@ -6,7 +6,7 @@ import java.util.List;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.FlatFile;
 import com.bytezone.xmit.PsDataset;
-import com.bytezone.xmit.XmitReader;
+import com.bytezone.xmit.Reader;
 
 import javafx.scene.input.KeyCode;
 
@@ -31,7 +31,7 @@ public class CommentsTab extends XmitTextTab implements TreeItemSelectionListene
     if (datasetStatus == null || !datasetStatus.hasDataset ())
       return lines;
 
-    XmitReader reader = datasetStatus.getReader ();
+    Reader reader = datasetStatus.getReader ();
 
     if (reader.size () > 1)
     {

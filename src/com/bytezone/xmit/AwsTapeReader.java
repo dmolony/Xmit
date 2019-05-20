@@ -1,13 +1,12 @@
 package com.bytezone.xmit;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-public class AwsTapeReader
+public class AwsTapeReader extends Reader
+//---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
   private final List<AwsTapeDataset> datasets = new ArrayList<> ();
@@ -16,6 +15,8 @@ public class AwsTapeReader
   public AwsTapeReader (File file)
   // ---------------------------------------------------------------------------------//
   {
+    super (file.getName (), 0);
+
     Utility.setCodePage ("CP037");
     AwsTapeDataset currentDataset = null;
     BlockPointer hdr1 = null;
@@ -25,7 +26,6 @@ public class AwsTapeReader
     byte[] buffer = readFile (file);
 
     int ptr = 0;
-    //    int record = 0;
 
     while (ptr < buffer.length)
     {
@@ -33,10 +33,7 @@ public class AwsTapeReader
       int prev = Utility.getTwoBytesReversed (buffer, ptr + 2);
       int flag = Utility.getTwoBytesReversed (buffer, ptr + 4);
 
-      //      record++;
       ptr += 6;
-      //      System.out.printf ("%,6d  %d  %04X  %04X  %04X%n", record, tapeMarkCount, next,
-      //          prev, flag);
 
       if (next == 0)            // tape mark
       {
@@ -105,26 +102,16 @@ public class AwsTapeReader
     {
       System.out.println (dataset);
       System.out.println (dataset.header2 ());
-      dataset.dump2 ();
+      dataset.createDataBlocks ();
     }
-
-    //    AwsTapeDataset dataset = datasets.get (4);
-    //    dataset.dump2 ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private byte[] readFile (File file)
+  @Override
+  public String getDisplayName ()
   // ---------------------------------------------------------------------------------//
   {
-    try
-    {
-      return Files.readAllBytes (file.toPath ());
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-      return null;
-    }
+    return "bugger me";
   }
 
   // from FILE533.XMI -> M370VTT2
@@ -152,9 +139,11 @@ public class AwsTapeReader
   **                             Initialize the output buffer **
   **                              location.                   **
    */
+
+  // ---------------------------------------------------------------------------------//
   public static void main (String[] args)
+  // ---------------------------------------------------------------------------------//
   {
-    File file = new File ("/Users/denismolony/Downloads/rpf171.aws");
-    new AwsTapeReader (file);
+    new AwsTapeReader (new File ("/Users/denismolony/Downloads/rpf171.aws"));
   }
 }

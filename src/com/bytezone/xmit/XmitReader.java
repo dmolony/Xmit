@@ -1,8 +1,6 @@
 package com.bytezone.xmit;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,36 +13,31 @@ import com.bytezone.xmit.textunit.TextUnitNumber;
 import com.bytezone.xmit.textunit.TextUnitString;
 
 // ---------------------------------------------------------------------------------//
-public class XmitReader
+public class XmitReader extends Reader
+//---------------------------------------------------------------------------------//
 {
   static final byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
                                  (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
 
-  private final String fileName;
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
-  private final List<Dataset> datasets = new ArrayList<> ();
 
   private Dataset activeDataset;
   private int files;
-  private boolean incomplete;
-  private final int level;
 
   // ---------------------------------------------------------------------------------//
   public XmitReader (File file)
   // ---------------------------------------------------------------------------------//
   {
-    fileName = file.getName ();
-    level = 0;
+    super (file.getName (), 0);
 
-    read (getBuffer (file));
+    read (readFile (file));
   }
 
   // ---------------------------------------------------------------------------------//
   public XmitReader (DataFile dataFile)
   // ---------------------------------------------------------------------------------//
   {
-    fileName = dataFile.getName ();
-    level = dataFile.getLevel ();
+    super (dataFile.getName (), dataFile.getLevel ());
 
     read (dataFile.getDataBuffer ());
   }
@@ -142,45 +135,8 @@ public class XmitReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public int size ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return datasets.size ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getLevel ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return level;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isIncomplete ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return incomplete;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public List<Dataset> getDatasets ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return datasets;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  // getActiveDataset
-  // ---------------------------------------------------------------------------------//
-
   public Dataset getActiveDataset ()
+  // ---------------------------------------------------------------------------------//
   {
     return activeDataset;
   }
@@ -237,7 +193,8 @@ public class XmitReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getFileName ()
+  @Override
+  public String getDisplayName ()
   // ---------------------------------------------------------------------------------//
   {
     return getControlRecordString (TextUnit.INMDSNAM);
@@ -254,20 +211,5 @@ public class XmitReader
         return ((TextUnitString) textUnit).getString ();
     }
     return "";
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private byte[] getBuffer (File file)
-  // ---------------------------------------------------------------------------------//
-  {
-    try
-    {
-      return Files.readAllBytes (file.toPath ());
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-      return null;
-    }
   }
 }

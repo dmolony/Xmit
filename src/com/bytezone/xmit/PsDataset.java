@@ -26,9 +26,9 @@ public class PsDataset extends Dataset
   // ---------------------------------------------------------------------------------//
   {
     flatFile = new FlatFile (this, disposition);
-    flatFile.setName (reader.getFileName ());
+    flatFile.setName (reader.getDisplayName ());
 
-    for (XmitSegment segment : segments)
+    for (Segment segment : segments)
       flatFile.addSegment (segment);
   }
 }

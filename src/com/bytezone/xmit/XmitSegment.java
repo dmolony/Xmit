@@ -4,36 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-class XmitSegment
-//---------------------------------------------------------------------------------//
+class XmitSegment extends Segment
+// ---------------------------------------------------------------------------------//
 {
-  private int rawBufferLength;
-  private final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public int size ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return rawBlockPointers.size ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public void addBlockPointer (BlockPointer blockPointer)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (blockPointer.offset + blockPointer.length > blockPointer.buffer.length)
-    {
-      // FILE185.XMI / FILE234I
-      System.out.println ("invalid block pointer");
-      System.out.printf ("%06X  %02X  %06X%n", blockPointer.offset, blockPointer.length,
-          blockPointer.buffer.length);
-      return;
-    }
-    rawBlockPointers.add (blockPointer);
-    rawBufferLength += blockPointer.length;               // used for non-data blocks
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   List<DataBlock> createDataBlocks ()                     // used only for data blocks
   // ---------------------------------------------------------------------------------//
   {
@@ -116,26 +92,7 @@ class XmitSegment
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getRawBufferLength ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return rawBufferLength;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  byte[] getEightBytes ()
-  // ---------------------------------------------------------------------------------//
-  {
-    byte[] eightBytes = new byte[8];
-
-    BlockPointer blockPointer = rawBlockPointers.get (0);
-    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0,
-        eightBytes.length);
-
-    return eightBytes;
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   public byte[] getRawBuffer ()                                 // contains no headers
   // ---------------------------------------------------------------------------------//
   {
@@ -152,11 +109,10 @@ class XmitSegment
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   int packBuffer (byte[] dataBuffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    //    assert buffer.length >= ptr + rawBufferLength;
-
     for (BlockPointer blockPointer : rawBlockPointers)
     {
       System.arraycopy (blockPointer.buffer, blockPointer.offset, dataBuffer, ptr,
@@ -168,6 +124,7 @@ class XmitSegment
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   boolean isXmit ()
   // ---------------------------------------------------------------------------------//
   {
@@ -178,11 +135,15 @@ class XmitSegment
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
+  byte[] getEightBytes ()
   // ---------------------------------------------------------------------------------//
   {
+    byte[] eightBytes = new byte[8];
+
     BlockPointer blockPointer = rawBlockPointers.get (0);
-    return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset,
-        rawBufferLength, rawBlockPointers.size ());
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0,
+        eightBytes.length);
+
+    return eightBytes;
   }
 }

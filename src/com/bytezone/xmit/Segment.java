@@ -3,100 +3,62 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.textunit.Dsorg.Org;
-
 // ---------------------------------------------------------------------------------//
-public abstract class Dataset
-//---------------------------------------------------------------------------------//
+public abstract class Segment
+// ---------------------------------------------------------------------------------//
 {
-  final Reader reader;
-  final Disposition disposition;
-
-  final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;
+  final List<BlockPointer> rawBlockPointers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  Dataset (Reader reader, Disposition disposition)
+  public int size ()
   // ---------------------------------------------------------------------------------//
   {
-    this.reader = reader;
-    this.disposition = disposition;
+    return rawBlockPointers.size ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public Reader getReader ()
+  abstract List<DataBlock> createDataBlocks ();           // used only for data blocks
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  abstract public byte[] getRawBuffer ();                      // contains no headers
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  abstract byte[] getEightBytes ();
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  abstract int packBuffer (byte[] dataBuffer, int ptr);
+
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  abstract boolean isXmit ();
+  // ---------------------------------------------------------------------------------//
+
+  // ---------------------------------------------------------------------------------//
+  public void addBlockPointer (BlockPointer blockPointer)
   // ---------------------------------------------------------------------------------//
   {
-    return reader;
+    if (blockPointer.offset + blockPointer.length > blockPointer.buffer.length)
+    {
+      // FILE185.XMI / FILE234I
+      System.out.println ("invalid block pointer");
+      System.out.printf ("%06X  %02X  %06X%n", blockPointer.offset, blockPointer.length,
+          blockPointer.buffer.length);
+      return;
+    }
+    rawBlockPointers.add (blockPointer);
+    rawBufferLength += blockPointer.length;               // used for non-data blocks
   }
 
   // ---------------------------------------------------------------------------------//
-  public Disposition getDisposition ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return disposition;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isPhysicalSequential ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return disposition.dsorg == Org.PS;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public boolean isPartitionedDataset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return disposition.dsorg == Org.PDS;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  int getRawBufferLength ()
+  public int getRawBufferLength ()
   // ---------------------------------------------------------------------------------//
   {
     return rawBufferLength;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  abstract void allocateSegments ();
-  // ---------------------------------------------------------------------------------//
-
-  // ---------------------------------------------------------------------------------//
-  void addSegment (Segment segment)
-  // ---------------------------------------------------------------------------------//
-  {
-    segments.add (segment);
-    rawBufferLength += segment.getRawBufferLength ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String listSegments ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    text.append (String.format ("File contains %,d bytes in %,d Segments%n%n",
-        rawBufferLength, segments.size ()));
-
-    int count = 0;
-    int total = 0;
-    for (Segment segment : segments)
-    {
-      total += segment.getRawBufferLength ();
-      text.append (String.format ("%,5d  %,7d  %,7d  %3d%n", count++,
-          segment.getRawBufferLength (), total, segment.size ()));
-
-      if (count > 500)
-      {
-        text.append ("Incomplete list\n");
-        break;
-      }
-    }
-
-    Utility.removeTrailingNewlines (text);
-
-    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -104,6 +66,8 @@ public abstract class Dataset
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s %s", reader.getDisplayName (), disposition);
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset,
+        rawBufferLength, rawBlockPointers.size ());
   }
 }

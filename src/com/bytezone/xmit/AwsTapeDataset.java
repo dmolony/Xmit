@@ -2,10 +2,15 @@ package com.bytezone.xmit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 // ---------------------------------------------------------------------------------//
 class AwsTapeDataset
+//---------------------------------------------------------------------------------//
 {
+  private static final int DIR_BLOCK_LENGTH = 0x114;
+
   String name;
   String serialNumber;
   String volSeq;
@@ -41,6 +46,11 @@ class AwsTapeDataset
   private final List<BlockPointer> blockPointers = new ArrayList<> ();
   private final List<BlockPointer> headers = new ArrayList<> ();
   private final List<BlockPointer> trailers = new ArrayList<> ();
+
+  private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
+
+  private CopyR1 copyR1;
+  private CopyR2 copyR2;
 
   // ---------------------------------------------------------------------------------//
   AwsTapeDataset (AwsTapeReader reader, BlockPointer hdr1, BlockPointer hdr2)
@@ -122,29 +132,52 @@ class AwsTapeDataset
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  void allocateSegments ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int segmentNbr = 0;
+
+    // convert first two DataBlock entries
+    copyR1 = new CopyR1 (blockPointers.get (segmentNbr++).getData (8));
+    copyR2 = new CopyR2 (blockPointers.get (segmentNbr++).getData (8));
+    disposition.setPdse (copyR1.isPdse ());
+
+    // read catalog entries
+    Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
+    while (segmentNbr < blockPointers.size ())
+    {
+      BlockPointer segment = blockPointers.get (segmentNbr++);
+      if (!addCatalogEntries (segment.getData (8), catalogMap))
+        break;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   List<DataBlock> createDataBlocks ()                     // used only for data blocks
   // ---------------------------------------------------------------------------------//
   {
     // convert BlockPointers to DataBlocks
     List<DataBlock> dataBlocks = new ArrayList<> ();
+    int count = 0;
+    for (int i = 2; i < blockPointers.size (); i++)
+    {
+      BlockPointer blockPointer = blockPointers.get (i);
+
+      int ptr = blockPointer.offset + 8;
+      if (blockPointer.buffer[ptr + 9] == 0x08)          // skip catalog entries
+        continue;
+
+      while (ptr < blockPointer.offset + blockPointer.length)
+      {
+        System.out.printf ("%3d  %s%n", ++count,
+            Utility.getHexDump (blockPointer.buffer, ptr, 12));
+        int len = Utility.getTwoBytes (blockPointer.buffer, ptr + 10);
+        ptr += len + 12;
+      }
+    }
     return dataBlocks;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  byte[] getRawBuffer ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    byte[] buffer = new byte[dataLength - blockPointers.size () * 8];
-  //    int ptr = 0;
-  //    for (BlockPointer blockPointer : blockPointers)
-  //    {
-  //      int len = blockPointer.length - 8;
-  //      System.arraycopy (blockPointer.buffer, blockPointer.offset + 8, buffer, ptr, len);
-  //      ptr += len;
-  //    }
-  //    assert ptr == buffer.length;
-  //    return buffer;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   void dump ()
@@ -158,32 +191,64 @@ class AwsTapeDataset
     for (int i = 2; i < blockPointers.size (); i++)
     {
       BlockPointer blockPointer = blockPointers.get (i);
-      byte[] buffer = blockPointer.getData (8);
-      System.out.println (Utility.getHexDump (buffer, 0, 12));
+      //      byte[] buffer = blockPointer.getData (8);
+      System.out.println (
+          Utility.getHexDump (blockPointer.buffer, blockPointer.offset + 8, 12));
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  void dump2 ()
+  private boolean addCatalogEntries (byte[] buffer,
+      Map<Long, List<CatalogEntry>> catalogMap)
   // ---------------------------------------------------------------------------------//
   {
-    int count = 0;
-    for (int i = 2; i < blockPointers.size (); i++)
+    int ptr1 = 0;
+    while (ptr1 + 22 < buffer.length)
     {
-      BlockPointer blockPointer = blockPointers.get (i);
+      int ptr2 = ptr1 + 22;
 
-      byte[] buffer = blockPointer.getData (8);
-      if (buffer[9] == 0x08)          // skip catalog entries
-        continue;
-      int ptr = 0;
-
-      while (ptr < buffer.length)
+      while (true)
       {
-        System.out.printf ("%3d  %s%n", ++count, Utility.getHexDump (buffer, ptr, 12));
-        int len = Utility.getTwoBytes (buffer, ptr + 10);
-        ptr += len + 12;
+        if (buffer[ptr2] == (byte) 0xFF)
+          return false;                                     // member list finished
+
+        CatalogEntry catalogEntry = CatalogEntry.instanceOf (buffer, ptr2);
+        catalogEntries.add (catalogEntry);
+        addToMap (catalogEntry, catalogMap);
+
+        // check for last member
+        if (Utility.matches (buffer, ptr2, buffer, ptr1 + 12, 8))
+          break;
+
+        ptr2 += catalogEntry.getEntryLength ();
       }
+
+      ptr1 += DIR_BLOCK_LENGTH;
     }
+
+    return true;                                            // member list not finished
+  }
+
+  // ---------------------------------------------------------------------------------//
+  // addToMap
+  // ---------------------------------------------------------------------------------//
+
+  private void addToMap (CatalogEntry catalogEntry,
+      Map<Long, List<CatalogEntry>> catalogMap)
+  {
+    long ttr = catalogEntry.getTtr ();
+    List<CatalogEntry> catalogEntriesTtr = catalogMap.get (ttr);
+
+    if (catalogEntriesTtr == null)
+    {
+      catalogEntriesTtr = new ArrayList<> ();
+      catalogMap.put (ttr, catalogEntriesTtr);
+    }
+
+    if (catalogEntry.isAlias ())
+      catalogEntriesTtr.add (catalogEntry);       // retain original sequence
+    else
+      catalogEntriesTtr.add (0, catalogEntry);    // insert at the head of the list
   }
 
   // ---------------------------------------------------------------------------------//

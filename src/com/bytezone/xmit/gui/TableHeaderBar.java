@@ -1,7 +1,7 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.XmitReader;
+import com.bytezone.xmit.Reader;
 
 import javafx.scene.paint.Color;
 
@@ -29,8 +29,8 @@ class TableHeaderBar extends HeaderBar
     }
     else
     {
-      XmitReader reader = datasetStatus.getReader ();
-      leftLabel.setText (reader.getFileName ());
+      Reader reader = datasetStatus.getReader ();
+      leftLabel.setText (reader.getDisplayName ());
       leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
     }

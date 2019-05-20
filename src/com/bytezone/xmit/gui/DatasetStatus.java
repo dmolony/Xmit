@@ -34,7 +34,7 @@ class DatasetStatus
     if (dataset != null)
       if (dataset.isPartitionedDataset ())
       {
-        String datasetName = dataset.getReader ().getFileName ();
+        String datasetName = dataset.getReader ().getDisplayName ();
         if (!datasets.containsKey (datasetName))
           datasets.put (datasetName, (PdsDataset) dataset);
       }
@@ -145,7 +145,7 @@ class DatasetStatus
   }
 
   //----------------------------------------------------------------------------------- //
-  XmitReader getReader ()
+  Reader getReader ()
   //----------------------------------------------------------------------------------- //
   {
     return dataset.getReader ();
@@ -200,7 +200,7 @@ class DatasetStatus
   String getReaderFileName ()
   //----------------------------------------------------------------------------------- //
   {
-    return dataset.getReader ().getFileName ();
+    return dataset.getReader ().getDisplayName ();
   }
 
   //----------------------------------------------------------------------------------- //

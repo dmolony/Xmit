@@ -8,6 +8,7 @@ import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.LoadModule;
 import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.XmitReader;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
@@ -35,7 +36,8 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
     if (datasetStatus == null || !datasetStatus.hasDataset ())
       return lines;
 
-    for (ControlRecord controlRecord : datasetStatus.getReader ().getControlRecords ())
+    for (ControlRecord controlRecord : ((XmitReader) datasetStatus.getReader ())
+        .getControlRecords ())
       lines.add (controlRecord.toString ());
 
     if (datasetStatus.isPds ())
