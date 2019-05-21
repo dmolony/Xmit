@@ -7,9 +7,9 @@ import java.util.List;
 import com.bytezone.xmit.Utility.FileType;
 import com.bytezone.xmit.textunit.ControlRecord;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public abstract class DataFile implements Comparable<DataFile>
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private String name = "";
   private final Disposition disposition;

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 // ---------------------------------------------------------------------------------//
-class AwsTapeDataset
+class AwsTapeDataset extends Dataset
 //---------------------------------------------------------------------------------//
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
@@ -56,6 +56,7 @@ class AwsTapeDataset
   AwsTapeDataset (AwsTapeReader reader, BlockPointer hdr1, BlockPointer hdr2)
   // ---------------------------------------------------------------------------------//
   {
+    super (reader, null);       // disposition???
     this.reader = reader;
     addHeader1 (hdr1);
     addHeader2 (hdr2);
@@ -132,7 +133,7 @@ class AwsTapeDataset
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
+  @Override
   void allocateSegments ()
   // ---------------------------------------------------------------------------------//
   {
@@ -145,39 +146,48 @@ class AwsTapeDataset
 
     // read catalog entries
     Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
-    while (segmentNbr < blockPointers.size ())
+    while (segmentNbr < segments.size ())
     {
-      BlockPointer segment = blockPointers.get (segmentNbr++);
-      if (!addCatalogEntries (segment.getData (8), catalogMap))
+      Segment segment = segments.get (segmentNbr++);
+      //      BlockPointer segment = blockPointers.get (segmentNbr++);
+      if (!addCatalogEntries (segment.getRawBuffer (), catalogMap))
         break;
     }
-  }
 
-  // ---------------------------------------------------------------------------------//
-  List<DataBlock> createDataBlocks ()                     // used only for data blocks
-  // ---------------------------------------------------------------------------------//
-  {
-    // convert BlockPointers to DataBlocks
+    // read data blocks
     List<DataBlock> dataBlocks = new ArrayList<> ();
-    int count = 0;
-    for (int i = 2; i < blockPointers.size (); i++)
+    while (segmentNbr < segments.size ())
     {
-      BlockPointer blockPointer = blockPointers.get (i);
-
-      int ptr = blockPointer.offset + 8;
-      if (blockPointer.buffer[ptr + 9] == 0x08)          // skip catalog entries
-        continue;
-
-      while (ptr < blockPointer.offset + blockPointer.length)
-      {
-        System.out.printf ("%3d  %s%n", ++count,
-            Utility.getHexDump (blockPointer.buffer, ptr, 12));
-        int len = Utility.getTwoBytes (blockPointer.buffer, ptr + 10);
-        ptr += len + 12;
-      }
+      Segment segment = segments.get (segmentNbr++);
+      dataBlocks.addAll (segment.createDataBlocks ());
     }
-    return dataBlocks;
   }
+
+  // ---------------------------------------------------------------------------------//
+  //  List<DataBlock> createDataBlocks ()                     // used only for data blocks
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    // convert BlockPointers to DataBlocks
+  //    List<DataBlock> dataBlocks = new ArrayList<> ();
+  //    int count = 0;
+  //    for (int i = 2; i < blockPointers.size (); i++)
+  //    {
+  //      BlockPointer blockPointer = blockPointers.get (i);
+  //
+  //      int ptr = blockPointer.offset + 8;
+  //      if (blockPointer.buffer[ptr + 9] == 0x08)          // skip catalog entries
+  //        continue;
+  //
+  //      while (ptr < blockPointer.offset + blockPointer.length)
+  //      {
+  //        System.out.printf ("%3d  %s%n", ++count,
+  //            Utility.getHexDump (blockPointer.buffer, ptr, 12));
+  //        int len = Utility.getTwoBytes (blockPointer.buffer, ptr + 10);
+  //        ptr += len + 12;
+  //      }
+  //    }
+  //    return dataBlocks;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   void dump ()
@@ -202,7 +212,7 @@ class AwsTapeDataset
       Map<Long, List<CatalogEntry>> catalogMap)
   // ---------------------------------------------------------------------------------//
   {
-    int ptr1 = 0;
+    int ptr1 = 8;                             // skip first 8 bytes - RDW etc
     while (ptr1 + 22 < buffer.length)
     {
       int ptr2 = ptr1 + 22;

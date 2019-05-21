@@ -190,7 +190,7 @@ class DatasetStatus
   }
 
   //----------------------------------------------------------------------------------- //
-  String getReaderName ()
+  String getReaderFileName ()
   //----------------------------------------------------------------------------------- //
   {
     return dataset.getReader ().getFileName ();

@@ -3,9 +3,9 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class XmitSegment extends Segment
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
 
   // ---------------------------------------------------------------------------------//
@@ -70,7 +70,6 @@ class XmitSegment extends Segment
         }
 
         int len = Math.min (recLen, avail);
-        // BlockPointer dataBlockPointer = new BlockPointer (blockPointer.buffer, ptr, len);
         dataBlock.add (new BlockPointer (blockPointer.buffer, ptr, len));
         ptr += len;
         avail -= len;
@@ -125,16 +124,6 @@ class XmitSegment extends Segment
 
   // ---------------------------------------------------------------------------------//
   @Override
-  boolean isXmit ()
-  // ---------------------------------------------------------------------------------//
-  {
-    BlockPointer blockPointer = rawBlockPointers.get (0);
-    return Utility.matches (XmitReader.INMR01, blockPointer.buffer,
-        blockPointer.offset + 1);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   byte[] getEightBytes ()
   // ---------------------------------------------------------------------------------//
   {
@@ -145,5 +134,15 @@ class XmitSegment extends Segment
         eightBytes.length);
 
     return eightBytes;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  boolean isXmit ()
+  // ---------------------------------------------------------------------------------//
+  {
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    return Utility.matches (XmitReader.INMR01, blockPointer.buffer,
+        blockPointer.offset + 1);
   }
 }

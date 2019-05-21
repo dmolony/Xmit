@@ -115,7 +115,7 @@ class FileTreeItem extends TreeItem<XmitFile>
 
     if (dataset.isPartitionedDataset ())
     {
-      List<PdsMember> members = ((PdsDataset) dataset).getXmitMembers ();
+      List<PdsMember> members = ((PdsDataset) dataset).getPdsMembers ();
       if (members.size () > 0)
       {
         isLeaf = false;

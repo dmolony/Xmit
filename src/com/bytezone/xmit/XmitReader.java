@@ -12,9 +12,9 @@ import com.bytezone.xmit.textunit.TextUnit;
 import com.bytezone.xmit.textunit.TextUnitNumber;
 import com.bytezone.xmit.textunit.TextUnitString;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public class XmitReader extends Reader
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   static final byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
                                  (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
@@ -210,6 +210,7 @@ public class XmitReader extends Reader
       if (textUnit != null && textUnit instanceof TextUnitString)
         return ((TextUnitString) textUnit).getString ();
     }
+
     return "";
   }
 }

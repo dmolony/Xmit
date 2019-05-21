@@ -9,9 +9,9 @@ import java.util.TreeMap;
 
 import com.bytezone.xmit.CatalogEntry.ModuleType;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public class PdsMember extends DataFile implements Iterable<DataBlock>
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private final List<DataBlock> dataBlocks;                    // PDS & PDS/E
   private final List<DataBlock> extraDataBlocks;               // PDSE only

@@ -6,21 +6,21 @@ import com.bytezone.xmit.CatalogEntry.ModuleType;
 
 // useful: https://stackoverflow.com/questions/28929563/
 // how-to-manipulate-the-result-of-a-future-in-javafx
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  private final List<PdsMember> xmitMembers = new ArrayList<> ();
+  private final List<PdsMember> pdsMembers = new ArrayList<> ();
   private final Map<String, Filter> filterList = new HashMap<> ();
 
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
   // ---------------------------------------------------------------------------------//
-  PdsDataset (XmitReader reader, Disposition disposition)
+  PdsDataset (Reader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
   {
     super (reader, disposition);
@@ -65,10 +65,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<PdsMember> getXmitMembers ()
+  public List<PdsMember> getPdsMembers ()
   // ---------------------------------------------------------------------------------//
   {
-    return xmitMembers;
+    return pdsMembers;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -138,7 +138,6 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     for (Segment segment : segments)
     {
       System.out.println (Utility.getHexDump (segment.getRawBuffer (), 0, 12));
-
     }
 
     // catalogMap : list of all CatalogEntries that share a TTL, in TTL sequence
@@ -173,7 +172,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       }
 
       if (member.isXmit ())
-        xmitMembers.add (member);       // should these be CatalogEntry?
+        pdsMembers.add (member);       // should these be CatalogEntry?
     }
 
     // FILE182.UTILXMIT contains REV38 which is flagged as an alias of REVIEW, but
@@ -315,7 +314,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 
   // ---------------------------------------------------------------------------------//
   //  public int memberIndex (String memberName)
-  //  // ---------------------------------------------------------------------------------//
+  // ---------------------------------------------------------------------------------//
   //  {
   //    int index = 0;
   //    for (CatalogEntry catalogEntry : catalogEntries)

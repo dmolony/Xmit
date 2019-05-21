@@ -6,7 +6,7 @@ import java.util.List;
 
 // ---------------------------------------------------------------------------------//
 public class AwsTapeReader extends Reader
-//---------------------------------------------------------------------------------//
+// ---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
   private final List<AwsTapeDataset> datasets = new ArrayList<> ();
@@ -17,13 +17,19 @@ public class AwsTapeReader extends Reader
   {
     super (file.getName (), 0);
 
+    read (readFile (file));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void read (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
     Utility.setCodePage ("CP037");
+
     AwsTapeDataset currentDataset = null;
     BlockPointer hdr1 = null;
     BlockPointer hdr2 = null;
     int tapeMarkCount = 0;
-
-    byte[] buffer = readFile (file);
 
     int ptr = 0;
 
@@ -102,7 +108,7 @@ public class AwsTapeReader extends Reader
     {
       System.out.println (dataset);
       System.out.println (dataset.header2 ());
-      dataset.createDataBlocks ();
+      //      dataset.createDataBlocks ();
     }
   }
 

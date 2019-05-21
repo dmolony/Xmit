@@ -2,9 +2,9 @@ package com.bytezone.xmit;
 
 import com.bytezone.xmit.Utility.FileType;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public abstract class CatalogEntry
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private PdsMember member;             // contains DataBlocks
   private String aliasName = "";        // member we are an alias of

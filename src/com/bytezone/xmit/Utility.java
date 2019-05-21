@@ -18,9 +18,9 @@ import com.bytezone.xmit.gui.XmitApp;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public class Utility
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   static final String nameStart = "[A-Z@$#]";
   static final String validChar = "[A-Z0-9@$#]";

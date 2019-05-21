@@ -50,7 +50,7 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
       lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
-      lines.add (String.format ("%s Catalog Blocks:", datasetStatus.getReaderName ()));
+      lines.add (String.format ("%s Catalog Blocks:", datasetStatus.getReaderFileName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
