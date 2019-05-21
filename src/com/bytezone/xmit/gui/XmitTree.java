@@ -17,9 +17,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-// ---------------------------------------------------------------------------------//
-class XmitTree extends TreeView<XmitFile> implements FontChangeListener, SaveState
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
+class XmitTree extends TreeView<XmitFile>                                             //
+    implements FontChangeListener, SaveState
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";

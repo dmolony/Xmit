@@ -37,9 +37,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class FontManager implements SaveState
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_FONT_NAME = "FontName";
   private static final String PREFS_FONT_SIZE = "FontSize";

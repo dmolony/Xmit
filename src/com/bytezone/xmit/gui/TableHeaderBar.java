@@ -5,10 +5,10 @@ import com.bytezone.xmit.Reader;
 
 import javafx.scene.paint.Color;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class TableHeaderBar extends HeaderBar
     implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private DatasetStatus datasetStatus;
   private FilterStatus filterStatus;

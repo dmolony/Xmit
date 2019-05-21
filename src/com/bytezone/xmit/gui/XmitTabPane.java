@@ -12,9 +12,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 
-// ---------------------------------------------------------------------------------//
-abstract class XmitTabPane extends TabPane implements FontChangeListener, SaveState
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
+abstract class XmitTabPane extends TabPane                                            //
+    implements FontChangeListener, SaveState
+// -----------------------------------------------------------------------------------//
 {
   private final String PREFS_LAST_TAB;
 

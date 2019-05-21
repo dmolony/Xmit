@@ -13,9 +13,9 @@ import com.bytezone.xmit.*;
 
 import javafx.scene.control.Alert.AlertType;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class XmitFile
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit");
   private static final List<String> compressionSuffixes = Arrays.asList ("zip");
@@ -121,7 +121,8 @@ class XmitFile
     if (reader != null)
     {
       Dataset dataset = reader.getActiveDataset ();
-      if (dataset.isPartitionedDataset () && ((PdsDataset) dataset).getPdsMembers ().size () > 0)
+      if (dataset.isPartitionedDataset ()
+          && ((PdsDataset) dataset).getPdsMembers ().size () > 0)
         fileTreeItem.buildChildren ();
     }
     return reader;

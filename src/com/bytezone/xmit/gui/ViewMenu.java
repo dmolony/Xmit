@@ -16,9 +16,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class ViewMenu implements SaveState
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_CODE_PAGE = "CodePage";
   private static final String PREFS_EURO_PAGE = "EuroPage";

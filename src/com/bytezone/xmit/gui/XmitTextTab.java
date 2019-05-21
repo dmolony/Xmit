@@ -10,9 +10,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 abstract class XmitTextTab extends XmitTab
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private final TextFlow textFlow = new TextFlow ();
   private final ScrollPane scrollPane = new ScrollPane (textFlow);

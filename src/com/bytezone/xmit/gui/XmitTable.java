@@ -23,11 +23,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Font;
 
-// ---------------------------------------------------------------------------------//
-class XmitTable extends TableView<CatalogEntryItem>                                 //
+// -----------------------------------------------------------------------------------//
+class XmitTable extends TableView<CatalogEntryItem>                                   //
     implements SaveState, TreeItemSelectionListener, FontChangeListener,
     FilterChangeListener
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
 

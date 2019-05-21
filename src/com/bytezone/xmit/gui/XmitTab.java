@@ -6,7 +6,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
+// -----------------------------------------------------------------------------------//
 abstract class XmitTab extends Tab implements SaveState
+// -----------------------------------------------------------------------------------//
 {
   final KeyCode keyCode;
   Font font;

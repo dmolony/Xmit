@@ -29,9 +29,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 public class XmitApp extends Application
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
   private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());

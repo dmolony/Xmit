@@ -11,9 +11,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 abstract class DataColumn<T> implements Comparable<DataColumn<?>>
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_SEQUENCE = "Sequence-";
   private static final String PREFS_WIDTH = "Width-";

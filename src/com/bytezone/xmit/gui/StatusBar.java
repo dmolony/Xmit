@@ -7,10 +7,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class StatusBar extends HBox implements FilterChangeListener, ShowLinesListener,
     FontChangeListener, CodePageSelectedListener
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   private static final int MAX_TICKS = 3;
   private final Label statusMessage = new Label ();

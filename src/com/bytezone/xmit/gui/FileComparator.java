@@ -4,9 +4,9 @@ import java.util.Comparator;
 
 import javafx.scene.control.TreeItem;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class FileComparator implements Comparator<TreeItem<XmitFile>>
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   @Override
   public int compare (TreeItem<XmitFile> thisFile, TreeItem<XmitFile> thatFile)

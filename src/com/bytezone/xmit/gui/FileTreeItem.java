@@ -14,9 +14,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
-// ---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 class FileTreeItem extends TreeItem<XmitFile>
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
 {
   static private final FileComparator comparator = new FileComparator ();
 

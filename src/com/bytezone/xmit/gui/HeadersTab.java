@@ -13,23 +13,23 @@ import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
 
-// ----------------------------------------------------------------------------------- //
+// -----------------------------------------------------------------------------------//
 class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
-//----------------------------------------------------------------------------------- //
+// -----------------------------------------------------------------------------------//
 {
   DatasetStatus datasetStatus;
 
-  //----------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------//
   public HeadersTab (String title, KeyCode keyCode)
-  //----------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------//
   {
     super (title, keyCode);
   }
 
-  //----------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------//
   @Override
   List<String> getLines ()
-  //----------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------//
   {
     List<String> lines = new ArrayList<> ();
 
@@ -50,7 +50,8 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
       lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
-      lines.add (String.format ("%s Catalog Blocks:", datasetStatus.getReaderFileName ()));
+      lines
+          .add (String.format ("%s Catalog Blocks:", datasetStatus.getReaderFileName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
@@ -64,10 +65,10 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
     return lines;
   }
 
-  //----------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------//
   @Override
   public void treeItemSelected (DatasetStatus datasetStatus)
-  //----------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------//
   {
     this.datasetStatus = datasetStatus;
     refresh ();
