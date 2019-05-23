@@ -37,8 +37,27 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
       for (ControlRecord controlRecord : ((XmitReader) datasetStatus.getReader ())
           .getControlRecords ())
         lines.add (controlRecord.toString ());
-    else
-      System.out.println ("AWSReader headers tab not writted");
+    else if (reader instanceof AwsTapeReader)
+    {
+      if (datasetStatus.isPds ())
+      {
+        PdsDataset dataset = (PdsDataset) datasetStatus.getDataset ();
+
+        lines.add ("HDR1");
+        lines.add ("-----------------------------------------------------------");
+        String header1 = dataset.getAwsTapeDataset ().header1 ();
+        for (String line : header1.split ("\n"))
+          lines.add (line);
+        lines.add ("");
+
+        lines.add ("HDR2");
+        lines.add ("-----------------------------------------------------------");
+        String header2 = dataset.getAwsTapeDataset ().header2 ();
+        for (String line : header2.split ("\n"))
+          lines.add (line);
+        lines.add ("");
+      }
+    }
 
     if (datasetStatus.isPds ())
     {

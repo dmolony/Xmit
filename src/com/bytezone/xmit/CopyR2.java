@@ -23,8 +23,10 @@ public class CopyR2
     List<String> lines = new ArrayList<> ();
 
     int max = (buffer[0] & 0xFF) + 1;
+    lines.add ("-----------------------------------------------------------");
     for (int i = 0; i < max; i++)
       lines.add (Utility.getHexValues (buffer, i * 16, 16));
+    lines.add ("-----------------------------------------------------------");
 
     return lines;
   }

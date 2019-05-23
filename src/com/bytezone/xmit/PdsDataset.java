@@ -19,6 +19,8 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
+  AwsTapeDataset awsTapeDataset;
+
   // ---------------------------------------------------------------------------------//
   PdsDataset (Reader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
@@ -27,10 +29,11 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  PdsDataset (Reader reader, AwsTapeDataset awsDataset)
+  PdsDataset (Reader reader, AwsTapeDataset awsTapeDataset)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, awsDataset.disposition);
+    super (reader, awsTapeDataset.disposition);
+    this.awsTapeDataset = awsTapeDataset;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -69,6 +72,13 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   // ---------------------------------------------------------------------------------//
   {
     return copyR2;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public AwsTapeDataset getAwsTapeDataset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return awsTapeDataset;
   }
 
   // ---------------------------------------------------------------------------------//

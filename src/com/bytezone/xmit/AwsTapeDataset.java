@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // ---------------------------------------------------------------------------------//
-class AwsTapeDataset
+public class AwsTapeDataset
 //---------------------------------------------------------------------------------//
 {
   String name;
@@ -75,7 +75,6 @@ class AwsTapeDataset
     systemCode = hdr1.getString (60, 13);
     reserved1 = hdr1.getString (73, 3);
     blockCountHi = hdr1.getString (76, 4);
-    System.out.println (header1 ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,9 +105,6 @@ class AwsTapeDataset
     largeBlockLength = hdr2.getString (70, 10);
 
     disposition = new Disposition (recfm, recordLength, blockLength);
-
-    System.out.println (header2 ());
-    System.out.println (disposition);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -120,7 +116,7 @@ class AwsTapeDataset
   }
 
   // ---------------------------------------------------------------------------------//
-  String header1 ()
+  public String header1 ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -143,7 +139,7 @@ class AwsTapeDataset
   }
 
   // ---------------------------------------------------------------------------------//
-  String header2 ()
+  public String header2 ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
