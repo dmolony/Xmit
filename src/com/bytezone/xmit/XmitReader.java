@@ -21,7 +21,6 @@ public class XmitReader extends Reader
 
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
 
-  private Dataset activeDataset;
   private int files;
 
   // ---------------------------------------------------------------------------------//
@@ -132,13 +131,6 @@ public class XmitReader extends Reader
     activeDataset = datasets.get (datasets.size () - 1);     // always last
     //    activeDataset = datasets.get (0);     // always first
     assert files == datasets.size ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public Dataset getActiveDataset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return activeDataset;
   }
 
   // ---------------------------------------------------------------------------------//

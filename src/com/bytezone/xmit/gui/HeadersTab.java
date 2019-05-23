@@ -3,12 +3,8 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.BasicModule;
-import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.*;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
-import com.bytezone.xmit.LoadModule;
-import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.XmitReader;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
@@ -36,9 +32,13 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
     if (datasetStatus == null || !datasetStatus.hasDataset ())
       return lines;
 
-    for (ControlRecord controlRecord : ((XmitReader) datasetStatus.getReader ())
-        .getControlRecords ())
-      lines.add (controlRecord.toString ());
+    Reader reader = datasetStatus.getReader ();
+    if (reader instanceof XmitReader)
+      for (ControlRecord controlRecord : ((XmitReader) datasetStatus.getReader ())
+          .getControlRecords ())
+        lines.add (controlRecord.toString ());
+    else
+      System.out.println ("AWSReader headers tab not writted");
 
     if (datasetStatus.isPds ())
     {

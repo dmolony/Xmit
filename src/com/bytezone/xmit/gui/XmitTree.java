@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Dataset;
-import com.bytezone.xmit.XmitReader;
+import com.bytezone.xmit.Reader;
 
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
@@ -101,7 +101,7 @@ class XmitTree extends TreeView<XmitFile>                                       
       }
 
       XmitFile xmitFile = newSel.getValue ();
-      XmitReader reader = xmitFile.getReader ((FileTreeItem) newSel);
+      Reader reader = xmitFile.getReader ((FileTreeItem) newSel);
 
       if (reader == null)
         notifyListeners (null, null);

@@ -37,7 +37,7 @@ public class CommentsTab extends XmitTextTab implements TreeItemSelectionListene
 
     if (reader.size () > 1)
     {
-      Dataset firstDataset = reader.getDatasets ().get (0);
+      Dataset firstDataset = reader.getDataset (0);
       if (firstDataset.isPhysicalSequential ())
       {
         FlatFile file = ((PsDataset) firstDataset).getFlatFile ();

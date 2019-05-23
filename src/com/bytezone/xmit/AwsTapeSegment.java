@@ -22,7 +22,7 @@ public class AwsTapeSegment extends Segment
       DataBlock dataBlock = new DataBlock (ptr, header);
       System.arraycopy (blockPointer.buffer, ptr, header.buffer, 0, 12);
       int len = Utility.getTwoBytes (blockPointer.buffer, ptr + 10);
-      dataBlock.add (new BlockPointer (blockPointer.buffer, ptr + 12, len - 12));
+      dataBlock.add (new BlockPointer (blockPointer.buffer, ptr + 12, len));
       dataBlocks.add (dataBlock);
       ptr += len + 12;
     }

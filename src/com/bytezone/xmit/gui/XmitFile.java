@@ -17,15 +17,15 @@ import javafx.scene.control.Alert.AlertType;
 class XmitFile
 // -----------------------------------------------------------------------------------//
 {
-  private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit");
+  private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit", "aws");
   private static final List<String> compressionSuffixes = Arrays.asList ("zip");
 
   private final File file;
   private final String suffix;
   private final String name;
 
-  private XmitReader reader;                    // can contain multiple datasets
-  private DataFile dataFile;                // PDS member or flat file
+  private Reader reader;                         // can contain multiple datasets
+  private DataFile dataFile;                    // PDS member or flat file
 
   // ---------------------------------------------------------------------------------//
   public XmitFile (File file)                       // plain .xmi file
@@ -114,10 +114,10 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  XmitReader getReader (FileTreeItem fileTreeItem)
+  Reader getReader (FileTreeItem fileTreeItem)
   // ---------------------------------------------------------------------------------//
   {
-    XmitReader reader = getReader ();
+    Reader reader = getReader ();
     if (reader != null)
     {
       Dataset dataset = reader.getActiveDataset ();
@@ -129,14 +129,19 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  XmitReader getReader ()
+  Reader getReader ()
   // ---------------------------------------------------------------------------------//
   {
     if (reader == null)
       if (isMember ())                            // xmit file contained in a PdsMember
         reader = new XmitReader (dataFile);
       else if (isFile () && !isCompressed ())
-        reader = new XmitReader (file);
+      {
+        if (file.getName ().endsWith (".aws"))
+          reader = new AwsTapeReader (file);
+        else
+          reader = new XmitReader (file);
+      }
 
     return reader;
   }

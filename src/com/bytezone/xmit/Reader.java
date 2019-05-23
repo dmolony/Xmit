@@ -4,16 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
-public abstract class Reader
+public abstract class Reader implements Iterable<Dataset>
 // -----------------------------------------------------------------------------------//
 {
   final String fileName;
   private final int level;
   boolean incomplete;
   final List<Dataset> datasets = new ArrayList<> ();
+  Dataset activeDataset;
 
   // ---------------------------------------------------------------------------------//
   public Reader (String fileName, int level)
@@ -56,10 +58,25 @@ public abstract class Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<Dataset> getDatasets ()
+  public Dataset getDataset (int index)
   // ---------------------------------------------------------------------------------//
   {
-    return datasets;
+    return datasets.get (index);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public Dataset getActiveDataset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return activeDataset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Iterator<Dataset> iterator ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return datasets.iterator ();
   }
 
   // ---------------------------------------------------------------------------------//

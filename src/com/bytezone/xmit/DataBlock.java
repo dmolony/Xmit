@@ -88,8 +88,7 @@ class DataBlock
       return eightBytes;
 
     BlockPointer blockPointer = blockPointers.get (0);
-    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0,
-        eightBytes.length);
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0, 8);
 
     return eightBytes;
   }
@@ -133,6 +132,7 @@ class DataBlock
 
     for (BlockPointer blockPointer : blockPointers)
     {
+      System.out.println (blockPointer);
       System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, offset,
           blockPointer.length);
       offset += blockPointer.length;

@@ -107,13 +107,12 @@ public class AwsTapeReader extends Reader
       }
     }
 
-    System.out.println ();
+    // allocate the data records
     for (Dataset dataset : datasets)
-    {
-      System.out.println (dataset);
       dataset.allocateSegments ();
-    }
 
+    // set active dataset
+    activeDataset = datasets.get (0);     // always first
   }
 
   // ---------------------------------------------------------------------------------//

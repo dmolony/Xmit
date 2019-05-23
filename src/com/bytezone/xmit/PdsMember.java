@@ -119,6 +119,9 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     byte[] buffer = new byte[getDataLength ()];
     int ptr = 0;
 
+    System.out.printf ("Creating buffer: %d%n", buffer.length);
+    System.out.printf ("Total datablocks: %d%n", dataBlocks.size ());
+
     for (DataBlock dataBlock : dataBlocks)
       ptr = dataBlock.packBuffer (buffer, ptr);
 

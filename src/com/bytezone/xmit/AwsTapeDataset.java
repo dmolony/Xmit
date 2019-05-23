@@ -19,6 +19,7 @@ class AwsTapeDataset
   String blockCountLo;
   String blockCountHi;
   String systemCode;
+  String reserved1;
 
   String recfm;
   String blockLength;
@@ -34,6 +35,9 @@ class AwsTapeDataset
   String deviceSerialNumber;
   String checkpointDatasetIdentifier;
   String largeBlockLength;
+  String reserved2;
+  String reserved3;
+  String reserved4;
 
   Disposition disposition;
   AwsTapeReader reader;
@@ -69,8 +73,9 @@ class AwsTapeDataset
     datasetSecurity = hdr1.getString (53, 1);
     blockCountLo = hdr1.getString (54, 6);
     systemCode = hdr1.getString (60, 13);
-    String notUsed = hdr1.getString (73, 3);
+    reserved1 = hdr1.getString (73, 3);
     blockCountHi = hdr1.getString (76, 4);
+    System.out.println (header1 ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -92,15 +97,18 @@ class AwsTapeDataset
     jobStep = hdr2.getString (26, 8);
     tapeRecordingTechnique = hdr2.getString (34, 2);
     controlCharacter = hdr2.getString (36, 1);
-    String notUsed = hdr2.getString (37, 1);
+    reserved2 = hdr2.getString (37, 1);
     blockAttribute = hdr2.getString (38, 1);
-    String notUsed2 = hdr2.getString (39, 2);
+    reserved3 = hdr2.getString (39, 2);
     deviceSerialNumber = hdr2.getString (41, 6);
     checkpointDatasetIdentifier = hdr2.getString (47, 1);
-    String notUsed3 = hdr2.getString (48, 22);
+    reserved4 = hdr2.getString (48, 22);
     largeBlockLength = hdr2.getString (70, 10);
 
     disposition = new Disposition (recfm, recordLength, blockLength);
+
+    System.out.println (header2 ());
+    System.out.println (disposition);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -112,13 +120,59 @@ class AwsTapeDataset
   }
 
   // ---------------------------------------------------------------------------------//
+  String header1 ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Dataset Identifier ......... %s%n", name));
+    text.append (String.format ("Dataset serial number ...... %s%n", serialNumber));
+    text.append (String.format ("Volume sequence number ..... %s%n", volSeq));
+    text.append (String.format ("Dataset sequence number .... %s%n", dsnSeq));
+    text.append (String.format ("Generation number .......... %s%n", genNumber));
+    text.append (String.format ("Version number ............. %s%n", genVersionNumber));
+    text.append (String.format ("Creation date .............. %s%n", creationDate));
+    text.append (String.format ("Expiration date ............ %s%n", expirationDate));
+    text.append (String.format ("Dataset security ........... %s%n", datasetSecurity));
+    text.append (String.format ("Block count, Low order ..... %s%n", blockCountLo));
+    text.append (String.format ("System code ................ %s%n", systemCode));
+    text.append (String.format ("Reserved ................... %s%n", reserved1));
+    text.append (String.format ("Block count, High order .... %s%n", blockCountHi));
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   String header2 ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s  %s  %s  %s  %s  %s  %s  %s  %s  %s  %s  %s", recfm,
-        blockLength, recordLength, tapeDensity, datasetPosition, jobName, jobStep,
-        tapeRecordingTechnique, controlCharacter, blockAttribute, deviceSerialNumber,
-        checkpointDatasetIdentifier);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Record format .............. %s%n", recfm));
+    text.append (String.format ("Block length ............... %s%n", blockLength));
+    text.append (String.format ("Record length .............. %s%n", recordLength));
+    text.append (String.format ("Tape density ............... %s%n", tapeDensity));
+    text.append (String.format ("Dataset position ........... %s%n", datasetPosition));
+    text.append (String.format ("Job name ................... %s%n", jobName));
+    text.append (String.format ("Job step ................... %s%n", jobStep));
+    text.append (
+        String.format ("Tape recording technique ... %s%n", tapeRecordingTechnique));
+    text.append (String.format ("Control character .......... %s%n", controlCharacter));
+    text.append (String.format ("Reserved ................... %s%n", reserved2));
+    text.append (String.format ("Block attribute ............ %s%n", blockAttribute));
+    text.append (String.format ("Reserved ................... %s%n", reserved3));
+    text.append (String.format ("Device serial number ....... %s%n", deviceSerialNumber));
+    text.append (
+        String.format ("Checkpoint dataset id ...... %s%n", checkpointDatasetIdentifier));
+    text.append (String.format ("Reserved ................... %s%n", reserved4));
+    text.append (String.format ("Large block length ......... %s%n", largeBlockLength));
+
+    return text.toString ();
+
+    //    return String.format ("%s  %s  %s  %s  %s  %s  %s  %s  %s  %s  %s  %s", recfm,
+    //        blockLength, recordLength, tapeDensity, datasetPosition, jobName, jobStep,
+    //        tapeRecordingTechnique, controlCharacter, blockAttribute, deviceSerialNumber,
+    //        checkpointDatasetIdentifier);
   }
 
   // ---------------------------------------------------------------------------------//
