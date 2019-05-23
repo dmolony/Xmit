@@ -3,9 +3,9 @@ package com.bytezone.xmit;
 import java.util.ArrayList;
 import java.util.List;
 
-// ---------------------------------------------------------------------------------//
-public class AwsTapeDataset
-//---------------------------------------------------------------------------------//
+// -----------------------------------------------------------------------------------//
+public class AwsTapeHeaders
+// -----------------------------------------------------------------------------------//
 {
   String name;
   String serialNumber;
@@ -46,7 +46,7 @@ public class AwsTapeDataset
   private final List<BlockPointer> trailers = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  AwsTapeDataset (AwsTapeReader reader, BlockPointer hdr1, BlockPointer hdr2)
+  AwsTapeHeaders (AwsTapeReader reader, BlockPointer hdr1, BlockPointer hdr2)
   // ---------------------------------------------------------------------------------//
   {
     this.reader = reader;
@@ -164,11 +164,6 @@ public class AwsTapeDataset
     text.append (String.format ("Large block length ......... %s%n", largeBlockLength));
 
     return text.toString ();
-
-    //    return String.format ("%s  %s  %s  %s  %s  %s  %s  %s  %s  %s  %s  %s", recfm,
-    //        blockLength, recordLength, tapeDensity, datasetPosition, jobName, jobStep,
-    //        tapeRecordingTechnique, controlCharacter, blockAttribute, deviceSerialNumber,
-    //        checkpointDatasetIdentifier);
   }
 
   // ---------------------------------------------------------------------------------//

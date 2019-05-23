@@ -27,7 +27,7 @@ public class AwsTapeReader extends Reader
     Utility.setCodePage ("CP037");
 
     Dataset currentDataset = null;
-    AwsTapeDataset currentAwsTapeDataset = null;
+    AwsTapeHeaders currentAwsTapeDataset = null;
     BlockPointer hdr1 = null;
     BlockPointer hdr2 = null;
     int tapeMarkCount = 0;
@@ -60,7 +60,7 @@ public class AwsTapeReader extends Reader
           // why is there no dsorg?
           if (Utility.matches (header, buffer, blockPointer.offset + 9))
           {
-            currentAwsTapeDataset = new AwsTapeDataset (this, hdr1, hdr2);
+            currentAwsTapeDataset = new AwsTapeHeaders (this, hdr1, hdr2);
             currentDataset = new PdsDataset (this, currentAwsTapeDataset);
             datasets.add (currentDataset);
           }
