@@ -34,7 +34,7 @@ public class Disposition
   public Disposition (String recfm, String lrecl, String blksize)
   // ---------------------------------------------------------------------------------//
   {
-    this.dsorg = Org.PS;
+    this.dsorg = Org.PDS;
     this.recfm = recfm.equals ("V") ? 0x5000 : recfm.equals ("F") ? 0x9000 : 0xC000;
     this.lrecl = Integer.parseInt (lrecl);
     this.blksize = Integer.parseInt (blksize);

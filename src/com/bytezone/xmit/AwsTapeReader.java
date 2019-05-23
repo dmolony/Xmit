@@ -9,7 +9,7 @@ public class AwsTapeReader extends Reader
 // ---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
-  private final List<AwsTapeDataset> datasets = new ArrayList<> ();
+  private final List<Dataset> datasets = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public AwsTapeReader (File file)
@@ -26,7 +26,8 @@ public class AwsTapeReader extends Reader
   {
     Utility.setCodePage ("CP037");
 
-    AwsTapeDataset currentDataset = null;
+    Dataset currentDataset = null;
+    AwsTapeDataset currentAwsTapeDataset = null;
     BlockPointer hdr1 = null;
     BlockPointer hdr2 = null;
     int tapeMarkCount = 0;
@@ -48,6 +49,8 @@ public class AwsTapeReader extends Reader
       }
 
       BlockPointer blockPointer = new BlockPointer (buffer, ptr, next);
+      AwsTapeSegment segment = new AwsTapeSegment ();
+      segment.addBlockPointer (blockPointer);
       ptr += next;
 
       if (tapeMarkCount == 1)
@@ -57,7 +60,8 @@ public class AwsTapeReader extends Reader
           // why is there no dsorg?
           if (Utility.matches (header, buffer, blockPointer.offset + 9))
           {
-            currentDataset = new AwsTapeDataset (this, hdr1, hdr2);     // PDS
+            currentAwsTapeDataset = new AwsTapeDataset (this, hdr1, hdr2);
+            currentDataset = new PdsDataset (this, currentAwsTapeDataset);
             datasets.add (currentDataset);
           }
           else
@@ -68,7 +72,7 @@ public class AwsTapeReader extends Reader
           hdr1 = null;
           hdr2 = null;
         }
-        currentDataset.addData (blockPointer);
+        currentDataset.addSegment (segment);
       }
       else
       {
@@ -86,11 +90,11 @@ public class AwsTapeReader extends Reader
             break;
 
           case "EOF1":
-            currentDataset.addTrailer (blockPointer);
+            currentAwsTapeDataset.addTrailer (blockPointer);
             break;
 
           case "EOF2":
-            currentDataset.addTrailer (blockPointer);
+            currentAwsTapeDataset.addTrailer (blockPointer);
             currentDataset = null;
             break;
 
@@ -104,12 +108,12 @@ public class AwsTapeReader extends Reader
     }
 
     System.out.println ();
-    for (AwsTapeDataset dataset : datasets)
+    for (Dataset dataset : datasets)
     {
       System.out.println (dataset);
-      System.out.println (dataset.header2 ());
-      //      dataset.createDataBlocks ();
+      dataset.allocateSegments ();
     }
+
   }
 
   // ---------------------------------------------------------------------------------//

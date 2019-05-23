@@ -7,7 +7,6 @@ import java.util.List;
 class XmitSegment extends Segment
 // -----------------------------------------------------------------------------------//
 {
-
   // ---------------------------------------------------------------------------------//
   @Override
   List<DataBlock> createDataBlocks ()                     // used only for data blocks
@@ -130,8 +129,7 @@ class XmitSegment extends Segment
     byte[] eightBytes = new byte[8];
 
     BlockPointer blockPointer = rawBlockPointers.get (0);
-    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0,
-        eightBytes.length);
+    System.arraycopy (blockPointer.buffer, blockPointer.offset, eightBytes, 0, 8);
 
     return eightBytes;
   }

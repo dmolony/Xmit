@@ -27,6 +27,13 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  PdsDataset (Reader reader, AwsTapeDataset awsDataset)
+  // ---------------------------------------------------------------------------------//
+  {
+    super (reader, awsDataset.disposition);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public ModuleType getModuleType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -135,10 +142,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       dataBlocks.addAll (segment.createDataBlocks ());
     }
 
-    for (Segment segment : segments)
-    {
-      System.out.println (Utility.getHexDump (segment.getRawBuffer (), 0, 12));
-    }
+    //    for (Segment segment : segments)
+    //    {
+    //      System.out.println (Utility.getHexDump (segment.getRawBuffer (), 0, 12));
+    //    }
 
     // catalogMap : list of all CatalogEntries that share a TTL, in TTL sequence
     // members    : list of PdsMember (List<DataBlock>) in TTL sequence

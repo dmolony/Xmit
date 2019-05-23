@@ -13,23 +13,18 @@ public class AwsTapeSegment extends Segment
   // ---------------------------------------------------------------------------------//
   {
     List<DataBlock> dataBlocks = new ArrayList<> ();
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    int ptr = blockPointer.offset + 8;
 
-    int count = 0;
-    for (int i = 2; i < rawBlockPointers.size (); i++)
+    while (ptr < blockPointer.offset + blockPointer.length)
     {
-      BlockPointer blockPointer = rawBlockPointers.get (i);
-
-      int ptr = blockPointer.offset + 8;
-      //      if (blockPointer.buffer[ptr + 9] == 0x08)      // skip catalog entries
-      //        continue;
-
-      while (ptr < blockPointer.offset + blockPointer.length)
-      {
-        System.out.printf ("%3d  %s%n", ++count,
-            Utility.getHexDump (blockPointer.buffer, ptr, 12));
-        int len = Utility.getTwoBytes (blockPointer.buffer, ptr + 10);
-        ptr += len + 12;
-      }
+      Header header = new Header ();
+      DataBlock dataBlock = new DataBlock (ptr, header);
+      System.arraycopy (blockPointer.buffer, ptr, header.buffer, 0, 12);
+      int len = Utility.getTwoBytes (blockPointer.buffer, ptr + 10);
+      dataBlock.add (new BlockPointer (blockPointer.buffer, ptr + 12, len - 12));
+      dataBlocks.add (dataBlock);
+      ptr += len + 12;
     }
 
     return dataBlocks;
@@ -37,18 +32,10 @@ public class AwsTapeSegment extends Segment
 
   //---------------------------------------------------------------------------------//
   @Override
-  byte[] getEightBytes ()
+  public byte[] getRawBuffer ()                                 // contains no headers
   //---------------------------------------------------------------------------------//
   {
-    return null;
-  }
-
-  //---------------------------------------------------------------------------------//
-  @Override
-  public byte[] getRawBuffer ()
-  //---------------------------------------------------------------------------------//
-  {
-    return null;
+    return rawBlockPointers.get (0).getData (8);
   }
 
   //---------------------------------------------------------------------------------//
@@ -56,7 +43,21 @@ public class AwsTapeSegment extends Segment
   int packBuffer (byte[] dataBuffer, int ptr)
   //---------------------------------------------------------------------------------//
   {
+    System.out.println ("packBuffer not writted");
     return 0;
+  }
+
+  //---------------------------------------------------------------------------------//
+  @Override
+  byte[] getEightBytes ()
+  //---------------------------------------------------------------------------------//
+  {
+    byte[] eightBytes = new byte[8];
+
+    BlockPointer blockPointer = rawBlockPointers.get (0);
+    System.arraycopy (blockPointer.buffer, blockPointer.offset + 8, eightBytes, 0, 8);
+
+    return eightBytes;
   }
 
   //---------------------------------------------------------------------------------//
@@ -64,6 +65,7 @@ public class AwsTapeSegment extends Segment
   boolean isXmit ()
   //---------------------------------------------------------------------------------//
   {
+    System.out.println ("isXmit not writted");
     return false;
   }
 }
