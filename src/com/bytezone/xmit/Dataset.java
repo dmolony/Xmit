@@ -10,7 +10,7 @@ public abstract class Dataset
 // -----------------------------------------------------------------------------------//
 {
   final Reader reader;
-  final Disposition disposition;
+  Disposition disposition;
 
   final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;

@@ -61,8 +61,6 @@ abstract class DataColumn<T> implements Comparable<DataColumn<?>>
   void save (int sequence)
   // ---------------------------------------------------------------------------------//
   {
-    //    System.out.printf ("%-12s %5.1f  %5.1f  %5.1f  %2d  %s%n", column.getText (),
-    //        column.getMinWidth (), column.getPrefWidth (), column.getWidth (), seq++, this);
     prefs.putInt (PREFS_SEQUENCE + columnHeading, sequence);
     prefs.putDouble (PREFS_WIDTH + columnHeading, column.getWidth ());
   }

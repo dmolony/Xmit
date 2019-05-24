@@ -132,7 +132,7 @@ class DataBlock
 
     for (BlockPointer blockPointer : blockPointers)
     {
-      System.out.println (blockPointer);
+      //      System.out.println (blockPointer);
       System.arraycopy (blockPointer.buffer, blockPointer.offset, buffer, offset,
           blockPointer.length);
       offset += blockPointer.length;

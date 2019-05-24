@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.textunit.Dsorg.Org;
+
 // https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.1.0/com.ibm.zos.v2r1.idau100/u1322.htm
 
 // -----------------------------------------------------------------------------------//
@@ -38,6 +40,8 @@ public class CopyR1
   private final boolean reblockable;
   private final boolean pdse;
 
+  private final Disposition disposition;
+
   // ---------------------------------------------------------------------------------//
   CopyR1 (byte[] buffer)
   // ---------------------------------------------------------------------------------//
@@ -46,13 +50,13 @@ public class CopyR1
 
     unloadFlags = buffer[0];
     assert Utility.matches (header, buffer, 1);
-    dsorg = Utility.getTwoBytes (buffer, 4);          // 0x0200 = PDS
+    dsorg = Utility.getTwoBytes (buffer, 4);                  // 0x0200 = PDS
     blksize = Utility.getTwoBytes (buffer, 6);
     reclen = Utility.getTwoBytes (buffer, 8);
     recfm = buffer[10];
     keylen = buffer[11];
     optcd = buffer[12];
-    smsfg = buffer[13];         // includes PDSE flag
+    smsfg = buffer[13];                                       // includes PDSE flag
     containerBlksize = Utility.getTwoBytes (buffer, 14);
     headerRecords = Utility.getTwoBytes (buffer, 36);
     zero = buffer[38];
@@ -62,8 +66,6 @@ public class CopyR1
     scext = (int) Utility.getValue (buffer, 42, 3);
     scalo = (int) Utility.getFourBytes (buffer, 45);
     lstar = (int) Utility.getValue (buffer, 49, 3);
-
-    //    System.out.printf ("DSORG: %04X%n", dsorg);
 
     if (buffer.length > 52)       // FILE776.XMI/XMCLOAD
     {
@@ -79,6 +81,8 @@ public class CopyR1
     managed = (smsfg & 0x80) != 0;
     reblockable = (smsfg & 0x20) != 0;
     pdse = (smsfg & 0x08) != 0;
+
+    disposition = new Disposition (Org.PDS, (recfm & 0xFF) << 8, reclen, blksize);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -92,6 +96,13 @@ public class CopyR1
     if (carriageControl == 1 || carriageControl == 2)
       recfmText += "A";
     return recfmText;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Disposition getDisposition ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return disposition;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -109,10 +120,11 @@ public class CopyR1
     String flagsText = isPdse () ? "PDSE" : "PDS";
 
     lines.add ("-----------------------------------------------------------");
-    lines.add (String.format ("Unld flags ...... %02X    %s", unloadFlags, flagsText));
+    lines.add (String.format ("Unld flags ...... %02X     %s", unloadFlags, flagsText));
+    lines.add (String.format ("Dsorg ........... %04X", dsorg));
     lines.add (String.format ("Block size ...... %04X  %<,7d", blksize));
     lines.add (String.format ("Record length.... %04X  %<,7d", reclen));
-    lines.add (String.format ("Record format ... %02X    %s", recfm, getRecfm ()));
+    lines.add (String.format ("Record format ... %02X     %s", recfm, getRecfm ()));
     lines.add (String.format ("Key length ...... %02X", keylen));
     lines.add (String.format ("OPTCD ........... %02X", optcd));
     lines.add (String.format ("SMSFG ........... %02X", smsfg));

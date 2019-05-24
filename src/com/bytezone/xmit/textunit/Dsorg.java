@@ -2,7 +2,9 @@ package com.bytezone.xmit.textunit;
 
 import com.bytezone.xmit.Utility;
 
+// -----------------------------------------------------------------------------------//
 public class Dsorg extends TextUnit
+// -----------------------------------------------------------------------------------//
 {
   public final static int VSAM = 0x0008;        // VSAM
   public final static int PDS = 0x0200;         // partioned organisation
@@ -13,14 +15,18 @@ public class Dsorg extends TextUnit
   //    PS, PSU, PO, POU, DA, DAU, GDG, IS, ISU, PDSM, VSAM
   //  }
 
+  // ---------------------------------------------------------------------------------//
   public enum Org
+  // ---------------------------------------------------------------------------------//
   {
     VSAM, PDS, PS
   }
 
   public final Org type;
 
+  // ---------------------------------------------------------------------------------//
   public Dsorg (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
   {
     super (buffer, ptr);
 

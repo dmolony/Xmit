@@ -19,7 +19,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
-  AwsTapeHeaders awsTapeDataset;
+  public AwsTapeHeaders awsTapeHeaders;        // this is clumsy
 
   // ---------------------------------------------------------------------------------//
   PdsDataset (Reader reader, Disposition disposition)
@@ -29,11 +29,11 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  PdsDataset (Reader reader, AwsTapeHeaders awsTapeDataset)
+  PdsDataset (Reader reader, AwsTapeHeaders awsTapeHeaders)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, awsTapeDataset.disposition);
-    this.awsTapeDataset = awsTapeDataset;
+    super (reader, awsTapeHeaders.disposition);
+    this.awsTapeHeaders = awsTapeHeaders;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -78,7 +78,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public AwsTapeHeaders getAwsTapeDataset ()
   // ---------------------------------------------------------------------------------//
   {
-    return awsTapeDataset;
+    return awsTapeHeaders;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -133,6 +133,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     // convert first two DataBlock entries
     copyR1 = new CopyR1 (segments.get (segmentNbr++).getRawBuffer ());
     copyR2 = new CopyR2 (segments.get (segmentNbr++).getRawBuffer ());
+    disposition = copyR1.getDisposition ();
     disposition.setPdse (copyR1.isPdse ());
 
     // read catalog entries
@@ -151,11 +152,6 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       Segment segment = segments.get (segmentNbr++);
       dataBlocks.addAll (segment.createDataBlocks ());
     }
-
-    //    for (Segment segment : segments)
-    //    {
-    //      System.out.println (Utility.getHexDump (segment.getRawBuffer (), 0, 12));
-    //    }
 
     // catalogMap : list of all CatalogEntries that share a TTL, in TTL sequence
     // members    : list of PdsMember (List<DataBlock>) in TTL sequence

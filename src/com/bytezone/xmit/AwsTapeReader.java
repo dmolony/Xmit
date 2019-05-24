@@ -120,7 +120,7 @@ public class AwsTapeReader extends Reader
   public String getDatasetName ()
   // ---------------------------------------------------------------------------------//
   {
-    return "bugger me";
+    return (((PdsDataset) activeDataset).awsTapeHeaders.name);
   }
 
   // from FILE533.XMI -> M370VTT2
