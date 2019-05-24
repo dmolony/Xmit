@@ -148,11 +148,4 @@ public class AwsTapeReader extends Reader
   **                             Initialize the output buffer **
   **                              location.                   **
    */
-
-  // ---------------------------------------------------------------------------------//
-  public static void main (String[] args)
-  // ---------------------------------------------------------------------------------//
-  {
-    new AwsTapeReader (new File ("/Users/denismolony/Downloads/rpf171.aws"));
-  }
 }

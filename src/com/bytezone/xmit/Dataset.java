@@ -11,6 +11,7 @@ public abstract class Dataset
 {
   final Reader reader;
   Disposition disposition;
+  String name = "dunno";
 
   final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;
@@ -28,6 +29,13 @@ public abstract class Dataset
   // ---------------------------------------------------------------------------------//
   {
     return reader;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return name;
   }
 
   // ---------------------------------------------------------------------------------//

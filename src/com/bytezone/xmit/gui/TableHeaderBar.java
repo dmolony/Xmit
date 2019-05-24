@@ -30,7 +30,8 @@ class TableHeaderBar extends HeaderBar
     else
     {
       Reader reader = datasetStatus.getReader ();
-      leftLabel.setText (reader.getDatasetName ());
+      //      leftLabel.setText (reader.getDatasetName ());
+      leftLabel.setText (datasetStatus.getDatasetName ());
       leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
     }

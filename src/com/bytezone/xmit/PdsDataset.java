@@ -26,6 +26,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   // ---------------------------------------------------------------------------------//
   {
     super (reader, disposition);
+    name = reader.getDatasetName ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -34,6 +35,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   {
     super (reader, awsTapeHeaders.disposition);
     this.awsTapeHeaders = awsTapeHeaders;
+    name = awsTapeHeaders.name;
   }
 
   // ---------------------------------------------------------------------------------//
