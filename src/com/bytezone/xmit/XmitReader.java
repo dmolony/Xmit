@@ -205,4 +205,12 @@ public class XmitReader extends Reader
 
     return "";
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("Xmit Reader: %s", fileName);
+  }
 }

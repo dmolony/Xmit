@@ -14,21 +14,21 @@ import com.bytezone.xmit.*;
 import javafx.scene.control.Alert.AlertType;
 
 // -----------------------------------------------------------------------------------//
-class XmitFile
-// -----------------------------------------------------------------------------------//
+class XmitFileNode
 {
-  private static final List<String> xmitSuffixes = Arrays.asList ("xmi", "xmit", "aws");
+  private static final List<String> validSuffixes = Arrays.asList ("xmi", "xmit", "aws");
   private static final List<String> compressionSuffixes = Arrays.asList ("zip");
 
   private final File file;
   private final String suffix;
   private final String name;
 
-  private Reader reader;                         // can contain multiple datasets
-  private DataFile dataFile;                    // PDS member or flat file
+  private Reader reader;                          // can contain multiple datasets
+  private Dataset dataset;
+  private DataFile dataFile;                      // PDS member 
 
   // ---------------------------------------------------------------------------------//
-  public XmitFile (File file)                       // plain .xmi file
+  public XmitFileNode (File file)                 // plain .xmi or .aws file
   // ---------------------------------------------------------------------------------//
   {
     this.file = file;
@@ -37,16 +37,26 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public XmitFile (File file, String name)          // an unzipped .xmi file
+  public XmitFileNode (File file, String name)   // an unzipped .xmi or .aws file
   // ---------------------------------------------------------------------------------//
   {
     this.file = file;
-    this.name = name;             // display this name instead of the tmp file name
+    this.name = name;                 // display this name instead of the tmp file name
     suffix = getSuffix (name);
   }
 
   // ---------------------------------------------------------------------------------//
-  public XmitFile (PdsMember pdsMember)            // an xmit file in a PDS member
+  public XmitFileNode (Dataset dataset)           // PDS or PS
+  // ---------------------------------------------------------------------------------//
+  {
+    file = null;
+    this.dataset = dataset;
+    name = dataset.getName ();
+    suffix = "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public XmitFileNode (PdsMember pdsMember)      // an xmit file from a PDS member
   // ---------------------------------------------------------------------------------//
   {
     file = null;
@@ -77,6 +87,20 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public boolean isCompressed ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isCompressionSuffix (suffix);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isLeaf ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return (isFile () && !isCompressed ()) || isMember ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   int getLevel ()
   // ---------------------------------------------------------------------------------//
   {
@@ -100,19 +124,13 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean isCompressed ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return isCompressionSuffix (suffix);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void setReader (XmitReader reader)
+  void setReader (Reader reader)
   // ---------------------------------------------------------------------------------//
   {
     this.reader = reader;
   }
 
+  // called from XmitTree
   // ---------------------------------------------------------------------------------//
   Reader getReader (FileTreeItem fileTreeItem)
   // ---------------------------------------------------------------------------------//
@@ -122,12 +140,13 @@ class XmitFile
     {
       Dataset dataset = reader.getActiveDataset ();
       if (dataset.isPartitionedDataset ()
-          && ((PdsDataset) dataset).getPdsMembers ().size () > 0)
+          && ((PdsDataset) dataset).getPdsXmitMembers ().size () > 0)
         fileTreeItem.buildChildren ();
     }
     return reader;
   }
 
+  // called from FileTreeNode
   // ---------------------------------------------------------------------------------//
   Reader getReader ()
   // ---------------------------------------------------------------------------------//
@@ -147,11 +166,17 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
   public String getName ()
   // ---------------------------------------------------------------------------------//
   {
     return name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static boolean isValidFileName (File file)
+  // ---------------------------------------------------------------------------------//
+  {
+    return isValidFileName (file.getName ().toUpperCase ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -162,7 +187,7 @@ class XmitFile
       return false;
 
     String suffix = getSuffix (fileName);
-    return isXmitSuffix (suffix) || isCompressionSuffix (suffix);
+    return isValidSuffix (suffix) || isCompressionSuffix (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -174,10 +199,10 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean isXmitSuffix (String suffix)
+  public static boolean isValidSuffix (String suffix)
   // ---------------------------------------------------------------------------------//
   {
-    return xmitSuffixes.contains (suffix);
+    return validSuffixes.contains (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -188,10 +213,10 @@ class XmitFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public static Map<ZipEntry, XmitFile> decompressZip (Path path)
+  public static Map<ZipEntry, XmitFileNode> decompressZip (Path path)
   // ---------------------------------------------------------------------------------//
   {
-    Map<ZipEntry, XmitFile> fileMap = new HashMap<> ();
+    Map<ZipEntry, XmitFileNode> fileMap = new HashMap<> ();
 
     try (ZipFile zipFile = new ZipFile (path.toString ()))
     {
@@ -206,7 +231,7 @@ class XmitFile
         {
           containsFolder = true;
         }
-        else if (XmitFile.isValidFileName (entryName))
+        else if (XmitFileNode.isValidFileName (entryName))
         {
           int pos = entryName.lastIndexOf ('.');
           String suffix = pos < 0 ? "" : entryName.substring (pos).toLowerCase ();
@@ -223,11 +248,12 @@ class XmitFile
           stream.close ();
           fos.close ();
           tmp.deleteOnExit ();          // why not delete it now?
-          fileMap.put (entry, new XmitFile (tmp, entryName));
+          fileMap.put (entry, new XmitFileNode (tmp, entryName));
         }
         else
           invalidNames.add (entryName);
       }
+
       if (fileMap.isEmpty ())
       {
         int size = invalidNames.size ();

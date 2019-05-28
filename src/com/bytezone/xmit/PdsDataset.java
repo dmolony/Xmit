@@ -13,7 +13,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private static final int DIR_BLOCK_LENGTH = 0x114;
 
   private final List<CatalogEntry> catalogEntries = new ArrayList<> ();
-  private final List<PdsMember> pdsMembers = new ArrayList<> ();
+  private final List<PdsMember> pdsXmitMembers = new ArrayList<> ();
   private final Map<String, Filter> filterList = new HashMap<> ();
 
   private CopyR1 copyR1;
@@ -84,10 +84,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<PdsMember> getPdsMembers ()
+  public List<PdsMember> getPdsXmitMembers ()
   // ---------------------------------------------------------------------------------//
   {
-    return pdsMembers;
+    return pdsXmitMembers;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -187,7 +187,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       }
 
       if (member.isXmit ())
-        pdsMembers.add (member);       // should these be CatalogEntry?
+        pdsXmitMembers.add (member);       // should these be CatalogEntry?
     }
 
     // FILE182.UTILXMIT contains REV38 which is flagged as an alias of REVIEW, but

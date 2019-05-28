@@ -288,8 +288,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
+  public String getText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -322,6 +321,14 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
     Utility.removeTrailingNewlines (text);
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

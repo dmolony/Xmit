@@ -72,7 +72,7 @@ public class XmitApp extends Application
     // get root folder
     validateRootFolderOrExit ();
 
-    xmitTree = new XmitTree (new FileTreeItem (new XmitFile (new File (rootFolderName))));
+    xmitTree = new XmitTree (new FileTreeItem (new XmitFileNode (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();
@@ -298,7 +298,7 @@ public class XmitApp extends Application
   {
     if (setRootFolder ())
       treePane
-          .setRootFolder (new FileTreeItem (new XmitFile (new File (rootFolderName))));
+          .setRootFolder (new FileTreeItem (new XmitFileNode (new File (rootFolderName))));
   }
 
   // ---------------------------------------------------------------------------------//

@@ -93,4 +93,12 @@ public abstract class Reader implements Iterable<Dataset>
       return null;
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("Reader: %s", fileName);
+  }
 }

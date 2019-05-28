@@ -18,14 +18,15 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // -----------------------------------------------------------------------------------//
-class XmitTree extends TreeView<XmitFile>                                             //
+class XmitTree extends TreeView<XmitFileNode>                                             //
     implements FontChangeListener, SaveState
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
 
-  private final MultipleSelectionModel<TreeItem<XmitFile>> model = getSelectionModel ();
+  private final MultipleSelectionModel<TreeItem<XmitFileNode>> model =
+      getSelectionModel ();
   private final List<TreeItemSelectionListener> listeners = new ArrayList<> ();
 
   private final Image zipImage;
@@ -50,16 +51,16 @@ class XmitTree extends TreeView<XmitFile>                                       
 
     fileTreeItem.setExpanded (true);
 
-    setCellFactory (new Callback<TreeView<XmitFile>, TreeCell<XmitFile>> ()
+    setCellFactory (new Callback<TreeView<XmitFileNode>, TreeCell<XmitFileNode>> ()
     {
       @Override
-      public TreeCell<XmitFile> call (TreeView<XmitFile> parm)
+      public TreeCell<XmitFileNode> call (TreeView<XmitFileNode> parm)
       {
-        TreeCell<XmitFile> cell = new TreeCell<> ()
+        TreeCell<XmitFileNode> cell = new TreeCell<> ()
         {
           private ImageView imageView;
 
-          public void updateItem (XmitFile xmitFile, boolean empty)
+          public void updateItem (XmitFileNode xmitFile, boolean empty)
           {
             super.updateItem (xmitFile, empty);
             if (empty || xmitFile == null)
@@ -76,7 +77,7 @@ class XmitTree extends TreeView<XmitFile>                                       
             }
           }
 
-          private void setImageView (XmitFile xmitFile)
+          private void setImageView (XmitFileNode xmitFile)
           {
             if (imageView == null)
               imageView = new ImageView ();
@@ -100,7 +101,7 @@ class XmitTree extends TreeView<XmitFile>                                       
         return;
       }
 
-      XmitFile xmitFile = newSel.getValue ();
+      XmitFileNode xmitFile = newSel.getValue ();
       Reader reader = xmitFile.getReader ((FileTreeItem) newSel);
 
       if (reader == null)
@@ -136,7 +137,7 @@ class XmitTree extends TreeView<XmitFile>                                       
 
     if (!lastPath.isEmpty ())
     {
-      Optional<TreeItem<XmitFile>> optionalNode = getNode (lastPath);
+      Optional<TreeItem<XmitFileNode>> optionalNode = getNode (lastPath);
       if (optionalNode.isPresent ())
       {
         int row = getRow (optionalNode.get ());
@@ -155,11 +156,11 @@ class XmitTree extends TreeView<XmitFile>                                       
   }
 
   // ---------------------------------------------------------------------------------//
-  Optional<TreeItem<XmitFile>> getNode (String path)
+  Optional<TreeItem<XmitFileNode>> getNode (String path)
   // ---------------------------------------------------------------------------------//
   {
-    TreeItem<XmitFile> node = getRoot ();
-    Optional<TreeItem<XmitFile>> optionalNode = Optional.empty ();
+    TreeItem<XmitFileNode> node = getRoot ();
+    Optional<TreeItem<XmitFileNode>> optionalNode = Optional.empty ();
 
     String[] chunks = path.split (SEPARATOR);
 
@@ -176,11 +177,12 @@ class XmitTree extends TreeView<XmitFile>                                       
   }
 
   // ---------------------------------------------------------------------------------//
-  private Optional<TreeItem<XmitFile>> search (TreeItem<XmitFile> parentNode, String name)
+  private Optional<TreeItem<XmitFileNode>> search (TreeItem<XmitFileNode> parentNode,
+      String name)
   // ---------------------------------------------------------------------------------//
   {
     parentNode.setExpanded (true);
-    for (TreeItem<XmitFile> childNode : parentNode.getChildren ())
+    for (TreeItem<XmitFileNode> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
         return Optional.of (childNode);
 
@@ -193,7 +195,7 @@ class XmitTree extends TreeView<XmitFile>                                       
   {
     StringBuilder pathBuilder = new StringBuilder ();
 
-    TreeItem<XmitFile> item = model.getSelectedItem ();
+    TreeItem<XmitFileNode> item = model.getSelectedItem ();
     while (item != null)
     {
       pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());

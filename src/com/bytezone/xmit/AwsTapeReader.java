@@ -1,15 +1,13 @@
 package com.bytezone.xmit;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 // ---------------------------------------------------------------------------------//
 public class AwsTapeReader extends Reader
 // ---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
-  private final List<Dataset> datasets = new ArrayList<> ();
+  //  private final List<Dataset> datasets = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public AwsTapeReader (File file)
@@ -121,6 +119,14 @@ public class AwsTapeReader extends Reader
   // ---------------------------------------------------------------------------------//
   {
     return (((PdsDataset) activeDataset).awsTapeHeaders.name);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("Tape Reader: %s", fileName);
   }
 
   // from FILE533.XMI -> M370VTT2
