@@ -7,7 +7,6 @@ public class AwsTapeReader extends Reader
 // ---------------------------------------------------------------------------------//
 {
   private static final byte[] header = { (byte) 0xCA, 0x6D, 0x0F };
-  //  private final List<Dataset> datasets = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public AwsTapeReader (File file)
@@ -118,7 +117,7 @@ public class AwsTapeReader extends Reader
   public String getDatasetName ()
   // ---------------------------------------------------------------------------------//
   {
-    return (((PdsDataset) activeDataset).awsTapeHeaders.name);
+    return (((PdsDataset) activeDataset).getAwsTapeHeaders ().name);
   }
 
   // ---------------------------------------------------------------------------------//

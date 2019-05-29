@@ -45,14 +45,14 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
 
         lines.add ("HDR1");
         lines.add ("-----------------------------------------------------------");
-        String header1 = dataset.getAwsTapeDataset ().header1 ();
+        String header1 = dataset.getAwsTapeHeaders ().header1 ();
         for (String line : header1.split ("\n"))
           lines.add (line);
         lines.add ("");
 
         lines.add ("HDR2");
         lines.add ("-----------------------------------------------------------");
-        String header2 = dataset.getAwsTapeDataset ().header2 ();
+        String header2 = dataset.getAwsTapeHeaders ().header2 ();
         for (String line : header2.split ("\n"))
           lines.add (line);
         lines.add ("");

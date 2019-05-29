@@ -15,7 +15,8 @@ public abstract class Reader implements Iterable<Dataset>
   private final int level;
   boolean incomplete;
   final List<Dataset> datasets = new ArrayList<> ();
-  Dataset activeDataset;
+
+  Dataset activeDataset;      // this will go
 
   // ---------------------------------------------------------------------------------//
   public Reader (String fileName, int level)

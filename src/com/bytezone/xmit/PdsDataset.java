@@ -19,7 +19,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private CopyR1 copyR1;
   private CopyR2 copyR2;
 
-  public AwsTapeHeaders awsTapeHeaders;        // this is clumsy
+  private AwsTapeHeaders awsTapeHeaders;        // this is clumsy
 
   // ---------------------------------------------------------------------------------//
   PdsDataset (Reader reader, Disposition disposition)
@@ -75,7 +75,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  public AwsTapeHeaders getAwsTapeDataset ()
+  public AwsTapeHeaders getAwsTapeHeaders ()
   // ---------------------------------------------------------------------------------//
   {
     return awsTapeHeaders;
