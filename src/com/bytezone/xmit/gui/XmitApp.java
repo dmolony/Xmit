@@ -39,7 +39,7 @@ public class XmitApp extends Application
   private Stage primaryStage;
   private String rootFolderName;
 
-  private XmitTree xmitTree;
+  private XmitTreeV1 xmitTree;
   private TreePane treePane;
 
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
@@ -72,7 +72,7 @@ public class XmitApp extends Application
     // get root folder
     validateRootFolderOrExit ();
 
-    xmitTree = new XmitTree (new FileTreeItem (new XmitFileNode (new File (rootFolderName))));
+    xmitTree = new XmitTreeV1 (new FileTreeItem (new XmitFileNode (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();

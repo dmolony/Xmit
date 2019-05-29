@@ -12,7 +12,7 @@ public abstract class Reader implements Iterable<Dataset>
 // -----------------------------------------------------------------------------------//
 {
   final String fileName;
-  private final int level;
+  private final int level;      // can probably go
   boolean incomplete;
   final List<Dataset> datasets = new ArrayList<> ();
 

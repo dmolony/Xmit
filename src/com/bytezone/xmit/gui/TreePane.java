@@ -7,11 +7,11 @@ class TreePane extends BorderPane
 // -----------------------------------------------------------------------------------//
 {
   private final String home = System.getProperty ("user.home");
-  private final XmitTree tree;
+  private final XmitTreeV1 tree;
   private final HeaderBar treeHeaderBar = new HeaderBar ();
 
   // ---------------------------------------------------------------------------------//
-  public TreePane (XmitTree tree)
+  public TreePane (XmitTreeV1 tree)
   // ---------------------------------------------------------------------------------//
   {
     this.tree = tree;

@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // -----------------------------------------------------------------------------------//
-class XmitTree extends TreeView<XmitFileNode>                                             //
+class XmitTreeV1 extends TreeView<XmitFileNode>                                             //
     implements FontChangeListener, SaveState
 // -----------------------------------------------------------------------------------//
 {
@@ -37,7 +37,7 @@ class XmitTree extends TreeView<XmitFileNode>                                   
   private final DatasetStatus datasetStatus = new DatasetStatus ();
 
   // ---------------------------------------------------------------------------------//
-  XmitTree (FileTreeItem fileTreeItem)
+  XmitTreeV1 (FileTreeItem fileTreeItem)
   // ---------------------------------------------------------------------------------//
   {
     super (fileTreeItem);
