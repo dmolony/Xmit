@@ -9,19 +9,20 @@ import com.bytezone.xmit.textunit.Dsorg.Org;
 public abstract class Dataset
 // -----------------------------------------------------------------------------------//
 {
-  final Reader reader;
-  Disposition disposition;
-  String name = "dunno";
+  private final Reader reader;
+  private Disposition disposition;
+  private final String name;
 
   final List<Segment> segments = new ArrayList<> ();
   int rawBufferLength;
 
   // ---------------------------------------------------------------------------------//
-  Dataset (Reader reader, Disposition disposition)
+  Dataset (Reader reader, Disposition disposition, String name)
   // ---------------------------------------------------------------------------------//
   {
     this.reader = reader;
     this.disposition = disposition;
+    this.name = name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -36,6 +37,13 @@ public abstract class Dataset
   // ---------------------------------------------------------------------------------//
   {
     return name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void setDisposition (Disposition disposition)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.disposition = disposition;
   }
 
   // ---------------------------------------------------------------------------------//

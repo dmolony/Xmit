@@ -25,7 +25,7 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   {
     this.disposition = disposition;
-    this.reader = dataset.reader;
+    this.reader = dataset.getReader ();
   }
 
   // ---------------------------------------------------------------------------------//

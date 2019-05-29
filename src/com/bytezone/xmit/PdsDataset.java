@@ -25,17 +25,15 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   PdsDataset (Reader reader, Disposition disposition)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, disposition);
-    name = reader.getDatasetName ();
+    super (reader, disposition, reader.getDatasetName ());
   }
 
   // ---------------------------------------------------------------------------------//
   PdsDataset (Reader reader, AwsTapeHeaders awsTapeHeaders)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, awsTapeHeaders.disposition);
+    super (reader, awsTapeHeaders.disposition, awsTapeHeaders.name);
     this.awsTapeHeaders = awsTapeHeaders;
-    name = awsTapeHeaders.name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -135,8 +133,8 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     // convert first two DataBlock entries
     copyR1 = new CopyR1 (segments.get (segmentNbr++).getRawBuffer ());
     copyR2 = new CopyR2 (segments.get (segmentNbr++).getRawBuffer ());
-    disposition = copyR1.getDisposition ();
-    disposition.setPdse (copyR1.isPdse ());
+    setDisposition (copyR1.getDisposition ());
+    getDisposition ().setPdse (copyR1.isPdse ());
 
     // read catalog entries
     Map<Long, List<CatalogEntry>> catalogMap = new TreeMap<> ();
@@ -235,7 +233,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
     {
       if (currentMember == null)
       {
-        currentMember = new PdsMember (this, disposition);
+        currentMember = new PdsMember (this, getDisposition ());
         members.add (currentMember);
       }
 
@@ -263,7 +261,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 
       if (ttl != lastTtl)
       {
-        currentMember = new PdsMember (this, disposition);
+        currentMember = new PdsMember (this, getDisposition ());
         members.add (currentMember);
         lastTtl = ttl;
       }
@@ -345,7 +343,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return reader.getDatasetName ();
+    return getReader ().getDatasetName ();
   }
 
   // ---------------------------------------------------------------------------------//
