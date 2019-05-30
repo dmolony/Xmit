@@ -19,7 +19,7 @@ import javafx.scene.control.TreeItem;
 class FileTreeItem extends TreeItem<XmitFileNode>
 // -----------------------------------------------------------------------------------//
 {
-  static private final FileComparator comparator = new FileComparator ();
+  static private final FileComparatorV1 comparator = new FileComparatorV1 ();
 
   private boolean isFirstTimeChildren = true;
   private boolean isFirstTimeLeaf = true;

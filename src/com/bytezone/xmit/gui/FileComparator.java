@@ -5,23 +5,23 @@ import java.util.Comparator;
 import javafx.scene.control.TreeItem;
 
 // -----------------------------------------------------------------------------------//
-class FileComparator implements Comparator<TreeItem<XmitFileNode>>
-// -----------------------------------------------------------------------------------//
+class FileComparator implements Comparator<TreeItem<NodeData>>
+//-----------------------------------------------------------------------------------//
 {
   @Override
-  public int compare (TreeItem<XmitFileNode> thisFile, TreeItem<XmitFileNode> thatFile)
+  public int compare (TreeItem<NodeData> thisFile, TreeItem<NodeData> thatFile)
   {
-    XmitFileNode thisXmitFile = thisFile.getValue ();
-    XmitFileNode thatXmitFile = thatFile.getValue ();
+    NodeData nodeData1 = thisFile.getValue ();
+    NodeData nodeData2 = thatFile.getValue ();
 
-    boolean thisFileIsDirectory = thisXmitFile.isDirectory ();
-    boolean thatFileIsDirectory = thatXmitFile.isDirectory ();
+    boolean thisFileIsDirectory = nodeData1.isDirectory ();
+    boolean thatFileIsDirectory = nodeData2.isDirectory ();
 
     if (thisFileIsDirectory && !thatFileIsDirectory)
       return 1;
     if (!thisFileIsDirectory && thatFileIsDirectory)
       return -1;
 
-    return thisXmitFile.getName ().compareToIgnoreCase (thatXmitFile.getName ());
+    return nodeData1.name.compareToIgnoreCase (nodeData2.name);
   }
 }
