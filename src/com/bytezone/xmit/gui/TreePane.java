@@ -7,11 +7,11 @@ class TreePane extends BorderPane
 // -----------------------------------------------------------------------------------//
 {
   private final String home = System.getProperty ("user.home");
-  private final XmitTreeV1 tree;
+  private final XmitTree tree;
   private final HeaderBar treeHeaderBar = new HeaderBar ();
 
   // ---------------------------------------------------------------------------------//
-  public TreePane (XmitTreeV1 tree)
+  public TreePane (XmitTree tree)
   // ---------------------------------------------------------------------------------//
   {
     this.tree = tree;
@@ -21,7 +21,7 @@ class TreePane extends BorderPane
   }
 
   // ---------------------------------------------------------------------------------//
-  void setRootFolder (FileTreeItem treeItem)
+  void setRootFolder (XmitTreeItem treeItem)
   // ---------------------------------------------------------------------------------//
   {
     tree.setRootFolder (treeItem);
@@ -32,7 +32,7 @@ class TreePane extends BorderPane
   void setFolderName ()
   // ---------------------------------------------------------------------------------//
   {
-    String pathName = tree.getRoot ().getValue ().toPath ().toString ();
+    String pathName = tree.getRoot ().getValue ().file.toPath ().toString ();
     if (pathName.startsWith (home))
       pathName = pathName.replace (home, "~");
     treeHeaderBar.leftLabel.setText (pathName);

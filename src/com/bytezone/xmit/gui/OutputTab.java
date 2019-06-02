@@ -6,20 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bytezone.xmit.PdsMember;
-import com.bytezone.xmit.Utility;
+import com.bytezone.xmit.*;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
 class OutputTab extends XmitTextTab
-    implements ShowLinesListener, TreeItemSelectionListener, TableItemSelectionListener,
-    FilterChangeListener, OutputWriter, CodePageSelectedListener
+    implements ShowLinesListener, TableItemSelectionListener, FilterChangeListener,
+    OutputWriter, CodePageSelectedListener, NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
   private static final int MAX_LINES = 2500;
@@ -34,7 +36,12 @@ class OutputTab extends XmitTextTab
       "^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
 
   LineDisplayStatus lineDisplayStatus;
-  DatasetStatus datasetStatus;
+  //  private NodeData nodeData;
+  //  private CatalogEntry catalogEntry;
+  private DataFile dataFile;
+
+  // keep track of all PDS datasets seen so that we can INCLUDE members
+  private final Map<String, PdsDataset> datasets = new TreeMap<> ();
 
   // ---------------------------------------------------------------------------------//
   public OutputTab (String title, KeyCode keyCode)
@@ -50,10 +57,7 @@ class OutputTab extends XmitTextTab
   List<String> getLines ()
   // ---------------------------------------------------------------------------------//
   {
-    if (datasetStatus == null || !datasetStatus.hasDataFile ())
-      return new ArrayList<> ();
-
-    return getLines (MAX_LINES);
+    return dataFile == null ? new ArrayList<> () : getLines (MAX_LINES);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -62,7 +66,7 @@ class OutputTab extends XmitTextTab
   {
     List<String> newLines = new ArrayList<> ();
 
-    List<String> lines = datasetStatus.getDataFile ().getLines ();     // improve this
+    List<String> lines = dataFile.getLines ();     // improve this
     int lineNo = 0;
     String includeDatasetName = "";
 
@@ -120,7 +124,7 @@ class OutputTab extends XmitTextTab
       String commentIndicator)
   // ---------------------------------------------------------------------------------//
   {
-    Optional<PdsMember> optMember = datasetStatus.findMember (datasetName, memberName);
+    Optional<PdsMember> optMember = findMember (datasetName, memberName);
     if (optMember.isEmpty ())
       newLines.add (
           String.format ("==> %s(%s): dataset not seen yet", datasetName, memberName));
@@ -128,6 +132,16 @@ class OutputTab extends XmitTextTab
       for (String line : optMember.get ().getLines ())
         if (!line.startsWith (commentIndicator))
           newLines.add (line);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Optional<PdsMember> findMember (String datasetName, String memberName)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (datasets.containsKey (datasetName))
+      return datasets.get (datasetName).findMember (memberName);
+
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -172,19 +186,11 @@ class OutputTab extends XmitTextTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
-    refresh ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void tableItemSelected (DatasetStatus datasetStatus)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.datasetStatus = datasetStatus;
+    //    this.catalogEntry = catalogEntry;
+    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
     refresh ();
   }
 
@@ -193,6 +199,29 @@ class OutputTab extends XmitTextTab
   public void selectCodePage (String codePageName)
   // ---------------------------------------------------------------------------------//
   {
+    refresh ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void nodeSelected (NodeData nodeData)
+  // ---------------------------------------------------------------------------------//
+  {
+    //    this.nodeData = nodeData;
+
+    if (nodeData.isPartitionedDataset ())
+    {
+      Dataset dataset = nodeData.dataset;
+      String datasetName = dataset.getReader ().getDatasetName ();
+      if (!datasets.containsKey (datasetName))
+        datasets.put (datasetName, (PdsDataset) dataset);
+      dataFile = null;
+    }
+    else if (nodeData.isPhysicalSequentialDataset ())
+      dataFile = nodeData.getDataFile ();
+    else
+      dataFile = null;
+
     refresh ();
   }
 }

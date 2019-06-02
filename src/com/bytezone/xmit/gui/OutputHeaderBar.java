@@ -1,19 +1,22 @@
 package com.bytezone.xmit.gui;
 
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+
 // -----------------------------------------------------------------------------------//
 class OutputHeaderBar extends HeaderBar
-    implements TreeItemSelectionListener, TableItemSelectionListener, ShowLinesListener
+    implements NodeDataListener, TableItemSelectionListener, ShowLinesListener
 // -----------------------------------------------------------------------------------//
 {
   private LineDisplayStatus lineDisplayStatus;
-  private DatasetStatus datasetStatus;
+  private NodeData nodeData;
+  private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//
   void updateNameLabel (boolean truncateLines)
   // ---------------------------------------------------------------------------------//
   {
-    if (datasetStatus == null || !datasetStatus.hasDataset ()
-        || !datasetStatus.hasCatalogEntry ())
+    if (nodeData == null || !nodeData.isDataset () || catalogEntry == null)
     {
       leftLabel.setText ("");
       return;
@@ -21,16 +24,16 @@ class OutputHeaderBar extends HeaderBar
 
     String indicator = truncateLines ? "<-" : "";
 
-    if (datasetStatus.isPds ())
+    if (nodeData.isPartitionedDataset ())
     {
-      String memberName = indicator + datasetStatus.getMemberName ();
-      if (datasetStatus.isAlias ())
-        leftLabel.setText (memberName + " -> " + datasetStatus.getAliasName ());
+      String memberName = indicator + nodeData.name;
+      if (catalogEntry.isAlias ())
+        leftLabel.setText (memberName + " -> " + catalogEntry.getAliasName ());
       else
         leftLabel.setText (memberName);
     }
     else
-      leftLabel.setText (indicator + datasetStatus.getDataFileName ());
+      leftLabel.setText (indicator + nodeData.name);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -44,21 +47,22 @@ class OutputHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
-
-    rightLabel.setText (
-        !datasetStatus.hasDataset () ? "" : datasetStatus.getDisposition ().toString ());
+    this.catalogEntry = catalogEntry;
     updateNameLabel (lineDisplayStatus.truncateLines);
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void tableItemSelected (DatasetStatus datasetStatus)
+  public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
+    this.nodeData = nodeData;
+
+    rightLabel
+        .setText (nodeData.isDataset () ? nodeData.getDisposition ().toString () : "");
     updateNameLabel (lineDisplayStatus.truncateLines);
   }
 }

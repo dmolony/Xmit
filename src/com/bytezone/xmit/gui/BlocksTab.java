@@ -3,16 +3,19 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.PdsMember;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
 class BlocksTab extends XmitTextTab
-    implements TreeItemSelectionListener, TableItemSelectionListener
+    implements NodeDataListener, TableItemSelectionListener
 // -----------------------------------------------------------------------------------//
 {
-  DatasetStatus datasetStatus;
+  private NodeData nodeData;
+  private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//
   public BlocksTab (String title, KeyCode keyCode)
@@ -28,32 +31,32 @@ class BlocksTab extends XmitTextTab
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || !datasetStatus.hasDataFile ())
+    if (nodeData == null || !nodeData.isDataFile ())
       return lines;
 
-    if (datasetStatus.isPds ())
-      ((PdsMember) datasetStatus.getDataFile ()).listSizeCounts (lines);
+    if (nodeData.isPartitionedDataset ())
+      ((PdsMember) nodeData.getDataFile ()).listSizeCounts (lines);
 
-    lines.add (datasetStatus.getDataFile ().toString ());
+    lines.add (nodeData.getDataFile ().toString ());
 
     return lines;
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.nodeData = nodeData;
     refresh ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void tableItemSelected (DatasetStatus datasetStatus)
+  public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.catalogEntry = catalogEntry;
     refresh ();
   }
 }

@@ -2,36 +2,36 @@ package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.scene.paint.Color;
 
 // -----------------------------------------------------------------------------------//
 class TableHeaderBar extends HeaderBar
-    implements TreeItemSelectionListener, FilterActionListener, FilterChangeListener
+    implements NodeDataListener, FilterActionListener, FilterChangeListener
 // -----------------------------------------------------------------------------------//
 {
-  private DatasetStatus datasetStatus;
+  private NodeData nodeData;
   private FilterStatus filterStatus;
   private int found;
   private int max;
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.nodeData = nodeData;
 
-    if (!datasetStatus.hasDataset ())
+    if (!nodeData.isDataset ())
     {
       leftLabel.setText ("");
       rightLabel.setText ("");
     }
     else
     {
-      Reader reader = datasetStatus.getReader ();
-      //      leftLabel.setText (reader.getDatasetName ());
-      leftLabel.setText (datasetStatus.getDatasetName ());
+      Reader reader = nodeData.getReader ();
+      leftLabel.setText (nodeData.name);
       leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
     }
@@ -64,10 +64,9 @@ class TableHeaderBar extends HeaderBar
   private void setMembersLabel ()
   // ---------------------------------------------------------------------------------//
   {
-    if (datasetStatus != null && datasetStatus.isPds ())
+    if (nodeData != null && nodeData.isPartitionedDataset ())
     {
-      int members =
-          ((PdsDataset) datasetStatus.getDataset ()).getCatalogEntries ().size ();
+      int members = ((PdsDataset) nodeData.dataset).getCatalogEntries ().size ();
 
       if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
         rightLabel

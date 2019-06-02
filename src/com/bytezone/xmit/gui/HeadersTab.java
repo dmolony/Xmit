@@ -3,17 +3,23 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.xmit.*;
+import com.bytezone.xmit.BasicModule;
+import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
+import com.bytezone.xmit.LoadModule;
+import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.XmitReader;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
+class HeadersTab extends XmitTextTab implements NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
-  DatasetStatus datasetStatus;
+  //  DatasetStatus datasetStatus;
+  NodeData nodeData;
 
   // ---------------------------------------------------------------------------------//
   public HeadersTab (String title, KeyCode keyCode)
@@ -29,39 +35,38 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || !datasetStatus.hasDataset ())
+    if (nodeData == null || !nodeData.isDataset ())
       return lines;
 
-    Reader reader = datasetStatus.getReader ();
-    if (reader instanceof XmitReader)
-      for (ControlRecord controlRecord : ((XmitReader) datasetStatus.getReader ())
+    //    Reader reader = datasetStatus.getReader ();
+    if (nodeData.isXmit ())
+    {
+      for (ControlRecord controlRecord : ((XmitReader) nodeData.getReader ())
           .getControlRecords ())
         lines.add (controlRecord.toString ());
-    else if (reader instanceof AwsTapeReader)
+    }
+    else if (nodeData.isTape ())
     {
-      if (datasetStatus.isPds ())
-      {
-        PdsDataset dataset = (PdsDataset) datasetStatus.getDataset ();
+      PdsDataset dataset = (PdsDataset) nodeData.dataset;
 
-        lines.add ("HDR1");
-        lines.add ("-----------------------------------------------------------");
-        String header1 = dataset.getAwsTapeHeaders ().header1 ();
-        for (String line : header1.split ("\n"))
-          lines.add (line);
-        lines.add ("");
+      lines.add ("HDR1");
+      lines.add ("-----------------------------------------------------------");
+      String header1 = dataset.getAwsTapeHeaders ().header1 ();
+      for (String line : header1.split ("\n"))
+        lines.add (line);
+      lines.add ("");
 
-        lines.add ("HDR2");
-        lines.add ("-----------------------------------------------------------");
-        String header2 = dataset.getAwsTapeHeaders ().header2 ();
-        for (String line : header2.split ("\n"))
-          lines.add (line);
-        lines.add ("");
-      }
+      lines.add ("HDR2");
+      lines.add ("-----------------------------------------------------------");
+      String header2 = dataset.getAwsTapeHeaders ().header2 ();
+      for (String line : header2.split ("\n"))
+        lines.add (line);
+      lines.add ("");
     }
 
-    if (datasetStatus.isPds ())
+    if (nodeData.isPartitionedDataset ())
     {
-      PdsDataset pdsDataset = (PdsDataset) datasetStatus.getDataset ();
+      PdsDataset pdsDataset = (PdsDataset) nodeData.dataset;
       lines.add ("COPYR1");
       lines.addAll (pdsDataset.getCopyR1 ().toLines ());
       lines.add ("");
@@ -69,8 +74,8 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
       lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
-      lines
-          .add (String.format ("%s Catalog Blocks:", datasetStatus.getReaderFileName ()));
+      lines.add (String.format ("%s Catalog Blocks:",
+          nodeData.dataset.getReader ().getFileName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
@@ -86,10 +91,10 @@ class HeadersTab extends XmitTextTab implements TreeItemSelectionListener
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.nodeData = nodeData;
     refresh ();
   }
 }

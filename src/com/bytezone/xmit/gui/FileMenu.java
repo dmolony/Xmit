@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
+import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Utility;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,7 +23,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
 // -----------------------------------------------------------------------------------//
-class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener, SaveState
+class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveState
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_EXTRACT_FOLDER = "ExtractFolder";
@@ -33,7 +35,8 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private final MenuItem saveMenuItem = new MenuItem ("Save output...");
   private final MenuItem aboutMenuItem = new MenuItem ("Show version...");
 
-  private DatasetStatus datasetStatus;
+  private NodeData nodeData;
+  private CatalogEntry catalogEntry;
 
   private String saveFolderName;
   private String extractFolderName;
@@ -89,8 +92,9 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
     if (outputWriter == null)
       return;
 
-    String extra = datasetStatus.isPds () ? "." + datasetStatus.getMemberName () : "";
-    String name = datasetStatus.getReaderDatasetName () + extra + ".txt";
+    System.out.println ("this is wrong");
+    String extra = nodeData.isMember () ? "." + nodeData.name : "";
+    String name = nodeData.name + extra + ".txt";
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Save output text to");
@@ -109,22 +113,19 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private void extractFile ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = null;
+    byte[] buffer = nodeData.getDataFile ().getDataBuffer ();
     String fileName = "";
+    DataFile member = nodeData.getDataFile ();
 
-    if (datasetStatus.isPs ())
+    System.out.println ("this is wrong");
+    if (nodeData.isPhysicalSequentialDataset ())
     {
-      DataFile member = datasetStatus.getFlatFile ();
-      buffer = member.getDataBuffer ();
-      fileName =
-          datasetStatus.getReaderDatasetName () + "." + member.getFileType ().name ();
+      fileName = nodeData.name + "." + member.getFileType ().name ();
     }
-    else
+    else if (nodeData.isPartitionedDataset ())
     {
-      buffer = datasetStatus.getMember ().getDataBuffer ();
       fileName =
-          datasetStatus.getReaderDatasetName () + "." + datasetStatus.getMemberName ()
-              + "." + datasetStatus.getMember ().getFileType ().name ();
+          nodeData.name + "." + member.getName () + "." + member.getFileType ().name ();
     }
 
     FileChooser fileChooser = new FileChooser ();
@@ -175,19 +176,19 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.nodeData = nodeData;
     setMenu ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void tableItemSelected (DatasetStatus datasetStatus)
+  public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.catalogEntry = catalogEntry;
     setMenu ();
   }
 
@@ -195,15 +196,14 @@ class FileMenu implements TableItemSelectionListener, TreeItemSelectionListener,
   private void setMenu ()
   // ---------------------------------------------------------------------------------//
   {
-    if (datasetStatus.isPs ())         // flat file
+    if (nodeData.isPhysicalSequentialDataset ())         // flat file
     {
-      extractMenuItem
-          .setText ("Extract " + datasetStatus.getReaderDatasetName () + "...");
+      extractMenuItem.setText ("Extract " + nodeData.name + "...");
       extractMenuItem.setDisable (false);
     }
-    else if (datasetStatus.isPds () && datasetStatus.hasCatalogEntry ())
+    else if (nodeData.isMember ())
     {
-      extractMenuItem.setText ("Extract " + datasetStatus.getMemberName () + "...");
+      extractMenuItem.setText ("Extract " + nodeData.name + "...");
       extractMenuItem.setDisable (false);
     }
     else

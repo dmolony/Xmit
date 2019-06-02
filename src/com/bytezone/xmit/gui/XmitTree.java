@@ -71,7 +71,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
 
           private void setImageView (NodeData nodeData)
           {
-            Image image = nodeData.isCompressed () ? zipImage :         //
+            Image image = nodeData.isCompressedFile () ? zipImage :         //
             nodeData.isDirectory () ? folderImage :                     //
             nodeData.isMember () ? mImage :                             //
             nodeData.isFile () ?                                        //
@@ -110,10 +110,9 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       //      if (nodeData.isXmit () && datasets > 1)
       //        treeItem.setLeaf (false);       // show the open triangle
 
+      System.out.println (nodeData);
       for (NodeDataListener listener : listeners)
         listener.nodeSelected (nodeData);
-
-      System.out.println (nodeData);
     });
   }
 
@@ -200,6 +199,14 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   {
     if (!listeners.contains (listener))
       listeners.add (listener);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void setRootFolder (XmitTreeItem xmitTreeItem)
+  // ---------------------------------------------------------------------------------//
+  {
+    setRoot (xmitTreeItem);
+    xmitTreeItem.setExpanded (true);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -11,10 +11,10 @@ import com.bytezone.xmit.*;
 class DatasetStatus
 // -----------------------------------------------------------------------------------//
 {
+  private String fileName;                // xmit file name (xxx.XMI)
   private Dataset dataset;                // usually file #1 in the Reader
   private DataFile dataFile;              // FlatFile or PdsMember
   private CatalogEntry catalogEntry;      // needed for alias members
-  private String fileName;                // xmit file name (xxx.XMI)
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
   private final Map<String, PdsDataset> datasets = new TreeMap<> ();
@@ -22,6 +22,7 @@ class DatasetStatus
   // keep track of last selected member for each dataset
   private final Map<Dataset, String> selectedMembers = new HashMap<> ();
 
+  // tree selection
   // ---------------------------------------------------------------------------------//
   void datasetSelected (Dataset dataset, String fileName)
   // ---------------------------------------------------------------------------------//
@@ -42,6 +43,7 @@ class DatasetStatus
         dataFile = ((PsDataset) dataset).getFlatFile ();
   }
 
+  // table selection
   // ---------------------------------------------------------------------------------//
   void catalogEntrySelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
@@ -50,7 +52,8 @@ class DatasetStatus
 
     if (catalogEntry == null)
     {
-      if (dataset != null && dataset.isPartitionedDataset ())        // filter might have no members
+      // filter might have no members
+      if (dataset != null && dataset.isPartitionedDataset ())
         dataFile = null;
     }
     else

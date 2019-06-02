@@ -14,6 +14,7 @@ public abstract class DataFile implements Comparable<DataFile>
   private String name = "";
   private final Disposition disposition;
   private final Reader reader;
+  private final Dataset dataset;
 
   private int dataLength = 0;
 
@@ -26,6 +27,7 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     this.disposition = disposition;
     this.reader = dataset.getReader ();
+    this.dataset = dataset;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -40,6 +42,13 @@ public abstract class DataFile implements Comparable<DataFile>
   // ---------------------------------------------------------------------------------//
   {
     return disposition;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public Dataset getDataset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataset;
   }
 
   // ---------------------------------------------------------------------------------//

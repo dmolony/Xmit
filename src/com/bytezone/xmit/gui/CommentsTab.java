@@ -7,14 +7,15 @@ import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.FlatFile;
 import com.bytezone.xmit.PsDataset;
 import com.bytezone.xmit.Reader;
+import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-public class CommentsTab extends XmitTextTab implements TreeItemSelectionListener
+public class CommentsTab extends XmitTextTab implements NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
-  DatasetStatus datasetStatus;
+  NodeData nodeData;
 
   // ---------------------------------------------------------------------------------//
   public CommentsTab (String title, KeyCode keyCode)
@@ -30,10 +31,10 @@ public class CommentsTab extends XmitTextTab implements TreeItemSelectionListene
   {
     List<String> lines = new ArrayList<> ();
 
-    if (datasetStatus == null || !datasetStatus.hasDataset ())
+    if (nodeData == null || !nodeData.isDataset ())
       return lines;
 
-    Reader reader = datasetStatus.getReader ();
+    Reader reader = nodeData.getReader ();
 
     if (reader.size () > 1)
     {
@@ -57,10 +58,10 @@ public class CommentsTab extends XmitTextTab implements TreeItemSelectionListene
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeItemSelected (DatasetStatus datasetStatus)
+  public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    this.datasetStatus = datasetStatus;
+    this.nodeData = nodeData;
     refresh ();
   }
 }

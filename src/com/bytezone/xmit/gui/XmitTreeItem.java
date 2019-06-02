@@ -54,7 +54,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
       firstTimeLeaf = false;
 
       if (nodeData.isFile ())
-        if (nodeData.isDirectory () || nodeData.isCompressed () || nodeData.isTape ())
+        if (nodeData.isDirectory () || nodeData.isCompressedFile () || nodeData.isTape ())
           isLeaf = false;
         else
           isLeaf = XmitTree.merging;
@@ -97,7 +97,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
     else if (nodeData.isFile ())
       if (nodeData.isDirectory ())
         addFiles (children, nodeData);
-      else if (nodeData.isCompressed ())
+      else if (nodeData.isCompressedFile ())
         addCompressedFiles (children, nodeData);
       else
         addDatasets (children, nodeData);

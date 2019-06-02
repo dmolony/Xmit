@@ -8,7 +8,7 @@ import java.util.List;
 import com.bytezone.xmit.*;
 
 // -----------------------------------------------------------------------------------//
-public class NodeData implements Iterable<Dataset>
+class NodeData implements Iterable<Dataset>
 // -----------------------------------------------------------------------------------//
 {
   static final List<String> validSuffixes = Arrays.asList ("xmi", "xmit", "aws");
@@ -22,6 +22,7 @@ public class NodeData implements Iterable<Dataset>
 
   private Reader reader;
   private boolean merged;
+  //  private boolean isCompressed;
 
   // ---------------------------------------------------------------------------------//
   public NodeData (File file)
@@ -32,6 +33,18 @@ public class NodeData implements Iterable<Dataset>
     this.dataset = null;
     this.member = null;
     this.suffix = getSuffix (name);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public NodeData (File file, String displayName)        // decompressed temporary file
+  // ---------------------------------------------------------------------------------//
+  {
+    this.name = displayName;
+    this.file = file;
+    this.dataset = null;
+    this.member = null;
+    this.suffix = getSuffix (file.getName ());
+    //    isCompressed = true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -53,20 +66,9 @@ public class NodeData implements Iterable<Dataset>
   {
     this.name = member.getName ();
     this.file = null;
-    this.dataset = null;
+    this.dataset = member.getDataset ();
     this.member = member;
     this.suffix = "";
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public NodeData (File file, String displayName)        // decompressed temporary file
-  // ---------------------------------------------------------------------------------//
-  {
-    this.name = displayName;
-    this.file = file;
-    this.dataset = null;
-    this.member = null;
-    this.suffix = getSuffix (file.getName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -84,10 +86,17 @@ public class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
+  boolean isCompressedFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return file != null && isCompressionSuffix (suffix);
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean isDatasetContainer ()
   // ---------------------------------------------------------------------------------//
   {
-    return isMember () || (file != null && !file.isDirectory () && !isCompressed ());
+    return isMember () || (file != null && !file.isDirectory () && !isCompressedFile ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -112,6 +121,20 @@ public class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
+  boolean isPhysicalSequentialDataset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataset != null && dataset.isPhysicalSequential ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Disposition getDisposition ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isDataset () ? dataset.getDisposition () : null;
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean isMember ()
   // ---------------------------------------------------------------------------------//
   {
@@ -119,10 +142,30 @@ public class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isCompressed ()
+  boolean isDataFile ()
   // ---------------------------------------------------------------------------------//
   {
-    return file != null && isCompressionSuffix (suffix);
+    return isMember () || isPhysicalSequentialDataset ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  DataFile getDataFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (isMember ())
+      return member;
+    if (isPhysicalSequentialDataset ())
+      return ((PsDataset) dataset).getFlatFile ();
+
+    System.out.printf ("%s is not a datafile%n", name);
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Reader getReader ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return reader;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -196,7 +239,7 @@ public class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  private void getReader ()
+  private void createReader ()
   // ---------------------------------------------------------------------------------//
   {
     if (isMember ())
@@ -206,7 +249,8 @@ public class NodeData implements Iterable<Dataset>
     else if (isTape ())
       reader = new AwsTapeReader (file);
     else
-      System.out.println ("Unknown suffix: " + suffix);
+      System.out.println ("Unknown suffix in createReader(): " + suffix);
+    assert reader != null;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -217,7 +261,7 @@ public class NodeData implements Iterable<Dataset>
       return 0;
 
     if (reader == null)
-      getReader ();
+      createReader ();
 
     return reader.size ();
   }
@@ -228,7 +272,7 @@ public class NodeData implements Iterable<Dataset>
   // ---------------------------------------------------------------------------------//
   {
     if (reader == null)
-      getReader ();
+      createReader ();
 
     return reader.iterator ();
   }
@@ -247,7 +291,7 @@ public class NodeData implements Iterable<Dataset>
     {
       text.append (String.format (" file .......... %s%n", file));
       text.append (String.format (" suffix ........ %s%n", suffix));
-      text.append (String.format (" isCompressed .. %s%n", isCompressed ()));
+      text.append (String.format (" isCompressed .. %s%n", isCompressedFile ()));
       text.append (String.format (" isDirectory ... %s%n", isDirectory ()));
       text.append (String.format (" isXmit ........ %s%n", isXmit ()));
       text.append (String.format (" isTape ........ %s%n", isTape ()));
@@ -259,6 +303,8 @@ public class NodeData implements Iterable<Dataset>
     {
       text.append (String.format (" dataset ....... %s%n", dataset.getName ()));
       text.append (String.format (" isPDS ......... %s%n", isPartitionedDataset ()));
+      text.append (
+          String.format (" isSequential .. %s%n", isPhysicalSequentialDataset ()));
       if (isPartitionedDataset ())
       {
         text.append (String.format (" members ....... %s%n",
