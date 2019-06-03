@@ -14,12 +14,19 @@ public abstract class Reader implements Iterable<Dataset>
   final String fileName;
   boolean incomplete;
   final List<Dataset> datasets = new ArrayList<> ();
+  final ReaderType readerType;
+
+  enum ReaderType
+  {
+    XMIT, TAPE
+  }
 
   // ---------------------------------------------------------------------------------//
-  public Reader (String fileName)
+  public Reader (String fileName, ReaderType readerType)
   // ---------------------------------------------------------------------------------//
   {
     this.fileName = fileName;
+    this.readerType = readerType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -27,6 +34,20 @@ public abstract class Reader implements Iterable<Dataset>
   // ---------------------------------------------------------------------------------//
   {
     return incomplete;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isTape ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return readerType == ReaderType.TAPE;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isXmit ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return readerType == ReaderType.XMIT;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -26,7 +26,7 @@ public class XmitReader extends Reader
   public XmitReader (File file)
   // ---------------------------------------------------------------------------------//
   {
-    super (file.getName ());
+    super (file.getName (), ReaderType.XMIT);
     read (readFile (file));
   }
 
@@ -34,7 +34,7 @@ public class XmitReader extends Reader
   public XmitReader (DataFile dataFile)
   // ---------------------------------------------------------------------------------//
   {
-    super (dataFile.getName ());
+    super (dataFile.getName (), ReaderType.XMIT);
     read (dataFile.getDataBuffer ());
   }
 

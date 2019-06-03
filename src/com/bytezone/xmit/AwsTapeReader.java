@@ -12,7 +12,7 @@ public class AwsTapeReader extends Reader
   public AwsTapeReader (File file)
   // ---------------------------------------------------------------------------------//
   {
-    super (file.getName ());
+    super (file.getName (), ReaderType.TAPE);
 
     read (readFile (file));
   }

@@ -163,14 +163,15 @@ class NodeData implements Iterable<Dataset>
   boolean isXmit ()
   // ---------------------------------------------------------------------------------//
   {
-    return suffix.equals ("xmi") || suffix.equals ("xmit");
+    return suffix.equals ("xmi") || suffix.equals ("xmit")
+        || (reader != null && reader.isXmit ());
   }
 
   // ---------------------------------------------------------------------------------//
   boolean isTape ()
   // ---------------------------------------------------------------------------------//
   {
-    return suffix.equals ("aws");
+    return suffix.equals ("aws") || (reader != null && reader.isTape ());
   }
 
   // ---------------------------------------------------------------------------------//
