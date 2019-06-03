@@ -27,7 +27,7 @@ public class XmitReader extends Reader
   public XmitReader (File file)
   // ---------------------------------------------------------------------------------//
   {
-    super (file.getName (), 0);
+    super (file.getName ());
 
     read (readFile (file));
   }
@@ -36,7 +36,7 @@ public class XmitReader extends Reader
   public XmitReader (DataFile dataFile)
   // ---------------------------------------------------------------------------------//
   {
-    super (dataFile.getName (), dataFile.getLevel ());
+    super (dataFile.getName ());
 
     read (dataFile.getDataBuffer ());
   }
@@ -96,11 +96,11 @@ public class XmitReader extends Reader
               switch (optOrg.get ())
               {
                 case PS:
-                  currentDataset = new PsDataset (this, disposition);
+                  currentDataset = new PsDataset (this, disposition, getDatasetName ());
                   break;
 
                 case PDS:
-                  currentDataset = new PdsDataset (this, disposition);
+                  currentDataset = new PdsDataset (this, disposition, getDatasetName ());
                   break;
 
                 case VSAM:
@@ -127,9 +127,6 @@ public class XmitReader extends Reader
     for (Dataset dataset : datasets)
       dataset.allocateSegments ();
 
-    // set active dataset
-    activeDataset = datasets.get (datasets.size () - 1);     // always last
-    //    activeDataset = datasets.get (0);     // always first
     assert files == datasets.size ();
   }
 
@@ -185,7 +182,7 @@ public class XmitReader extends Reader
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
+  //  @Override
   public String getDatasetName ()
   // ---------------------------------------------------------------------------------//
   {

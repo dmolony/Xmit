@@ -22,10 +22,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   private AwsTapeHeaders awsTapeHeaders;        // this is clumsy
 
   // ---------------------------------------------------------------------------------//
-  PdsDataset (Reader reader, Disposition disposition)
+  PdsDataset (Reader reader, Disposition disposition, String datasetName)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, disposition, reader.getDatasetName ());
+    super (reader, disposition, datasetName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -326,24 +326,10 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  //  public int memberIndex (String memberName)
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    int index = 0;
-  //    for (CatalogEntry catalogEntry : catalogEntries)
-  //    {
-  //      if (memberName.equals (catalogEntry.getMemberName ()))
-  //        return index;
-  //      ++index;
-  //    }
-  //    return 0;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return getReader ().getDatasetName ();
+    return getName ();
   }
 
   // ---------------------------------------------------------------------------------//

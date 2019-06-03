@@ -12,7 +12,7 @@ public class AwsTapeReader extends Reader
   public AwsTapeReader (File file)
   // ---------------------------------------------------------------------------------//
   {
-    super (file.getName (), 0);
+    super (file.getName ());
 
     read (readFile (file));
   }
@@ -107,17 +107,6 @@ public class AwsTapeReader extends Reader
     // allocate the data records
     for (Dataset dataset : datasets)
       dataset.allocateSegments ();
-
-    // set active dataset
-    activeDataset = datasets.get (0);     // always first
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String getDatasetName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return (((PdsDataset) activeDataset).getAwsTapeHeaders ().name);
   }
 
   // ---------------------------------------------------------------------------------//

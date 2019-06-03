@@ -37,10 +37,10 @@ class BlocksTab extends XmitTextTab
       {
         PdsMember member = ((PdsMember) dataFile);
         member.listSizeCounts (lines);
-        lines.add (member.getText ());
+        lines.add (member.getText ());        // should split
       }
       else
-        lines.add (dataFile.toString ());
+        lines.add (dataFile.toString ());     // should split
 
     return lines;
   }

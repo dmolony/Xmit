@@ -7,10 +7,10 @@ public class PsDataset extends Dataset
   private FlatFile flatFile;
 
   // ---------------------------------------------------------------------------------//
-  PsDataset (XmitReader reader, Disposition disposition)
+  PsDataset (XmitReader reader, Disposition disposition, String name)
   // ---------------------------------------------------------------------------------//
   {
-    super (reader, disposition, reader.getDatasetName ());
+    super (reader, disposition, name);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -26,7 +26,7 @@ public class PsDataset extends Dataset
   // ---------------------------------------------------------------------------------//
   {
     flatFile = new FlatFile (this, getDisposition ());
-    flatFile.setName (getReader ().getDatasetName ());
+    flatFile.setName (getName ());
 
     for (Segment segment : segments)
       flatFile.addSegment (segment);

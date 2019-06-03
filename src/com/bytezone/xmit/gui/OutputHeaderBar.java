@@ -26,7 +26,7 @@ class OutputHeaderBar extends HeaderBar
 
     if (nodeData.isPartitionedDataset ())
     {
-      String memberName = indicator + nodeData.name;
+      String memberName = indicator + catalogEntry.getMemberName ();
       if (catalogEntry.isAlias ())
         leftLabel.setText (memberName + " -> " + catalogEntry.getAliasName ());
       else

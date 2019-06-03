@@ -22,7 +22,6 @@ class NodeData implements Iterable<Dataset>
 
   private Reader reader;
   private boolean merged;
-  //  private boolean isCompressed;
 
   // ---------------------------------------------------------------------------------//
   public NodeData (File file)
@@ -44,7 +43,6 @@ class NodeData implements Iterable<Dataset>
     this.dataset = null;
     this.member = null;
     this.suffix = getSuffix (file.getName ());
-    //    isCompressed = true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -69,13 +67,6 @@ class NodeData implements Iterable<Dataset>
     this.dataset = member.getDataset ();
     this.member = member;
     this.suffix = "";
-  }
-
-  // ---------------------------------------------------------------------------------//
-  int getLevel ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return member == null ? 0 : member.getLevel ();
   }
 
   // ---------------------------------------------------------------------------------//

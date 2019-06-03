@@ -39,7 +39,6 @@ public class XmitApp extends Application
   private Stage primaryStage;
   private String rootFolderName;
 
-  //  private XmitTreeV1 xmitTree;
   private XmitTree xmitTree;
   private TreePane treePane;
 
@@ -73,8 +72,6 @@ public class XmitApp extends Application
     // get root folder
     validateRootFolderOrExit ();
 
-    //    xmitTree =
-    //   new XmitTreeV1 (new FileTreeItem (new XmitFileNode (new File (rootFolderName))));
     xmitTree = new XmitTree (new XmitTreeItem (new NodeData (new File (rootFolderName))));
     treePane = new TreePane (xmitTree);
 
