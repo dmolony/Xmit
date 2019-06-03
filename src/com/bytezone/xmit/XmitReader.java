@@ -20,7 +20,6 @@ public class XmitReader extends Reader
                                  (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
 
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
-
   private int files;
 
   // ---------------------------------------------------------------------------------//
@@ -28,7 +27,6 @@ public class XmitReader extends Reader
   // ---------------------------------------------------------------------------------//
   {
     super (file.getName ());
-
     read (readFile (file));
   }
 
@@ -37,7 +35,6 @@ public class XmitReader extends Reader
   // ---------------------------------------------------------------------------------//
   {
     super (dataFile.getName ());
-
     read (dataFile.getDataBuffer ());
   }
 
