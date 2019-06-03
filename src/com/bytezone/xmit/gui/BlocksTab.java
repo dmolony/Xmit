@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
@@ -15,7 +16,7 @@ class BlocksTab extends XmitTextTab
 // -----------------------------------------------------------------------------------//
 {
   private NodeData nodeData;
-  private CatalogEntry catalogEntry;
+  private DataFile dataFile;
 
   // ---------------------------------------------------------------------------------//
   public BlocksTab (String title, KeyCode keyCode)
@@ -31,13 +32,15 @@ class BlocksTab extends XmitTextTab
   {
     List<String> lines = new ArrayList<> ();
 
-    if (nodeData == null || !nodeData.isDataFile ())
-      return lines;
-
-    if (nodeData.isPartitionedDataset ())
-      ((PdsMember) nodeData.getDataFile ()).listSizeCounts (lines);
-
-    lines.add (nodeData.getDataFile ().toString ());
+    if (dataFile != null)
+      if (nodeData.isPartitionedDataset ())
+      {
+        PdsMember member = ((PdsMember) dataFile);
+        member.listSizeCounts (lines);
+        lines.add (member.getText ());
+      }
+      else
+        lines.add (dataFile.toString ());
 
     return lines;
   }
@@ -48,6 +51,12 @@ class BlocksTab extends XmitTextTab
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;
+
+    if (nodeData.isPhysicalSequentialDataset ())
+      dataFile = nodeData.getDataFile ();
+    else
+      dataFile = null;
+
     refresh ();
   }
 
@@ -56,7 +65,7 @@ class BlocksTab extends XmitTextTab
   public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    this.catalogEntry = catalogEntry;
+    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
     refresh ();
   }
 }

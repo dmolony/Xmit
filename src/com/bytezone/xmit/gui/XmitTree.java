@@ -110,7 +110,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       //      if (nodeData.isXmit () && datasets > 1)
       //        treeItem.setLeaf (false);       // show the open triangle
 
-      System.out.println (nodeData);
+      //      System.out.println (nodeData);
       for (NodeDataListener listener : listeners)
         listener.nodeSelected (nodeData);
     });

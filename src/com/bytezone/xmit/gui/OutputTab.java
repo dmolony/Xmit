@@ -36,8 +36,6 @@ class OutputTab extends XmitTextTab
       "^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
 
   LineDisplayStatus lineDisplayStatus;
-  //  private NodeData nodeData;
-  //  private CatalogEntry catalogEntry;
   private DataFile dataFile;
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
@@ -189,7 +187,6 @@ class OutputTab extends XmitTextTab
   public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.catalogEntry = catalogEntry;
     dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
     refresh ();
   }
@@ -207,8 +204,6 @@ class OutputTab extends XmitTextTab
   public void nodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.nodeData = nodeData;
-
     if (nodeData.isPartitionedDataset ())
     {
       Dataset dataset = nodeData.dataset;

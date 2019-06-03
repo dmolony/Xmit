@@ -18,7 +18,6 @@ import javafx.scene.input.KeyCode;
 class HeadersTab extends XmitTextTab implements NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
-  //  DatasetStatus datasetStatus;
   NodeData nodeData;
 
   // ---------------------------------------------------------------------------------//
@@ -38,7 +37,6 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
     if (nodeData == null || !nodeData.isDataset ())
       return lines;
 
-    //    Reader reader = datasetStatus.getReader ();
     if (nodeData.isXmit ())
     {
       for (ControlRecord controlRecord : ((XmitReader) nodeData.getReader ())

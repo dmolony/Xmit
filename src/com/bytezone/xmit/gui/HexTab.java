@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Utility;
 import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
@@ -17,7 +18,7 @@ class HexTab extends XmitTextTab
   private static final int MAX_HEX_BYTES = 0x20_000;
 
   NodeData nodeData;
-  CatalogEntry catalogEntry;
+  DataFile dataFile;
 
   // ---------------------------------------------------------------------------------//
   public HexTab (String title, KeyCode keyCode)
@@ -34,10 +35,10 @@ class HexTab extends XmitTextTab
   {
     List<String> lines = new ArrayList<> ();
 
-    if (nodeData == null || !nodeData.isDataFile ())
+    if (dataFile == null)
       return lines;
 
-    byte[] buffer = nodeData.getDataFile ().getDataBuffer ();
+    byte[] buffer = dataFile.getDataBuffer ();
     return Utility.getHexDumpLines (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length));
   }
 
@@ -47,6 +48,12 @@ class HexTab extends XmitTextTab
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;
+
+    if (nodeData.isPhysicalSequentialDataset ())
+      dataFile = nodeData.getDataFile ();
+    else
+      dataFile = null;
+
     refresh ();
   }
 
@@ -55,7 +62,7 @@ class HexTab extends XmitTextTab
   public void tableItemSelected (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    this.catalogEntry = catalogEntry;
+    dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
     refresh ();
   }
 
