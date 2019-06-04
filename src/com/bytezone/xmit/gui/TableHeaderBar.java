@@ -1,7 +1,6 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.Reader;
 import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.scene.paint.Color;
@@ -23,17 +22,17 @@ class TableHeaderBar extends HeaderBar
   {
     this.nodeData = nodeData;
 
-    if (!nodeData.isDataset ())
+    if (nodeData.isDataset ())
     {
-      leftLabel.setText ("");
-      rightLabel.setText ("");
+      leftLabel.setText (nodeData.dataset.getName ());
+      leftLabel
+          .setTextFill (nodeData.getReader ().isIncomplete () ? Color.RED : Color.BLACK);
+      setMembersLabel ();
     }
     else
     {
-      Reader reader = nodeData.getReader ();
-      leftLabel.setText (nodeData.name);
-      leftLabel.setTextFill (reader.isIncomplete () ? Color.RED : Color.BLACK);
-      setMembersLabel ();
+      leftLabel.setText ("");
+      rightLabel.setText ("");
     }
   }
 
