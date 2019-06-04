@@ -37,6 +37,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
 
   private NodeData nodeData;
   private CatalogEntry catalogEntry;
+  private DataFile dataFile;
 
   private String saveFolderName;
   private String extractFolderName;
@@ -113,20 +114,15 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   private void extractFile ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = nodeData.getDataFile ().getDataBuffer ();
+    byte[] buffer = dataFile.getDataBuffer ();
     String fileName = "";
-    DataFile member = nodeData.getDataFile ();
 
-    System.out.println ("this is wrong");
+    // review this !!
     if (nodeData.isPhysicalSequentialDataset ())
-    {
-      fileName = nodeData.name + "." + member.getFileType ().name ();
-    }
+      fileName = nodeData.name + "." + dataFile.getFileType ().name ();
     else if (nodeData.isPartitionedDataset ())
-    {
-      fileName =
-          nodeData.name + "." + member.getName () + "." + member.getFileType ().name ();
-    }
+      fileName = nodeData.name + "." + dataFile.getName () + "."
+          + dataFile.getFileType ().name ();
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Extract file to");
@@ -180,6 +176,12 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;
+    if (nodeData.isPartitionedDataset ())
+      dataFile = null;
+    else if (nodeData.isPhysicalSequentialDataset ())
+      dataFile = nodeData.getDataFile ();
+    else
+      dataFile = null;
     setMenu ();
   }
 
@@ -189,6 +191,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     this.catalogEntry = catalogEntry;
+    dataFile = catalogEntry.getMember ();
     setMenu ();
   }
 
@@ -201,9 +204,9 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
       extractMenuItem.setText ("Extract " + nodeData.name + "...");
       extractMenuItem.setDisable (false);
     }
-    else if (nodeData.isMember ())
+    else if (catalogEntry != null)
     {
-      extractMenuItem.setText ("Extract " + nodeData.name + "...");
+      extractMenuItem.setText ("Extract " + catalogEntry.getMemberName () + "...");
       extractMenuItem.setDisable (false);
     }
     else
