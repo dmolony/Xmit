@@ -83,7 +83,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     Utility.showAlert (AlertType.INFORMATION, "About XmitApp",
-        "Version: 1.0.23\nReleased: 1 May 2019\nAuthor: Denis Molony");
+        "Version: 1.0.24\nReleased: 5 June 2019\nAuthor: Denis Molony");
   }
 
   // ---------------------------------------------------------------------------------//
