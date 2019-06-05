@@ -292,9 +292,11 @@ public class Utility
   public static long getFourBytes (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    long a = getTwoBytes (buffer, ptr) << 16;
-    long b = getTwoBytes (buffer, ptr + 2);
-    return a + b;
+    //    long a = getTwoBytes (buffer, ptr) << 16;
+    //    long b = getTwoBytes (buffer, ptr + 2);
+    //    return a + b;
+    return ((buffer[ptr] & 0xFF) << 24) | ((buffer[++ptr] & 0xFF) << 16)
+        | ((buffer[++ptr] & 0xFF) << 8) | (buffer[++ptr] & 0xFF);
   }
 
   // ---------------------------------------------------------------------------------//
