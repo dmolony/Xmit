@@ -93,8 +93,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     if (outputWriter == null)
       return;
 
-    System.out.println ("this is wrong");
-    String extra = nodeData.isMember () ? "." + nodeData.name : "";
+    String extra = catalogEntry == null ? "" : "." + catalogEntry.getMemberName ();
     String name = nodeData.name + extra + ".txt";
 
     FileChooser fileChooser = new FileChooser ();
@@ -115,14 +114,9 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = dataFile.getDataBuffer ();
-    String fileName = "";
 
-    // review this !!
-    if (nodeData.isPhysicalSequentialDataset ())
-      fileName = nodeData.name + "." + dataFile.getFileType ().name ();
-    else if (nodeData.isPartitionedDataset ())
-      fileName = nodeData.name + "." + dataFile.getName () + "."
-          + dataFile.getFileType ().name ();
+    String extra = catalogEntry == null ? "" : "." + catalogEntry.getMemberName ();
+    String fileName = nodeData.name + extra + "." + dataFile.getFileType ().name ();
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Extract file to");
@@ -176,12 +170,14 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;
+
     if (nodeData.isPartitionedDataset ())
       dataFile = null;
     else if (nodeData.isPhysicalSequentialDataset ())
       dataFile = nodeData.getDataFile ();
     else
       dataFile = null;
+
     setMenu ();
   }
 
@@ -192,6 +188,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     this.catalogEntry = catalogEntry;
     dataFile = catalogEntry.getMember ();
+
     setMenu ();
   }
 
