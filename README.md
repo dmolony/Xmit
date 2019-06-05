@@ -5,6 +5,7 @@
 - selectable [codepages](resources/view.md) and [fonts](resources/fonts.md)
 - [filter/search](resources/filter.md) PDS members
 - [extract](resources/extract.md) individual PDS members
+- view AWS tape files
 
 ## Sample screens
 ### MacOS
