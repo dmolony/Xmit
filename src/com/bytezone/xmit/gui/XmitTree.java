@@ -18,7 +18,6 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
-  //  static private final Font font = Font.font ("Monaco", FontWeight.NORMAL, 12);
   static final boolean merging = true;
 
   private final Image zipImage;
@@ -98,21 +97,20 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       NodeData nodeData = newSel.getValue ();
       XmitTreeItem treeItem = (XmitTreeItem) newSel;
 
-      int datasets = nodeData.size ();    // forces the reader to exist
+      int datasets = nodeData.size ();            // forces the reader to exist
 
       if (merging && nodeData.isDatasetContainer ())
         if (datasets == 1 || nodeData.isXmit ())
           nodeData.merge ();
 
       if (nodeData.isPartitionedDataset () && nodeData.getPdsXmitMembers ().size () > 0)
-        treeItem.setLeaf (false);       // show the open triangle
+        treeItem.setLeaf (false);                 // show the open triangle
 
       //      if (nodeData.isXmit () && datasets > 1)
       //        treeItem.setLeaf (false);       // show the open triangle
 
-      //      System.out.println (nodeData);
       for (NodeDataListener listener : listeners)
-        listener.nodeSelected (nodeData);
+        listener.treeNodeSelected (nodeData);
     });
   }
 
@@ -222,6 +220,6 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   interface NodeDataListener
   // ---------------------------------------------------------------------------------//
   {
-    public void nodeSelected (NodeData nodeData);
+    public void treeNodeSelected (NodeData nodeData);
   }
 }

@@ -47,11 +47,10 @@ public class XmitTreeItem extends TreeItem<NodeData>
   public boolean isLeaf ()
   // ---------------------------------------------------------------------------------//
   {
-    NodeData nodeData = getValue ();
-
     if (firstTimeLeaf)
     {
       firstTimeLeaf = false;
+      NodeData nodeData = getValue ();
 
       if (nodeData.isFile ())
         if (nodeData.isDirectory () || nodeData.isCompressedFile () || nodeData.isTape ())

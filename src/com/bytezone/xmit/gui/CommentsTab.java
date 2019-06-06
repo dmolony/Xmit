@@ -58,7 +58,7 @@ public class CommentsTab extends XmitTextTab implements NodeDataListener
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void nodeSelected (NodeData nodeData)
+  public void treeNodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

@@ -168,7 +168,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void nodeSelected (NodeData nodeData)
+  public void treeNodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;
@@ -176,17 +176,12 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     if (nodeData.isPhysicalSequentialDataset ())
     {
       dataFile = nodeData.getDataFile ();
-      extractMenuFileName = nodeData.dataset.getName ();
-      extractFileName = nodeData.dataset.getName ();
-      extractMenuItem.setText ("Extract " + extractMenuFileName + "...");
-      extractMenuItem.setDisable (false);
+      set (nodeData.dataset.getName (), nodeData.dataset.getName (), false);
     }
     else
     {
       dataFile = null;
-      extractMenuItem.setText ("Extract... ");
-      extractMenuItem.setDisable (true);
-      extractFileName = "";
+      set ("", "", true);
     }
   }
 
@@ -197,9 +192,18 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     this.catalogEntry = catalogEntry;
     dataFile = catalogEntry.getMember ();
-    extractMenuFileName = catalogEntry.getMemberName ();
-    extractFileName = nodeData.dataset.getName () + "." + catalogEntry.getMemberName ();
-    extractMenuItem.setText ("Extract " + extractMenuFileName + "...");
-    extractMenuItem.setDisable (false);
+
+    set (catalogEntry.getMemberName (),
+        nodeData.dataset.getName () + "." + catalogEntry.getMemberName (), false);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void set (String menuText, String fileName, boolean disable)
+  // ---------------------------------------------------------------------------------//
+  {
+    extractMenuFileName = menuText;
+    extractMenuItem.setText ("Extract " + menuText + "...");
+    extractFileName = fileName;
+    extractMenuItem.setDisable (disable);
   }
 }

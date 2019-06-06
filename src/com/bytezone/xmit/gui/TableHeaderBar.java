@@ -17,7 +17,7 @@ class TableHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void nodeSelected (NodeData nodeData)
+  public void treeNodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

@@ -201,7 +201,7 @@ class OutputTab extends XmitTextTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void nodeSelected (NodeData nodeData)
+  public void treeNodeSelected (NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     if (nodeData.isPartitionedDataset ())
