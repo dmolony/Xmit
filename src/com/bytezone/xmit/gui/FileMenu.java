@@ -39,6 +39,9 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   private CatalogEntry catalogEntry;
   private DataFile dataFile;
 
+  private String extractMenuFileName;
+  private String extractFileName;
+
   private String saveFolderName;
   private String extractFolderName;
 
@@ -115,13 +118,12 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     byte[] buffer = dataFile.getDataBuffer ();
 
-    String extra = catalogEntry == null ? "" : "." + catalogEntry.getMemberName ();
-    String fileName = nodeData.name + extra + "." + dataFile.getFileType ().name ();
-
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Extract file to");
     fileChooser.setInitialDirectory (new File (extractFolderName));
-    fileChooser.setInitialFileName (fileName);
+
+    String suffix = "." + dataFile.getFileType ().name ();
+    fileChooser.setInitialFileName (extractFileName + suffix);
 
     File file = fileChooser.showSaveDialog (null);
     if (file != null)
@@ -171,14 +173,21 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     this.nodeData = nodeData;
 
-    if (nodeData.isPartitionedDataset ())
-      dataFile = null;
-    else if (nodeData.isPhysicalSequentialDataset ())
+    if (nodeData.isPhysicalSequentialDataset ())
+    {
       dataFile = nodeData.getDataFile ();
+      extractMenuFileName = nodeData.dataset.getName ();
+      extractFileName = nodeData.dataset.getName ();
+      extractMenuItem.setText ("Extract " + extractMenuFileName + "...");
+      extractMenuItem.setDisable (false);
+    }
     else
+    {
       dataFile = null;
-
-    setMenu ();
+      extractMenuItem.setText ("Extract... ");
+      extractMenuItem.setDisable (true);
+      extractFileName = "";
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -188,28 +197,9 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     this.catalogEntry = catalogEntry;
     dataFile = catalogEntry.getMember ();
-
-    setMenu ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void setMenu ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (nodeData.isPhysicalSequentialDataset ())         // flat file
-    {
-      extractMenuItem.setText ("Extract " + nodeData.name + "...");
-      extractMenuItem.setDisable (false);
-    }
-    else if (catalogEntry != null)
-    {
-      extractMenuItem.setText ("Extract " + catalogEntry.getMemberName () + "...");
-      extractMenuItem.setDisable (false);
-    }
-    else
-    {
-      extractMenuItem.setText ("Extract... ");
-      extractMenuItem.setDisable (true);
-    }
+    extractMenuFileName = catalogEntry.getMemberName ();
+    extractFileName = nodeData.dataset.getName () + "." + catalogEntry.getMemberName ();
+    extractMenuItem.setText ("Extract " + extractMenuFileName + "...");
+    extractMenuItem.setDisable (false);
   }
 }
