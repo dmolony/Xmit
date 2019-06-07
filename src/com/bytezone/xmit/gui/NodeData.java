@@ -11,7 +11,7 @@ import com.bytezone.xmit.*;
 class NodeData implements Iterable<Dataset>
 // -----------------------------------------------------------------------------------//
 {
-  static final List<String> validSuffixes = Arrays.asList ("xmi", "xmit", "aws");
+  static final List<String> fileSuffixes = Arrays.asList ("xmi", "xmit", "aws");
   static final List<String> compressionSuffixes = Arrays.asList ("zip");
 
   final String name;
@@ -43,6 +43,8 @@ class NodeData implements Iterable<Dataset>
     this.dataset = null;
     this.member = null;
     this.suffix = getSuffix (file.getName ());
+
+    assert isValidFileSuffix (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -59,7 +61,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public NodeData (PdsMember member)
+  public NodeData (PdsMember member)                  // a member containg an xmit file
   // ---------------------------------------------------------------------------------//
   {
     this.name = member.getName ();
@@ -77,17 +79,24 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
+  boolean isReadableFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return file != null && !file.isDirectory () && !isCompressedFile ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean isCompressedFile ()
   // ---------------------------------------------------------------------------------//
   {
-    return file != null && isCompressionSuffix (suffix);
+    return file != null && isValidCompressionSuffix (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
   boolean isDatasetContainer ()
   // ---------------------------------------------------------------------------------//
   {
-    return isMember () || (file != null && !file.isDirectory () && !isCompressedFile ());
+    return isMember () || isReadableFile ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -178,7 +187,7 @@ class NodeData implements Iterable<Dataset>
   public boolean isValidFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return isValidSuffix (suffix) || isCompressionSuffix (suffix);
+    return isValidFileSuffix (suffix) || isValidCompressionSuffix (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -189,18 +198,18 @@ class NodeData implements Iterable<Dataset>
       return false;
 
     String suffix = getSuffix (fileName);
-    return isValidSuffix (suffix) || isCompressionSuffix (suffix);
+    return isValidFileSuffix (suffix) || isValidCompressionSuffix (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean isValidSuffix (String suffix)
+  public static boolean isValidFileSuffix (String suffix)
   // ---------------------------------------------------------------------------------//
   {
-    return validSuffixes.contains (suffix);
+    return fileSuffixes.contains (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean isCompressionSuffix (String suffix)
+  public static boolean isValidCompressionSuffix (String suffix)
   // ---------------------------------------------------------------------------------//
   {
     return compressionSuffixes.contains (suffix);

@@ -39,10 +39,8 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   private CatalogEntry catalogEntry;
   private DataFile dataFile;
 
-  private String extractMenuFileName;
-  private String extractFileName;
-
   private String saveFolderName;
+  private String extractFileName;
   private String extractFolderName;
 
   private OutputWriter outputWriter;
@@ -176,12 +174,12 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     if (nodeData.isPhysicalSequentialDataset ())
     {
       dataFile = nodeData.getDataFile ();
-      set (nodeData.dataset.getName (), nodeData.dataset.getName (), false);
+      set (nodeData.dataset.getName (), nodeData.dataset.getName ());
     }
     else
     {
       dataFile = null;
-      set ("", "", true);
+      set ("", "");
     }
   }
 
@@ -194,16 +192,15 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     dataFile = catalogEntry.getMember ();
 
     set (catalogEntry.getMemberName (),
-        nodeData.dataset.getName () + "." + catalogEntry.getMemberName (), false);
+        nodeData.dataset.getName () + "." + catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//
-  private void set (String menuText, String fileName, boolean disable)
+  private void set (String menuText, String fileName)
   // ---------------------------------------------------------------------------------//
   {
-    extractMenuFileName = menuText;
     extractMenuItem.setText ("Extract " + menuText + "...");
     extractFileName = fileName;
-    extractMenuItem.setDisable (disable);
+    extractMenuItem.setDisable (menuText.isEmpty ());
   }
 }
