@@ -16,9 +16,9 @@ class NodeData implements Iterable<Dataset>
 
   final String name;
   final File file;
-  Dataset dataset;
-  final PdsMember member;
-  final String suffix;
+  private Dataset dataset;
+  private final PdsMember member;
+  private final String suffix;
 
   private Reader reader;
   private boolean merged;
@@ -31,7 +31,7 @@ class NodeData implements Iterable<Dataset>
     this.file = file;
     this.dataset = null;
     this.member = null;
-    this.suffix = getSuffix (name);
+    this.suffix = file.isDirectory () ? "" : getSuffix (name);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -111,6 +111,20 @@ class NodeData implements Iterable<Dataset>
   // ---------------------------------------------------------------------------------//
   {
     return dataset != null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Dataset getDataset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getDatasetName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataset.getName ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -232,7 +246,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public void merge ()
+  void merge ()
   // ---------------------------------------------------------------------------------//
   {
     dataset = reader.getDataset (reader.size () - 1);       // last dataset

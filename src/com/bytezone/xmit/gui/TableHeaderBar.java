@@ -24,7 +24,7 @@ class TableHeaderBar extends HeaderBar
 
     if (nodeData.isDataset ())
     {
-      leftLabel.setText (nodeData.dataset.getName ());
+      leftLabel.setText (nodeData.getDatasetName ());
       leftLabel
           .setTextFill (nodeData.getReader ().isIncomplete () ? Color.RED : Color.BLACK);
       setMembersLabel ();
@@ -65,7 +65,7 @@ class TableHeaderBar extends HeaderBar
   {
     if (nodeData != null && nodeData.isPartitionedDataset ())
     {
-      int members = ((PdsDataset) nodeData.dataset).getCatalogEntries ().size ();
+      int members = ((PdsDataset) nodeData.getDataset ()).getCatalogEntries ().size ();
 
       if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
         rightLabel

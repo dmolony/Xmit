@@ -206,7 +206,7 @@ class OutputTab extends XmitTextTab
   {
     if (nodeData.isPartitionedDataset ())
     {
-      Dataset dataset = nodeData.dataset;
+      Dataset dataset = nodeData.getDataset ();
       String datasetName = dataset.getName ();
       if (!datasets.containsKey (datasetName))
         datasets.put (datasetName, (PdsDataset) dataset);

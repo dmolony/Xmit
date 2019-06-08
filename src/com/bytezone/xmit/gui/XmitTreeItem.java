@@ -60,7 +60,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
       else if (nodeData.isMember ())
         isLeaf = XmitTree.merging;
       else if (nodeData.isDataset ())
-        if (nodeData.dataset.isPartitionedDataset ())
+        if (nodeData.isPartitionedDataset ())
           isLeaf = nodeData.getPdsXmitMembers ().size () == 0;
         else
           isLeaf = true;

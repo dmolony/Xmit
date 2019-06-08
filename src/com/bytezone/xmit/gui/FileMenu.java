@@ -174,7 +174,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     if (nodeData.isPhysicalSequentialDataset ())
     {
       dataFile = nodeData.getDataFile ();
-      set (nodeData.dataset.getName (), nodeData.dataset.getName ());
+      set (nodeData.getDatasetName (), nodeData.getDatasetName ());
     }
     else
     {
@@ -192,7 +192,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     dataFile = catalogEntry.getMember ();
 
     set (catalogEntry.getMemberName (),
-        nodeData.dataset.getName () + "." + catalogEntry.getMemberName ());
+        nodeData.getDatasetName () + "." + catalogEntry.getMemberName ());
   }
 
   // ---------------------------------------------------------------------------------//

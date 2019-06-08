@@ -87,7 +87,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
     if (newSel != null)
     {
       CatalogEntry catalogEntry = newSel.getCatalogEntry ();
-      selectedMembers.put (nodeData.dataset, catalogEntry.getMemberName ());
+      selectedMembers.put (nodeData.getDataset (), catalogEntry.getMemberName ());
       for (TableItemSelectionListener listener : selectionListeners)
         listener.tableItemSelected (catalogEntry);
     }
@@ -164,8 +164,8 @@ class XmitTable extends TableView<CatalogEntryItem>                             
     this.nodeData = nodeData;
     if (nodeData.isPartitionedDataset ())
     {
-      setVisibleColumns (((PdsDataset) nodeData.dataset).getModuleType ());
-      buildList (previousSelection (nodeData.dataset));
+      setVisibleColumns (((PdsDataset) nodeData.getDataset ()).getModuleType ());
+      buildList (previousSelection (nodeData.getDataset ()));
     }
     else
     {
@@ -212,7 +212,8 @@ class XmitTable extends TableView<CatalogEntryItem>                             
           String.format ("No members contain '%s'", filterStatus.filterValue)));
 
     // create filter
-    Filter filter = ((PdsDataset) nodeData.dataset).getFilter (filterStatus.filterValue);
+    Filter filter =
+        ((PdsDataset) nodeData.getDataset ()).getFilter (filterStatus.filterValue);
     FilterMode filterMode =
         filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
             : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
@@ -224,7 +225,8 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     // notify filter listeners
     for (FilterActionListener listener : filterListeners)
-      listener.filtering (items.size (), ((PdsDataset) nodeData.dataset).size (), true);
+      listener.filtering (items.size (), ((PdsDataset) nodeData.getDataset ()).size (),
+          true);
 
     // select a member
     selectCatalogEntryItem (findItem (selectedName));

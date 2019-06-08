@@ -45,7 +45,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
     }
     else if (nodeData.isTape ())
     {
-      PdsDataset dataset = (PdsDataset) nodeData.dataset;
+      PdsDataset dataset = (PdsDataset) nodeData.getDataset ();
 
       lines.add ("HDR1");
       lines.add ("-----------------------------------------------------------");
@@ -64,7 +64,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
 
     if (nodeData.isPartitionedDataset ())
     {
-      PdsDataset pdsDataset = (PdsDataset) nodeData.dataset;
+      PdsDataset pdsDataset = (PdsDataset) nodeData.getDataset ();
       lines.add ("COPYR1");
       lines.addAll (pdsDataset.getCopyR1 ().toLines ());
       lines.add ("");
@@ -73,7 +73,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
       lines.add ("");
 
       lines.add (String.format ("%s Catalog Blocks:",
-          nodeData.dataset.getReader ().getFileName ()));
+          nodeData.getDataset ().getReader ().getFileName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
