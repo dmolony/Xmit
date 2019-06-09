@@ -108,7 +108,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
   private void addFiles (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    File[] files = nodeData.file.listFiles ();
+    File[] files = nodeData.getFile ().listFiles ();
     if (files == null)
       return;
 
@@ -146,7 +146,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
       NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
-    Map<ZipEntry, XmitTreeItem> fileList = decompressZip (nodeData.file.toPath ());
+    Map<ZipEntry, XmitTreeItem> fileList = decompressZip (nodeData.getFile ().toPath ());
     if (fileList.size () > 0)
     {
       for (ZipEntry entry : fileList.keySet ())

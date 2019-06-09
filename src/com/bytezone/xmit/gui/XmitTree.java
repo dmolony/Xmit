@@ -61,7 +61,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
             }
             else
             {
-              setText (nodeData.name);
+              setText (nodeData.getName ());
               setImageView (nodeData);
               setGraphic (imageView);
               setFont (font);
@@ -71,11 +71,11 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
           private void setImageView (NodeData nodeData)
           {
             Image image = nodeData.isCompressedFile () ? zipImage :         //
-            nodeData.isDirectory () ? folderImage :                     //
-            nodeData.isMember () ? mImage :                             //
-            nodeData.isFile () ?                                        //
-            nodeData.name.endsWith (".aws") ? tImage : xImage :         //
-            nodeData.isDataset () ? dImage :                            //
+            nodeData.isDirectory () ? folderImage :                         //
+            nodeData.isMember () ? mImage :                                 //
+            nodeData.isFile () ?                                            //
+            nodeData.getName ().endsWith (".aws") ? tImage : xImage :       //
+            nodeData.isDataset () ? dImage :                                //
             null;
 
             imageView.setImage (image);
@@ -169,7 +169,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   {
     parentNode.setExpanded (true);
     for (TreeItem<NodeData> childNode : parentNode.getChildren ())
-      if (childNode.getValue ().name.equals (name))
+      if (childNode.getValue ().getName ().equals (name))
         return Optional.of (childNode);
 
     return Optional.empty ();
@@ -184,7 +184,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
     TreeItem<NodeData> item = model.getSelectedItem ();
     while (item != null)
     {
-      pathBuilder.insert (0, SEPARATOR + item.getValue ().name);
+      pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());
       item = item.getParent ();
     }
 

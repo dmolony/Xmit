@@ -22,6 +22,6 @@ class FileComparator implements Comparator<TreeItem<NodeData>>
     if (!thisFileIsDirectory && thatFileIsDirectory)
       return -1;
 
-    return nodeData1.name.compareToIgnoreCase (nodeData2.name);
+    return nodeData1.getName ().compareToIgnoreCase (nodeData2.getName ());
   }
 }

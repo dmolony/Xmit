@@ -95,7 +95,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
       return;
 
     String extra = catalogEntry == null ? "" : "." + catalogEntry.getMemberName ();
-    String name = nodeData.name + extra + ".txt";
+    String name = nodeData.getName () + extra + ".txt";
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Save output text to");

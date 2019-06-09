@@ -32,7 +32,7 @@ class TreePane extends BorderPane
   void setFolderName ()
   // ---------------------------------------------------------------------------------//
   {
-    String pathName = tree.getRoot ().getValue ().file.toPath ().toString ();
+    String pathName = tree.getRoot ().getValue ().getFile ().toPath ().toString ();
     if (pathName.startsWith (home))
       pathName = pathName.replace (home, "~");
     treeHeaderBar.leftLabel.setText (pathName);

@@ -14,8 +14,8 @@ class NodeData implements Iterable<Dataset>
   static final List<String> fileSuffixes = Arrays.asList ("xmi", "xmit", "aws");
   static final List<String> compressionSuffixes = Arrays.asList ("zip");
 
-  final String name;
-  final File file;
+  private final String name;
+  private final File file;
   private Dataset dataset;
   private final PdsMember member;
   private final String suffix;
@@ -72,10 +72,24 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
+  String getName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return name;
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean isFile ()
   // ---------------------------------------------------------------------------------//
   {
     return file != null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  File getFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return file;
   }
 
   // ---------------------------------------------------------------------------------//

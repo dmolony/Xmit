@@ -33,7 +33,7 @@ class OutputHeaderBar extends HeaderBar
         leftLabel.setText (memberName);
     }
     else
-      leftLabel.setText (indicator + nodeData.name);
+      leftLabel.setText (indicator + nodeData.getName ());
   }
 
   // ---------------------------------------------------------------------------------//
