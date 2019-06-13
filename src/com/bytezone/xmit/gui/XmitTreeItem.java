@@ -177,26 +177,27 @@ public class XmitTreeItem extends TreeItem<NodeData>
       {
         ZipEntry entry = entries.nextElement ();
         String entryName = entry.getName ();
+
         if (entryName.endsWith ("/"))
           containsFolder = true;
         else if (NodeData.isValidFileName (entryName))
         {
           int pos = entryName.lastIndexOf ('.');
           String suffix = pos < 0 ? "" : entryName.substring (pos).toLowerCase ();
-          InputStream stream = zipFile.getInputStream (entry);
-          File tmp = File.createTempFile (entry.getName (), suffix);
+          InputStream inputStream = zipFile.getInputStream (entry);
 
-          FileOutputStream fos = new FileOutputStream (tmp);
+          File tempFile = File.createTempFile (entryName, suffix);
+          FileOutputStream outputStream = new FileOutputStream (tempFile);
 
           int bytesRead;
           byte[] buffer = new byte[1024];
-          while ((bytesRead = stream.read (buffer)) > 0)
-            fos.write (buffer, 0, bytesRead);
+          while ((bytesRead = inputStream.read (buffer)) > 0)
+            outputStream.write (buffer, 0, bytesRead);
 
-          stream.close ();
-          fos.close ();
-          tmp.deleteOnExit ();          // why not delete it now?
-          fileMap.put (entry, new XmitTreeItem (new NodeData (tmp, entryName)));
+          inputStream.close ();
+          outputStream.close ();
+          tempFile.deleteOnExit ();          // it hasn't been read yet
+          fileMap.put (entry, new XmitTreeItem (new NodeData (tempFile, entryName)));
         }
         else
           invalidNames.add (entryName);

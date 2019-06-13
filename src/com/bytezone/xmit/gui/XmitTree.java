@@ -20,12 +20,18 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   private static String SEPARATOR = "/";
   static final boolean merging = true;
 
-  private final Image zipImage;
-  private final Image xImage;
-  private final Image mImage;
-  private final Image dImage;
-  private final Image tImage;
-  private final Image folderImage;
+  private final Image zipImage =
+      new Image (getClass ().getResourceAsStream ("/icons/zip-icon.png"));
+  private final Image xImage =
+      new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
+  private final Image mImage =
+      new Image (getClass ().getResourceAsStream ("/icons/M-blue-icon.png"));
+  private final Image dImage =
+      new Image (getClass ().getResourceAsStream ("/icons/D-pink-icon.png"));
+  private final Image tImage =
+      new Image (getClass ().getResourceAsStream ("/icons/T-black-icon.png"));
+  private final Image folderImage =
+      new Image (getClass ().getResourceAsStream ("/icons/folder-icon.png"));
   private Font font;
 
   private final MultipleSelectionModel<TreeItem<NodeData>> model = getSelectionModel ();
@@ -34,13 +40,6 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   public XmitTree (TreeItem<NodeData> root)
   {
     super (root);
-
-    tImage = new Image (getClass ().getResourceAsStream ("/icons/T-black-icon.png"));
-    dImage = new Image (getClass ().getResourceAsStream ("/icons/D-pink-icon.png"));
-    mImage = new Image (getClass ().getResourceAsStream ("/icons/M-blue-icon.png"));
-    xImage = new Image (getClass ().getResourceAsStream ("/icons/X-green-icon.png"));
-    folderImage = new Image (getClass ().getResourceAsStream ("/icons/folder-icon.png"));
-    zipImage = new Image (getClass ().getResourceAsStream ("/icons/zip-icon.png"));
 
     setCellFactory (new Callback<TreeView<NodeData>, TreeCell<NodeData>> ()
     {
@@ -97,16 +96,17 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       NodeData nodeData = newSel.getValue ();
       XmitTreeItem treeItem = (XmitTreeItem) newSel;
 
-      int datasets = nodeData.size ();            // forces the reader to exist
+      int datasets = nodeData.size ();    // forces the reader to exist (if possible)
 
-      if (merging && nodeData.isDatasetContainer ())
-        if (datasets == 1 || nodeData.isXmit ())
-          nodeData.merge ();
+      if (merging && nodeData.isDatasetContainer () && nodeData.isXmit ())
+        nodeData.merge ();
+
+      //      System.out.println (nodeData);
 
       if (nodeData.isPartitionedDataset () && nodeData.getPdsXmitMembers ().size () > 0)
         treeItem.setLeaf (false);                 // show the open triangle
 
-      //      if (nodeData.isXmit () && datasets > 1)
+      //      if (!merging && nodeData.isXmit () && datasets > 1)
       //        treeItem.setLeaf (false);       // show the open triangle
 
       for (NodeDataListener listener : listeners)
@@ -168,6 +168,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   // ---------------------------------------------------------------------------------//
   {
     parentNode.setExpanded (true);
+
     for (TreeItem<NodeData> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
         return Optional.of (childNode);

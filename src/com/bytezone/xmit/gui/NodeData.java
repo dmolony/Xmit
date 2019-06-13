@@ -173,17 +173,17 @@ class NodeData implements Iterable<Dataset>
   boolean isDataFile ()
   // ---------------------------------------------------------------------------------//
   {
-    return isMember () || isPhysicalSequentialDataset ();
+    return isPartitionedDataset () || isPhysicalSequentialDataset ();
   }
 
   // ---------------------------------------------------------------------------------//
   DataFile getDataFile ()
   // ---------------------------------------------------------------------------------//
   {
+    if (isPhysicalSequentialDataset ())                 // test this first
+      return ((PsDataset) dataset).getFlatFile ();
     if (isMember ())
       return member;
-    if (isPhysicalSequentialDataset ())
-      return ((PsDataset) dataset).getFlatFile ();
 
     System.out.printf ("%s is not a datafile%n", name);
     return null;
@@ -278,7 +278,10 @@ class NodeData implements Iterable<Dataset>
     else if (isTape ())
       reader = new AwsTapeReader (file);
     else
+    {
       System.out.println ("Unknown suffix in createReader(): " + suffix);
+      System.out.println (this);
+    }
     assert reader != null;
   }
 
@@ -314,12 +317,16 @@ class NodeData implements Iterable<Dataset>
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("Name ........... %s%n", name));
+    text.append (String.format ("isContainer .... %s%n", isDatasetContainer ()));
+    if (isDatasetContainer ())
+      text.append (String.format (" datasets ...... %s%n", size ()));
     text.append (String.format ("isFile ......... %s%n", isFile ()));
 
     if (isFile ())
     {
       text.append (String.format (" file .......... %s%n", file));
       text.append (String.format (" suffix ........ %s%n", suffix));
+      text.append (String.format (" isReadable .... %s%n", isReadableFile ()));
       text.append (String.format (" isCompressed .. %s%n", isCompressedFile ()));
       text.append (String.format (" isDirectory ... %s%n", isDirectory ()));
       text.append (String.format (" isXmit ........ %s%n", isXmit ()));
