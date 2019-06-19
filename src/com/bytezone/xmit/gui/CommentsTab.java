@@ -12,7 +12,7 @@ import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-public class CommentsTab extends XmitTextTab implements NodeDataListener
+class CommentsTab extends XmitTextTab implements NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
   NodeData nodeData;

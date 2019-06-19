@@ -24,7 +24,7 @@ class NodeData implements Iterable<Dataset>
   private boolean merged;
 
   // ---------------------------------------------------------------------------------//
-  public NodeData (File file)
+  NodeData (File file)
   // ---------------------------------------------------------------------------------//
   {
     this.name = file.getName ();
@@ -35,7 +35,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public NodeData (File file, String displayName)        // decompressed temporary file
+  NodeData (File file, String displayName)              // decompressed temporary file
   // ---------------------------------------------------------------------------------//
   {
     this.name = displayName;
@@ -48,7 +48,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public NodeData (Dataset dataset)
+  NodeData (Dataset dataset)
   // ---------------------------------------------------------------------------------//
   {
     this.name = dataset.getName ();
@@ -61,7 +61,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public NodeData (PdsMember member)                  // a member containg an xmit file
+  NodeData (PdsMember member)                       // a member containg an xmit file
   // ---------------------------------------------------------------------------------//
   {
     this.name = member.getName ();
@@ -69,6 +69,14 @@ class NodeData implements Iterable<Dataset>
     this.dataset = member.getDataset ();
     this.member = member;
     this.suffix = "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void merge ()
+  // ---------------------------------------------------------------------------------//
+  {
+    dataset = reader.getDataset (reader.size () - 1);       // last dataset
+    merged = true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -212,14 +220,14 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean isValidFileName ()
+  boolean isValidFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return isValidFileSuffix (suffix) || isValidCompressionSuffix (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean isValidFileName (String fileName)
+  static boolean isValidFileName (String fileName)
   // ---------------------------------------------------------------------------------//
   {
     if (fileName.startsWith ("__MACOSX/._"))      // no idea what this is
@@ -230,21 +238,21 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean isValidFileSuffix (String suffix)
+  static boolean isValidFileSuffix (String suffix)
   // ---------------------------------------------------------------------------------//
   {
     return fileSuffixes.contains (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean isValidCompressionSuffix (String suffix)
+  static boolean isValidCompressionSuffix (String suffix)
   // ---------------------------------------------------------------------------------//
   {
     return compressionSuffixes.contains (suffix);
   }
 
   // ---------------------------------------------------------------------------------//
-  public static String getSuffix (String filename)
+  static String getSuffix (String filename)
   // ---------------------------------------------------------------------------------//
   {
     int dotPos = filename.lastIndexOf ('.');
@@ -257,14 +265,6 @@ class NodeData implements Iterable<Dataset>
   {
     assert isPartitionedDataset ();
     return ((PdsDataset) dataset).getPdsXmitMembers ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void merge ()
-  // ---------------------------------------------------------------------------------//
-  {
-    dataset = reader.getDataset (reader.size () - 1);       // last dataset
-    merged = true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -286,7 +286,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  public int size ()
+  int size ()
   // ---------------------------------------------------------------------------------//
   {
     if (!isDatasetContainer ())

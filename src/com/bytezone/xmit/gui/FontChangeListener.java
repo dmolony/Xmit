@@ -6,5 +6,5 @@ import javafx.scene.text.Font;
 interface FontChangeListener
 // -----------------------------------------------------------------------------------//
 {
-  public void setFont (Font font);
+  void setFont (Font font);
 }

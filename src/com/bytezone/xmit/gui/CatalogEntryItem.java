@@ -39,7 +39,7 @@ public class CatalogEntryItem                   // must be public
   private StringProperty attr;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryItem (CatalogEntry catalogEntry)
+  CatalogEntryItem (CatalogEntry catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
     this.catalogEntry = catalogEntry;

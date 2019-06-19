@@ -4,5 +4,5 @@ package com.bytezone.xmit.gui;
 interface FilterChangeListener
 // -----------------------------------------------------------------------------------//
 {
-  public void setFilter (FilterStatus filterStatus);
+  void setFilter (FilterStatus filterStatus);
 }
