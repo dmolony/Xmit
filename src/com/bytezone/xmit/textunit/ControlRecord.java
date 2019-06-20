@@ -10,6 +10,12 @@ public class ControlRecord
   private final String name;
   private final List<TextUnit> textUnits = new ArrayList<> ();
   private final int fileNbr;
+  private final ControlRecordType controlRecordType;
+
+  public enum ControlRecordType
+  {
+    INMR01, INMR02, INMR03, INMR04, INMR05, INMR06
+  }
 
   // ---------------------------------------------------------------------------------//
   // constructor
@@ -20,10 +26,13 @@ public class ControlRecord
     int ptr = 0;
     name = Utility.getString (buffer, ptr, 6);
     assert name.startsWith ("INMR0");
+    int index = (buffer[ptr + 5] & 0xFF) - 241;         // ebcdic 0xF0 + 1
+    controlRecordType = ControlRecordType.values ()[index];
+
     int max = ptr + buffer.length;
     ptr += 6;
 
-    if ("INMR02".equals (name))
+    if (controlRecordType == ControlRecordType.INMR02)
     {
       fileNbr = (int) Utility.getFourBytes (buffer, ptr);     // need to save this
       ptr += 4;
@@ -45,9 +54,14 @@ public class ControlRecord
   // nameMatches
   // ---------------------------------------------------------------------------------//
 
-  public boolean nameMatches (String name)
+  //  public boolean nameMatches (ControlRecordType controlRecordType)
+  //  {
+  //    return this.controlRecordType == controlRecordType;
+  //  }
+
+  public ControlRecordType getControlRecordType ()
   {
-    return this.name.equals (name);
+    return controlRecordType;
   }
 
   // ---------------------------------------------------------------------------------//

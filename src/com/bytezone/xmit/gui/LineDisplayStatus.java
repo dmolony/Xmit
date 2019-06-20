@@ -34,10 +34,10 @@ class LineDisplayStatus implements SaveState
   void reset ()
   // ---------------------------------------------------------------------------------//
   {
-    this.showLines = false;
-    this.stripLines = false;
-    this.truncateLines = false;
-    this.expandInclude = false;
+    showLines = false;
+    stripLines = false;
+    truncateLines = false;
+    expandInclude = false;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -55,10 +55,10 @@ class LineDisplayStatus implements SaveState
   void copy (LineDisplayStatus lineDisplayStatus)
   // ---------------------------------------------------------------------------------//
   {
-    this.showLines = lineDisplayStatus.showLines;
-    this.stripLines = lineDisplayStatus.stripLines;
-    this.truncateLines = lineDisplayStatus.truncateLines;
-    this.expandInclude = lineDisplayStatus.expandInclude;
+    showLines = lineDisplayStatus.showLines;
+    stripLines = lineDisplayStatus.stripLines;
+    truncateLines = lineDisplayStatus.truncateLines;
+    expandInclude = lineDisplayStatus.expandInclude;
   }
 
   // ---------------------------------------------------------------------------------//

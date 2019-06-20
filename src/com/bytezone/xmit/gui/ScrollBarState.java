@@ -19,8 +19,9 @@ class ScrollBarState
   private double blockIncrement;
   private double unitIncrement;
 
+  // not used
   // ---------------------------------------------------------------------------------//
-  public ScrollBarState (TextArea textArea, Orientation orientation)
+  private ScrollBarState (TextArea textArea, Orientation orientation)
   // ---------------------------------------------------------------------------------//
   {
     this.textArea = textArea;

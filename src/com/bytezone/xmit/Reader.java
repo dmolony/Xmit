@@ -11,10 +11,10 @@ import java.util.List;
 public abstract class Reader implements Iterable<Dataset>
 // -----------------------------------------------------------------------------------//
 {
-  final String fileName;
-  boolean incomplete;
+  private final String fileName;
+  private boolean incomplete;
   final List<Dataset> datasets = new ArrayList<> ();
-  final ReaderType readerType;
+  private final ReaderType readerType;
 
   enum ReaderType
   {
@@ -34,6 +34,13 @@ public abstract class Reader implements Iterable<Dataset>
   // ---------------------------------------------------------------------------------//
   {
     return incomplete;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void setIsIncomplete (boolean isIncomplete)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.incomplete = isIncomplete;
   }
 
   // ---------------------------------------------------------------------------------//

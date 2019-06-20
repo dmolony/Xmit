@@ -114,7 +114,7 @@ public class AwsTapeReader extends Reader
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("Tape Reader: %s", fileName);
+    return String.format ("Tape Reader: %s", getFileName ());
   }
 
   // from FILE533.XMI -> M370VTT2

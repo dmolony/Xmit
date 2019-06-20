@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.bytezone.xmit.textunit.ControlRecord;
+import com.bytezone.xmit.textunit.ControlRecord.ControlRecordType;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 import com.bytezone.xmit.textunit.TextUnit;
@@ -51,60 +52,56 @@ public class XmitReader extends Reader
       int length = buffer[ptr] & 0xFF;
       if (ptr + length > buffer.length)
       {
-        incomplete = true;          // see FILE185.XMI / FILE234I
+        setIsIncomplete (true);          // see FILE185.XMI / FILE234I
         break;
       }
 
       byte flags = buffer[ptr + 1];
-      boolean firstSegment = (flags & 0x80) != 0;
-      boolean lastSegment = (flags & 0x40) != 0;
-      boolean controlRecord = (flags & 0x20) != 0;
-      boolean recordNumber = (flags & 0x10) != 0;       // not seen one of these yet
+      boolean isFirstSegment = (flags & 0x80) != 0;
+      boolean isLastSegment = (flags & 0x40) != 0;
+      boolean isControlRecord = (flags & 0x20) != 0;
+      boolean isRecordNumber = (flags & 0x10) != 0;       // not seen one of these yet
 
-      if (recordNumber)
+      if (isRecordNumber)
         System.out.println ("******** Found a record number");
 
-      if (firstSegment)
+      if (isFirstSegment)
         currentSegment = new XmitSegment ();
 
       currentSegment.addBlockPointer (new BlockPointer (buffer, ptr + 2, length - 2));
 
-      if (lastSegment)
+      if (isLastSegment)
       {
-        if (controlRecord)
+        if (isControlRecord)
         {
-          ControlRecord cr = new ControlRecord (currentSegment.getRawBuffer ());
-          controlRecords.add (cr);
-          if (cr.nameMatches ("INMR06"))
+          ControlRecord controlRecord =
+              new ControlRecord (currentSegment.getRawBuffer ());
+          controlRecords.add (controlRecord);
+
+          if (controlRecord.getControlRecordType () == ControlRecordType.INMR06)
             break;
-          if (cr.nameMatches ("INMR01"))
+
+          if (controlRecord.getControlRecordType () == ControlRecordType.INMR01)
           {
-            TextUnit textUnit = cr.getTextUnit (TextUnit.INMNUMF);
+            TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMNUMF);
             if (textUnit != null)
               files = (int) ((TextUnitNumber) textUnit).getNumber ();
           }
-          if (cr.nameMatches ("INMR03"))
+
+          if (controlRecord.getControlRecordType () == ControlRecordType.INMR03)
           {
             Optional<Org> optOrg = getDsorg (datasets.size () + 1);
             if (optOrg.isPresent ())
             {
               Disposition disposition =
                   new Disposition (getInmr02 (datasets.size () + 1).get ());
-              switch (optOrg.get ())
+
+              currentDataset = switch (optOrg.get ())
               {
-                case PS:
-                  currentDataset = new PsDataset (this, disposition, getDatasetName ());
-                  break;
-
-                case PDS:
-                  currentDataset = new PdsDataset (this, disposition, getDatasetName ());
-                  break;
-
-                case VSAM:
-                  currentDataset = null;         // will crash
-                  System.out.println ("VSAM datasets are not supported");
-                  break;
-              }
+                case PS -> new PsDataset (this, disposition, getDatasetName ());
+                case PDS -> new PdsDataset (this, disposition, getDatasetName ());
+                case VSAM -> throw new IllegalArgumentException ("VSAM not supported");
+              };
             }
             else
               currentDataset = null;
@@ -205,6 +202,6 @@ public class XmitReader extends Reader
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("Xmit Reader: %s", fileName);
+    return String.format ("Xmit Reader: %s", getFileName ());
   }
 }

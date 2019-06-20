@@ -242,8 +242,7 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     try
     {
-      XmitReader reader = new XmitReader (this);
-      //      Dataset dataset = reader.getActiveDataset ();
+      XmitReader reader = new XmitReader (this);        // fix this!!
 
       for (ControlRecord controlRecord : reader.getControlRecords ())
         lines.add (String.format ("%s", controlRecord));
