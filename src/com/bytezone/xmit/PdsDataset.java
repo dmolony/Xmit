@@ -116,14 +116,6 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  void listFilters ()
-  // ---------------------------------------------------------------------------------//
-  {
-    for (String key : filterList.keySet ())
-      System.out.println (filterList.get (key));
-  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   void allocateSegments ()
   // ---------------------------------------------------------------------------------//
@@ -204,6 +196,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   // ---------------------------------------------------------------------------------//
   {
     int count = 0;
+
     for (long ttl : catalogMap.keySet ())
     {
       System.out.printf ("%4d  %06X%n", count++, ttl);
@@ -217,6 +210,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   // ---------------------------------------------------------------------------------//
   {
     int count = 0;
+
     for (PdsMember pdsMember : members)
       System.out.printf ("%4d  %-8s  %,9d%n", count++, pdsMember.getName (),
           pdsMember.getDataLength ());
@@ -304,11 +298,9 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
-  // addToMap
-  // ---------------------------------------------------------------------------------//
-
   private void addToMap (CatalogEntry catalogEntry,
       Map<Long, List<CatalogEntry>> catalogMap)
+  // ---------------------------------------------------------------------------------//
   {
     long ttr = catalogEntry.getTtr ();
     List<CatalogEntry> catalogEntriesTtr = catalogMap.get (ttr);
@@ -323,13 +315,6 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
       catalogEntriesTtr.add (catalogEntry);       // retain original sequence
     else
       catalogEntriesTtr.add (0, catalogEntry);    // insert at the head of the list
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getFileName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return getName ();
   }
 
   // ---------------------------------------------------------------------------------//

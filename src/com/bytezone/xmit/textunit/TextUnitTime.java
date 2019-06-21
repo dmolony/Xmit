@@ -11,7 +11,9 @@ public class TextUnitTime extends TextUnitString
       DateTimeFormatter.ofPattern ("yyyyMMddHHmmss");
   private final LocalDateTime dateTime;
 
+  //---------------------------------------------------------------------------------//
   public TextUnitTime (byte[] buffer, int ptr)
+  //---------------------------------------------------------------------------------//
   {
     super (buffer, ptr);
 

@@ -18,7 +18,7 @@ import javafx.scene.input.KeyCode;
 class HeadersTab extends XmitTextTab implements NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
-  NodeData nodeData;
+  private NodeData nodeData;
 
   // ---------------------------------------------------------------------------------//
   public HeadersTab (String title, KeyCode keyCode)
@@ -45,18 +45,18 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
     }
     else if (nodeData.isTape ())
     {
-      PdsDataset dataset = (PdsDataset) nodeData.getDataset ();
+      PdsDataset pdsDataset = (PdsDataset) nodeData.getDataset ();
 
       lines.add ("HDR1");
       lines.add ("-----------------------------------------------------------");
-      String header1 = dataset.getAwsTapeHeaders ().header1 ();
+      String header1 = pdsDataset.getAwsTapeHeaders ().header1 ();
       for (String line : header1.split ("\n"))
         lines.add (line);
       lines.add ("");
 
       lines.add ("HDR2");
       lines.add ("-----------------------------------------------------------");
-      String header2 = dataset.getAwsTapeHeaders ().header2 ();
+      String header2 = pdsDataset.getAwsTapeHeaders ().header2 ();
       for (String line : header2.split ("\n"))
         lines.add (line);
       lines.add ("");
@@ -72,8 +72,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
       lines.addAll (pdsDataset.getCopyR2 ().toLines ());
       lines.add ("");
 
-      lines.add (String.format ("%s Catalog Blocks:",
-          nodeData.getDataset ().getReader ().getFileName ()));
+      lines.add (String.format ("%s Catalog Blocks:", pdsDataset.getName ()));
 
       if (pdsDataset.getModuleType () == ModuleType.BASIC)
         lines.add (BasicModule.getDebugHeader ());
