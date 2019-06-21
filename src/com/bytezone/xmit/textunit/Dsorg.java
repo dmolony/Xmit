@@ -49,11 +49,9 @@ public class Dsorg extends TextUnit
   }
 
   // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     return type == null ? super.toString ()
         : String.format ("%04X  %-8s  %s", keys[keyId], mnemonics[keyId], type);

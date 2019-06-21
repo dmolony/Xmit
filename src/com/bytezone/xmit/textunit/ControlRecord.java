@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.bytezone.xmit.Utility;
 
+// -----------------------------------------------------------------------------------//
 public class ControlRecord
+// -----------------------------------------------------------------------------------//
 {
   private final String name;
   private final List<TextUnit> textUnits = new ArrayList<> ();
@@ -18,10 +20,8 @@ public class ControlRecord
   }
 
   // ---------------------------------------------------------------------------------//
-  // constructor
-  // ---------------------------------------------------------------------------------//
-
   public ControlRecord (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
   {
     int ptr = 0;
     name = Utility.getString (buffer, ptr, 6);
@@ -51,33 +51,22 @@ public class ControlRecord
   }
 
   // ---------------------------------------------------------------------------------//
-  // nameMatches
-  // ---------------------------------------------------------------------------------//
-
-  //  public boolean nameMatches (ControlRecordType controlRecordType)
-  //  {
-  //    return this.controlRecordType == controlRecordType;
-  //  }
-
   public ControlRecordType getControlRecordType ()
+  // ---------------------------------------------------------------------------------//
   {
     return controlRecordType;
   }
 
   // ---------------------------------------------------------------------------------//
-  // fileNbrMatches
-  // ---------------------------------------------------------------------------------//
-
   public boolean fileNbrMatches (int fileNbr)
+  // ---------------------------------------------------------------------------------//
   {
     return this.fileNbr == fileNbr;
   }
 
   // ---------------------------------------------------------------------------------//
-  // createTextUnit
-  // ---------------------------------------------------------------------------------//
-
   private TextUnit createTextUnit (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
   {
     int key = Utility.getTwoBytes (buffer, ptr);
     switch (key)
@@ -127,10 +116,8 @@ public class ControlRecord
   }
 
   // ---------------------------------------------------------------------------------//
-  // getTextUnit
-  // ---------------------------------------------------------------------------------//
-
   public TextUnit getTextUnit (int keyId)
+  // ---------------------------------------------------------------------------------//
   {
     for (TextUnit textUnit : textUnits)
       if (textUnit.matches (keyId))
@@ -140,11 +127,9 @@ public class ControlRecord
   }
 
   // ---------------------------------------------------------------------------------//
-  // toString
-  // ---------------------------------------------------------------------------------//
-
   @Override
   public String toString ()
+  // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.bytezone.xmit.textunit.ControlRecord;
-import com.bytezone.xmit.textunit.ControlRecord.ControlRecordType;
 import com.bytezone.xmit.textunit.Dsorg;
 import com.bytezone.xmit.textunit.Dsorg.Org;
 import com.bytezone.xmit.textunit.TextUnit;
@@ -69,6 +68,7 @@ public class XmitReader extends Reader
         currentSegment = new XmitSegment ();
 
       currentSegment.addBlockPointer (new BlockPointer (buffer, ptr + 2, length - 2));
+      ptr += length;
 
       if (isLastSegment)
       {
@@ -78,21 +78,20 @@ public class XmitReader extends Reader
               new ControlRecord (currentSegment.getRawBuffer ());
           controlRecords.add (controlRecord);
 
-          if (controlRecord.getControlRecordType () == ControlRecordType.INMR06)
-            break;
-
-          if (controlRecord.getControlRecordType () == ControlRecordType.INMR01)
+          switch (controlRecord.getControlRecordType ())
           {
-            TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMNUMF);
-            if (textUnit != null)
-              files = (int) ((TextUnitNumber) textUnit).getNumber ();
-          }
+            case INMR01:
+              TextUnit textUnit = controlRecord.getTextUnit (TextUnit.INMNUMF);
+              if (textUnit != null)
+                files = (int) ((TextUnitNumber) textUnit).getNumber ();
+              break;
+            case INMR02:
+              break;
+            case INMR03:
+              Optional<Org> optOrg = getDsorg (datasets.size () + 1);
+              if (optOrg.isEmpty ())
+                throw new IllegalArgumentException ("DSORG not found");
 
-          if (controlRecord.getControlRecordType () == ControlRecordType.INMR03)
-          {
-            Optional<Org> optOrg = getDsorg (datasets.size () + 1);
-            if (optOrg.isPresent ())
-            {
               Disposition disposition =
                   new Disposition (getInmr02 (datasets.size () + 1).get ());
 
@@ -102,19 +101,21 @@ public class XmitReader extends Reader
                 case PDS -> new PdsDataset (this, disposition, getDatasetName ());
                 case VSAM -> throw new IllegalArgumentException ("VSAM not supported");
               };
-            }
-            else
-              currentDataset = null;
-
-            if (currentDataset != null)
               datasets.add (currentDataset);
+              break;
+            case INMR06:
+              ptr = Integer.MAX_VALUE;      // force break
+              break;
+            case INMR04:
+            case INMR05:
+              break;
+            default:
+              break;
           }
         }
         else
           currentDataset.addSegment (currentSegment);
       }
-
-      ptr += length;
     }
 
     // allocate the data records
