@@ -1,7 +1,7 @@
 package com.bytezone.xmit;
 
 // -----------------------------------------------------------------------------------//
-public class TtlCalculator          // not used
+class TtlCalculator          // not used
 // -----------------------------------------------------------------------------------//
 {
   private int ttr;

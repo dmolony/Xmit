@@ -16,7 +16,9 @@ public abstract class Reader implements Iterable<Dataset>
   final List<Dataset> datasets = new ArrayList<> ();
   private final ReaderType readerType;
 
+  // ---------------------------------------------------------------------------------//
   enum ReaderType
+  // ---------------------------------------------------------------------------------//
   {
     XMIT, TAPE
   }
