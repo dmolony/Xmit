@@ -88,12 +88,12 @@ public class XmitReader extends Reader
             case INMR02:
               break;
             case INMR03:
-              Optional<Org> optOrg = getDsorg (datasets.size () + 1);
+              int fileNo = datasets.size () + 1;
+              Optional<Org> optOrg = getDsorg (fileNo);
               if (optOrg.isEmpty ())
                 throw new IllegalArgumentException ("DSORG not found");
 
-              Disposition disposition =
-                  new Disposition (getInmr02 (datasets.size () + 1).get ());
+              Disposition disposition = new Disposition (getInmr02 (fileNo).get ());
 
               currentDataset = switch (optOrg.get ())
               {
@@ -113,10 +113,10 @@ public class XmitReader extends Reader
               break;
           }
         }
-        else
+        else        // not a control record
           currentDataset.addSegment (currentSegment);
       }
-    }
+    }               // while
 
     // allocate the data records
     for (Dataset dataset : datasets)
