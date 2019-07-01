@@ -249,7 +249,7 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
 
     for (DataBlock dataBlock : dataBlocks)
     {
-      long ttl = dataBlock.getTtl ();
+      long ttl = dataBlock.getTtr ();
       if (ttl == 0)
         continue;     // skip first PDSE block
 
