@@ -26,7 +26,8 @@ public class BasicModule extends CatalogEntry
   {
     super (ModuleType.BASIC, buffer);
 
-    if (buffer.length == 12)          // hw == 0
+    if (halfWords == 0)
+    //    if (buffer.length == 12)          // hw == 0
     {
       vv = 0;
       mm = 0;
@@ -36,7 +37,8 @@ public class BasicModule extends CatalogEntry
     }
     else
     {
-      if (buffer.length >= 14)
+      if (halfWords >= 1)
+      //        if (buffer.length >= 14)
       {
         vv = buffer[12] & 0xFF;
         mm = buffer[13] & 0xFF;

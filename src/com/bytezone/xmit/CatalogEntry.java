@@ -11,7 +11,7 @@ public abstract class CatalogEntry
 
   private final boolean isAlias;
   private final int numTtr;
-  private final int halfWords;
+  final int halfWords;
   private final String name;
   private final int ttr;
 
@@ -79,6 +79,20 @@ public abstract class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     return moduleType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isBasicModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return moduleType == ModuleType.BASIC;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isLoadModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return moduleType == ModuleType.LOAD;
   }
 
   // ---------------------------------------------------------------------------------//

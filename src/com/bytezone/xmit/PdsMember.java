@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import com.bytezone.xmit.CatalogEntry.ModuleType;
-
 // -----------------------------------------------------------------------------------//
 public class PdsMember extends DataFile implements Iterable<DataBlock>
 // -----------------------------------------------------------------------------------//
@@ -215,7 +213,7 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   void undefined ()         // recfm = U
   // ---------------------------------------------------------------------------------//
   {
-    if (catalogEntry == null || catalogEntry.getModuleType () == ModuleType.LOAD
+    if (catalogEntry == null || catalogEntry.isLoadModule ()
         || getCommonBlockLength () <= 1)
     {
       if (getEightBytes ()[0] == 0x20)
@@ -272,39 +270,39 @@ public class PdsMember extends DataFile implements Iterable<DataBlock>
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getText ()
+  public void getText (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
-
     int count = 0;
     int total = 0;
     int pointers = 0;
 
-    text.append (
-        "\n    #    Offset    Header                    Data         Data      Ptrs\n");
-    text.append (
-        "  ----  --------  -------------------------- --------  ---------  ------\n");
+    lines.add ("");
+    lines
+        .add ("    #    Offset    Header                    Data         Data      Ptrs");
+    lines
+        .add ("  ----  --------  -------------------------- --------  ---------  ------");
     for (DataBlock dataBlock : dataBlocks)
     {
       total += dataBlock.getSize ();
       pointers += dataBlock.totalBlockPointers ();
-      text.append (String.format ("  %4d  %s%n", count++, dataBlock));
+      lines.add (String.format ("  %4d  %s", count++, dataBlock));
     }
-    text.append (String.format ("%44.44s %s%n", "", "--------  ---------  ------"));
 
     int b1 = (total & 0xFF0000) >>> 16;
     int b2 = (total & 0x00FF00) >>> 8;
     int b3 = (total & 0x0000FF);
-    text.append (String.format ("%44.44s %02X %02X %02X %,10d  %,6d%n", "", b1, b2, b3,
-        total, pointers));
 
-    for (DataBlock dataBlock : extraDataBlocks)
-      text.append (String.format ("   %3d  %s%n", count++, dataBlock));
+    lines.add (String.format ("%44.44s %s", "", "--------  ---------  ------"));
+    lines.add (String.format ("%44.44s %02X %02X %02X %,10d  %,6d", "", b1, b2, b3, total,
+        pointers));
 
-    Utility.removeTrailingNewlines (text);
-
-    return text.toString ();
+    if (extraDataBlocks.size () > 0)
+    {
+      lines.add ("");
+      for (DataBlock dataBlock : extraDataBlocks)
+        lines.add (String.format ("  %4d  %s", count++, dataBlock));
+    }
   }
 
   // ---------------------------------------------------------------------------------//

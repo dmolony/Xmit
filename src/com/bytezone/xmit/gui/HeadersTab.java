@@ -5,12 +5,10 @@ import java.util.List;
 
 import com.bytezone.xmit.BasicModule;
 import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.CatalogEntry.ModuleType;
 import com.bytezone.xmit.LoadModule;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.XmitReader;
 import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
-import com.bytezone.xmit.textunit.ControlRecord;
 
 import javafx.scene.input.KeyCode;
 
@@ -39,13 +37,12 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
 
     if (nodeData.isXmit ())
     {
-      for (ControlRecord controlRecord : ((XmitReader) nodeData.getReader ())
-          .getControlRecords ())
+      for (var controlRecord : ((XmitReader) nodeData.getReader ()).getControlRecords ())
         lines.add (controlRecord.toString ());
     }
     else if (nodeData.isTape ())
     {
-      PdsDataset pdsDataset = (PdsDataset) nodeData.getDataset ();
+      var pdsDataset = (PdsDataset) nodeData.getDataset ();
 
       lines.add ("HDR1");
       lines.add ("-----------------------------------------------------------");
@@ -64,7 +61,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
 
     if (nodeData.isPartitionedDataset ())
     {
-      PdsDataset pdsDataset = (PdsDataset) nodeData.getDataset ();
+      var pdsDataset = (PdsDataset) nodeData.getDataset ();
       lines.add ("COPYR1");
       lines.addAll (pdsDataset.getCopyR1 ().toLines ());
       lines.add ("");
@@ -74,7 +71,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
 
       lines.add (String.format ("%s Catalog Blocks:", pdsDataset.getName ()));
 
-      if (pdsDataset.getModuleType () == ModuleType.BASIC)
+      if (pdsDataset.isBasicModule ())
         lines.add (BasicModule.getDebugHeader ());
       else
         lines.add (LoadModule.getDebugHeader ());

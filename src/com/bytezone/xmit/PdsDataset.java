@@ -44,6 +44,13 @@ public class PdsDataset extends Dataset implements Iterable<CatalogEntry>
   }
 
   // ---------------------------------------------------------------------------------//
+  public boolean isBasicModule ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntries.size () > 0 && catalogEntries.get (0).isBasicModule ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   public Optional<PdsMember> findMember (String name)
   // ---------------------------------------------------------------------------------//
   {
