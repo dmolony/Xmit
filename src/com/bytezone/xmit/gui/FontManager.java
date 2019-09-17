@@ -342,15 +342,6 @@ class FontManager implements SaveState
     fontNameListView.getSelectionModel ().selectedItemProperty ()
         .addListener ( (obs, o, n) -> setTextFont ());
 
-    //      fontNameListView.setCellFactory (CheckBoxListCell
-    //          .forListView (new Callback<FontName, ObservableValue<Boolean>> ()
-    //          {
-    //            @Override
-    //            public ObservableValue<Boolean> call (FontName item)
-    //            {
-    //              return item.onProperty ();
-    //            }
-    //          }));
     fontNameListView.setCellFactory (CheckBoxListCell.forListView (FontName::onProperty));
 
     factory.setWrapAround (true);
