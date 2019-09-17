@@ -95,12 +95,23 @@ public class XmitReader extends Reader
 
               Disposition disposition = new Disposition (getInmr02 (fileNo).get ());
 
-              currentDataset = switch (optOrg.get ())
+              //   currentDataset = switch (optOrg.get ())
+              //   {
+              //    case PS -> new PsDataset (this, disposition, getDatasetName ());
+              //    case PDS -> new PdsDataset (this, disposition, getDatasetName ());
+              //  case VSAM -> throw new IllegalArgumentException ("VSAM not supported");
+              //              };
+              switch (optOrg.get ())
               {
-                case PS -> new PsDataset (this, disposition, getDatasetName ());
-                case PDS -> new PdsDataset (this, disposition, getDatasetName ());
-                case VSAM -> throw new IllegalArgumentException ("VSAM not supported");
-              };
+                case PS:
+                  currentDataset = new PsDataset (this, disposition, getDatasetName ());
+                  break;
+                case PDS:
+                  currentDataset = new PdsDataset (this, disposition, getDatasetName ());
+                  break;
+                case VSAM:
+                  throw new IllegalArgumentException ("VSAM not supported");
+              }
               datasets.add (currentDataset);
               break;
             case INMR06:
