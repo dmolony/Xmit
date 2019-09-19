@@ -123,11 +123,11 @@ public class XmitReader extends Reader
             default:
               break;
           }
-        }
-        else        // not a control record
+        }            // is a control record
+        else
           currentDataset.addSegment (currentSegment);
-      }
-    }               // while
+      }             // isLastSegment
+    }               // while ptr < buffer.length
 
     // allocate the data records
     for (Dataset dataset : datasets)
