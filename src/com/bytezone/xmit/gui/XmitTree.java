@@ -101,8 +101,6 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       if (merging && nodeData.isDatasetContainer () && nodeData.isXmit ())
         nodeData.merge ();
 
-      //      System.out.println (nodeData);
-
       if (nodeData.isPartitionedDataset () && nodeData.getPdsXmitMembers ().size () > 0)
         treeItem.setLeaf (false);                 // show the open triangle
 
