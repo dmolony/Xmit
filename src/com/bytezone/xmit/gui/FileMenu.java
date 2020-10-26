@@ -99,7 +99,12 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
 
     FileChooser fileChooser = new FileChooser ();
     fileChooser.setTitle ("Save output text to");
-    fileChooser.setInitialDirectory (new File (saveFolderName));
+
+    File saveFolder = new File (saveFolderName);
+    if (!saveFolder.exists ())
+      saveFolder = new File (System.getProperty ("user.home"));
+
+    fileChooser.setInitialDirectory (saveFolder);
     fileChooser.setInitialFileName (name);
 
     File file = fileChooser.showSaveDialog (null);
@@ -144,8 +149,13 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     saveFolderName = prefs.get (PREFS_SAVE_FOLDER, System.getProperty ("user.home"));
+    if (!new File (saveFolderName).exists ())
+      saveFolderName = System.getProperty ("user.home");
+
     extractFolderName =
         prefs.get (PREFS_EXTRACT_FOLDER, System.getProperty ("user.home"));
+    if (!new File (extractFolderName).exists ())
+      extractFolderName = System.getProperty ("user.home");
   }
 
   // ---------------------------------------------------------------------------------//
