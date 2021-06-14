@@ -61,6 +61,49 @@ public class XmitApp extends Application
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  public void start (Stage primaryStage) throws Exception
+  // ---------------------------------------------------------------------------------//
+  {
+    checkParameters ();
+
+    this.primaryStage = primaryStage;
+    primaryStage.setTitle ("XmitApp");
+    Scene scene = new Scene (createContent ());
+    primaryStage.setScene (scene);
+
+    scene.setOnKeyPressed (e -> keyPressed (e));
+
+    //    if (false)
+    //    {
+    //      Desktop desktop = Desktop.getDesktop ();
+    //      System.out.println (Desktop.isDesktopSupported ());
+    //      System.out.println (desktop.isSupported (Action.APP_ABOUT));
+    //      desktop.setAboutHandler (e -> squawk ("About dialog"));
+    //      desktop.setPreferencesHandler (e -> squawk ("Preferences dialog"));
+    //      desktop.setQuitHandler ( (e, r) -> squawk ("Quit dialog"));
+    //    }
+
+    primaryStage.show ();
+
+    // this must happen after show()
+    splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
+    splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
+
+    Timeline clock =
+        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
+        {
+          @Override
+          public void handle (ActionEvent event)
+          {
+            statusBar.tick ();
+          }
+        }));
+    clock.setCycleCount (Timeline.INDEFINITE);
+    clock.play ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   private Parent createContent ()
   // ---------------------------------------------------------------------------------//
   {
@@ -166,49 +209,6 @@ public class XmitApp extends Application
     borderPane.setTop (headerBar);
     borderPane.setCenter (tabPane);
     return borderPane;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void start (Stage primaryStage) throws Exception
-  // ---------------------------------------------------------------------------------//
-  {
-    checkParameters ();
-
-    this.primaryStage = primaryStage;
-    primaryStage.setTitle ("XmitApp");
-    Scene scene = new Scene (createContent ());
-    primaryStage.setScene (scene);
-
-    scene.setOnKeyPressed (e -> keyPressed (e));
-
-    //    if (false)
-    //    {
-    //      Desktop desktop = Desktop.getDesktop ();
-    //      System.out.println (Desktop.isDesktopSupported ());
-    //      System.out.println (desktop.isSupported (Action.APP_ABOUT));
-    //      desktop.setAboutHandler (e -> squawk ("About dialog"));
-    //      desktop.setPreferencesHandler (e -> squawk ("Preferences dialog"));
-    //      desktop.setQuitHandler ( (e, r) -> squawk ("Quit dialog"));
-    //    }
-
-    primaryStage.show ();
-
-    // this must happen after show()
-    splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
-    splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
-
-    Timeline clock =
-        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
-        {
-          @Override
-          public void handle (ActionEvent event)
-          {
-            statusBar.tick ();
-          }
-        }));
-    clock.setCycleCount (Timeline.INDEFINITE);
-    clock.play ();
   }
 
   // ---------------------------------------------------------------------------------//

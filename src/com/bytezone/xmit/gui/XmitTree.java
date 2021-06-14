@@ -14,7 +14,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
+// -----------------------------------------------------------------------------------//
 public class XmitTree extends TreeView<NodeData> implements SaveState, FontChangeListener
+// -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
   private static String SEPARATOR = "/";
@@ -37,7 +39,9 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   private final MultipleSelectionModel<TreeItem<NodeData>> model = getSelectionModel ();
   private final List<NodeDataListener> listeners = new ArrayList<> ();
 
+  // ---------------------------------------------------------------------------------//
   public XmitTree (TreeItem<NodeData> root)
+  // ---------------------------------------------------------------------------------//
   {
     super (root);
 
