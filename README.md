@@ -16,14 +16,14 @@
 ![Linux](resources/xmit-linux.png?raw=true "Linux")
 
 ## Installation
-- Download and install [Java 12](https://jdk.java.net/12/) and [JavaFX 12](https://gluonhq.com/products/javafx/), which are now separate downloads.
+- Download and install [Java 17](https://jdk.java.net/17/) and [JavaFX 17](https://gluonhq.com/products/javafx/), which are now separate downloads.
 - Download [XmitApp](https://github.com/dmolony/xmit/releases).
 - Create executable run file.  
 #### MacOS or Linux shell file  
 
 ```
-/path/to/jdk-12.jdk/Contents/Home/bin/java        \
---module-path /path/to/javafx-sdk-12/lib          \
+/path/to/jdk-17.jdk/Contents/Home/bin/java        \
+--module-path /path/to/javafx-sdk-17/lib          \
 --add-modules=javafx.controls                     \
 -Dfile.encoding=UTF-8                             \
 -jar /path/to/XmitApp.jar
@@ -31,8 +31,8 @@
 #### Windows batch file  
 
 ```
-C:\path\to\jdk-12\bin\java.exe                    \
---module-path C:\path\to\javafx-sdk-12\lib        \
+C:\path\to\jdk-17\bin\java.exe                    \
+--module-path C:\path\to\javafx-sdk-17\lib        \
 --add-modules=javafx.controls                     \
 -Dfile.encoding=UTF-8                             \
 -jar C:\path\to\XmitApp.jar
