@@ -41,8 +41,7 @@ class LineDisplayStatus implements SaveState
   }
 
   // ---------------------------------------------------------------------------------//
-  void set (boolean showLines, boolean stripLines, boolean truncateLines,
-      boolean expandLines)
+  void set (boolean showLines, boolean stripLines, boolean truncateLines, boolean expandLines)
   // ---------------------------------------------------------------------------------//
   {
     this.showLines = showLines;

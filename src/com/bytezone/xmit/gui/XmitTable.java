@@ -1,6 +1,12 @@
 package com.bytezone.xmit.gui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.CatalogEntry;
@@ -30,8 +36,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
   private final List<FilterActionListener> filterListeners = new ArrayList<> ();
   private final List<TableItemSelectionListener> selectionListeners = new ArrayList<> ();
-  private final ObservableList<CatalogEntryItem> items =
-      FXCollections.observableArrayList ();
+  private final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
 
   private NodeData nodeData;
   private FilterStatus filterStatus;
@@ -50,25 +55,25 @@ class XmitTable extends TableView<CatalogEntryItem>                             
     sortedList.comparatorProperty ().bind (this.comparatorProperty ());
     setItems (sortedList);
 
-    dataColumns.addAll (Arrays.asList (
-        new StringColumn ("Member", "MemberName", 8, "CENTER-LEFT", DisplayType.ALL),
-        new NumberColumn ("Bytes", "Bytes", 9, DisplayType.ALL),
-        new StringColumn ("Id", "UserName", 8, "CENTER-LEFT", DisplayType.BASIC),
-        new NumberColumn ("Size", "Size", 7, DisplayType.BASIC),
-        new NumberColumn ("Init", "Init", 7, DisplayType.BASIC),
-        new LocalDateColumn ("Created", "DateCreated", 10, DisplayType.BASIC),
-        new LocalDateColumn ("Modified", "DateModified", 10, DisplayType.BASIC),
-        new StringColumn ("Time", "Time", 8, "CENTER", DisplayType.BASIC),
-        new FileTypeColumn ("Type", "Type", 5, "CENTER", DisplayType.BASIC),
-        new StringColumn ("ver.mod", "Version", 7, "CENTER", DisplayType.BASIC),
-        new NumberColumn ("Storage", "storage", 7, "%06X", "CENTER", DisplayType.LOAD),
-        new NumberColumn ("Entry", "epa", 7, "%06X", "CENTER", DisplayType.LOAD),
-        new StringColumn ("APF", "apf", 4, "CENTER", DisplayType.LOAD),
-        new NumberColumn ("amode", "aMode", 5, DisplayType.LOAD),
-        new NumberColumn ("rmode", "rMode", 5, DisplayType.LOAD),
-        new NumberColumn ("ssi", "ssi", 8, "%08X", "CENTER", DisplayType.LOAD),
-        new StringColumn ("Attributes", "attr", 10, "CENTER", DisplayType.LOAD),
-        new StringColumn ("Alias", "AliasName", 8, "CENTER-LEFT", DisplayType.ALL)));
+    dataColumns.addAll (
+        Arrays.asList (new StringColumn ("Member", "MemberName", 8, "CENTER-LEFT", DisplayType.ALL),
+            new NumberColumn ("Bytes", "Bytes", 9, DisplayType.ALL),
+            new StringColumn ("Id", "UserName", 8, "CENTER-LEFT", DisplayType.BASIC),
+            new NumberColumn ("Size", "Size", 7, DisplayType.BASIC),
+            new NumberColumn ("Init", "Init", 7, DisplayType.BASIC),
+            new LocalDateColumn ("Created", "DateCreated", 10, DisplayType.BASIC),
+            new LocalDateColumn ("Modified", "DateModified", 10, DisplayType.BASIC),
+            new StringColumn ("Time", "Time", 8, "CENTER", DisplayType.BASIC),
+            new FileTypeColumn ("Type", "Type", 5, "CENTER", DisplayType.BASIC),
+            new StringColumn ("ver.mod", "Version", 7, "CENTER", DisplayType.BASIC),
+            new NumberColumn ("Storage", "storage", 7, "%06X", "CENTER", DisplayType.LOAD),
+            new NumberColumn ("Entry", "epa", 7, "%06X", "CENTER", DisplayType.LOAD),
+            new StringColumn ("APF", "apf", 4, "CENTER", DisplayType.LOAD),
+            new NumberColumn ("amode", "aMode", 5, DisplayType.LOAD),
+            new NumberColumn ("rmode", "rMode", 5, DisplayType.LOAD),
+            new NumberColumn ("ssi", "ssi", 8, "%08X", "CENTER", DisplayType.LOAD),
+            new StringColumn ("Attributes", "attr", 10, "CENTER", DisplayType.LOAD),
+            new StringColumn ("Alias", "AliasName", 8, "CENTER-LEFT", DisplayType.ALL)));
 
     Collections.sort (dataColumns);                   // sort into saved sequence
 
@@ -80,8 +85,8 @@ class XmitTable extends TableView<CatalogEntryItem>                             
   }
 
   // ---------------------------------------------------------------------------------//
-  private void selected (ObservableValue<? extends CatalogEntryItem> obs,
-      CatalogEntryItem oldSel, CatalogEntryItem newSel)
+  private void selected (ObservableValue<? extends CatalogEntryItem> obs, CatalogEntryItem oldSel,
+      CatalogEntryItem newSel)
   // ---------------------------------------------------------------------------------//
   {
     if (newSel != null)
@@ -105,8 +110,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
   private void setVisibleColumns (ModuleType moduleType)
   // ---------------------------------------------------------------------------------//
   {
-    DisplayType displayType =
-        moduleType == ModuleType.BASIC ? DisplayType.BASIC : DisplayType.LOAD;
+    DisplayType displayType = moduleType == ModuleType.BASIC ? DisplayType.BASIC : DisplayType.LOAD;
     if (currentDisplayType != displayType)
     {
       currentDisplayType = displayType;
@@ -208,15 +212,13 @@ class XmitTable extends TableView<CatalogEntryItem>                             
     if (filterStatus.filterValue.isEmpty ())
       setPlaceholder (new Label (String.format ("No members to display")));
     else
-      setPlaceholder (new Label (
-          String.format ("No members contain '%s'", filterStatus.filterValue)));
+      setPlaceholder (
+          new Label (String.format ("No members contain '%s'", filterStatus.filterValue)));
 
     // create filter
-    Filter filter =
-        ((PdsDataset) nodeData.getDataset ()).getFilter (filterStatus.filterValue);
-    FilterMode filterMode =
-        filterStatus.filterValue.isEmpty () || !filterStatus.filterActive ? FilterMode.OFF
-            : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
+    Filter filter = ((PdsDataset) nodeData.getDataset ()).getFilter (filterStatus.filterValue);
+    FilterMode filterMode = filterStatus.filterValue.isEmpty () || !filterStatus.filterActive
+        ? FilterMode.OFF : filterStatus.filterReverse ? FilterMode.REVERSED : FilterMode.ON;
 
     // build items based on filter value
     items.clear ();
@@ -225,8 +227,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
     // notify filter listeners
     for (FilterActionListener listener : filterListeners)
-      listener.filtering (items.size (), ((PdsDataset) nodeData.getDataset ()).size (),
-          true);
+      listener.filtering (items.size (), ((PdsDataset) nodeData.getDataset ()).size (), true);
 
     // select a member
     selectCatalogEntryItem (findItem (selectedName));

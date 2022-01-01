@@ -10,8 +10,14 @@ import com.bytezone.xmit.Utility;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -33,8 +39,7 @@ class ViewMenu implements SaveState
   private final Menu viewMenu = new Menu ("View");
   private final MenuItem fontMenuItem = new MenuItem ("Set Font...");
   private final MenuItem filterMenuItem = new MenuItem ("Set PDS Filter...");
-  private final CheckMenuItem exclusiveFilterMenuItem =
-      new CheckMenuItem ("Exclusive Filter");
+  private final CheckMenuItem exclusiveFilterMenuItem = new CheckMenuItem ("Exclusive Filter");
 
   private final CheckMenuItem showLinesMenuItem;
   private final CheckMenuItem stripLinesMenuItem;
@@ -44,17 +49,16 @@ class ViewMenu implements SaveState
 
   private final String[][]                    //
   codePageNames = {                           //
-                   { "CP037", "CP1140" },     // USA/Canada
-                   { "CP273", "CP1141" },     // Germany
-                   { "CP285", "CP1146" },     // UK
-                   { "CP297", "CP1147" },     // France
-                   { "CP500", "CP1148" },     // International #5
-                   { "CP870", "CP1153" },     // Latin-2
-                   { "CP1047", "CP924" },     // Latin-1
-                   { "USER1", "USER1" } };    // 1047 with NL/LF swapped
-  private final KeyCode[] keyCodes =
-      { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4, KeyCode.DIGIT5,
-        KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };
+      { "CP037", "CP1140" },     // USA/Canada
+      { "CP273", "CP1141" },     // Germany
+      { "CP285", "CP1146" },     // UK
+      { "CP297", "CP1147" },     // France
+      { "CP500", "CP1148" },     // International #5
+      { "CP870", "CP1153" },     // Latin-2
+      { "CP1047", "CP924" },     // Latin-1
+      { "USER1", "USER1" } };    // 1047 with NL/LF swapped
+  private final KeyCode[] keyCodes = { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3,
+      KeyCode.DIGIT4, KeyCode.DIGIT5, KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };
 
   private final ToggleGroup toggleGroup = new ToggleGroup ();
   private final List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
@@ -65,12 +69,11 @@ class ViewMenu implements SaveState
   {
     ObservableList<MenuItem> menuItems = viewMenu.getItems ();
 
-    KeyCodeCombination cmdShiftF = new KeyCodeCombination (KeyCode.F,
-        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
-    KeyCodeCombination cmdF =
-        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN);
-    KeyCodeCombination cmdAltF = new KeyCodeCombination (KeyCode.F,
-        KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN);
+    KeyCodeCombination cmdShiftF =
+        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
+    KeyCodeCombination cmdF = new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN);
+    KeyCodeCombination cmdAltF =
+        new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN, KeyCombination.ALT_DOWN);
 
     fontMenuItem.setAccelerator (cmdAltF);
     filterMenuItem.setAccelerator (cmdF);
@@ -84,11 +87,9 @@ class ViewMenu implements SaveState
 
     EventHandler<ActionEvent> action = e -> alterLineStatus ();
     showLinesMenuItem = setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, action);
-    stripLinesMenuItem =
-        setCheckMenuItem ("Strip Line Numbers", KeyCode.L, SHIFT, action);
+    stripLinesMenuItem = setCheckMenuItem ("Strip Line Numbers", KeyCode.L, SHIFT, action);
     truncateMenuItem = setCheckMenuItem ("Truncate Column 1", KeyCode.T, action);
-    expandIncludeMenuItem =
-        setCheckMenuItem ("Expand Include Members", KeyCode.I, action);
+    expandIncludeMenuItem = setCheckMenuItem ("Expand Include Members", KeyCode.I, action);
 
     menuItems.add (new SeparatorMenuItem ());
 
@@ -101,8 +102,8 @@ class ViewMenu implements SaveState
 
     menuItems.add (new SeparatorMenuItem ());
 
-    euroMenuItem = setCheckMenuItem ("Euro update", KeyCode.DIGIT9,
-        e -> setEuroAndNotifyListeners ());
+    euroMenuItem =
+        setCheckMenuItem ("Euro update", KeyCode.DIGIT9, e -> setEuroAndNotifyListeners ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -144,11 +145,10 @@ class ViewMenu implements SaveState
 
     if (keyCode != null)
       if (shift)
-        menuItem.setAccelerator (new KeyCodeCombination (keyCode,
-            KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        menuItem.setAccelerator (new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN,
+            KeyCombination.SHIFT_DOWN));
       else
-        menuItem.setAccelerator (
-            new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
+        menuItem.setAccelerator (new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
 
     menuItem.setOnAction (action);
 
@@ -163,8 +163,7 @@ class ViewMenu implements SaveState
     menuItem.setToggleGroup (toggleGroup);
     menuItem.setUserData (name);
     menuItem.setOnAction (e -> notifyCodePageListeners ());
-    menuItem
-        .setAccelerator (new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
+    menuItem.setAccelerator (new KeyCodeCombination (keyCode, KeyCombination.SHORTCUT_DOWN));
     return menuItem;
   }
 

@@ -238,8 +238,8 @@ class FontManager implements SaveState
   public void restore (Preferences prefs)
   // ---------------------------------------------------------------------------------//
   {
-    fontNameSubList.addAll (
-        Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT_NAME).split (";")));
+    fontNameSubList
+        .addAll (Arrays.asList (prefs.get (PREFS_FONTS_SELECTED, REQUIRED_FONT_NAME).split (";")));
 
     currentFontSize = prefs.getInt (PREFS_FONT_SIZE, DEFAULT_FONT_SIZE);
     setCurrentFontIndex (prefs.get (PREFS_FONT_NAME, REQUIRED_FONT_NAME));
@@ -285,8 +285,7 @@ class FontManager implements SaveState
       Font font = Font.font (familyName, FontWeight.NORMAL, FontPosture.REGULAR, 15.0);
       thinTxt.setFont (font);
       thikTxt.setFont (font);
-      if (thinTxt.getLayoutBounds ().getWidth () == thikTxt.getLayoutBounds ()
-          .getWidth ())
+      if (thinTxt.getLayoutBounds ().getWidth () == thikTxt.getLayoutBounds ().getWidth ())
       {
         FontName fontName = new FontName (familyName);
         fontName.setOn (fontNameSubList.contains (familyName));
@@ -305,8 +304,8 @@ class FontManager implements SaveState
     StringBuilder text = new StringBuilder ();
     String line;
 
-    DataInputStream inputStream = new DataInputStream (XmitApp.class.getClassLoader ()
-        .getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
+    DataInputStream inputStream = new DataInputStream (
+        XmitApp.class.getClassLoader ().getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
     try (BufferedReader in = new BufferedReader (new InputStreamReader (inputStream)))
     {
       while ((line = in.readLine ()) != null)
@@ -378,8 +377,8 @@ class FontManager implements SaveState
 
     Region filler = new Region ();
     HBox.setHgrow (filler, Priority.ALWAYS);
-    controlBox.getChildren ().addAll (new Label ("Font size"), new Spinner<> (factory),
-        filler, btnCancel, btnApply, btnAccept);
+    controlBox.getChildren ().addAll (new Label ("Font size"), new Spinner<> (factory), filler,
+        btnCancel, btnApply, btnAccept);
 
     borderPane.setLeft (fontNameListView);
     borderPane.setCenter (text);

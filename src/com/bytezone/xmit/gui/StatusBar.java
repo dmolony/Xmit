@@ -1,5 +1,12 @@
 package com.bytezone.xmit.gui;
 
+import com.bytezone.xmit.gui.CodePageSelectedListener;
+import com.bytezone.xmit.gui.FilterChangeListener;
+import com.bytezone.xmit.gui.FilterStatus;
+import com.bytezone.xmit.gui.FontChangeListener;
+import com.bytezone.xmit.gui.LineDisplayStatus;
+import com.bytezone.xmit.gui.ShowLinesListener;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;

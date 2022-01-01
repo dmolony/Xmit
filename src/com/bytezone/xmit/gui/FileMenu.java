@@ -51,12 +51,10 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem,
         new SeparatorMenuItem (), aboutMenuItem);
-    rootMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.R, KeyCombination.SHORTCUT_DOWN));
-    extractMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.E, KeyCombination.SHORTCUT_DOWN));
-    saveMenuItem.setAccelerator (
-        new KeyCodeCombination (KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+    rootMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+    extractMenuItem
+        .setAccelerator (new KeyCodeCombination (KeyCode.E, KeyCombination.SHORTCUT_DOWN));
+    saveMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 
     extractMenuItem.setOnAction (e -> extractFile ());
     saveMenuItem.setOnAction (e -> saveFile ());
@@ -134,8 +132,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
       {
         Files.write (Paths.get (file.getAbsolutePath ()), buffer);
         extractFolderName = file.getParent ();
-        Utility.showAlert (AlertType.INFORMATION, "Success",
-            "File Extracted: " + file.getName ());
+        Utility.showAlert (AlertType.INFORMATION, "Success", "File Extracted: " + file.getName ());
       }
       catch (IOException e)
       {
@@ -152,8 +149,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
     if (!new File (saveFolderName).exists ())
       saveFolderName = System.getProperty ("user.home");
 
-    extractFolderName =
-        prefs.get (PREFS_EXTRACT_FOLDER, System.getProperty ("user.home"));
+    extractFolderName = prefs.get (PREFS_EXTRACT_FOLDER, System.getProperty ("user.home"));
     if (!new File (extractFolderName).exists ())
       extractFolderName = System.getProperty ("user.home");
   }

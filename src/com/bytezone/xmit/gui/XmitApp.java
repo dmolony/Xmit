@@ -1,116 +1,71 @@
 package com.bytezone.xmit.gui;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 // -----------------------------------------------------------------------------------//
-public class XmitApp extends Application
+public class XmitApp extends AppBase
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_ROOT_FOLDER = "RootFolder";
-  private final Preferences prefs = Preferences.userNodeForPackage (this.getClass ());
 
-  private Stage primaryStage;
   private String rootFolderName;
 
   private XmitTree xmitTree;
   private TreePane treePane;
 
+  private final SplitPane splitPane = new SplitPane ();
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
   private final TableTabPane tableTabPane = new TableTabPane ("Table");
 
   private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
 
-  private final MenuBar menuBar = new MenuBar ();
   private final FileMenu fileMenu = new FileMenu ();
   private final ViewMenu viewMenu = new ViewMenu ();
-
-  private final SplitPane splitPane = new SplitPane ();
-  private final WindowStatus windowStatus = new WindowStatus ();
-
-  private final List<SaveState> saveStateList = new ArrayList<> ();
-  private final StatusBar statusBar = new StatusBar ();
-
-  private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   @Override
   public void start (Stage primaryStage) throws Exception
   // ---------------------------------------------------------------------------------//
   {
-    checkParameters ();
-
-    this.primaryStage = primaryStage;
-    primaryStage.setTitle ("XmitApp");
-    Scene scene = new Scene (createContent ());
-    primaryStage.setScene (scene);
+    super.start (primaryStage);
 
     scene.setOnKeyPressed (e -> keyPressed (e));
 
-    //    if (false)
-    //    {
-    //      Desktop desktop = Desktop.getDesktop ();
-    //      System.out.println (Desktop.isDesktopSupported ());
-    //      System.out.println (desktop.isSupported (Action.APP_ABOUT));
-    //      desktop.setAboutHandler (e -> squawk ("About dialog"));
-    //      desktop.setPreferencesHandler (e -> squawk ("Preferences dialog"));
-    //      desktop.setQuitHandler ( (e, r) -> squawk ("Quit dialog"));
-    //    }
-
-    primaryStage.show ();
-
     // this must happen after show()
-    splitPane.setDividerPosition (0, windowStatus.dividerPosition1);
-    splitPane.setDividerPosition (1, windowStatus.dividerPosition2);
-
-    Timeline clock =
-        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
-        {
-          @Override
-          public void handle (ActionEvent event)
-          {
-            statusBar.tick ();
-          }
-        }));
-    clock.setCycleCount (Timeline.INDEFINITE);
-    clock.play ();
+    XmitWindowStatus xmitWindowStatus = (XmitWindowStatus) windowStatus;
+    splitPane.setDividerPosition (0, xmitWindowStatus.dividerPosition1);
+    splitPane.setDividerPosition (1, xmitWindowStatus.dividerPosition2);
   }
 
   // ---------------------------------------------------------------------------------//
-  private Parent createContent ()
+  @Override
+  Parent createContent ()
   // ---------------------------------------------------------------------------------//
   {
+    primaryStage.setTitle ("XmitApp");
+
     // place menubar
-    final String os = System.getProperty ("os.name");
-    if (os != null && os.startsWith ("Mac"))
-      menuBar.setUseSystemMenuBar (true);
+    //    final String os = System.getProperty ("os.name");
+    //    if (os != null && os.startsWith ("Mac"))
+    //      menuBar.setUseSystemMenuBar (true);
 
     // get root folder
     validateRootFolderOrExit ();
@@ -121,8 +76,7 @@ public class XmitApp extends Application
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();
     OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
-    splitPane.getItems ().addAll (treePane,
-        createBorderPane (tableHeaderBar, tableTabPane),
+    splitPane.getItems ().addAll (treePane, createBorderPane (tableHeaderBar, tableTabPane),
         createBorderPane (outputHeaderBar, outputTabPane));
 
     XmitTable xmitTable = tableTabPane.membersTab.xmitTable;
@@ -193,10 +147,8 @@ public class XmitApp extends Application
     primaryStage.setOnCloseRequest (e -> exit ());
 
     // ensure viewMenu (codepage) is set before xmitTree
-    saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu,
-        xmitTree, tableTabPane, fontManager));
-
-    restore ();
+    saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu, xmitTree,
+        tableTabPane, fontManager));
 
     return mainPane;
   }
@@ -248,48 +200,13 @@ public class XmitApp extends Application
   }
 
   // ---------------------------------------------------------------------------------//
-  private void setWindow ()
+  @Override
+  protected void exit ()
   // ---------------------------------------------------------------------------------//
   {
-    primaryStage.setWidth (1200);
-    primaryStage.setHeight (800);
-    primaryStage.centerOnScreen ();
-  }
+    ((XmitWindowStatus) windowStatus).setDividers (splitPane);
 
-  // ---------------------------------------------------------------------------------//
-  private void restore ()
-  // ---------------------------------------------------------------------------------//
-  {
-    for (SaveState saveState : saveStateList)
-      saveState.restore (prefs);
-
-    windowStatus.restore (prefs);
-
-    if (windowStatus.width <= 0 || windowStatus.height <= 22 || windowStatus.x < 0
-        || windowStatus.y < 0)
-      setWindow ();
-    else
-    {
-      primaryStage.setWidth (windowStatus.width);
-      primaryStage.setHeight (windowStatus.height);
-      primaryStage.setX (windowStatus.x);
-      primaryStage.setY (windowStatus.y);
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void exit ()
-  // ---------------------------------------------------------------------------------//
-  {
-    windowStatus.setLocation (primaryStage);
-    windowStatus.setDividers (splitPane);
-
-    windowStatus.save (prefs);
-
-    for (SaveState saveState : saveStateList)
-      saveState.save (prefs);
-
-    Platform.exit ();
+    super.exit ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -297,8 +214,7 @@ public class XmitApp extends Application
   // ---------------------------------------------------------------------------------//
   {
     if (setRootFolder ())
-      treePane
-          .setRootFolder (new XmitTreeItem (new NodeData (new File (rootFolderName))));
+      treePane.setRootFolder (new XmitTreeItem (new NodeData (new File (rootFolderName))));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -352,28 +268,19 @@ public class XmitApp extends Application
   }
 
   // ---------------------------------------------------------------------------------//
-  private void checkParameters ()
+  @Override
+  Preferences getPreferences ()
   // ---------------------------------------------------------------------------------//
   {
-    for (String s : getParameters ().getUnnamed ())
-    {
-      System.out.printf ("Parameter: %s%n", s);
-      if ("-debug".equals (s))
-        debug = true;
-      else if ("-reset".equals (s))
-        try
-        {
-          prefs.clear ();
-          System.out.println ("Preferences reset");
-        }
-        catch (BackingStoreException e1)
-        {
-          System.out.println ("Preferences NOT reset");
-          e1.printStackTrace ();
-        }
-      else
-        System.out.printf ("Unknown parameter: %s%n", s);
-    }
+    return Preferences.userNodeForPackage (this.getClass ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  WindowStatus getWindowStatus ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return new XmitWindowStatus ();
   }
 
   // ---------------------------------------------------------------------------------//

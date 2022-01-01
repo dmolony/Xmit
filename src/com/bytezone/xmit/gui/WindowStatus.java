@@ -2,7 +2,6 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
-import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 
 // -----------------------------------------------------------------------------------//
@@ -10,16 +9,11 @@ class WindowStatus implements SaveState
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_WINDOW_LOCATION = "WindowLocation";
-  private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
-  private static final String PREFS_DIVIDER_POSITION_2 = "DividerPosition2";
 
   double width;
   double height;
   double x;
   double y;
-
-  double dividerPosition1;
-  double dividerPosition2;
 
   // ---------------------------------------------------------------------------------//
   public WindowStatus ()
@@ -39,15 +33,6 @@ class WindowStatus implements SaveState
   }
 
   // ---------------------------------------------------------------------------------//
-  void setDividers (SplitPane splitPane)
-  // ---------------------------------------------------------------------------------//
-  {
-    double[] dividerPositions = splitPane.getDividerPositions ();
-    this.dividerPosition1 = dividerPositions[0];
-    this.dividerPosition2 = dividerPositions[1];
-  }
-
-  // ---------------------------------------------------------------------------------//
   void reset ()
   // ---------------------------------------------------------------------------------//
   {
@@ -55,9 +40,6 @@ class WindowStatus implements SaveState
     height = 0.0;
     x = 0.0;
     y = 0.0;
-
-    dividerPosition1 = 0.0;
-    dividerPosition2 = 0.0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -70,9 +52,6 @@ class WindowStatus implements SaveState
       String text = String.format ("%f,%f,%f,%f", width, height, x, y);
       prefs.put (PREFS_WINDOW_LOCATION, text);
     }
-
-    prefs.putDouble (PREFS_DIVIDER_POSITION_1, dividerPosition1);
-    prefs.putDouble (PREFS_DIVIDER_POSITION_2, dividerPosition2);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -91,8 +70,5 @@ class WindowStatus implements SaveState
       x = Double.parseDouble (chunks[2]);
       y = Double.parseDouble (chunks[3]);
     }
-
-    dividerPosition1 = prefs.getDouble (PREFS_DIVIDER_POSITION_1, .33);
-    dividerPosition2 = prefs.getDouble (PREFS_DIVIDER_POSITION_2, .67);
   }
 }
