@@ -2,6 +2,8 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.WindowStatus;
+
 import javafx.scene.control.SplitPane;
 
 // -----------------------------------------------------------------------------------//
@@ -14,18 +16,21 @@ public class XmitWindowStatus extends WindowStatus
   double dividerPosition1;
   double dividerPosition2;
 
+  SplitPane splitPane;
+
   // ---------------------------------------------------------------------------------//
-  void setDividers (SplitPane splitPane)
+  void setSplitPane (SplitPane splitPane)
   // ---------------------------------------------------------------------------------//
   {
-    double[] dividerPositions = splitPane.getDividerPositions ();
-    this.dividerPosition1 = dividerPositions[0];
-    this.dividerPosition2 = dividerPositions[1];
+    this.splitPane = splitPane;
+
+    splitPane.setDividerPosition (0, dividerPosition1);
+    splitPane.setDividerPosition (1, dividerPosition2);
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void reset ()
+  protected void reset ()
   // ---------------------------------------------------------------------------------//
   {
     super.reset ();
@@ -40,6 +45,10 @@ public class XmitWindowStatus extends WindowStatus
   // ---------------------------------------------------------------------------------//
   {
     super.save (prefs);
+
+    double[] dividerPositions = splitPane.getDividerPositions ();
+    this.dividerPosition1 = dividerPositions[0];
+    this.dividerPosition2 = dividerPositions[1];
 
     prefs.putDouble (PREFS_DIVIDER_POSITION_1, dividerPosition1);
     prefs.putDouble (PREFS_DIVIDER_POSITION_2, dividerPosition2);

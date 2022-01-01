@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
+
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;

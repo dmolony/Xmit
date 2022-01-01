@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Utility;

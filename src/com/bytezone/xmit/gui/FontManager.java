@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;

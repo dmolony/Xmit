@@ -2,6 +2,8 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
+
 // -----------------------------------------------------------------------------------//
 class FilterStatus implements SaveState
 // -----------------------------------------------------------------------------------//

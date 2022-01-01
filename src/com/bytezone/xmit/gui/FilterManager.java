@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

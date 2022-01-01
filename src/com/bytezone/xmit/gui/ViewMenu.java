@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
 import com.bytezone.xmit.Utility;
 
 import javafx.collections.ObservableList;

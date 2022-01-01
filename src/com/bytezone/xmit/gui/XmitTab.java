@@ -2,6 +2,8 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.SaveState;
+
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
