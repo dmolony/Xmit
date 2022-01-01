@@ -54,7 +54,7 @@ public class XmitApp extends AppBase
   {
     super.start (primaryStage);
 
-    scene.setOnKeyPressed (e -> keyPressed (e));
+    primaryStage.getScene ().setOnKeyPressed (e -> keyPressed (e));
 
     // this must happen after show()
     ((XmitWindowStatus) windowStatus).setSplitPane (splitPane);
