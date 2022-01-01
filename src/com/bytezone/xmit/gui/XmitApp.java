@@ -6,9 +6,13 @@ import java.util.prefs.Preferences;
 
 import com.bytezone.xmit.Utility;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
@@ -18,6 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 // -----------------------------------------------------------------------------------//
 public class XmitApp extends AppBase
@@ -29,6 +34,7 @@ public class XmitApp extends AppBase
 
   private XmitTree xmitTree;
   private TreePane treePane;
+  private final StatusBar statusBar = new StatusBar ();
 
   private final SplitPane splitPane = new SplitPane ();
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
@@ -53,6 +59,19 @@ public class XmitApp extends AppBase
     XmitWindowStatus xmitWindowStatus = (XmitWindowStatus) windowStatus;
     splitPane.setDividerPosition (0, xmitWindowStatus.dividerPosition1);
     splitPane.setDividerPosition (1, xmitWindowStatus.dividerPosition2);
+
+    // create status bar clock
+    Timeline clock =
+        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
+        {
+          @Override
+          public void handle (ActionEvent event)
+          {
+            statusBar.tick ();
+          }
+        }));
+    clock.setCycleCount (Timeline.INDEFINITE);
+    clock.play ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -61,11 +80,6 @@ public class XmitApp extends AppBase
   // ---------------------------------------------------------------------------------//
   {
     primaryStage.setTitle ("XmitApp");
-
-    // place menubar
-    //    final String os = System.getProperty ("os.name");
-    //    if (os != null && os.startsWith ("Mac"))
-    //      menuBar.setUseSystemMenuBar (true);
 
     // get root folder
     validateRootFolderOrExit ();

@@ -1,12 +1,5 @@
 package com.bytezone.xmit.gui;
 
-import com.bytezone.xmit.gui.CodePageSelectedListener;
-import com.bytezone.xmit.gui.FilterChangeListener;
-import com.bytezone.xmit.gui.FilterStatus;
-import com.bytezone.xmit.gui.FontChangeListener;
-import com.bytezone.xmit.gui.LineDisplayStatus;
-import com.bytezone.xmit.gui.ShowLinesListener;
-
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -15,8 +8,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 // -----------------------------------------------------------------------------------//
-class StatusBar extends HBox implements FilterChangeListener, ShowLinesListener,
-    FontChangeListener, CodePageSelectedListener
+class StatusBar extends HBox
+    implements FilterChangeListener, ShowLinesListener, FontChangeListener, CodePageSelectedListener
 // -----------------------------------------------------------------------------------//
 {
   private static final int MAX_TICKS = 3;
@@ -64,17 +57,14 @@ class StatusBar extends HBox implements FilterChangeListener, ShowLinesListener,
   {
     statusMessage.setText ("");
 
-    String filterText =
-        filterStatus.filterActive
-            ? filterStatus.filterValue.isEmpty () ? "NONE"
-                : (filterStatus.filterReverse ? "~" : "") + filterStatus.filterValue
-            : "OFF";
+    String filterText = filterStatus.filterActive ? filterStatus.filterValue.isEmpty () ? "NONE"
+        : (filterStatus.filterReverse ? "~" : "") + filterStatus.filterValue : "OFF";
     String showText = (filterStatus.filterActive && !filterStatus.filterValue.isEmpty ())
         ? filterStatus.filterExclusion ? "Filtered lines" : "All lines" : "All lines";
     String includeText = expandJclInclude ? "ON" : "OFF";
 
-    statusDisplay.setText (
-        String.format ("Filter: %-20s Show: %-20s JCL Include: %-12s Codepage: %-6s",
+    statusDisplay
+        .setText (String.format ("Filter: %-20s Show: %-20s JCL Include: %-12s Codepage: %-6s",
             filterText, showText, includeText, codePageName));
   }
 

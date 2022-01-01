@@ -5,18 +5,13 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AppBase extends Application
@@ -29,7 +24,6 @@ public abstract class AppBase extends Application
   protected final MenuBar menuBar = new MenuBar ();
   protected final BorderPane mainPane = new BorderPane ();
   protected final WindowStatus windowStatus = getWindowStatus ();
-  protected final StatusBar statusBar = new StatusBar ();
   protected Scene scene;                                    // not sure if this is needed
 
   protected final List<SaveState> saveStateList = new ArrayList<> ();
@@ -63,18 +57,6 @@ public abstract class AppBase extends Application
     restore ();
 
     primaryStage.show ();
-
-    Timeline clock =
-        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
-        {
-          @Override
-          public void handle (ActionEvent event)
-          {
-            statusBar.tick ();
-          }
-        }));
-    clock.setCycleCount (Timeline.INDEFINITE);
-    clock.play ();
   }
 
   // ---------------------------------------------------------------------------------//
