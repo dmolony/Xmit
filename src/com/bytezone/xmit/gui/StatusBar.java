@@ -11,7 +11,6 @@ class StatusBar extends HBox implements FontChangeListener
 {
   private static final int MAX_TICKS = 3;
   private final Label statusMessage = new Label ();
-
   private int ticksLeft;
 
   // ---------------------------------------------------------------------------------//
@@ -20,7 +19,7 @@ class StatusBar extends HBox implements FontChangeListener
   {
     super (10);
 
-    getChildren ().addAll (statusMessage);
+    getChildren ().add (statusMessage);
     setPadding (new Insets (5));
   }
 

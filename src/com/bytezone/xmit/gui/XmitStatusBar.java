@@ -6,8 +6,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
+// -----------------------------------------------------------------------------------//
 public class XmitStatusBar extends StatusBar
     implements FilterChangeListener, ShowLinesListener, CodePageSelectedListener
+// -----------------------------------------------------------------------------------//
 {
   private FilterStatus filterStatus;
   private boolean expandJclInclude;
