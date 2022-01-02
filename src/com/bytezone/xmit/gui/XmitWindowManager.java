@@ -2,12 +2,12 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
-import com.bytezone.appbase.WindowStatus;
+import com.bytezone.appbase.WindowManager;
 
 import javafx.scene.control.SplitPane;
 
 // -----------------------------------------------------------------------------------//
-public class XmitWindowStatus extends WindowStatus
+public class XmitWindowManager extends WindowManager
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
