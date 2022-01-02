@@ -35,7 +35,7 @@ public class XmitApp extends AppBase
 
   private XmitTree xmitTree;
   private TreePane treePane;
-  private final StatusBar statusBar = new StatusBar ();
+  private final XmitStatusBar xmitStatusBar = new XmitStatusBar ();
 
   private final SplitPane splitPane = new SplitPane ();
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
@@ -66,7 +66,7 @@ public class XmitApp extends AppBase
           @Override
           public void handle (ActionEvent event)
           {
-            statusBar.tick ();
+            xmitStatusBar.tick ();
           }
         }));
     clock.setCycleCount (Timeline.INDEFINITE);
@@ -103,10 +103,10 @@ public class XmitApp extends AppBase
     // codepage listeners
     viewMenu.addCodePageListener (outputTabPane.outputTab);
     viewMenu.addCodePageListener (outputTabPane.hexTab);
-    viewMenu.addCodePageListener (statusBar);
+    viewMenu.addCodePageListener (xmitStatusBar);
 
     // lines listeners
-    viewMenu.addShowLinesListener (statusBar);
+    viewMenu.addShowLinesListener (xmitStatusBar);
     viewMenu.addShowLinesListener (outputHeaderBar);
     viewMenu.addShowLinesListener (outputTabPane.outputTab);
 
@@ -114,10 +114,10 @@ public class XmitApp extends AppBase
     fontManager.addFontChangeListener (xmitTree);
     fontManager.addFontChangeListener (outputTabPane);
     fontManager.addFontChangeListener (tableTabPane);
-    fontManager.addFontChangeListener (statusBar);
+    fontManager.addFontChangeListener (xmitStatusBar);
 
     // filter change listeners (filter parameters)
-    filterManager.addFilterListener (statusBar);
+    filterManager.addFilterListener (xmitStatusBar);
     filterManager.addFilterListener (tableHeaderBar);
     filterManager.addFilterListener (outputTabPane.outputTab);
     filterManager.addFilterListener (xmitTable);
@@ -144,7 +144,7 @@ public class XmitApp extends AppBase
     xmitTable.addListener (fileMenu);
 
     mainPane.setCenter (splitPane);
-    mainPane.setBottom (statusBar);
+    mainPane.setBottom (xmitStatusBar);
 
     // add menus
     ObservableList<Menu> menus = menuBar.getMenus ();
