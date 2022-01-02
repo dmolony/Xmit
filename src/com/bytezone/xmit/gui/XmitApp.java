@@ -176,16 +176,16 @@ public class XmitApp extends AppBase
   {
     switch (keyEvent.getCode ())
     {
-      case B:
-      case X:
-      case O:
+      case B:       // blocks
+      case X:       // hex
+      case O:       // output
         outputTabPane.keyPressed (keyEvent);
         keyEvent.consume ();
         break;
 
-      case H:
-      case M:
-      case C:
+      case H:       // headers
+      case M:       // members
+      case C:       // comments
         tableTabPane.keyPressed (keyEvent);
         keyEvent.consume ();
         break;
