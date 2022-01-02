@@ -5,16 +5,13 @@ import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 import com.bytezone.appbase.AppBase;
+import com.bytezone.appbase.StatusBar;
 import com.bytezone.appbase.WindowStatus;
 import com.bytezone.xmit.Utility;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
@@ -23,7 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 // -----------------------------------------------------------------------------------//
 public class XmitApp extends AppBase
@@ -58,19 +54,6 @@ public class XmitApp extends AppBase
 
     // this must happen after show()
     ((XmitWindowStatus) windowStatus).setSplitPane (splitPane);
-
-    // create status bar clock
-    Timeline clock =
-        new Timeline (new KeyFrame (Duration.seconds (2), new EventHandler<ActionEvent> ()
-        {
-          @Override
-          public void handle (ActionEvent event)
-          {
-            xmitStatusBar.tick ();
-          }
-        }));
-    clock.setCycleCount (Timeline.INDEFINITE);
-    clock.play ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -144,7 +127,7 @@ public class XmitApp extends AppBase
     xmitTable.addListener (fileMenu);
 
     mainPane.setCenter (splitPane);
-    mainPane.setBottom (xmitStatusBar);
+    //    mainPane.setBottom (xmitStatusBar);
 
     // add menus
     ObservableList<Menu> menus = menuBar.getMenus ();
@@ -278,6 +261,14 @@ public class XmitApp extends AppBase
   // ---------------------------------------------------------------------------------//
   {
     return new XmitWindowStatus ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  protected StatusBar getStatusBar ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return xmitStatusBar;
   }
 
   // ---------------------------------------------------------------------------------//

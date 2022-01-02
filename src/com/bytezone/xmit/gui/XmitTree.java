@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.FontChangeListener;
 import com.bytezone.appbase.SaveState;
 
 import javafx.scene.control.MultipleSelectionModel;

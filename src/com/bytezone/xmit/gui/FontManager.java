@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.FontChangeListener;
 import com.bytezone.appbase.SaveState;
 
 import javafx.beans.property.BooleanProperty;

@@ -1,5 +1,7 @@
 package com.bytezone.xmit.gui;
 
+import com.bytezone.appbase.StatusBar;
+
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;

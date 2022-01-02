@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.FontChangeListener;
 import com.bytezone.appbase.SaveState;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.CatalogEntry.ModuleType;
