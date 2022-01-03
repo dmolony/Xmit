@@ -2,12 +2,13 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
-import com.bytezone.appbase.WindowManager;
+import com.bytezone.appbase.StageManager;
 
 import javafx.scene.control.SplitPane;
+import javafx.stage.Stage;
 
 // -----------------------------------------------------------------------------------//
-public class XmitWindowManager extends WindowManager
+public class XmitStageManager extends StageManager
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_DIVIDER_POSITION_1 = "DividerPosition1";
@@ -17,6 +18,13 @@ public class XmitWindowManager extends WindowManager
   double dividerPosition2;
 
   SplitPane splitPane;
+
+  // ---------------------------------------------------------------------------------//
+  public XmitStageManager (Stage stage)
+  // ---------------------------------------------------------------------------------//
+  {
+    super (stage);
+  }
 
   // ---------------------------------------------------------------------------------//
   void setSplitPane (SplitPane splitPane)

@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 import com.bytezone.appbase.AppBase;
+import com.bytezone.appbase.StageManager;
 import com.bytezone.appbase.StatusBar;
-import com.bytezone.appbase.WindowManager;
 import com.bytezone.xmit.Utility;
 
 import javafx.application.Application;
@@ -32,7 +32,7 @@ public class XmitApp extends AppBase
   private XmitTree xmitTree;
   private TreePane treePane;
   private final XmitStatusBar xmitStatusBar = new XmitStatusBar ();
-  private final XmitWindowManager xmitWindowManager = new XmitWindowManager ();
+  private XmitStageManager xmitStageManager;
 
   private final SplitPane splitPane = new SplitPane ();
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
@@ -54,7 +54,7 @@ public class XmitApp extends AppBase
     primaryStage.getScene ().setOnKeyPressed (e -> keyPressed (e));
 
     // this must happen after show()
-    xmitWindowManager.setSplitPane (splitPane);
+    xmitStageManager.setSplitPane (splitPane);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -258,10 +258,11 @@ public class XmitApp extends AppBase
 
   // ---------------------------------------------------------------------------------//
   @Override
-  protected WindowManager getWindowManager ()
+  protected StageManager getStageManager (Stage stage)
   // ---------------------------------------------------------------------------------//
   {
-    return xmitWindowManager;
+    xmitStageManager = new XmitStageManager (stage);
+    return xmitStageManager;
   }
 
   // ---------------------------------------------------------------------------------//
