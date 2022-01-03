@@ -6,10 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.AppBase;
 import com.bytezone.appbase.SaveState;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.Utility;
 import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.event.ActionEvent;
@@ -82,7 +82,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   private void about ()
   // ---------------------------------------------------------------------------------//
   {
-    Utility.showAlert (AlertType.INFORMATION, "About XmitApp",
+    AppBase.showAlert (AlertType.INFORMATION, "About XmitApp",
         "Version: 1.0.24\nReleased: 5 June 2019\nAuthor: Denis Molony");
   }
 
@@ -133,11 +133,11 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
       {
         Files.write (Paths.get (file.getAbsolutePath ()), buffer);
         extractFolderName = file.getParent ();
-        Utility.showAlert (AlertType.INFORMATION, "Success", "File Extracted: " + file.getName ());
+        AppBase.showAlert (AlertType.INFORMATION, "Success", "File Extracted: " + file.getName ());
       }
       catch (IOException e)
       {
-        Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
+        AppBase.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
       }
   }
 

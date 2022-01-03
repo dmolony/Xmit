@@ -5,13 +5,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.bytezone.appbase.AppBase;
 import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsMember;
-import com.bytezone.xmit.Utility;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -124,8 +129,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addDatasets (ObservableList<TreeItem<NodeData>> children,
-      NodeData nodeData)
+  private void addDatasets (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     for (Dataset dataset : nodeData)
@@ -133,8 +137,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addPdsMembers (ObservableList<TreeItem<NodeData>> children,
-      NodeData nodeData)
+  private void addPdsMembers (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     for (PdsMember member : nodeData.getPdsXmitMembers ())
@@ -142,8 +145,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addCompressedFiles (ObservableList<TreeItem<NodeData>> children,
-      NodeData nodeData)
+  private void addCompressedFiles (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     Map<ZipEntry, XmitTreeItem> fileList = decompressZip (nodeData.getFile ().toPath ());
@@ -206,12 +208,11 @@ public class XmitTreeItem extends TreeItem<NodeData>
       if (fileMap.isEmpty ())
       {
         int size = invalidNames.size ();
-        String message =
-            String.format ("Zip file contains %d file%s, but no .XMI or .AWS files", size,
-                size == 1 ? "" : "s");
+        String message = String.format ("Zip file contains %d file%s, but no .XMI or .AWS files",
+            size, size == 1 ? "" : "s");
         if (containsFolder)
           message += "\nFile contains unexamined subfolders";
-        Utility.showAlert (AlertType.INFORMATION, "", message);
+        AppBase.showAlert (AlertType.INFORMATION, "", message);
       }
     }
     catch (IOException e)

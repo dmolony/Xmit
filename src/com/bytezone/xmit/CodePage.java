@@ -3,6 +3,8 @@ package com.bytezone.xmit;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+import com.bytezone.appbase.AppBase;
+
 import javafx.scene.control.Alert.AlertType;
 
 // https://en.wikipedia.org/wiki/EBCDIC_code_pages
@@ -53,7 +55,7 @@ public class CodePage
       }
       catch (UnsupportedEncodingException e)
       {
-        Utility.showAlert (AlertType.ERROR, "Encoding Exception", e.toString ());
+        AppBase.showAlert (AlertType.ERROR, "Encoding Exception", e.toString ());
       }
     }
 
@@ -93,8 +95,7 @@ public class CodePage
     }
     else
     {
-      String[] codePageNames =
-          { "CP037", "CP273", "CP285", "CP297", "CP500", "CP1047", "USER1" };
+      String[] codePageNames = { "CP037", "CP273", "CP285", "CP297", "CP500", "CP1047", "USER1" };
       CodePage[] codePages = new CodePage[codePageNames.length];
       int count = 0;
 

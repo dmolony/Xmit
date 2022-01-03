@@ -12,16 +12,21 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bytezone.xmit.*;
+import com.bytezone.appbase.AppBase;
+import com.bytezone.xmit.CatalogEntry;
+import com.bytezone.xmit.DataFile;
+import com.bytezone.xmit.Dataset;
+import com.bytezone.xmit.PdsDataset;
+import com.bytezone.xmit.PdsMember;
+import com.bytezone.xmit.Utility;
 import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class OutputTab extends XmitTextTab
-    implements ShowLinesListener, TableItemSelectionListener, FilterChangeListener,
-    OutputWriter, CodePageSelectedListener, NodeDataListener
+class OutputTab extends XmitTextTab implements ShowLinesListener, TableItemSelectionListener,
+    FilterChangeListener, OutputWriter, CodePageSelectedListener, NodeDataListener
 // -----------------------------------------------------------------------------------//
 {
   private static final int MAX_LINES = 2500;
@@ -32,8 +37,8 @@ class OutputTab extends XmitTextTab
 
   private static Pattern includePattern =
       Pattern.compile ("^//\\s+JCLLIB\\s+ORDER=\\((" + Utility.validName + ")\\)$");
-  private static Pattern memberPattern = Pattern.compile (
-      "^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
+  private static Pattern memberPattern = Pattern
+      .compile ("^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
 
   LineDisplayStatus lineDisplayStatus;
   private DataFile dataFile;
@@ -99,8 +104,7 @@ class OutputTab extends XmitTextTab
   }
 
   // ---------------------------------------------------------------------------------//
-  private String checkInclude (String includeDatasetName, String line,
-      List<String> newLines)
+  private String checkInclude (String includeDatasetName, String line, List<String> newLines)
   // ---------------------------------------------------------------------------------//
   {
     if (!includeDatasetName.isEmpty ())
@@ -124,8 +128,7 @@ class OutputTab extends XmitTextTab
   {
     Optional<PdsMember> optMember = findMember (datasetName, memberName);
     if (optMember.isEmpty ())
-      newLines.add (
-          String.format ("==> %s(%s): dataset not seen yet", datasetName, memberName));
+      newLines.add (String.format ("==> %s(%s): dataset not seen yet", datasetName, memberName));
     else
       for (String line : optMember.get ().getLines ())
         if (!line.startsWith (commentIndicator))
@@ -154,12 +157,11 @@ class OutputTab extends XmitTextTab
     {
       for (String line : getLines (0))
         output.write (line + "\n");
-      Utility.showAlert (AlertType.INFORMATION, "Success",
-          "File Saved: " + file.getName ());
+      AppBase.showAlert (AlertType.INFORMATION, "Success", "File Saved: " + file.getName ());
     }
     catch (IOException e)
     {
-      Utility.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
+      AppBase.showAlert (AlertType.ERROR, "Error", "File Error: " + e.getMessage ());
     }
   }
 

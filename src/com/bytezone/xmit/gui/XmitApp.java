@@ -7,7 +7,6 @@ import java.util.prefs.Preferences;
 import com.bytezone.appbase.AppBase;
 import com.bytezone.appbase.StageManager;
 import com.bytezone.appbase.StatusBar;
-import com.bytezone.xmit.Utility;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -205,7 +204,7 @@ public class XmitApp extends AppBase
     rootFolderName = prefs.get (PREFS_ROOT_FOLDER, "");
     if (rootFolderName.isEmpty ())
     {
-      Utility.showAlert (AlertType.INFORMATION, "XMIT folder",
+      AppBase.showAlert (AlertType.INFORMATION, "XMIT folder",
           "The XMIT file folder has not yet been defined. Please choose the "
               + "TOP LEVEL FOLDER where you store your XMIT files. This folder "
               + "may contain subfolders. It can also be changed at any time.");

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.AppBase;
 import com.bytezone.appbase.SaveState;
 import com.bytezone.xmit.Utility;
 
@@ -203,7 +204,7 @@ class ViewMenu implements SaveState
       Object o = toggle.getUserData ();
       String codePageName = o.toString ();
       if (!codePageName.startsWith ("USER") && !Charset.isSupported (codePageName))
-        Utility.showAlert (AlertType.ERROR, "Encoding Exception",
+        AppBase.showAlert (AlertType.ERROR, "Encoding Exception",
             "Charset " + codePageName + " is not supported");
       else
       {

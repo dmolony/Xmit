@@ -15,9 +15,6 @@ import java.util.regex.Pattern;
 
 import com.bytezone.xmit.gui.XmitApp;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 // -----------------------------------------------------------------------------------//
 public class Utility
 // -----------------------------------------------------------------------------------//
@@ -35,18 +32,15 @@ public class Utility
   private static CodePage codePage;
   private static Map<String, CodePage> codePageMap = new HashMap<> ();
 
-  private static final byte[][] signatures =
-      { { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, 0x1A,
-          (byte) 0xE1 },                                // DOC
-        { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E },   // PDF
-        { 0x50, 0x4B, 0x03, 0x04 },                     // ZIP
-        { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 },         // RAR
-        { (byte) 0x89, 0x50, 0x4E, 0x47 },              // PNG
-        { 0x7B, 0x5C, 0x72, 0x74, 0x66 },               // RTF
-        { 0x5A, 0x00, 0x12, (byte) 0xD3, (byte) 0xA8, (byte) 0xA8, 0x00, 0x00 }, // AFP
-      };
-
-  private static Alert alert;
+  private static final byte[][] signatures = {
+      { (byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0, (byte) 0xA1, (byte) 0xB1, 0x1A, (byte) 0xE1 },                                // DOC
+      { 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E },   // PDF
+      { 0x50, 0x4B, 0x03, 0x04 },                     // ZIP
+      { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07 },         // RAR
+      { (byte) 0x89, 0x50, 0x4E, 0x47 },              // PNG
+      { 0x7B, 0x5C, 0x72, 0x74, 0x66 },               // RTF
+      { 0x5A, 0x00, 0x12, (byte) 0xD3, (byte) 0xA8, (byte) 0xA8, 0x00, 0x00 }, // AFP
+  };
 
   // ---------------------------------------------------------------------------------//
   public enum FileType
@@ -190,8 +184,8 @@ public class Utility
 
     for (int i = 1; i < chunks.length; i++)
     {
-      text.append (Character
-          .toString (Integer.parseInt (new String (s.substring (ptr + 2, ptr + 5)))));
+      text.append (
+          Character.toString (Integer.parseInt (new String (s.substring (ptr + 2, ptr + 5)))));
       text.append (chunks[i]);
       ptr += chunks[i].length () + 6;
     }
@@ -241,8 +235,7 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2,
-      int length)
+  public static boolean matches (byte[] key, int ptr1, byte[] buffer, int ptr2, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (ptr1 + length > key.length || ptr2 + length > buffer.length)
@@ -272,9 +265,6 @@ public class Utility
   public static int getTwoBytes (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    //    int a = (buffer[ptr] & 0xFF) << 8;
-    //    int b = (buffer[ptr + 1] & 0xFF);
-    //    return a + b;
     return ((buffer[ptr] & 0xFF) << 8) | (buffer[++ptr] & 0xFF);
   }
 
@@ -282,9 +272,6 @@ public class Utility
   public static int getTwoBytesReversed (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    //    int a = (buffer[ptr] & 0xFF);
-    //    int b = (buffer[ptr + 1] & 0xFF) << 8;
-    //    return a + b;
     return (buffer[ptr] & 0xFF) | ((buffer[++ptr] & 0xFF) << 8);
   }
 
@@ -292,9 +279,6 @@ public class Utility
   public static long getFourBytes (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    //    long a = getTwoBytes (buffer, ptr) << 16;
-    //    long b = getTwoBytes (buffer, ptr + 2);
-    //    return a + b;
     return ((buffer[ptr] & 0xFF) << 24) | ((buffer[++ptr] & 0xFF) << 16)
         | ((buffer[++ptr] & 0xFF) << 8) | (buffer[++ptr] & 0xFF);
   }
@@ -383,8 +367,7 @@ public class Utility
   private static boolean isLetter (int c)
   // ---------------------------------------------------------------------------------//
   {
-    return (c >= 0xC1 && c <= 0xC9) || (c >= 0xD1 && c <= 0xD9)
-        || (c >= 0xE2 && c <= 0xE9);
+    return (c >= 0xC1 && c <= 0xC9) || (c >= 0xD1 && c <= 0xD9) || (c >= 0xE2 && c <= 0xE9);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -441,8 +424,8 @@ public class Utility
         int c = b[z] & 0xFF;
         textLine.append (c < 0x40 || c == 0xFF ? '.' : (char) codePage.ebc2asc[c]);
       }
-      text.append (String.format ("%06X  %-48s %s%n", displayOffset + ptr,
-          hexLine.toString (), textLine.toString ()));
+      text.append (String.format ("%06X  %-48s %s%n", displayOffset + ptr, hexLine.toString (),
+          textLine.toString ()));
     }
 
     if (text.length () > 0)
@@ -466,8 +449,7 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static List<String> getHexDumpLines (byte[] b, int offset, int length,
-      int displayOffset)
+  public static List<String> getHexDumpLines (byte[] b, int offset, int length, int displayOffset)
   // ---------------------------------------------------------------------------------//
   {
     final int lineSize = 16;
@@ -492,8 +474,8 @@ public class Utility
         int c = b[z] & 0xFF;
         textLine.append (c < 0x40 || c == 0xFF ? '.' : (char) codePage.ebc2asc[c]);
       }
-      lines.add (String.format ("%06X  %-48s %s", displayOffset + ptr,
-          hexLine.toString (), textLine.toString ()));
+      lines.add (String.format ("%06X  %-48s %s", displayOffset + ptr, hexLine.toString (),
+          textLine.toString ()));
     }
 
     return lines;
@@ -506,8 +488,8 @@ public class Utility
     StringBuilder text = new StringBuilder ();
     String line;
 
-    DataInputStream inputStream = new DataInputStream (XmitApp.class.getClassLoader ()
-        .getResourceAsStream ("com/bytezone/xmit/codepages.txt"));
+    DataInputStream inputStream = new DataInputStream (
+        XmitApp.class.getClassLoader ().getResourceAsStream ("com/bytezone/xmit/codepages.txt"));
     try (BufferedReader in = new BufferedReader (new InputStreamReader (inputStream)))
     {
       int count = 0;
@@ -553,21 +535,6 @@ public class Utility
     }
 
     return -1;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public static void showAlert (AlertType alertType, String title, String message)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (alert == null)
-    {
-      alert = new Alert (alertType);
-      alert.setTitle (title);
-      alert.setHeaderText (null);
-    }
-
-    alert.setContentText (message);
-    alert.showAndWait ();
   }
 
   //----------------------------------------------------------------------------------- //
