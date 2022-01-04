@@ -11,6 +11,7 @@ import com.bytezone.appbase.StatusBar;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
@@ -57,7 +58,7 @@ public class XmitApp extends AppBase
 
   // ---------------------------------------------------------------------------------//
   @Override
-  protected void createContent ()
+  protected Parent createContent ()
   // ---------------------------------------------------------------------------------//
   {
     primaryStage.setTitle ("XmitApp");
@@ -125,9 +126,6 @@ public class XmitApp extends AppBase
     xmitTable.addListener (outputHeaderBar);
     xmitTable.addListener (fileMenu);
 
-    mainPane.setCenter (splitPane);
-    //    mainPane.setBottom (xmitStatusBar);
-
     // add menus
     ObservableList<Menu> menus = menuBar.getMenus ();
     menus.addAll (fileMenu.getMenu (), viewMenu.getMenu ());
@@ -140,6 +138,8 @@ public class XmitApp extends AppBase
     // ensure viewMenu (codepage) is set before xmitTree
     saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu, xmitTree,
         tableTabPane, fontManager));
+
+    return splitPane;
   }
 
   // ---------------------------------------------------------------------------------//
