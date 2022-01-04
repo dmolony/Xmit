@@ -37,7 +37,6 @@ public class XmitApp extends AppBase
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
   private final TableTabPane tableTabPane = new TableTabPane ("Table");
 
-  private final FontManager fontManager = new FontManager ();
   private final FilterManager filterManager = new FilterManager ();
 
   private final FileMenu fileMenu = new FileMenu ();
@@ -270,6 +269,14 @@ public class XmitApp extends AppBase
   // ---------------------------------------------------------------------------------//
   {
     return xmitStatusBar;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  protected XmitFontManager getFontManager ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return new XmitFontManager ();
   }
 
   // ---------------------------------------------------------------------------------//
