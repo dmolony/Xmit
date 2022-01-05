@@ -50,8 +50,6 @@ public class XmitApp extends AppBase
   {
     super.start (primaryStage);
 
-    primaryStage.getScene ().setOnKeyPressed (e -> keyPressed (e));
-
     // this must happen after show()
     xmitStageManager.setSplitPane (splitPane);
   }
@@ -132,9 +130,6 @@ public class XmitApp extends AppBase
 
     fileMenu.setOutputWriter (outputTabPane.outputTab);
 
-    // exit action
-    primaryStage.setOnCloseRequest (e -> exit ());
-
     // ensure viewMenu (codepage) is set before xmitTree
     saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu, xmitTree,
         tableTabPane, fontManager));
@@ -147,15 +142,20 @@ public class XmitApp extends AppBase
   // ---------------------------------------------------------------------------------//
   {
     BorderPane borderPane = new BorderPane ();
+
     borderPane.setTop (headerBar);
     borderPane.setCenter (tabPane);
+
     return borderPane;
   }
 
   // ---------------------------------------------------------------------------------//
-  private void keyPressed (KeyEvent keyEvent)
+  @Override
+  protected void keyPressed (KeyEvent keyEvent)
   // ---------------------------------------------------------------------------------//
   {
+    super.keyPressed (keyEvent);
+
     switch (keyEvent.getCode ())
     {
       case B:       // blocks
