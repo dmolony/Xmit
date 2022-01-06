@@ -1,5 +1,6 @@
 package com.bytezone.xmit.gui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,13 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
 
   private final MultipleSelectionModel<TreeItem<NodeData>> model = getSelectionModel ();
   private final List<NodeDataListener> listeners = new ArrayList<> ();
+
+  // ---------------------------------------------------------------------------------//
+  public XmitTree (String rootFolderName)
+  // ---------------------------------------------------------------------------------//
+  {
+    this (new XmitTreeItem (new NodeData (new File (rootFolderName))));
+  }
 
   // ---------------------------------------------------------------------------------//
   public XmitTree (TreeItem<NodeData> root)

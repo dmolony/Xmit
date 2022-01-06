@@ -19,12 +19,13 @@ class XmitFontManager extends FontManager
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
-    String line;
 
     DataInputStream inputStream = new DataInputStream (
         XmitApp.class.getClassLoader ().getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
+
     try (BufferedReader in = new BufferedReader (new InputStreamReader (inputStream)))
     {
+      String line;
       while ((line = in.readLine ()) != null)
         text.append (line + "\n");
     }
@@ -32,6 +33,7 @@ class XmitFontManager extends FontManager
     {
       e.printStackTrace ();
     }
+
     if (text.length () > 0)
       text.deleteCharAt (text.length () - 1);
 

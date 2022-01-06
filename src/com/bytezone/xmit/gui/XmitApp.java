@@ -10,10 +10,8 @@ import com.bytezone.appbase.StatusBar;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
@@ -50,8 +48,7 @@ public class XmitApp extends AppBase
   {
     super.start (primaryStage);
 
-    // this must happen after show()
-    xmitStageManager.setSplitPane (splitPane);
+    xmitStageManager.setSplitPane (splitPane);      // this must happen after show()
   }
 
   // ---------------------------------------------------------------------------------//
@@ -64,13 +61,14 @@ public class XmitApp extends AppBase
     // get root folder
     validateRootFolderOrExit ();
 
-    xmitTree = new XmitTree (new XmitTreeItem (new NodeData (new File (rootFolderName))));
+    xmitTree = new XmitTree (rootFolderName);
     treePane = new TreePane (xmitTree);
 
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();
     OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
-    splitPane.getItems ().addAll (treePane, createBorderPane (tableHeaderBar, tableTabPane),
+    splitPane.getItems ().addAll (treePane, //
+        createBorderPane (tableHeaderBar, tableTabPane),
         createBorderPane (outputHeaderBar, outputTabPane));
 
     XmitTable xmitTable = tableTabPane.membersTab.xmitTable;
@@ -125,8 +123,7 @@ public class XmitApp extends AppBase
     xmitTable.addListener (fileMenu);
 
     // add menus
-    ObservableList<Menu> menus = menuBar.getMenus ();
-    menus.addAll (fileMenu.getMenu (), viewMenu.getMenu ());
+    menuBar.getMenus ().addAll (fileMenu.getMenu (), viewMenu.getMenu ());
 
     fileMenu.setOutputWriter (outputTabPane.outputTab);
 
