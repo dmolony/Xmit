@@ -84,7 +84,7 @@ class FileMenu extends Menu implements TableItemSelectionListener, NodeDataListe
   // ---------------------------------------------------------------------------------//
   {
     AppBase.showAlert (AlertType.INFORMATION, "About XmitApp",
-        "Version: 1.0.24\nReleased: 7 January 2022\nAuthor: Denis Molony");
+        "Version: 1.0.25\nReleased: 7 January 2022\nAuthor: Denis Molony");
   }
 
   // ---------------------------------------------------------------------------------//
