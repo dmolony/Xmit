@@ -38,8 +38,8 @@ public class XmitApp extends AppBase
 
   private final FilterManager filterManager = new FilterManager ();
 
-  private final FileMenu fileMenu = new FileMenu ();
-  private final ViewMenu viewMenu = new ViewMenu ();
+  private final FileMenu fileMenu = new FileMenu ("File");
+  private final ViewMenu viewMenu = new ViewMenu ("View");
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -123,7 +123,7 @@ public class XmitApp extends AppBase
     xmitTable.addListener (fileMenu);
 
     // add menus
-    menuBar.getMenus ().addAll (fileMenu.getMenu (), viewMenu.getMenu ());
+    menuBar.getMenus ().addAll (fileMenu, viewMenu);
 
     fileMenu.setOutputWriter (outputTabPane.outputTab);
 

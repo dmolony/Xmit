@@ -24,13 +24,12 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
 // -----------------------------------------------------------------------------------//
-class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveState
+class FileMenu extends Menu implements TableItemSelectionListener, NodeDataListener, SaveState
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_EXTRACT_FOLDER = "ExtractFolder";
   private static final String PREFS_SAVE_FOLDER = "SaveFolder";
 
-  private final Menu fileMenu = new Menu ("File");
   private final MenuItem rootMenuItem = new MenuItem ("Set XMIT root folder...");
   private final MenuItem extractMenuItem = new MenuItem ("Extract file...");
   private final MenuItem saveMenuItem = new MenuItem ("Save output...");
@@ -47,11 +46,13 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   private OutputWriter outputWriter;
 
   // ---------------------------------------------------------------------------------//
-  public FileMenu ()
+  public FileMenu (String name)
   // ---------------------------------------------------------------------------------//
   {
-    fileMenu.getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem,
-        new SeparatorMenuItem (), aboutMenuItem);
+    super (name);
+
+    getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem, new SeparatorMenuItem (),
+        aboutMenuItem);
     rootMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.R, KeyCombination.SHORTCUT_DOWN));
     extractMenuItem
         .setAccelerator (new KeyCodeCombination (KeyCode.E, KeyCombination.SHORTCUT_DOWN));
@@ -83,7 +84,7 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   // ---------------------------------------------------------------------------------//
   {
     AppBase.showAlert (AlertType.INFORMATION, "About XmitApp",
-        "Version: 1.0.24\nReleased: 5 June 2019\nAuthor: Denis Molony");
+        "Version: 1.0.24\nReleased: 7 January 2022\nAuthor: Denis Molony");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -162,13 +163,6 @@ class FileMenu implements TableItemSelectionListener, NodeDataListener, SaveStat
   {
     prefs.put (PREFS_SAVE_FOLDER, saveFolderName);
     prefs.put (PREFS_EXTRACT_FOLDER, extractFolderName);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  Menu getMenu ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileMenu;
   }
 
   // ---------------------------------------------------------------------------------//

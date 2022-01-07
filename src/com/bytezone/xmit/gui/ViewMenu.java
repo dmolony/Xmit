@@ -25,7 +25,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
 // -----------------------------------------------------------------------------------//
-class ViewMenu implements SaveState
+class ViewMenu extends Menu implements SaveState
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_CODE_PAGE = "CodePage";
@@ -38,7 +38,6 @@ class ViewMenu implements SaveState
   private final List<CodePageSelectedListener> codePageListeners = new ArrayList<> ();
   private final LineDisplayStatus lineDisplayStatus = new LineDisplayStatus ();
 
-  private final Menu viewMenu = new Menu ("View");
   private final MenuItem fontMenuItem = new MenuItem ("Set Font...");
   private final MenuItem filterMenuItem = new MenuItem ("Set PDS Filter...");
   private final CheckMenuItem exclusiveFilterMenuItem = new CheckMenuItem ("Exclusive Filter");
@@ -66,10 +65,12 @@ class ViewMenu implements SaveState
   private final List<RadioMenuItem> codePageMenuItems = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public ViewMenu ()
+  public ViewMenu (String name)
   // ---------------------------------------------------------------------------------//
   {
-    ObservableList<MenuItem> menuItems = viewMenu.getItems ();
+    super (name);
+
+    ObservableList<MenuItem> menuItems = getItems ();
 
     KeyCodeCombination cmdShiftF =
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
@@ -143,7 +144,7 @@ class ViewMenu implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     CheckMenuItem menuItem = new CheckMenuItem (name);
-    viewMenu.getItems ().add (menuItem);
+    getItems ().add (menuItem);
 
     if (keyCode != null)
       if (shift)
@@ -282,12 +283,5 @@ class ViewMenu implements SaveState
   {
     if (!codePageListeners.contains (listener))
       codePageListeners.add (listener);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  Menu getMenu ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return viewMenu;
   }
 }
