@@ -13,15 +13,15 @@ class FilterStatus implements SaveState
   private static final String PREFS_FILTER_REVERSE = "FilterReverse";
   private static final String PREFS_FILTER_ACTIVE = "FilterActive";
 
-  String filterValue;           // text to search for
-  boolean filterExclusion;      // show output lines with filterValue only / all lines
-  boolean filterReverse;        // show members with/without filterValue
-  boolean filterActive;         // filter on/off
+  String filterValue;         // text to search for
+  boolean filterExclusion;    // show output lines with filterValue only / all lines
+  boolean filterReverse;      // show members with/without filterValue
+  boolean filterActive;       // filter on/off
 
   // Filter Commands
-  // cmd-f - dialog box to enter/remove filterValue
-  // f     - toggles filterActive
-  // F     - toggles filterReverse
+  // cmd-f - shows dialog box to enter/remove filterValue
+  //     f - toggles filterActive
+  //     F - toggles filterReverse
   // cmd-F - toggles filterExclusion
 
   // ---------------------------------------------------------------------------------//

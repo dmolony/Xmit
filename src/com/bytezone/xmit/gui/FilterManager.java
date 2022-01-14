@@ -17,8 +17,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -27,6 +25,7 @@ class FilterManager implements SaveState
 // -----------------------------------------------------------------------------------//
 {
   private Stage stage;
+
   private final TextField filterTextField = new TextField ();
   private final CheckBox filterExclusionCheckBox = new CheckBox ();
   private final CheckBox filterReverseCheckBox = new CheckBox ();
@@ -171,13 +170,15 @@ class FilterManager implements SaveState
   private void buildStage ()
   // ---------------------------------------------------------------------------------//
   {
-    stage = new Stage ();
-    stage.setTitle ("Filter Manager");
-
     BorderPane borderPane = new BorderPane ();
     Label lblText = new Label ("Filter text");
     Label lblExclusive = new Label ("Exclusive");
+    Label lblReverse = new Label ("Reverse");
+
     filterTextField.setPrefWidth (300);
+    lblText.setPrefWidth (60);
+    lblExclusive.setPrefWidth (60);
+    lblReverse.setPrefWidth (60);
 
     Button btnApply = getButton ("Apply");
     Button btnCancel = getButton ("Cancel");
@@ -186,32 +187,34 @@ class FilterManager implements SaveState
 
     HBox textBox1 = new HBox (10);
     textBox1.setPrefHeight (30);
-    textBox1.setPadding (new Insets (6, 10, 6, 20));
+    textBox1.setPadding (new Insets (6, 10, 6, 10));
     textBox1.setAlignment (Pos.CENTER_LEFT);
     textBox1.getChildren ().addAll (lblText, filterTextField);
 
     HBox textBox2 = new HBox (10);
-    textBox2.setPrefHeight (30);
-    textBox2.setPadding (new Insets (6, 10, 6, 20));
+    textBox2.setPrefHeight (20);
+    textBox2.setPadding (new Insets (6, 10, 6, 10));
     textBox2.setAlignment (Pos.CENTER_LEFT);
     textBox2.getChildren ().addAll (lblExclusive, filterExclusionCheckBox);
 
-    VBox vBox = new VBox (10);
-    vBox.setPrefHeight (100);
+    HBox textBox3 = new HBox (10);
+    textBox3.setPrefHeight (20);
+    textBox3.setPadding (new Insets (6, 10, 6, 10));
+    textBox3.setAlignment (Pos.CENTER_LEFT);
+    textBox3.getChildren ().addAll (lblReverse, filterReverseCheckBox);
+
+    VBox vBox = new VBox ();
     vBox.setPadding (new Insets (6, 10, 6, 10));
-    vBox.setAlignment (Pos.CENTER_LEFT);
-    vBox.getChildren ().addAll (textBox1, textBox2);
+    vBox.getChildren ().addAll (textBox1, textBox2, textBox3);
 
     HBox controlBox = new HBox (10);
     controlBox.setPrefHeight (20);
     controlBox.setPadding (new Insets (6, 10, 6, 10));
-    controlBox.setAlignment (Pos.CENTER_LEFT);
-    Region filler = new Region ();
-    HBox.setHgrow (filler, Priority.ALWAYS);
-    controlBox.getChildren ().addAll (filler, btnCancel, btnApply, btnAccept, btnRemove);
+    controlBox.setAlignment (Pos.CENTER_RIGHT);
+    controlBox.getChildren ().addAll (btnCancel, btnApply, btnAccept, btnRemove);
 
-    borderPane.setBottom (controlBox);
     borderPane.setCenter (vBox);
+    borderPane.setBottom (controlBox);
 
     btnApply.setOnAction (e -> apply ());
     btnCancel.setOnAction (e -> cancel ());
@@ -221,6 +224,11 @@ class FilterManager implements SaveState
     btnAccept.setDefaultButton (true);
     btnCancel.setCancelButton (true);
 
-    stage.setScene (new Scene (borderPane, 500, 140));
+    stage = new Stage ();
+    stage.setTitle ("Filter Manager");
+
+    stage.setScene (new Scene (borderPane));
+    stage.sizeToScene ();
+    stage.setResizable (false);
   }
 }
