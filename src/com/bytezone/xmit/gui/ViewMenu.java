@@ -175,10 +175,10 @@ class ViewMenu extends Menu implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     lineDisplayStatus.set (                     //
-        showLinesMenuItem.isSelected (),        //
-        stripLinesMenuItem.isSelected (),       //
-        truncateMenuItem.isSelected (),         //
-        expandIncludeMenuItem.isSelected ());
+        showLinesMenuItem.isSelected (),        // Add Sequence Numbers
+        stripLinesMenuItem.isSelected (),       // Strip Line Numbers
+        truncateMenuItem.isSelected (),         // Truncate Column 1
+        expandIncludeMenuItem.isSelected ());   // Expand Include Members
     notifyLinesListeners ();
   }
 

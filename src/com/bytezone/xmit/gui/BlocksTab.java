@@ -11,8 +11,7 @@ import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class BlocksTab extends XmitTextTab
-    implements NodeDataListener, TableItemSelectionListener
+class BlocksTab extends XmitTextTab implements NodeDataListener, TableItemSelectionListener
 // -----------------------------------------------------------------------------------//
 {
   private NodeData nodeData;

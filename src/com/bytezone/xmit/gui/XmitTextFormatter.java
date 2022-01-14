@@ -3,41 +3,71 @@ package com.bytezone.xmit.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.appbase.TextFormatter;
+
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 // -----------------------------------------------------------------------------------//
-class TextFormatter
+class XmitTextFormatter implements TextFormatter
 // -----------------------------------------------------------------------------------//
 {
   final List<Text> textList = new ArrayList<> ();
   final Color baseColor = Color.GREEN;
   final Color numberColor = Color.LIGHTSEAGREEN;
-  boolean showLines;
+  boolean showLineNumbers;
   Font font;
 
   private final FilterStatus filterStatus = new FilterStatus ();
 
   // ---------------------------------------------------------------------------------//
-  public void setShowLines (boolean showLines)
+  @Override
+  public List<Text> format (String line)
   // ---------------------------------------------------------------------------------//
   {
-    this.showLines = showLines;
+    textList.clear ();
+
+    addTextNewLine (line, baseColor);
+
+    return textList;
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean getShowLines ()
+  @Override
+  public List<Text> format (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
-    return showLines;
+    textList.clear ();
+
+    if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
+      plainFormat (lines);
+    else
+      filterFormat (lines);
+
+    return textList;
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
     this.font = font;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void setShowLineNumbers (boolean showLineNumbers)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.showLineNumbers = showLineNumbers;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean getShowLineNumbers ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return showLineNumbers;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -62,38 +92,13 @@ class TextFormatter
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<Text> format (String line)
-  // ---------------------------------------------------------------------------------//
-  {
-    textList.clear ();
-
-    addTextNewLine (line, baseColor);
-
-    return textList;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public List<Text> format (List<String> lines)
-  // ---------------------------------------------------------------------------------//
-  {
-    textList.clear ();
-
-    if (filterStatus.filterValue.isEmpty () || !filterStatus.filterActive)
-      plainFormat (lines);
-    else
-      filterFormat (lines);
-
-    return textList;
-  }
-
-  // ---------------------------------------------------------------------------------//
   void plainFormat (List<String> lines)
   // ---------------------------------------------------------------------------------//
   {
     int lineNo = 1;
     for (String line : lines)
     {
-      if (showLines)
+      if (showLineNumbers)
         addText (String.format ("%06d ", lineNo++), numberColor);
 
       addTextNewLine (line, baseColor);
@@ -108,7 +113,7 @@ class TextFormatter
     int lineNo = 1;
     for (String line : lines)
     {
-      if (showLines)
+      if (showLineNumbers)
         addText (String.format ("%06d ", lineNo++), numberColor);
 
       if (highlight (line, filterStatus.filterValue, Color.RED))
@@ -116,7 +121,7 @@ class TextFormatter
 
       if (filterStatus.filterExclusion)
       {
-        if (showLines)
+        if (showLineNumbers)
           textList.remove (textList.size () - 1);
       }
       else

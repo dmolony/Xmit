@@ -1,9 +1,11 @@
 package com.bytezone.xmit.gui;
 
+import com.bytezone.appbase.TabPaneBase;
+
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class TableTabPane extends XmitTabPane
+class TableTabPane extends TabPaneBase
 // -----------------------------------------------------------------------------------//
 {
   final HeadersTab headersTab = new HeadersTab ("Headers", KeyCode.H);

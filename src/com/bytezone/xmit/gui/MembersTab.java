@@ -2,11 +2,13 @@ package com.bytezone.xmit.gui;
 
 import java.util.prefs.Preferences;
 
+import com.bytezone.appbase.TableTabBase;
+
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 
 // -----------------------------------------------------------------------------------//
-class MembersTab extends XmitTableTab
+class MembersTab extends TableTabBase
 // -----------------------------------------------------------------------------------//
 {
   XmitTable xmitTable = new XmitTable ();
@@ -38,7 +40,7 @@ class MembersTab extends XmitTableTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void setFont (Font font)
+  public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
     super.setFont (font);

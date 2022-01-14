@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 // -----------------------------------------------------------------------------------//
-class TextFormatterJcl extends TextFormatter
+class TextFormatterJcl extends XmitTextFormatter
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
@@ -24,7 +24,7 @@ class TextFormatterJcl extends TextFormatter
     int lineNo = 1;
     for (String line : lines)
     {
-      if (showLines)
+      if (showLineNumbers)
         addText (String.format ("%06d ", lineNo++), numberColor);
 
       if (line.startsWith ("//*"))                // line comment

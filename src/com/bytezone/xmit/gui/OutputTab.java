@@ -171,7 +171,7 @@ class OutputTab extends XmitTextTab implements ShowLinesListener, TableItemSelec
   // ---------------------------------------------------------------------------------//
   {
     this.lineDisplayStatus = lineDisplayStatus;
-    textFormatter.setShowLines (lineDisplayStatus.showLines);
+    textFormatter.setShowLineNumbers (lineDisplayStatus.showLines);
     refresh ();
   }
 

@@ -2,6 +2,8 @@ package com.bytezone.xmit.gui;
 
 import java.util.List;
 
+import com.bytezone.appbase.TextTabBase;
+
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -11,19 +13,21 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 // -----------------------------------------------------------------------------------//
-abstract class XmitTextTab extends XmitTab
+public abstract class XmitTextTab extends TextTabBase
 // -----------------------------------------------------------------------------------//
 {
   private final TextFlow textFlow = new TextFlow ();
   private final ScrollPane scrollPane = new ScrollPane (textFlow);
 
-  TextFormatter textFormatter = new TextFormatter ();
+  XmitTextFormatter textFormatter = new XmitTextFormatter ();
 
   // ---------------------------------------------------------------------------------//
   public XmitTextTab (String title, KeyCode keyCode)
   // ---------------------------------------------------------------------------------//
   {
     super (title, keyCode);
+
+    //    this.textFormatter = textFormatter;
 
     textFlow.setLineSpacing (1);
 
@@ -39,13 +43,13 @@ abstract class XmitTextTab extends XmitTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void update ()
+  public void update ()
   // ---------------------------------------------------------------------------------//
   {
-    if (valid)
+    if (isValid ())
       return;
 
-    valid = true;
+    setValid (true);
 
     textFlow.getChildren ().setAll (textFormatter.format (getLines ()));
 
@@ -55,7 +59,7 @@ abstract class XmitTextTab extends XmitTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void setFont (Font font)
+  public void setFont (Font font)
   // ---------------------------------------------------------------------------------//
   {
     super.setFont (font);

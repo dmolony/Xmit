@@ -13,7 +13,7 @@ class LineDisplayStatus implements SaveState
   private static final String PREFS_TRUNCATE = "Truncate";
   private static final String PREFS_CHECK_INCLUDE = "CheckInclude";
 
-  boolean showLines;
+  boolean showLines;          // 
   boolean stripLines;
   boolean truncateLines;
   boolean expandInclude;

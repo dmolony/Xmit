@@ -71,8 +71,10 @@ public class XmitStatusBar extends StatusBar
 
     String filterText = filterStatus.filterActive ? filterStatus.filterValue.isEmpty () ? "NONE"
         : (filterStatus.filterReverse ? "~" : "") + filterStatus.filterValue : "OFF";
+
     String showText = (filterStatus.filterActive && !filterStatus.filterValue.isEmpty ())
         ? filterStatus.filterExclusion ? "Filtered lines" : "All lines" : "All lines";
+
     String includeText = expandJclInclude ? "ON" : "OFF";
 
     statusDisplay
