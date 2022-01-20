@@ -58,6 +58,7 @@ class ViewMenu extends Menu implements SaveState
       { "CP870", "CP1153" },     // Latin-2
       { "CP1047", "CP924" },     // Latin-1
       { "USER1", "USER1" } };    // 1047 with NL/LF swapped
+
   private final KeyCode[] keyCodes = { KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3,
       KeyCode.DIGIT4, KeyCode.DIGIT5, KeyCode.DIGIT6, KeyCode.DIGIT7, KeyCode.DIGIT8 };
 
@@ -72,6 +73,7 @@ class ViewMenu extends Menu implements SaveState
 
     ObservableList<MenuItem> menuItems = getItems ();
 
+    // Filter keys
     KeyCodeCombination cmdShiftF =
         new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
     KeyCodeCombination cmdF = new KeyCodeCombination (KeyCode.F, KeyCombination.SHORTCUT_DOWN);
@@ -89,10 +91,11 @@ class ViewMenu extends Menu implements SaveState
     menuItems.add (new SeparatorMenuItem ());
 
     EventHandler<ActionEvent> action = e -> alterLineStatus ();
-    showLinesMenuItem = setCheckMenuItem ("Add Sequence Numbers", KeyCode.L, action);
-    stripLinesMenuItem = setCheckMenuItem ("Strip Line Numbers", KeyCode.L, SHIFT, action);
-    truncateMenuItem = setCheckMenuItem ("Truncate Column 1", KeyCode.T, action);
-    expandIncludeMenuItem = setCheckMenuItem ("Expand Include Members", KeyCode.I, action);
+
+    showLinesMenuItem = addCheckMenuItem ("Add Sequence Numbers", KeyCode.L, action);
+    stripLinesMenuItem = addCheckMenuItem ("Strip Line Numbers", KeyCode.L, SHIFT, action);
+    truncateMenuItem = addCheckMenuItem ("Truncate Column 1", KeyCode.T, action);
+    expandIncludeMenuItem = addCheckMenuItem ("Expand Include Members", KeyCode.I, action);
 
     menuItems.add (new SeparatorMenuItem ());
 
@@ -106,7 +109,7 @@ class ViewMenu extends Menu implements SaveState
     menuItems.add (new SeparatorMenuItem ());
 
     euroMenuItem =
-        setCheckMenuItem ("Euro update", KeyCode.DIGIT9, e -> setEuroAndNotifyListeners ());
+        addCheckMenuItem ("Euro update", KeyCode.DIGIT9, e -> setEuroAndNotifyListeners ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -131,15 +134,15 @@ class ViewMenu extends Menu implements SaveState
   }
 
   // ---------------------------------------------------------------------------------//
-  private CheckMenuItem setCheckMenuItem (String name, KeyCode keyCode,
+  private CheckMenuItem addCheckMenuItem (String name, KeyCode keyCode,
       EventHandler<ActionEvent> action)
   // ---------------------------------------------------------------------------------//
   {
-    return setCheckMenuItem (name, keyCode, NO_SHIFT, action);
+    return addCheckMenuItem (name, keyCode, NO_SHIFT, action);
   }
 
   // ---------------------------------------------------------------------------------//
-  private CheckMenuItem setCheckMenuItem (String name, KeyCode keyCode, boolean shift,
+  private CheckMenuItem addCheckMenuItem (String name, KeyCode keyCode, boolean shift,
       EventHandler<ActionEvent> action)
   // ---------------------------------------------------------------------------------//
   {
@@ -235,10 +238,12 @@ class ViewMenu extends Menu implements SaveState
   // ---------------------------------------------------------------------------------//
   {
     lineDisplayStatus.restore (prefs);
+
     showLinesMenuItem.setSelected (lineDisplayStatus.showLines);
     stripLinesMenuItem.setSelected (lineDisplayStatus.stripLines);
     truncateMenuItem.setSelected (lineDisplayStatus.truncateLines);
     expandIncludeMenuItem.setSelected (lineDisplayStatus.expandInclude);
+
     notifyLinesListeners ();
 
     euroMenuItem.setSelected (prefs.getBoolean (PREFS_EURO_PAGE, false));

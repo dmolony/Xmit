@@ -106,6 +106,7 @@ public abstract class DataFile implements Comparable<DataFile>
   {
     if (lines.size () == 0 || codePage != Utility.getCodePage ())
       createDataLines ();
+
     return lines;
   }
 

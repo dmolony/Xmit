@@ -21,8 +21,7 @@ class TableTabPane extends TabPaneBase
     add (headersTab);
     add (commentsTab);
     add (membersTab);
-    setDefaultTab (2);
 
-    getTabs ().addAll (headersTab, commentsTab, membersTab);
+    setDefaultTab (2);
   }
 }

@@ -21,8 +21,7 @@ class OutputTabPane extends TabPaneBase
     add (blocksTab);
     add (hexTab);
     add (outputTab);
-    setDefaultTab (2);
 
-    getTabs ().addAll (blocksTab, hexTab, outputTab);
+    setDefaultTab (2);
   }
 }

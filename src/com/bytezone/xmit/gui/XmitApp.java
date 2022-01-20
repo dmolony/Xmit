@@ -28,15 +28,17 @@ public class XmitApp extends AppBase
   private String rootFolderName;
 
   private XmitTree xmitTree;
-  private TreePane treePane;
-  private final XmitStatusBar xmitStatusBar = new XmitStatusBar ();
-  private XmitStageManager xmitStageManager;
 
+  // set three panes for the split pane
   private final SplitPane splitPane = new SplitPane ();
+  private TreePane treePane;
   private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
   private final TableTabPane tableTabPane = new TableTabPane ("Table");
 
   private final FilterManager filterManager = new FilterManager ();
+  private final XmitStatusBar xmitStatusBar = new XmitStatusBar ();
+
+  private XmitStageManager xmitStageManager;
 
   private final FileMenu fileMenu = new FileMenu ("File");
   private final ViewMenu viewMenu = new ViewMenu ("View");
@@ -190,7 +192,12 @@ public class XmitApp extends AppBase
   // ---------------------------------------------------------------------------------//
   {
     if (setRootFolder ())
+    {
       treePane.setRootFolder (new XmitTreeItem (new NodeData (new File (rootFolderName))));
+      xmitStatusBar.setStatusMessage ("Root folder changed");
+    }
+    else
+      xmitStatusBar.setStatusMessage ("Root folder unchanged");
   }
 
   // ---------------------------------------------------------------------------------//

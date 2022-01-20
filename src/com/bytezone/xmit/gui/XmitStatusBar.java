@@ -67,8 +67,6 @@ public class XmitStatusBar extends StatusBar
   private void setStatusText ()
   // ---------------------------------------------------------------------------------//
   {
-    //    statusMessage.setText ("");
-
     String filterText = filterStatus.filterActive ? filterStatus.filterValue.isEmpty () ? "NONE"
         : (filterStatus.filterReverse ? "~" : "") + filterStatus.filterValue : "OFF";
 
