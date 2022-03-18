@@ -32,8 +32,8 @@ public class XmitApp extends AppBase
   // set three panes for the split pane
   private final SplitPane splitPane = new SplitPane ();
   private TreePane treePane;
-  private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
   private final TableTabPane tableTabPane = new TableTabPane ("Table");
+  private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
 
   private final FilterManager filterManager = new FilterManager ();
   private final XmitStatusBar xmitStatusBar = new XmitStatusBar ();
@@ -233,14 +233,13 @@ public class XmitApp extends AppBase
     DirectoryChooser directoryChooser = new DirectoryChooser ();
     directoryChooser.setTitle ("Set XMIT file folder");
 
-    String previousRootFolderName = prefs.get (PREFS_ROOT_FOLDER, "");
-    if (previousRootFolderName.isEmpty ())
+    if (rootFolderName.isEmpty ())
       directoryChooser.setInitialDirectory (new File (System.getProperty ("user.home")));
     else
-      directoryChooser.setInitialDirectory (new File (previousRootFolderName));
+      directoryChooser.setInitialDirectory (new File (rootFolderName));
 
     File file = directoryChooser.showDialog (null);
-    if (file != null && file.isDirectory ())
+    if (file != null && file.isDirectory () && !file.getAbsolutePath ().equals (rootFolderName))
     {
       rootFolderName = file.getAbsolutePath ();
       prefs.put (PREFS_ROOT_FOLDER, rootFolderName);
