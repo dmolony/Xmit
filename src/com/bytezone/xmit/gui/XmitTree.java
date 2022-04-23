@@ -19,7 +19,7 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 // -----------------------------------------------------------------------------------//
-public class XmitTree extends TreeView<NodeData> implements SaveState, FontChangeListener
+public class XmitTree extends TreeView<TreeNodeData> implements SaveState, FontChangeListener
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
@@ -40,32 +40,32 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       new Image (getClass ().getResourceAsStream ("/icons/folder-icon.png"));
   private Font font;
 
-  private final MultipleSelectionModel<TreeItem<NodeData>> model = getSelectionModel ();
-  private final List<NodeDataListener> listeners = new ArrayList<> ();
+  private final MultipleSelectionModel<TreeItem<TreeNodeData>> model = getSelectionModel ();
+  private final List<TreeNodeListener> listeners = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public XmitTree (String rootFolderName)
   // ---------------------------------------------------------------------------------//
   {
-    this (new XmitTreeItem (new NodeData (new File (rootFolderName))));
+    this (new XmitTreeItem (new TreeNodeData (new File (rootFolderName))));
   }
 
   // ---------------------------------------------------------------------------------//
-  public XmitTree (TreeItem<NodeData> root)
+  public XmitTree (TreeItem<TreeNodeData> root)
   // ---------------------------------------------------------------------------------//
   {
     super (root);
 
-    setCellFactory (new Callback<TreeView<NodeData>, TreeCell<NodeData>> ()
+    setCellFactory (new Callback<TreeView<TreeNodeData>, TreeCell<TreeNodeData>> ()
     {
       @Override
-      public TreeCell<NodeData> call (TreeView<NodeData> parm)
+      public TreeCell<TreeNodeData> call (TreeView<TreeNodeData> parm)
       {
-        TreeCell<NodeData> cell = new TreeCell<> ()
+        TreeCell<TreeNodeData> cell = new TreeCell<> ()
         {
           private final ImageView imageView = new ImageView ();
 
-          public void updateItem (NodeData nodeData, boolean empty)
+          public void updateItem (TreeNodeData nodeData, boolean empty)
           {
             super.updateItem (nodeData, empty);
             if (empty || nodeData == null)
@@ -82,7 +82,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
             }
           }
 
-          private void setImageView (NodeData nodeData)
+          private void setImageView (TreeNodeData nodeData)
           {
             Image image = nodeData.isCompressedFile () ? zipImage :         //
             nodeData.isDirectory () ? folderImage :                         //
@@ -108,7 +108,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
         return;
       }
 
-      NodeData nodeData = newSel.getValue ();
+      TreeNodeData nodeData = newSel.getValue ();
       XmitTreeItem treeItem = (XmitTreeItem) newSel;
 
       int datasets = nodeData.size ();    // forces the reader to exist (if possible)
@@ -122,7 +122,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
       //      if (!merging && nodeData.isXmit () && datasets > 1)
       //        treeItem.setLeaf (false);       // show the open triangle
 
-      for (NodeDataListener listener : listeners)
+      for (TreeNodeListener listener : listeners)
         listener.treeNodeSelected (nodeData);
     });
   }
@@ -144,7 +144,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
 
     if (!lastPath.isEmpty ())
     {
-      Optional<TreeItem<NodeData>> optionalNode = getNode (lastPath);
+      Optional<TreeItem<TreeNodeData>> optionalNode = getNode (lastPath);
       if (optionalNode.isPresent ())
       {
         int row = getRow (optionalNode.get ());
@@ -155,11 +155,11 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   }
 
   // ---------------------------------------------------------------------------------//
-  Optional<TreeItem<NodeData>> getNode (String path)
+  Optional<TreeItem<TreeNodeData>> getNode (String path)
   // ---------------------------------------------------------------------------------//
   {
-    TreeItem<NodeData> node = getRoot ();
-    Optional<TreeItem<NodeData>> optionalNode = Optional.empty ();
+    TreeItem<TreeNodeData> node = getRoot ();
+    Optional<TreeItem<TreeNodeData>> optionalNode = Optional.empty ();
 
     String[] chunks = path.split (SEPARATOR);
 
@@ -177,12 +177,12 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   }
 
   // ---------------------------------------------------------------------------------//
-  private Optional<TreeItem<NodeData>> search (TreeItem<NodeData> parentNode, String name)
+  private Optional<TreeItem<TreeNodeData>> search (TreeItem<TreeNodeData> parentNode, String name)
   // ---------------------------------------------------------------------------------//
   {
     parentNode.setExpanded (true);
 
-    for (TreeItem<NodeData> childNode : parentNode.getChildren ())
+    for (TreeItem<TreeNodeData> childNode : parentNode.getChildren ())
       if (childNode.getValue ().getName ().equals (name))
         return Optional.of (childNode);
 
@@ -195,7 +195,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   {
     StringBuilder pathBuilder = new StringBuilder ();
 
-    TreeItem<NodeData> item = model.getSelectedItem ();
+    TreeItem<TreeNodeData> item = model.getSelectedItem ();
     while (item != null)
     {
       pathBuilder.insert (0, SEPARATOR + item.getValue ().getName ());
@@ -206,7 +206,7 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   }
 
   // ---------------------------------------------------------------------------------//
-  public void addListener (NodeDataListener listener)
+  public void addListener (TreeNodeListener listener)
   // ---------------------------------------------------------------------------------//
   {
     if (!listeners.contains (listener))
@@ -231,9 +231,9 @@ public class XmitTree extends TreeView<NodeData> implements SaveState, FontChang
   }
 
   // ---------------------------------------------------------------------------------//
-  interface NodeDataListener
+  interface TreeNodeListener
   // ---------------------------------------------------------------------------------//
   {
-    public void treeNodeSelected (NodeData nodeData);
+    public void treeNodeSelected (TreeNodeData nodeData);
   }
 }

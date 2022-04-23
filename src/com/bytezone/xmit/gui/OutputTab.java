@@ -19,19 +19,19 @@ import com.bytezone.xmit.Dataset;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.PdsMember;
 import com.bytezone.xmit.Utility;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class OutputTab extends XmitTextTab //
-    implements ShowLinesListener,   //
-    TableItemSelectionListener,     //
-    FilterChangeListener,           //
-    OutputWriter,                   //
-    CodePageSelectedListener,       //
-    NodeDataListener
+class OutputTab extends XmitTextTab implements    //
+    ShowLinesListener,                            //
+    TableItemSelectionListener,                   //
+    FilterChangeListener,                         //
+    OutputWriter,                                 //
+    CodePageSelectedListener,                     //
+    TreeNodeListener
 // -----------------------------------------------------------------------------------//
 {
   private static final int MAX_LINES = 2500;
@@ -46,7 +46,7 @@ class OutputTab extends XmitTextTab //
       .compile ("^//(" + Utility.validPart + ")?\\s+INCLUDE\\s+MEMBER=(" + Utility.validPart + ")");
 
   LineDisplayStatus lineDisplayStatus;
-  private DataFile dataFile;      // the item to display
+  private DataFile dataFile;                    // the item to display
 
   // keep track of all PDS datasets seen so that we can INCLUDE members
   private final Map<String, PdsDataset> datasets = new TreeMap<> ();
@@ -208,7 +208,7 @@ class OutputTab extends XmitTextTab //
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     if (nodeData.isPartitionedDataset ())

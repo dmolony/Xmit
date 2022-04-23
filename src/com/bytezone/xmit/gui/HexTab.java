@@ -6,18 +6,18 @@ import java.util.List;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.Utility;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
 class HexTab extends XmitTextTab
-    implements NodeDataListener, TableItemSelectionListener, CodePageSelectedListener
+    implements TreeNodeListener, TableItemSelectionListener, CodePageSelectedListener
 // -----------------------------------------------------------------------------------//
 {
   private static final int MAX_HEX_BYTES = 0x20_000;
 
-  NodeData nodeData;
+  TreeNodeData nodeData;
   DataFile dataFile;
 
   // ---------------------------------------------------------------------------------//
@@ -44,7 +44,7 @@ class HexTab extends XmitTextTab
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

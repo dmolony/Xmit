@@ -24,7 +24,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TreeItem;
 
 // -----------------------------------------------------------------------------------//
-public class XmitTreeItem extends TreeItem<NodeData>
+public class XmitTreeItem extends TreeItem<TreeNodeData>
 // -----------------------------------------------------------------------------------//
 {
   private static final FileComparator comparator = new FileComparator ();
@@ -34,7 +34,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
   private boolean isLeaf;
 
   // ---------------------------------------------------------------------------------//
-  public XmitTreeItem (NodeData nodeData)
+  public XmitTreeItem (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     super (nodeData);
@@ -55,7 +55,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
     if (firstTimeLeaf)
     {
       firstTimeLeaf = false;
-      NodeData nodeData = getValue ();
+      TreeNodeData nodeData = getValue ();
 
       if (nodeData.isFile ())
         if (nodeData.isDirectory () || nodeData.isCompressedFile () || nodeData.isTape ())
@@ -76,7 +76,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public ObservableList<TreeItem<NodeData>> getChildren ()
+  public ObservableList<TreeItem<TreeNodeData>> getChildren ()
   // ---------------------------------------------------------------------------------//
   {
     if (firstTimeChildren)
@@ -88,11 +88,11 @@ public class XmitTreeItem extends TreeItem<NodeData>
   }
 
   // ---------------------------------------------------------------------------------//
-  ObservableList<TreeItem<NodeData>> buildChildren ()
+  ObservableList<TreeItem<TreeNodeData>> buildChildren ()
   // ---------------------------------------------------------------------------------//
   {
-    ObservableList<TreeItem<NodeData>> children = FXCollections.observableArrayList ();
-    NodeData nodeData = getValue ();
+    ObservableList<TreeItem<TreeNodeData>> children = FXCollections.observableArrayList ();
+    TreeNodeData nodeData = getValue ();
 
     if (nodeData.isPartitionedDataset ())
       addPdsMembers (children, nodeData);
@@ -110,7 +110,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addFiles (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
+  private void addFiles (ObservableList<TreeItem<TreeNodeData>> children, TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     File[] files = nodeData.getFile ().listFiles ();
@@ -122,30 +122,30 @@ public class XmitTreeItem extends TreeItem<NodeData>
       if (file.isHidden ())
         continue;
 
-      if (file.isDirectory () || NodeData.isValidFileName (file.getName ()))
-        children.add (new XmitTreeItem (new NodeData (file)));
+      if (file.isDirectory () || TreeNodeData.isValidFileName (file.getName ()))
+        children.add (new XmitTreeItem (new TreeNodeData (file)));
     }
     Collections.sort (children, comparator);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addDatasets (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
+  private void addDatasets (ObservableList<TreeItem<TreeNodeData>> children, TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     for (Dataset dataset : nodeData)
-      children.add (new XmitTreeItem (new NodeData (dataset)));
+      children.add (new XmitTreeItem (new TreeNodeData (dataset)));
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addPdsMembers (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
+  private void addPdsMembers (ObservableList<TreeItem<TreeNodeData>> children, TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     for (PdsMember member : nodeData.getPdsXmitMembers ())
-      children.add (new XmitTreeItem (new NodeData (member)));
+      children.add (new XmitTreeItem (new TreeNodeData (member)));
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addCompressedFiles (ObservableList<TreeItem<NodeData>> children, NodeData nodeData)
+  private void addCompressedFiles (ObservableList<TreeItem<TreeNodeData>> children, TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     Map<ZipEntry, XmitTreeItem> fileList = decompressZip (nodeData.getFile ().toPath ());
@@ -157,7 +157,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
         String[] chunks = entryName.split ("/");
         int filePos = chunks.length - 1;
         String fileName = chunks[filePos];
-        if (NodeData.isValidFileName (fileName))
+        if (TreeNodeData.isValidFileName (fileName))
           children.add (fileList.get (entry));
       }
       Collections.sort (children, comparator);
@@ -182,7 +182,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
 
         if (entryName.endsWith ("/"))
           containsFolder = true;
-        else if (NodeData.isValidFileName (entryName))
+        else if (TreeNodeData.isValidFileName (entryName))
         {
           int pos = entryName.lastIndexOf ('.');
           String suffix = pos < 0 ? "" : entryName.substring (pos).toLowerCase ();
@@ -199,7 +199,7 @@ public class XmitTreeItem extends TreeItem<NodeData>
           inputStream.close ();
           outputStream.close ();
           tempFile.deleteOnExit ();          // it hasn't been read yet
-          fileMap.put (entry, new XmitTreeItem (new NodeData (tempFile, entryName)));
+          fileMap.put (entry, new XmitTreeItem (new TreeNodeData (tempFile, entryName)));
         }
         else
           invalidNames.add (entryName);

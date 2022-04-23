@@ -1,23 +1,23 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.PdsDataset;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.scene.paint.Color;
 
 // -----------------------------------------------------------------------------------//
 class TableHeaderBar extends HeaderBar
-    implements NodeDataListener, FilterActionListener, FilterChangeListener
+    implements TreeNodeListener, FilterActionListener, FilterChangeListener
 // -----------------------------------------------------------------------------------//
 {
-  private NodeData nodeData;
+  private TreeNodeData nodeData;
   private FilterStatus filterStatus;
   private int found;
   private int max;
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

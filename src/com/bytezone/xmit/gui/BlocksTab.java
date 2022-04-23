@@ -6,15 +6,15 @@ import java.util.List;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
 import com.bytezone.xmit.PdsMember;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class BlocksTab extends XmitTextTab implements NodeDataListener, TableItemSelectionListener
+class BlocksTab extends XmitTextTab implements TreeNodeListener, TableItemSelectionListener
 // -----------------------------------------------------------------------------------//
 {
-  private NodeData nodeData;
+  private TreeNodeData nodeData;
   private DataFile dataFile;
 
   // ---------------------------------------------------------------------------------//
@@ -47,7 +47,7 @@ class BlocksTab extends XmitTextTab implements NodeDataListener, TableItemSelect
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

@@ -1,15 +1,15 @@
 package com.bytezone.xmit.gui;
 
 import com.bytezone.xmit.CatalogEntry;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 // -----------------------------------------------------------------------------------//
 class OutputHeaderBar extends HeaderBar
-    implements NodeDataListener, TableItemSelectionListener, ShowLinesListener
+    implements TreeNodeListener, TableItemSelectionListener, ShowLinesListener
 // -----------------------------------------------------------------------------------//
 {
   private LineDisplayStatus lineDisplayStatus;
-  private NodeData nodeData;
+  private TreeNodeData nodeData;
   private CatalogEntry catalogEntry;
 
   // ---------------------------------------------------------------------------------//
@@ -56,7 +56,7 @@ class OutputHeaderBar extends HeaderBar
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

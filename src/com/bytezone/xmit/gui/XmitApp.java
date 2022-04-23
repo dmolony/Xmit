@@ -69,7 +69,8 @@ public class XmitApp extends AppBase
     TableHeaderBar tableHeaderBar = new TableHeaderBar ();
     OutputHeaderBar outputHeaderBar = new OutputHeaderBar ();
 
-    splitPane.getItems ().addAll (treePane, //
+    splitPane.getItems ().addAll (                          //
+        treePane,                                           //
         createBorderPane (tableHeaderBar, tableTabPane),
         createBorderPane (outputHeaderBar, outputTabPane));
 
@@ -193,7 +194,7 @@ public class XmitApp extends AppBase
   {
     if (setRootFolder ())
     {
-      treePane.setRootFolder (new XmitTreeItem (new NodeData (new File (rootFolderName))));
+      treePane.setRootFolder (new XmitTreeItem (new TreeNodeData (new File (rootFolderName))));
       xmitStatusBar.setStatusMessage ("Root folder changed");
     }
     else

@@ -18,7 +18,7 @@ import com.bytezone.xmit.Filter;
 import com.bytezone.xmit.Filter.FilterMode;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.gui.DataColumn.DisplayType;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,7 +31,7 @@ import javafx.scene.text.Font;
 
 // -----------------------------------------------------------------------------------//
 class XmitTable extends TableView<CatalogEntryItem>                                   //
-    implements SaveState, NodeDataListener, FontChangeListener, FilterChangeListener
+    implements SaveState, TreeNodeListener, FontChangeListener, FilterChangeListener
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_MEMBER_NAME = "LastMemberName";
@@ -40,7 +40,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
   private final List<TableItemSelectionListener> selectionListeners = new ArrayList<> ();
   private final ObservableList<CatalogEntryItem> items = FXCollections.observableArrayList ();
 
-  private NodeData nodeData;
+  private TreeNodeData nodeData;
   private FilterStatus filterStatus;
 
   private DisplayType currentDisplayType = null;
@@ -164,7 +164,7 @@ class XmitTable extends TableView<CatalogEntryItem>                             
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

@@ -10,7 +10,7 @@ import com.bytezone.appbase.AppBase;
 import com.bytezone.appbase.SaveState;
 import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.DataFile;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,7 +24,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
 // -----------------------------------------------------------------------------------//
-class FileMenu extends Menu implements TableItemSelectionListener, NodeDataListener, SaveState
+class FileMenu extends Menu implements TableItemSelectionListener, TreeNodeListener, SaveState
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_EXTRACT_FOLDER = "ExtractFolder";
@@ -35,7 +35,7 @@ class FileMenu extends Menu implements TableItemSelectionListener, NodeDataListe
   private final MenuItem saveMenuItem = new MenuItem ("Save output...");
   private final MenuItem aboutMenuItem = new MenuItem ("Show version...");
 
-  private NodeData nodeData;
+  private TreeNodeData nodeData;
   private CatalogEntry catalogEntry;
   private DataFile dataFile;
 
@@ -167,7 +167,7 @@ class FileMenu extends Menu implements TableItemSelectionListener, NodeDataListe
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

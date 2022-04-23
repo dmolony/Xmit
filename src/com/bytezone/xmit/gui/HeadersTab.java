@@ -8,15 +8,15 @@ import com.bytezone.xmit.CatalogEntry;
 import com.bytezone.xmit.LoadModule;
 import com.bytezone.xmit.PdsDataset;
 import com.bytezone.xmit.XmitReader;
-import com.bytezone.xmit.gui.XmitTree.NodeDataListener;
+import com.bytezone.xmit.gui.XmitTree.TreeNodeListener;
 
 import javafx.scene.input.KeyCode;
 
 // -----------------------------------------------------------------------------------//
-class HeadersTab extends XmitTextTab implements NodeDataListener
+class HeadersTab extends XmitTextTab implements TreeNodeListener
 // -----------------------------------------------------------------------------------//
 {
-  private NodeData nodeData;
+  private TreeNodeData nodeData;
 
   // ---------------------------------------------------------------------------------//
   public HeadersTab (String title, KeyCode keyCode)
@@ -85,7 +85,7 @@ class HeadersTab extends XmitTextTab implements NodeDataListener
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void treeNodeSelected (NodeData nodeData)
+  public void treeNodeSelected (TreeNodeData nodeData)
   // ---------------------------------------------------------------------------------//
   {
     this.nodeData = nodeData;

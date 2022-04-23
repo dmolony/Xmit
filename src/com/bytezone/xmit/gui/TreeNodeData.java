@@ -8,7 +8,7 @@ import java.util.List;
 import com.bytezone.xmit.*;
 
 // -----------------------------------------------------------------------------------//
-class NodeData implements Iterable<Dataset>
+class TreeNodeData implements Iterable<Dataset>
 // -----------------------------------------------------------------------------------//
 {
   static final List<String> fileSuffixes = Arrays.asList ("xmi", "xmit", "aws");
@@ -24,7 +24,7 @@ class NodeData implements Iterable<Dataset>
   private boolean merged;
 
   // ---------------------------------------------------------------------------------//
-  NodeData (File file)
+  TreeNodeData (File file)
   // ---------------------------------------------------------------------------------//
   {
     this.name = file.getName ();
@@ -35,7 +35,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  NodeData (File file, String displayName)              // decompressed temporary file
+  TreeNodeData (File file, String displayName)              // decompressed temporary file
   // ---------------------------------------------------------------------------------//
   {
     this.name = displayName;
@@ -48,7 +48,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  NodeData (Dataset dataset)
+  TreeNodeData (Dataset dataset)
   // ---------------------------------------------------------------------------------//
   {
     this.name = dataset.getName ();
@@ -61,7 +61,7 @@ class NodeData implements Iterable<Dataset>
   }
 
   // ---------------------------------------------------------------------------------//
-  NodeData (PdsMember member)                       // a member containg an xmit file
+  TreeNodeData (PdsMember member)                       // a member containg an xmit file
   // ---------------------------------------------------------------------------------//
   {
     this.name = member.getName ();
