@@ -27,8 +27,6 @@ public abstract class XmitTextTab extends TextTabBase
   {
     super (title, keyCode);
 
-    //    this.textFormatter = textFormatter;
-
     textFlow.setLineSpacing (1);
 
     scrollPane.setPadding (new Insets (5, 5, 5, 5));
