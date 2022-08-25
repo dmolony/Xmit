@@ -53,12 +53,14 @@ class FileMenu extends Menu implements TableItemSelectionListener, TreeNodeListe
 
     getItems ().addAll (rootMenuItem, extractMenuItem, saveMenuItem, new SeparatorMenuItem (),
         aboutMenuItem);
+
     rootMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.R, KeyCombination.SHORTCUT_DOWN));
     extractMenuItem
         .setAccelerator (new KeyCodeCombination (KeyCode.E, KeyCombination.SHORTCUT_DOWN));
     saveMenuItem.setAccelerator (new KeyCodeCombination (KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 
     extractMenuItem.setOnAction (e -> extractFile ());
+
     saveMenuItem.setOnAction (e -> saveFile ());
     aboutMenuItem.setOnAction (e -> about ());
     saveMenuItem.setDisable (true);
