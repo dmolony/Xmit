@@ -23,7 +23,7 @@ public class XmitTree extends TreeView<TreeNodeData> implements SaveState, FontC
 // -----------------------------------------------------------------------------------//
 {
   private static final String PREFS_LAST_PATH = "LastPath";
-  private static String SEPARATOR = "/";
+  private static String SEPARATOR = "/";      // is this the best choice?
   static final boolean merging = true;
 
   private final Image zipImage =
@@ -85,12 +85,12 @@ public class XmitTree extends TreeView<TreeNodeData> implements SaveState, FontC
           private void setImageView (TreeNodeData nodeData)
           {
             Image image = nodeData.isCompressedFile () ? zipImage :         //
-            nodeData.isDirectory () ? folderImage :                         //
-            nodeData.isMember () ? mImage :                                 //
-            nodeData.isFile () ?                                            //
-            nodeData.getName ().endsWith (".aws") ? tImage : xImage :       //
-            nodeData.isDataset () ? dImage :                                //
-            null;
+                nodeData.isDirectory () ? folderImage :                         //
+                    nodeData.isMember () ? mImage :                                 //
+                        nodeData.isFile () ?                                            //
+                            nodeData.getName ().endsWith (".aws") ? tImage : xImage :       //
+                            nodeData.isDataset () ? dImage :                                //
+                                null;
 
             imageView.setImage (image);
           }
@@ -161,7 +161,7 @@ public class XmitTree extends TreeView<TreeNodeData> implements SaveState, FontC
     TreeItem<TreeNodeData> node = getRoot ();
     Optional<TreeItem<TreeNodeData>> optionalNode = Optional.empty ();
 
-    String[] chunks = path.split (SEPARATOR);
+    String[] chunks = path.split ("\\" + SEPARATOR);
 
     for (int i = 2; i < chunks.length; i++)
     {
