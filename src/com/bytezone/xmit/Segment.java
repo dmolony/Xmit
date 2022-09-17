@@ -49,6 +49,7 @@ public abstract class Segment
           blockPointer.buffer.length);
       return;
     }
+
     rawBlockPointers.add (blockPointer);
     rawBufferLength += blockPointer.length;               // used for non-data blocks
   }
@@ -66,7 +67,7 @@ public abstract class Segment
   // ---------------------------------------------------------------------------------//
   {
     BlockPointer blockPointer = rawBlockPointers.get (0);
-    return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset,
-        rawBufferLength, rawBlockPointers.size ());
+    return String.format ("%06X:   %06X  %<,7d  %,5d", blockPointer.offset, rawBufferLength,
+        rawBlockPointers.size ());
   }
 }

@@ -99,7 +99,7 @@ public class Utility
     for (int i = offset; i < max; i++)
     {
       int b = buffer[i] & 0xFF;
-      if (b == 0 || b == 0x20)        // ascii space character
+      if (b == 0 || b == 0xFF || b == 0x20)        // ascii space character
         //      if ((b < 0x40 && b != 0x05 && b != 0x0C) || b == 0xFF)
         return true;
     }

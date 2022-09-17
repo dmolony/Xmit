@@ -33,13 +33,38 @@ public class FlatFile extends DataFile implements Iterable<Segment>
   public byte[] getDataBuffer ()
   // ---------------------------------------------------------------------------------//
   {
+    if (true)
+      return getDataBufferRDW ();
+
     byte[] buffer = new byte[getDataLength ()];
     int ptr = 0;
 
     for (Segment segment : segments)
       ptr = segment.packBuffer (buffer, ptr);
 
-    assert ptr == getDataLength ();
+    assert ptr == buffer.length;
+    return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public byte[] getDataBufferRDW ()
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] buffer = new byte[getDataLength () + 4 * segments.size ()];
+    int ptr = 0;
+
+    for (Segment segment : segments)
+    {
+      int recLen = segment.rawBufferLength + 4;
+      buffer[ptr] = (byte) ((recLen & 0xFF00) >> 8);
+      buffer[ptr + 1] = (byte) (recLen & 0x00FF);
+      buffer[ptr + 2] = 0;
+      buffer[ptr + 3] = 0;
+      ptr += 4;
+      ptr = segment.packBuffer (buffer, ptr);
+    }
+
+    assert ptr == buffer.length;
     return buffer;
   }
 
@@ -97,16 +122,18 @@ public class FlatFile extends DataFile implements Iterable<Segment>
     int max = 500;
     for (Segment segment : segments)
     {
+      //      lines.add ("\nSegment: " + segment);
+      //      lines.add ("-------------------------------------------------------------------------");
       byte[] buffer = segment.getRawBuffer ();
-      if (Utility.isBinary (buffer))
-      {
-        for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
-          lines.add (line);
-        //        if (lines.size () > 10_000)
-        //          break;
-      }
-      else
-        lines.add (Utility.getString (buffer));
+
+      //      if (Utility.isBinary (buffer))
+      for (String line : Arrays.asList (Utility.getHexDump (buffer).split ("\n")))
+        lines.add (line);
+      //      else
+      //        lines.add (Utility.getString (buffer));
+
+      lines.add ("");
+
       if (++count > max)
         break;
     }
