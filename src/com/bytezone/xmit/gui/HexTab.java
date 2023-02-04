@@ -25,6 +25,7 @@ class HexTab extends XmitTextTab
   // ---------------------------------------------------------------------------------//
   {
     super (title, keyCode);
+
     textFormatter = new TextFormatterHex ();
   }
 
@@ -39,6 +40,7 @@ class HexTab extends XmitTextTab
       return lines;
 
     byte[] buffer = dataFile.getDataBuffer ();
+
     return Utility.getHexDumpLines (buffer, 0, Math.min (MAX_HEX_BYTES, buffer.length));
   }
 
@@ -63,6 +65,7 @@ class HexTab extends XmitTextTab
   // ---------------------------------------------------------------------------------//
   {
     dataFile = catalogEntry == null ? null : catalogEntry.getMember ();
+
     refresh ();
   }
 

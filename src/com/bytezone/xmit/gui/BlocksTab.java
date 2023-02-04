@@ -31,16 +31,18 @@ class BlocksTab extends XmitTextTab implements TreeNodeListener, TableItemSelect
   {
     List<String> lines = new ArrayList<> ();
 
-    if (dataFile != null)
-      if (nodeData.isPartitionedDataset ())
-      {
-        PdsMember member = ((PdsMember) dataFile);
-        member.listSizeCounts (lines);
-        member.getText (lines);
-        //        lines.add (member.getText ());        // should split
-      }
-      else
-        lines.add (dataFile.toString ());     // should split
+    if (dataFile == null)
+      return lines;
+
+    if (nodeData.isPartitionedDataset ())
+    {
+      PdsMember member = ((PdsMember) dataFile);
+      member.listSizeCounts (lines);
+      member.getText (lines);
+      //        lines.add (member.getText ());        // should split
+    }
+    else
+      lines.add (dataFile.toString ());     // should split
 
     return lines;
   }
