@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xmit" default="jar" basedir=".">
+
+  <property name="srcDir" location="src" />
+  <property name="binDir" location="bin" />
+  <property name="dropbox" location="/Users/denismolony/Dropbox/Java" />
+  <property name="jarFile" location="${dropbox}/XmitApp.jar" />
+
+  <target name="version">
+    <echo>${ant.version}</echo>
+    <echo>Java/JVM version: ${ant.java.version}</echo>
+    <echo>Java/JVM detail version: ${java.version}</echo>
+  </target>
+
+  <target name="init" depends="version">
+    <delete file="${binDir}/*.class" />
+  </target>
+
+  <target name="compilation" depends="init">
+    <javac debug="on" srcdir="${srcDir}" destdir="${binDir}" includeantruntime="false">
+      <classpath>
+        <pathelement location="." />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compilation">
+    <jar destfile="${jarFile}">
+      <fileset dir="${binDir}" />
+      <zipfileset src="${dropbox}/AppBase.jar" />
+      <manifest>
+        <attribute name="Main-Class" value="com.bytezone.xmit.gui.XmitApp" />
+      </manifest>
+    </jar>
+  </target>
+
+</project>
