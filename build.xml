@@ -3,8 +3,8 @@
 
   <property name="srcDir" location="src" />
   <property name="binDir" location="bin" />
-  <property name="jarFolder" location="${user.home}/Dropbox/Java" />
-  <property name="jarFile" location="${jarFolder}/XmitApp.jar" />
+  <property name="jarDir" location="${user.home}/Dropbox/Java" />
+  <property name="jarFile" location="${jarDir}/XmitApp.jar" />
 
   <target name="version">
     <echo>${ant.version}</echo>
@@ -27,7 +27,7 @@
   <target name="jar" depends="compilation">
     <jar destfile="${jarFile}">
       <fileset dir="${binDir}" />
-      <zipfileset src="${jarFolder}/AppBase.jar" />
+      <zipfileset src="${jarDir}/AppBase.jar" />
       <manifest>
         <attribute name="Main-Class" value="com.bytezone.xmit.gui.XmitApp" />
       </manifest>
