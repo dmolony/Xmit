@@ -20,8 +20,8 @@ class XmitFontManager extends FontManager
   {
     StringBuilder text = new StringBuilder ();
 
-    DataInputStream inputStream = new DataInputStream (
-        XmitApp.class.getClassLoader ().getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
+    DataInputStream inputStream = new DataInputStream (XmitApp.class.getClassLoader ()
+        .getResourceAsStream ("com/bytezone/xmit/gui/jcl.txt"));
 
     try (BufferedReader in = new BufferedReader (new InputStreamReader (inputStream)))
     {
