@@ -16,7 +16,7 @@
 ![Linux](resources/xmit-linux.png?raw=true "Linux")
 
 ## Installation
-- Download and install [Java 17](https://jdk.java.net/17/) and [JavaFX 17](https://gluonhq.com/products/javafx/), which are now separate downloads.
+- Download and install the latest [JDK and JavaFX](https://jdk.java.net/) binaries.
 - Download [XmitApp](https://github.com/dmolony/xmit/releases).
 - Create executable run file.  
 #### MacOS or Linux shell file  

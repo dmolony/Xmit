@@ -17,7 +17,7 @@ public class XmitReader extends Reader
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] INMR01 = { (byte) 0xE0, (byte) 0xC9, (byte) 0xD5, (byte) 0xD4,
-                                 (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
+      (byte) 0xD9, (byte) 0xF0, (byte) 0xF1 };
 
   private final List<ControlRecord> controlRecords = new ArrayList<> ();
   private int files;
@@ -85,8 +85,10 @@ public class XmitReader extends Reader
               if (textUnit != null)
                 files = (int) ((TextUnitNumber) textUnit).getNumber ();
               break;
+
             case INMR02:
               break;
+
             case INMR03:
               int fileNo = datasets.size () + 1;
               Optional<Org> optOrg = getDsorg (fileNo);
@@ -94,32 +96,24 @@ public class XmitReader extends Reader
                 throw new IllegalArgumentException ("DSORG not found");
 
               Disposition disposition = new Disposition (getInmr02 (fileNo).get ());
-
-              //   currentDataset = switch (optOrg.get ())
-              //   {
-              //    case PS -> new PsDataset (this, disposition, getDatasetName ());
-              //    case PDS -> new PdsDataset (this, disposition, getDatasetName ());
-              //  case VSAM -> throw new IllegalArgumentException ("VSAM not supported");
-              //              };
-              switch (optOrg.get ())
+              currentDataset = switch (optOrg.get ())
               {
-                case PS:
-                  currentDataset = new PsDataset (this, disposition, getDatasetName ());
-                  break;
-                case PDS:
-                  currentDataset = new PdsDataset (this, disposition, getDatasetName ());
-                  break;
-                case VSAM:
-                  throw new IllegalArgumentException ("VSAM not supported");
-              }
+                case PS -> new PsDataset (this, disposition, getDatasetName ());
+                case PDS -> new PdsDataset (this, disposition, getDatasetName ());
+                case VSAM -> throw new IllegalArgumentException ("VSAM not supported");
+              };
+
               datasets.add (currentDataset);
               break;
+
             case INMR06:
               ptr = Integer.MAX_VALUE;      // force break
               break;
+
             case INMR04:
             case INMR05:
               break;
+
             default:
               break;
           }
