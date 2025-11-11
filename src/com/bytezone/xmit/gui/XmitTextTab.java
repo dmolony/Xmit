@@ -6,19 +6,14 @@ import com.bytezone.appbase.TextTabBase;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 // -----------------------------------------------------------------------------------//
 public abstract class XmitTextTab extends TextTabBase
 // -----------------------------------------------------------------------------------//
 {
-  private final TextFlow textFlow = new TextFlow ();
-  private final ScrollPane scrollPane = new ScrollPane (textFlow);
-
   XmitTextFormatter textFormatter = new XmitTextFormatter ();
 
   // ---------------------------------------------------------------------------------//

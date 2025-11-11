@@ -41,6 +41,7 @@ public class XmitApp extends AppBase
   private XmitStageManager xmitStageManager;
 
   private final FileMenu fileMenu = new FileMenu ("File");
+  private final EditMenu editMenu = new EditMenu ("Edit");
   private final ViewMenu viewMenu = new ViewMenu ("View");
 
   // ---------------------------------------------------------------------------------//
@@ -125,14 +126,17 @@ public class XmitApp extends AppBase
     xmitTable.addListener (outputHeaderBar);
     xmitTable.addListener (fileMenu);
 
+    // tab change listeners
+    outputTabPane.addTabChangeListener (editMenu);
+
     // add menus
-    menuBar.getMenus ().addAll (fileMenu, viewMenu);
+    menuBar.getMenus ().addAll (fileMenu, editMenu, viewMenu);
 
     fileMenu.setOutputWriter (outputTabPane.outputTab);
 
     // ensure viewMenu (codepage) is set before xmitTree
-    saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu, xmitTree,
-        tableTabPane, fontManager));
+    saveStateList.addAll (Arrays.asList (filterManager, outputTabPane, fileMenu, viewMenu,
+        xmitTree, tableTabPane, fontManager));
 
     return splitPane;
   }
@@ -156,26 +160,28 @@ public class XmitApp extends AppBase
   {
     super.keyPressed (keyEvent);
 
+    if (keyEvent.isMetaDown ())
+      return;
+
+    boolean eventHandled = true;
+
     switch (keyEvent.getCode ())
     {
       case B:       // blocks
       case X:       // hex
       case O:       // output
         outputTabPane.keyPressed (keyEvent);
-        keyEvent.consume ();
         break;
 
       case H:       // headers
       case M:       // members
       case C:       // comments
         tableTabPane.keyPressed (keyEvent);
-        keyEvent.consume ();
         break;
 
       case COMMA:
       case PERIOD:
         fontManager.keyPressed (keyEvent);
-        keyEvent.consume ();
         break;
 
       case F:
@@ -184,8 +190,12 @@ public class XmitApp extends AppBase
         break;
 
       default:
+        eventHandled = false;
         break;
     }
+
+    if (eventHandled)
+      keyEvent.consume ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -194,7 +204,8 @@ public class XmitApp extends AppBase
   {
     if (setRootFolder ())
     {
-      treePane.setRootFolder (new XmitTreeItem (new TreeNodeData (new File (rootFolderName))));
+      treePane.setRootFolder (
+          new XmitTreeItem (new TreeNodeData (new File (rootFolderName))));
       xmitStatusBar.setStatusMessage ("Root folder changed");
     }
     else
@@ -240,7 +251,8 @@ public class XmitApp extends AppBase
       directoryChooser.setInitialDirectory (new File (rootFolderName));
 
     File file = directoryChooser.showDialog (null);
-    if (file != null && file.isDirectory () && !file.getAbsolutePath ().equals (rootFolderName))
+    if (file != null && file.isDirectory ()
+        && !file.getAbsolutePath ().equals (rootFolderName))
     {
       rootFolderName = file.getAbsolutePath ();
       prefs.put (PREFS_ROOT_FOLDER, rootFolderName);
